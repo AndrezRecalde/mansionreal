@@ -271,7 +271,8 @@ class DepartamentoController extends Controller
                     ->where('fecha_checkout', '>=', $fecha)
                     ->whereIn('estado_id', $estadosReserva);
             },
-            'estado'
+            'estado',
+            'reservas.consumos'
         ])->get();
 
         // 4. Formatear la respuesta
@@ -317,13 +318,25 @@ class DepartamentoController extends Controller
                     'id'             => $reserva->id,
                     'codigo_reserva' => $reserva->codigo_reserva,
                     'huesped'        => $reserva->huesped?->nombres . ' ' . $reserva->huesped?->apellidos,
+                    'huesped_dni'    => $reserva->huesped?->dni,
                     'fecha_checkin'  => $reserva->fecha_checkin,
                     'fecha_checkout' => $reserva->fecha_checkout,
+                    'total_noches'   => $reserva->total_noches,
                     'estado'         => [
                         'id'      => $reserva->estado?->id,
                         'nombre'  => $reserva->estado?->nombre_estado,
                         'color'   => $reserva->estado?->color,
                     ],
+                    'consumos'      => $reserva->consumos ? $reserva->consumos->map(function ($consumo) {
+                        return [
+                            'id'          => $consumo->id,
+                            'producto'    => $consumo->inventario?->nombre_producto,
+                            'cantidad'    => $consumo->cantidad,
+                            'subtotal'    => $consumo->subtotal,
+                            'iva'         => $consumo->iva,
+                            'total'       => $consumo->total,
+                        ];
+                    }) : null,
                 ] : null,
             ];
         });

@@ -3,17 +3,25 @@ import { useErrorException } from "../error/useErrorException";
 import {
     rtkAsignarReserva,
     rtkCargando,
+    rtkCargandoPDFNotaVenta,
     rtkCargarErrores,
     rtkCargarMensaje,
     rtkCargarReservas,
     rtkLimpiarReservas,
 } from "../../store/reserva/reservaSlice";
+import { useDepartamentoStore } from "../../hooks";
 import apiAxios from "../../api/apiAxios";
-import { useDepartamentoStore } from "../departamento/useDepartamentoStore";
 
 export const useReservaDepartamentoStore = () => {
-    const { cargando, reservas, activarReserva, mensaje, errores } =
-        useSelector((state) => state.reserva);
+    const {
+        cargando,
+        cargandoPDFNotaVenta,
+        cargandoPDFReporte,
+        reservas,
+        activarReserva,
+        mensaje,
+        errores,
+    } = useSelector((state) => state.reserva);
     const { fnConsultarDisponibilidadDepartamentos } = useDepartamentoStore();
     const dispatch = useDispatch();
     const { ExceptionMessageError } = useErrorException(rtkCargarErrores);
@@ -86,7 +94,7 @@ export const useReservaDepartamentoStore = () => {
     const fnCargarReporteDepartamentosPorFechas = async ({
         fecha_inicio = null,
         fecha_fin = null,
-        anio
+        anio,
     }) => {
         try {
             dispatch(rtkCargando(true));
@@ -95,7 +103,7 @@ export const useReservaDepartamentoStore = () => {
                 {
                     fecha_inicio,
                     fecha_fin,
-                    anio
+                    anio,
                 }
             );
             const { result } = data;
@@ -130,9 +138,36 @@ export const useReservaDepartamentoStore = () => {
         }
     };
 
+    const fnExportarNotaVentaPDF = async (reserva_id) => {
+        try {
+            dispatch(rtkCargandoPDFNotaVenta(true));
+            const response = await apiAxios.post(
+                "/gerencia/exportar-nota-venta",
+                { reserva_id },
+                {
+                    responseType: "blob", // Importante para manejar archivos binarios
+                }
+            );
+
+            // Crear un enlace para descargar el archivo PDF
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", `nota_venta_${reserva_id}.pdf`); // Nombre del archivo
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+        } catch (error) {
+            console.log(error);
+            ExceptionMessageError(error);
+        } finally {
+            dispatch(rtkCargandoPDFNotaVenta(false));
+        }
+    };
+
     const fnAsignarReserva = (reserva) => {
         dispatch(rtkAsignarReserva(reserva));
-    }
+    };
 
     const fnLimpiarReservas = () => {
         dispatch(rtkLimpiarReservas());
@@ -140,6 +175,8 @@ export const useReservaDepartamentoStore = () => {
 
     return {
         cargando,
+        cargandoPDFNotaVenta,
+        cargandoPDFReporte,
         reservas,
         activarReserva,
         mensaje,
@@ -150,7 +187,8 @@ export const useReservaDepartamentoStore = () => {
         fnEliminarReserva,
         fnCargarReporteDepartamentosPorFechas,
         fnBuscarReservas,
+        fnExportarNotaVentaPDF,
         fnAsignarReserva,
-        fnLimpiarReservas
+        fnLimpiarReservas,
     };
 };

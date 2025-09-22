@@ -4,13 +4,13 @@ import {
     categoriaSlice,
     configuracionIvaSlice,
     consumoSlice,
-    dashGastosDaniosSlice,
+    //dashGastosDaniosSlice,
     dashHuespedesGananciasMesSlice,
     dashHuespedesSlice,
     dashIngresosPorDepartamentoSlice,
-    dashIngresosTotalesSlice,
-    dashIvaRecaudadoSlice,
-    dashOcupacionActualSlice,
+    //dashIngresosTotalesSlice,
+    //dashIvaRecaudadoSlice,
+    //dashOcupacionActualSlice,
     dashRankingProductosSlice,
     dashResumenKPISlice,
     departamentoSlice,
@@ -50,14 +50,14 @@ export const store = configureStore({
         dashResumenKPI: dashResumenKPISlice.reducer,
         dashHuespedesGananciasMes: dashHuespedesGananciasMesSlice.reducer,
         dashRankingProductos: dashRankingProductosSlice.reducer,
-
-
-        dashGastosDanios: dashGastosDaniosSlice.reducer,
-        dashHuespedes: dashHuespedesSlice.reducer,
         dashIngresosPorDepartamento: dashIngresosPorDepartamentoSlice.reducer,
-        dashIngresosTotales: dashIngresosTotalesSlice.reducer,
-        dashIvaRecaudado: dashIvaRecaudadoSlice.reducer,
-        dashOcupacionActual: dashOcupacionActualSlice.reducer,
+        dashHuespedes: dashHuespedesSlice.reducer,
+
+
+        //dashGastosDanios: dashGastosDaniosSlice.reducer,
+        //dashIngresosTotales: dashIngresosTotalesSlice.reducer,
+        //dashIvaRecaudado: dashIvaRecaudadoSlice.reducer,
+        //dashOcupacionActual: dashOcupacionActualSlice.reducer,
 
         /* Roles */
         role: roleSlice.reducer,

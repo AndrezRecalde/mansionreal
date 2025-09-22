@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
     cargando: false,
     consumos: [],
-    activarConsumos: false,
+    activarConsumo: false,
     mensaje: undefined,
     errores: undefined,
 };
@@ -30,13 +30,13 @@ export const consumoSlice = createSlice({
             state.cargando = false;
         },
         rtkActivarConsumo: (state, { payload }) => {
-            state.activarConsumos = payload;
+            state.activarConsumo = payload;
             state.cargando = false;
             state.errores = undefined;
             state.mensaje = undefined;
         },
         rtkLimpiarConsumos: (state) => {
-            state.activarConsumos = false;
+            state.activarConsumo = false;
             state.errores = undefined;
             state.mensaje = undefined;
         },

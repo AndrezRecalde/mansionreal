@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     abrirModalReservarDepartamento: false,
+    abrirModalReservaFinalizar: false,
 };
 
 export const uiReservaSlice = createSlice({
@@ -11,7 +12,10 @@ export const uiReservaSlice = createSlice({
         rtkAbrirModalReservarDepartamento: (state, { payload }) => {
             state.abrirModalReservarDepartamento = payload;
         },
+        rtkAbrirModalReservaFinalizar: (state, { payload }) => {
+            state.abrirModalReservaFinalizar = payload;
+        },
     },
 });
 
-export const { rtkAbrirModalReservarDepartamento } = uiReservaSlice.actions;
+export const { rtkAbrirModalReservarDepartamento, rtkAbrirModalReservaFinalizar } = uiReservaSlice.actions;

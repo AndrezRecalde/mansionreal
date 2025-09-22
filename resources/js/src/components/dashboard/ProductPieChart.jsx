@@ -19,8 +19,11 @@ export default function ProductPieChart() {
     ];
 
     const options = {
-        chart: { type: "pie" },
-        title: { text: "Consumo por Producto" },
+        chart: { type: "pie", backgroundColor: "transparent" },
+        title: {
+            text: "Consumo por Producto",
+            style: { color: "#228be6", fontWeight: "bold" },
+        },
         tooltip: {
             pointFormat: "<b>{point.y}</b> vendidos",
         },

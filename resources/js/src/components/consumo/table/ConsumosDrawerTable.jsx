@@ -1,71 +1,73 @@
 import { useCallback, useMemo } from "react";
-import { Button } from "@mantine/core";
+import { Button, Stack } from "@mantine/core";
 import { useMantineReactTable } from "mantine-react-table";
 import { ContenidoTable, MenuTable_EA } from "../../../components";
 import { IconShoppingCartPlus } from "@tabler/icons-react";
-import { useUiConsumo } from "../../../hooks";
-
-// Datos de ejemplo
-const productos = [
-    {
-        nombre_producto: "Coca Cola",
-        cantidad: 2,
-        total: "$3.00",
-    },
-    {
-        nombre_producto: "Papas Fritas",
-        cantidad: 1,
-        total: "$0.80",
-    },
-    {
-        nombre_producto: "Jabón Líquido",
-        cantidad: 1,
-        total: "$2.50",
-    },
-];
+import { useConsumoStore, useUiConsumo } from "../../../hooks";
 
 export const ConsumosDrawerTable = () => {
+    const { cargando, consumos } = useConsumoStore();
     const { fnAbrirModalConsumo } = useUiConsumo();
+
+    // Calcula la suma de todos los totales (no solo los de la página actual)
+    const totalConsumos = useMemo(() => {
+        if (!Array.isArray(consumos)) return 0;
+        return consumos.reduce((acc, curr) => acc + Number(curr.total ?? 0), 0);
+    }, [consumos]);
+
     const columns = useMemo(
         () => [
             {
                 header: "Producto",
                 accessorKey: "nombre_producto",
                 size: 80,
-                //filterVariant: "autocomplete",
             },
             {
                 header: "Cantidad",
                 accessorKey: "cantidad",
-                //filterVariant: "autocomplete",
             },
             {
                 header: "Total",
                 accessorKey: "total",
-                //filterVariant: "autocomplete",
+                Cell: ({ cell }) => (
+                    <span>
+                        {Number(cell.getValue()).toLocaleString("es-EC", {
+                            style: "currency",
+                            currency: "USD",
+                            minimumFractionDigits: 2,
+                        })}
+                    </span>
+                ),
+                // Footer nativo de la columna, suma total de todos los consumos
+                Footer: () => (
+                    <Stack>
+                        Total Consumos:
+                        <strong>
+                            {totalConsumos.toLocaleString("es-EC", {
+                                style: "currency",
+                                currency: "USD",
+                                minimumFractionDigits: 2,
+                            })}
+                        </strong>
+                    </Stack>
+                ),
             },
         ],
-        [productos]
+        [consumos, totalConsumos]
     );
 
-    const handleAbrirConsumo = useCallback(
-        (selected) => {
-            fnAbrirModalConsumo(true);
-        },
-        [productos]
-    );
+    const handleAbrirConsumo = useCallback(() => {
+        fnAbrirModalConsumo(true);
+    }, [fnAbrirModalConsumo]);
 
-     const handleEliminarConsumo = useCallback(
-        (selected) => {
-            console.log("Eliminar consumo:", selected);
-        },
-        [productos]
-    );
+    const handleEliminarConsumo = useCallback((selected) => {
+        console.log("Eliminar consumo:", selected);
+    }, []);
 
     const table = useMantineReactTable({
         columns,
-        data: productos, //must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
-        //state: { showProgressBars: isLoading },
+        data: consumos,
+        state: { showProgressBars: cargando },
         enableFacetedValues: false,
         enableDensityToggle: false,
         enableColumnFilterModes: false,
@@ -74,7 +76,8 @@ export const ConsumosDrawerTable = () => {
         enableGlobalFilter: false,
         enableRowActions: true,
         enableColumnActions: false,
-        renderTopToolbarCustomActions: ({ table }) => (
+        enableColumnFooters: true, // Habilita los footers de columna
+        renderTopToolbarCustomActions: () => (
             <Button
                 leftSection={<IconShoppingCartPlus size={20} stroke={1.8} />}
                 variant="filled"

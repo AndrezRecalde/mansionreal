@@ -13,37 +13,6 @@ class DashboardController extends Controller
      * KPIs que NO requieren filtro de fechas/año
      */
 
-    // Total de huéspedes alojados (hoy)
-    public function totalHuespedesAlojados()
-    {
-        try {
-            $result = DB::select('CALL kpi_total_huespedes_alojados()');
-            return response()->json([
-                'status' => HTTPStatus::Success,
-                'result' => $result
-            ], 200);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => HTTPStatus::Error,
-                'msg'    => $th->getMessage()
-            ], 500);
-        }
-    }
-
-    // Ocupación actual (hoy)
-    public function ocupacionActual()
-    {
-        try {
-            $result = DB::select('CALL kpi_ocupacion_actual()');
-            return response()->json($result);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => HTTPStatus::Error,
-                'msg'    => $th->getMessage()
-            ], 500);
-        }
-    }
-
     // Huéspedes y ganancias por mes (requiere año)
     public function huespedesYGananciasPorMes(Request $request)
     {
@@ -97,8 +66,8 @@ class DashboardController extends Controller
             $fecha_inicio = $request->fecha_inicio;
             $fecha_fin = $request->fecha_fin;
             $anio = $request->anio;
-            $limite = $request->limite ?? 10;
-            $result = DB::select('CALL kpi_huespedes_recurrentes(?, ?, ?, ?)', [
+            $limite = $request->limite ?? 5;
+            $result = DB::select('CALL kpi_huespedes_mas_recurrentes(?, ?, ?, ?)', [
                 $fecha_inicio,
                 $fecha_fin,
                 $anio,
@@ -161,81 +130,6 @@ class DashboardController extends Controller
                 'status' => HTTPStatus::Success,
                 'result' => $result
             ], 200);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => HTTPStatus::Error,
-                'msg'    => $th->getMessage()
-            ], 500);
-        }
-    }
-
-    // Gastos por daños
-    public function gastosPorDanos(Request $request)
-    {
-        try {
-            $fecha_inicio = $request->fecha_inicio;
-            $fecha_fin = $request->fecha_fin;
-            $anio = $request->anio;
-            $result = DB::select('CALL kpi_gastos_por_danos(?, ?, ?)', [
-                $fecha_inicio,
-                $fecha_fin,
-                $anio
-            ]);
-            return response()->json([
-                'status' => HTTPStatus::Success,
-                'result' => $result
-            ], 200);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => HTTPStatus::Error,
-                'msg'    => $th->getMessage()
-            ], 500);
-        }
-    }
-
-    // IVA recaudado
-    public function ivaRecaudado(Request $request)
-    {
-        try {
-            $fecha_inicio = $request->fecha_inicio;
-            $fecha_fin = $request->fecha_fin;
-            $anio = $request->anio;
-            $result = DB::select('CALL kpi_iva_recaudado(?, ?, ?)', [
-                $fecha_inicio,
-                $fecha_fin,
-                $anio
-            ]);
-            return response()->json([
-                'status' => HTTPStatus::Success,
-                'result' => $result
-            ], 200);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => HTTPStatus::Error,
-                'msg'    => $th->getMessage()
-            ], 500);
-        }
-    }
-
-    // Ingresos totales
-    public function ingresosTotales(Request $request)
-    {
-        try {
-            $fecha_inicio = $request->fecha_inicio;
-            $fecha_fin = $request->fecha_fin;
-            $anio = $request->anio;
-            $result = DB::select('CALL kpi_ingresos_totales(?, ?, ?)', [
-                $fecha_inicio,
-                $fecha_fin,
-                $anio
-            ]);
-            return response()->json(
-                [
-                    'status' => HTTPStatus::Success,
-                    'result' => $result
-                ],
-                200
-            );
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => HTTPStatus::Error,

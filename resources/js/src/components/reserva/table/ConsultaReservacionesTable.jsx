@@ -1,43 +1,49 @@
-import { Table } from "@mantine/core";
+import { Badge, Table, Text } from "@mantine/core";
 
 export const ConsultaReservacionesTable = ({ reserva }) => {
     return (
-        <Table variant="vertical" layout="fixed" withTableBorder>
+        <Table highlightOnHover withTableBorder verticalSpacing="sm">
             <Table.Tbody>
                 <Table.Tr>
-                    <Table.Th w={250}>Nombre de departamento</Table.Th>
+                    <Table.Th w={220}>Departamento</Table.Th>
                     <Table.Td>
-                        Departamento {reserva.nombre_departamento}
+                        <Text fw={500}>{reserva.nombre_departamento}</Text>
+                        <Badge color="indigo" ml={8} size="sm">
+                            {reserva.tipo_departamento}
+                        </Badge>
                     </Table.Td>
                 </Table.Tr>
                 <Table.Tr>
-                    <Table.Th>Tipo de departamento</Table.Th>
-                    <Table.Td>{reserva.tipo_departamento}</Table.Td>
-                </Table.Tr>
-
-                <Table.Tr>
                     <Table.Th>Capacidad</Table.Th>
-                    <Table.Td>{reserva.capacidad}</Table.Td>
+                    <Table.Td>
+                        <Badge color="blue" size="sm">
+                            {reserva.capacidad} personas
+                        </Badge>
+                    </Table.Td>
                 </Table.Tr>
                 <Table.Tr>
-                    <Table.Th>Total de Reservas</Table.Th>
-                    <Table.Td>{reserva.total_reservas}</Table.Td>
+                    <Table.Th>Reservas</Table.Th>
+                    <Table.Td>
+                        <Badge color="teal" size="sm">
+                            {reserva.total_reservas}
+                        </Badge>
+                        <Text size="xs" color="dimmed" ml={12}>
+                            huéspedes: {reserva.total_huespedes}
+                        </Text>
+                    </Table.Td>
                 </Table.Tr>
                 <Table.Tr>
-                    <Table.Th>Total Huespedes</Table.Th>
-                    <Table.Td>{reserva.total_huespedes}</Table.Td>
+                    <Table.Th>Consumos</Table.Th>
+                    <Table.Td>
+                        <Text fw={500}>${reserva.subtotal_consumos}</Text>
+                        <Text size="xs" color="dimmed">
+                            IVA: ${reserva.iva_recaudado}
+                        </Text>
+                    </Table.Td>
                 </Table.Tr>
                 <Table.Tr>
                     <Table.Th>Total Consumos</Table.Th>
-                    <Table.Td>{reserva.subtotal_consumos}</Table.Td>
-                </Table.Tr>
-                <Table.Tr>
-                    <Table.Th>Iva Recaudado</Table.Th>
-                    <Table.Td>{reserva.iva_recaudado}</Table.Td>
-                </Table.Tr>
-                <Table.Tr>
-                    <Table.Th>Total Consumos</Table.Th>
-                    <Table.Td>{reserva.total_consumos}</Table.Td>
+                    <Table.Td fw={500}>${reserva.total_consumos}</Table.Td>
                 </Table.Tr>
             </Table.Tbody>
         </Table>

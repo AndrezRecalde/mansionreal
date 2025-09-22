@@ -8,13 +8,10 @@ import { useUiHeaderMenu } from "./layout/useUiHeaderMenu";
 import { useTitleHook } from "./title/useTitleHook";
 
 /* Dashboard */
-import { useDashGastosDaniosStore } from "./dashboard/useDashGastosDaniosStore";
+import { useDashboardKPIStore } from "./dashboard/useDashboardKPIStore";
 import { useDashHuepedGananciaStore } from "./dashboard/useDashHuepedGananciaStore";
 import { useDashHuespedStore } from "./dashboard/useDashHuespedStore";
 import { useDashIngresosPorDepartamentoStore } from "./dashboard/useDashIngresosPorDepartamentoStore";
-import { useDashIngresosTotales } from "./dashboard/useDashIngresosTotales";
-import { useDashIvaRecaudado } from "./dashboard/useDashIvaRecaudado";
-import { useDashOcupacionActualStore } from "./dashboard/useDashOcupacionActualStore";
 import { useDashRankingProductosStore } from "./dashboard/useDashRankingProductosStore";
 
 
@@ -80,13 +77,10 @@ export {
     useTitleHook,
 
     /* Dashboard */
-    useDashGastosDaniosStore,
+    useDashboardKPIStore,
     useDashHuepedGananciaStore,
     useDashHuespedStore,
     useDashIngresosPorDepartamentoStore,
-    useDashIngresosTotales,
-    useDashIvaRecaudado,
-    useDashOcupacionActualStore,
     useDashRankingProductosStore,
 
     /* Usuario */

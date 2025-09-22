@@ -27,7 +27,7 @@ export const useGastoStore = () => {
     }) => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.post("/gastos", {
+            const { data } = await apiAxios.post("/gerencia/gastos", {
                 fecha_inicio,
                 fecha_fin,
                 reserva_id,
@@ -47,10 +47,10 @@ export const useGastoStore = () => {
             if (gasto.id) {
                 //actualizando
                 const { data } = await apiAxios.put(
-                    `/gasto/${gasto.id}`,
+                    `/gerencia/gasto/${gasto.id}`,
                     gasto
                 );
-                fnCargarGastos({});
+                fnCargarGastos({ reserva_id: gasto.reserva_id });
                 dispatch(rtkCargarMensaje(data));
                 setTimeout(() => {
                     dispatch(rtkCargarMensaje(undefined));
@@ -58,8 +58,8 @@ export const useGastoStore = () => {
                 return;
             }
             //creando
-            const { data } = await apiAxios.post("/gasto", gasto);
-            fnCargarGastos({});
+            const { data } = await apiAxios.post("/gerencia/gasto", gasto);
+            fnCargarGastos({ reserva_id: gasto.reserva_id });
             dispatch(rtkCargarMensaje(data));
             setTimeout(() => {
                 dispatch(rtkCargarMensaje(undefined));
@@ -72,7 +72,9 @@ export const useGastoStore = () => {
 
     const fnEliminarGasto = async (gasto) => {
         try {
-            const { data } = await apiAxios.delete(`/gasto/${gasto.id}`);
+            const { data } = await apiAxios.delete(
+                `/gerencia/gasto/${gasto.id}`
+            );
             fnCargarGastos({});
             dispatch(rtkCargarMensaje(data));
             setTimeout(() => {

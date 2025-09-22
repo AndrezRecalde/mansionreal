@@ -1,24 +1,15 @@
 import { useEffect } from "react";
-import {
-    Container,
-    Divider,
-    TextInput,
-    Loader,
-    Center,
-    Button,
-    Group,
-} from "@mantine/core";
-import { DateInput } from "@mantine/dates";
+import { Container, Divider, Loader, Center } from "@mantine/core";
 import {
     ConsumoModal,
     ConsumosDrawer,
-    DisponibilidadCards,
+    //DisponibilidadCards,
+    DisponibilidadTable,
     FiltroDisponibilidad,
     GastoModal,
     ReservarDepartamentoModal,
     TitlePage,
 } from "../../components";
-import { IconSearch } from "@tabler/icons-react";
 import {
     useDepartamentoStore,
     useReservaDepartamentoStore,
@@ -45,11 +36,10 @@ const inventariosEjemplo = [
 
 const DisponibilidadActualPage = () => {
     useTitleHook("Disponibilidad - Mansión Real");
-    const {
-        cargando,
-        fnConsultarDisponibilidadDepartamentos,
-        fnLimpiarDepartamentos,
-    } = useDepartamentoStore();
+    const { cargando, activarDepartamento, fnAsignarDepartamento } =
+        useDepartamentoStore();
+    const { fnConsultarDisponibilidadDepartamentos, fnLimpiarDepartamentos } =
+        useDepartamentoStore();
     const {
         fnAbrirModalConsumo,
         abrirModalConsumo,
@@ -102,13 +92,16 @@ const DisponibilidadActualPage = () => {
                     <Loader size="xl" />
                 </Center>
             ) : (
-                <DisponibilidadCards
+                <DisponibilidadTable
                     setOpened={fnAbrirDrawerConsumosDepartamento}
                 />
             )}
 
             <ReservarDepartamentoModal />
-            <ConsumosDrawer />
+            <ConsumosDrawer
+                activarElemento={activarDepartamento?.reserva?.id}
+                fnAsignarElemento={fnAsignarDepartamento}
+            />
             <ConsumoModal
                 opened={abrirModalConsumo}
                 onClose={() => fnAbrirModalConsumo(false)}

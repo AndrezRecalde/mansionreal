@@ -1,12 +1,19 @@
 import { Badge } from "@mantine/core";
 import { useMantineReactTable } from "mantine-react-table";
-import { ConsumosInformacionTable, ContenidoTable, MenuTable_EA } from "../../../components";
+import {
+    ConsumosInformacionTable,
+    ContenidoTable,
+    MenuTable_RESERVA,
+} from "../../../components";
 import { useCallback, useMemo } from "react";
-import { useReservaDepartamentoStore } from "../../../hooks";
+import { useReservaDepartamentoStore, useUiConsumo, useUiReservaDepartamento } from "../../../hooks";
 import { MRT_Localization_ES } from "mantine-react-table/locales/es/index.cjs";
 
 export const ReservasInformacionTable = ({ cargando }) => {
-    const { reservas } = useReservaDepartamentoStore();
+    const { reservas, fnAsignarReserva } = useReservaDepartamentoStore();
+    const { fnAbrirModalReservaFinalizar } = useUiReservaDepartamento();
+    const { fnAbrirDrawerConsumosDepartamento } = useUiConsumo();
+
     const columns = useMemo(
         () => [
             {
@@ -67,6 +74,24 @@ export const ReservasInformacionTable = ({ cargando }) => {
         [reservas]
     );
 
+    const handleAgregarConsumos = useCallback(
+        (selected) => {
+            console.log(selected);
+            fnAsignarReserva(selected);
+            fnAbrirDrawerConsumosDepartamento(true);
+        },
+        [reservas]
+    );
+
+    const handleFinalizarReserva = useCallback(
+        (selected) => {
+            console.log(selected);
+            fnAsignarReserva(selected);
+            fnAbrirModalReservaFinalizar(true);
+        },
+        [reservas]
+    );
+
     const table = useMantineReactTable({
         columns,
         data: reservas, //must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
@@ -77,10 +102,11 @@ export const ReservasInformacionTable = ({ cargando }) => {
         enableDensityToggle: false,
         enableRowActions: true,
         renderRowActionMenuItems: ({ row }) => (
-            <MenuTable_EA
+            <MenuTable_RESERVA
                 row={row}
-                titulo="Editar"
-                handleAction={handleEditar}
+                handleEditar={handleEditar}
+                handleAgregarConsumos={handleAgregarConsumos}
+                handleFinalizarReserva={handleFinalizarReserva}
             />
         ),
         renderDetailPanel: ({ row }) => <ConsumosInformacionTable data={row} />,

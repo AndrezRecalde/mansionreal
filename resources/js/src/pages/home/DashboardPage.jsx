@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
     Grid,
     Card,
@@ -10,7 +11,9 @@ import {
 } from "@mantine/core";
 import { DateInput, YearPickerInput } from "@mantine/dates";
 import {
+    useDashboardKPIStore,
     useDashHuepedGananciaStore,
+    useDashHuespedStore,
     useDashIngresosPorDepartamentoStore,
     useDashRankingProductosStore,
     useTitleHook,
@@ -22,8 +25,7 @@ import DepartmentBarChart from "../../components/dashboard/DepartmentBarChart";
 import ProductPieChart from "../../components/dashboard/ProductPieChart";
 import ReservationsTable from "../../components/dashboard/ReservationsTable";
 import GuestsRankingTable from "../../components/dashboard/GuestsRankingTable";
-import { useDashboardKPIStore } from "../../hooks/dashboard/useDashboardKPIStore";
-import { useEffect } from "react";
+import { FiltrarPorFechasForm } from "../../components";
 
 export default function DashboardPage() {
     useTitleHook("Dashboard - Mansión Real");
@@ -38,17 +40,21 @@ export default function DashboardPage() {
         fnCargarIngresosPorDepartamento,
         fnLimpiarIngresosPorDepartamento,
     } = useDashIngresosPorDepartamentoStore();
+    const { fnCargarHuespedesRecurrentes, fnLimpiarHuespedesRecurrentes } =
+        useDashHuespedStore();
 
     useEffect(() => {
         fnCargarResumenKPI({ p_anio: new Date().getFullYear() });
         fnCargarHuespedesGananciasMes(new Date().getFullYear());
         fnCargarRankingProductos({ anio: new Date().getFullYear() });
         fnCargarIngresosPorDepartamento({ anio: new Date().getFullYear() });
+        fnCargarHuespedesRecurrentes({ anio: new Date().getFullYear() });
         return () => {
             fnLimpiarResumenKPI();
             fnLimpiarHuespedesGananciasMes();
             fnLimpiarRankingProductos();
             fnLimpiarIngresosPorDepartamento();
+            fnLimpiarHuespedesRecurrentes();
         };
     }, []);
 
@@ -58,41 +64,16 @@ export default function DashboardPage() {
                 Panel Administrativo
             </Title>
             {/* Filtros */}
-            <Paper p={15} mb={20} radius="md" shadow="xs" withBorder>
-                <Group gap="xs" align="end" wrap="wrap">
-                    <DateInput
-                        valueFormat="YYYY-MM-DD"
-                        label={null}
-                        placeholder="Fecha Inicio"
-                        size="sm"
-                        style={{ minWidth: rem(110) }}
-                    />
-                    <DateInput
-                        valueFormat="YYYY-MM-DD"
-                        label={null}
-                        placeholder="Fecha Fin"
-                        size="sm"
-                        radius="md"
-                        style={{ minWidth: rem(110) }}
-                    />
-                    <YearPickerInput
-                        label={null}
-                        placeholder="Año"
-                        value={new Date()}
-                        size="sm"
-                        style={{ minWidth: rem(70) }}
-                    />
-                    <ActionIcon
-                        color="indigo"
-                        variant="filled"
-                        size={rem(34)}
-                        radius="xl"
-                        aria-label="Buscar"
-                    >
-                        <IconSearch size={18} stroke={2} />
-                    </ActionIcon>
-                </Group>
-            </Paper>
+            <FiltrarPorFechasForm
+                titulo="Filtrar por Año"
+                fnHandleAction={(values) => {
+                    fnCargarResumenKPI(values);
+                    fnCargarHuespedesGananciasMes(values.anio);
+                    fnCargarRankingProductos({ anio: values.anio });
+                    fnCargarIngresosPorDepartamento({ anio: values.anio });
+                    fnCargarHuespedesRecurrentes({ anio: values.anio });
+                }}
+            />
 
             {/* KPIs */}
             <Grid mb="md" grow>

@@ -35,20 +35,35 @@ export default function OccupancyLineChart() {
     );
 
     const options = {
-        chart: { zoomType: "xy" },
-        title: { text: "Huéspedes y Ganancias Mensuales" },
-        xAxis: { categories: meses },
+        chart: {
+            zoomType: "xy",
+            backgroundColor: "transparent",
+        },
+        title: {
+            text: "Huéspedes y Ganancias Mensuales",
+            style: { color: "#228be6", fontWeight: "bold" },
+        },
+        xAxis: {
+            categories: meses,
+            labels: {
+                style: { fontSize: "14px", fontWeight: 600, color: "#a1a6ab" },
+            },
+        },
         yAxis: [
             {
                 // Eje Y para huéspedes
                 title: { text: "Total de Huéspedes" },
                 min: 0,
+                labels: { style: { fontSize: "14px", color: "#a1a6ab" } },
+                gridLineColor: "#a1a6ab",
             },
             {
                 // Eje Y para ganancias
                 title: { text: "Total de Ganancias (USD)" },
                 min: 0,
                 opposite: true,
+                labels: { style: { fontSize: "14px", color: "#a1a6ab" } },
+                gridLineColor: "#a1a6ab",
             },
         ],
         tooltip: {

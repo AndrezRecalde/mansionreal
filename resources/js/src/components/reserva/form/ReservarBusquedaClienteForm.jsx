@@ -37,11 +37,8 @@ export const ReservarBusquedaClienteForm = ({
                 <Button
                     variant="light"
                     color="red"
-                    px={12}
                     leftSection={<IconX size={16} />}
                     onClick={handleClear}
-                    style={{ minWidth: 120 }}
-                    type="button"
                     disabled={cargando}
                 >
                     Limpiar

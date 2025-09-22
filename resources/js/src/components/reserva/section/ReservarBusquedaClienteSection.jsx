@@ -71,14 +71,7 @@ export const ReservarBusquedaClienteSection = ({
                 </TextSection>
             }
         >
-            <Card
-                withBorder
-                radius="md"
-                shadow="sm"
-                p={15}
-                mb={15}
-                style={{ background: "#f7f9fa" }}
-            >
+            <Card withBorder radius="sm" shadow="sm" p={15} mb={15}>
                 <ReservarBusquedaClienteForm
                     reservaForm={reservaForm}
                     showDetails={showDetails}

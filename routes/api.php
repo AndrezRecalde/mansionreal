@@ -55,20 +55,13 @@ Route::get('/provincias', [ProvinciaController::class, 'getProvincias'])->middle
 
 Route::group(['prefix' => 'gerencia', 'middleware' => ['auth:sanctum', CheckRole::class . ':ADMINISTRADOR|GERENTE']], function () {
 
-    /* Dashboard KPI: Sin Filtros */
+
+    /* Dashboard KPIS */
+    Route::post('/dashboard/resumen-kpi', [DashboardController::class, 'kpiResumen']);
     Route::post('/dashboard/huespedes-ganancias-por-mes', [DashboardController::class, 'huespedesYGananciasPorMes']);
-    Route::get('/dashboard/ocupacion-actual', [DashboardController::class, 'ocupacionActual']);
     Route::post('/dashboard/ranking-productos', [DashboardController::class, 'productosMasConsumidos']);
     Route::post('/dashboard/ingresos-departamento', [DashboardController::class, 'ingresosPorTipoDepartamento']);
-
-
-    /* Dashboard KPI: Con filtros */
-    Route::post('/dashboard/resumen-kpi', [DashboardController::class, 'kpiResumen']);
-    Route::post('/dashboard/gastos-por-danos', [DashboardController::class, 'gastosPorDanos']);
     Route::post('/dashboard/huespedes-recurrentes', [DashboardController::class, 'huespedesRecurrentes']);
-    Route::post('/dashboard/total-huespedes-alojados', [DashboardController::class, 'totalHuespedesAlojados']); // Ojo deberia tener filtros
-    Route::post('/dashboard/ingresos-totales', [DashboardController::class, 'ingresosTotales']);
-    Route::post('/dashboard/iva-recaudado', [DashboardController::class, 'ivaRecaudado']);
 
 
     /* Usuarios */
@@ -126,9 +119,12 @@ Route::group(['prefix' => 'gerencia', 'middleware' => ['auth:sanctum', CheckRole
     Route::post('/reporte-departamentos', [ReservasController::class, 'reporteDepartamentosPorFechas']);
     Route::post('/reservas/buscar', [ReservasController::class, 'buscarReservas']);
 
+    /* Exportar PDF Reservas */
+    Route::post('/exportar-nota-venta', [ReservasController::class, 'exportarNotaVentaPDF']);
+
     /* Consumos */
     Route::post('/consumo-reserva', [ConsumosController::class, 'buscarConsumosPorReserva']);
-    Route::post('/consumos/registrar', [ConsumosController::class, 'registrarConsumos']);
+    Route::post('/consumo', [ConsumosController::class, 'registrarConsumos']);
     Route::put('/consumo/{id}', [ConsumosController::class, 'update']);
     Route::delete('/consumo/{id}', [ConsumosController::class, 'delete']);
 

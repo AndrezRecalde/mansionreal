@@ -98,9 +98,9 @@ export const headerGerenciaRoutes = {
         },
         {
             icon: IconListCheck,
-            title: "Historial Consumos",
-            path: "historial-consumos",
-            link: "/gerencia/historial-consumos",
+            title: "Historial Reservas",
+            path: "historial-reservas",
+            link: "/gerencia/historial-reservas",
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
         },
         {

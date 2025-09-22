@@ -16,18 +16,20 @@ class ConsumosController extends Controller
 {
     public function buscarConsumosPorReserva(Request $request)
     {
-        $reserva_id = $request->input('reserva_id');
+        $reserva_id = $request->reserva_id;
 
         if (!$reserva_id) {
             return response()->json(['error' => 'Debe proporcionar el reserva_id'], 400);
         }
 
-        $consumos = \App\Models\Consumo::with('inventario')
+        $consumos = Consumo::with('inventario')
             ->where('reserva_id', $reserva_id)
             ->get()
             ->map(function ($c) {
                 return [
+                    'id'              => $c->id,
                     'nombre_producto' => $c->inventario ? $c->inventario->nombre_producto : null,
+                    'huespued'        => $c->reserva ? $c->reserva->huesped->nombres . ' ' . $c->reserva->huesped->apellidos : null,
                     'cantidad'        => $c->cantidad,
                     'subtotal'        => $c->subtotal,
                     'tasa_iva'        => $c->tasa_iva,
@@ -37,7 +39,10 @@ class ConsumosController extends Controller
                 ];
             });
 
-        return response()->json($consumos);
+        return response()->json([
+            'status' => HTTPStatus::Success,
+            'consumos'   => $consumos
+        ]);
     }
 
     //Funcion para registrar uno o varios consumos segun el precio_unitario que se encuentra en la tabla inventarios y calcular el iva segun la configuracion del sistema

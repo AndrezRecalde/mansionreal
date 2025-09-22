@@ -2,31 +2,11 @@ import { useCallback, useMemo } from "react";
 import { Button } from "@mantine/core";
 import { useMantineReactTable } from "mantine-react-table";
 import { ContenidoTable, MenuTable_EA } from "../../../components";
-import { useUiGasto } from "../../../hooks";
+import { useGastoStore, useUiGasto } from "../../../hooks";
 import { IconListDetails } from "@tabler/icons-react";
 
-const gastos = [
-    {
-        descripcion: "Reparación de aire acondicionado",
-        monto: "$150.00",
-        tipo_dano: "Electrónico",
-        fecha_creacion: "2024-10-01",
-    },
-    {
-        descripcion: "Cambio de cerradura",
-        monto: "$75.00",
-        tipo_dano: "Mecánico",
-        fecha_creacion: "2024-10-05",
-    },
-    {
-        descripcion: "Reparación de tubería",
-        monto: "$200.00",
-        tipo_dano: "Plomería",
-        fecha_creacion: "2024-10-10",
-    },
-];
-
 export const GastoDrawerTable = () => {
+    const { cargando, gastos } = useGastoStore();
     const { fnAbrirModalGasto, fnAbrirEliminarModalGasto } = useUiGasto();
     const columns = useMemo(
         () => [
@@ -75,7 +55,7 @@ export const GastoDrawerTable = () => {
     const table = useMantineReactTable({
         columns,
         data: gastos, //must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
-        //state: { showProgressBars: isLoading },
+        state: { showProgressBars: cargando },
         enableFacetedValues: false,
         enableDensityToggle: false,
         enableColumnFilterModes: false,

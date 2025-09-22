@@ -13,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 
 class ReservasController extends Controller
@@ -107,7 +108,7 @@ class ReservasController extends Controller
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'reserva'   => $reserva
+                'msg'   => 'Reserva #' . $reserva->codigo_reserva . ' creada con éxito',
             ]);
         } catch (\Throwable $th) {
             return response()->json([
@@ -275,5 +276,82 @@ class ReservasController extends Controller
             'status'     => HTTPStatus::Success,
             'reservas'   => $reservas
         ]);
+    }
+
+
+    /* Exportar PDF */
+
+    public function exportarNotaVentaPDF(Request $request)
+    {
+        $reservaId = $request->input('reserva_id');
+        if (!$reservaId) {
+            return response()->json([
+                'status' => HTTPStatus::Error,
+                'msg'    => 'El ID de la reserva es obligatorio'
+            ], 422);
+        }
+
+        // 2. Consulta la reserva específica con sus consumos y departamento relacionado
+        $reserva = Reserva::with([
+            'departamento',
+            'huesped',
+            'estado',
+            'consumos.inventario'
+        ])->find($reservaId);
+
+        if (!$reserva) {
+            return response()->json([
+                'error' => 'Reserva no encontrada'
+            ], 404);
+        }
+
+        $dpto = $reserva->departamento;
+
+        // 3. Armar estructura igual a consultarDisponibilidadDepartamentosPorFecha
+        $resultado = [
+            'id'                  => $dpto->id,
+            'numero_departamento' => $dpto->numero_departamento,
+            'capacidad'           => $dpto->capacidad,
+            'reserva'             => [
+                'id'             => $reserva->id,
+                'codigo_reserva' => $reserva->codigo_reserva,
+                'huesped'        => $reserva->huesped?->nombres . ' ' . $reserva->huesped?->apellidos,
+                'huesped_dni'    => $reserva->huesped?->dni,
+                'fecha_checkin'  => $reserva->fecha_checkin,
+                'fecha_checkout' => $reserva->fecha_checkout,
+                'total_noches'   => $reserva->total_noches,
+                'estado'         => [
+                    'id'      => $reserva->estado?->id,
+                    'nombre'  => $reserva->estado?->nombre_estado,
+                    'color'   => $reserva->estado?->color,
+                ],
+                'consumos'      => $reserva->consumos ? $reserva->consumos->map(function ($consumo) {
+                    return [
+                        'id'          => $consumo->id,
+                        'producto'    => $consumo->inventario?->nombre_producto,
+                        'cantidad'    => $consumo->cantidad,
+                        'subtotal'    => $consumo->subtotal,
+                        'iva'         => $consumo->iva,
+                        'total'       => $consumo->total,
+                    ];
+                }) : [],
+            ],
+        ];
+
+        // 4. Datos fijos
+        $ruc = "0803188499001";
+        $direccion = "Atacames, Via Principal a Súa";
+        $logo = public_path('/assets/images/logo_hotel.jpeg'); // Ajusta nombre si es necesario
+
+        // 5. Generar PDF
+        $pdf = Pdf::loadView('pdf.reportes.nota_venta_pdf', [
+            'ruc'           => $ruc,
+            'direccion'     => $direccion,
+            'logo'          => $logo,
+            'departamento'  => $resultado,
+            'reserva'       => $resultado['reserva'],
+        ]);
+
+        return $pdf->download("nota_de_venta_{$reserva->codigo_reserva}.pdf");
     }
 }

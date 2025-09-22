@@ -284,6 +284,7 @@ const DepartamentoCard = memo(
         onReservar,
         onEstado,
         onFinalizarReserva,
+        fnAsignarDepartamento
     }) => {
         const imagenSrc =
             departamento.imagenes.length > 0
@@ -307,6 +308,7 @@ const DepartamentoCard = memo(
                 });
                 return;
             } else {
+                fnAsignarDepartamento(departamento);
                 setOpened(true);
             }
         };
@@ -464,6 +466,7 @@ export const DisponibilidadCards = ({ setOpened }) => {
                     onReservar={handleReservarClick}
                     onEstado={handleEstadoClick}
                     onFinalizarReserva={handleFinalizarReservaClick}
+                    fnAsignarDepartamento={fnAsignarDepartamento}
                 />
             ))}
         </SimpleGrid>

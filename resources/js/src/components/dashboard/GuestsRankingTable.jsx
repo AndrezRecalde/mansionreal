@@ -1,27 +1,27 @@
 import { Table } from "@mantine/core";
+import { useDashHuespedStore } from "../../hooks";
 
 export default function GuestsRankingTable() {
-    const data = [
-        { nombre: "Juan Pérez", reservas: 5 },
-        { nombre: "Ana Gómez", reservas: 4 },
-    ];
+    const { huespedesRecurrentes } = useDashHuespedStore();
+
+    const rows = huespedesRecurrentes.map((huesped) => (
+        <Table.Tr key={huesped.id}>
+            <Table.Td>{huesped.apellidos + " " + huesped.nombres}</Table.Td>
+            <Table.Td>{huesped.dni}</Table.Td>
+            <Table.Td>{huesped.cantidad_reservas}</Table.Td>
+        </Table.Tr>
+    ));
 
     return (
-        <Table withTableBorder highlightOnHover>
+        <Table striped withTableBorder withColumnBorders>
             <Table.Thead>
                 <Table.Tr>
                     <Table.Th>Nombre</Table.Th>
-                    <Table.Th>Reservas</Table.Th>
+                    <Table.Th>Cedula</Table.Th>
+                    <Table.Th>Total Reservas</Table.Th>
                 </Table.Tr>
             </Table.Thead>
-            <Table.Tbody>
-                {data.map((row) => (
-                    <Table.Tr key={row.nombre}>
-                        <Table.Td>{row.nombre}</Table.Td>
-                        <Table.Td>{row.reservas}</Table.Td>
-                    </Table.Tr>
-                ))}
-            </Table.Tbody>
+            <Table.Tbody>{rows}</Table.Tbody>
         </Table>
     );
 }

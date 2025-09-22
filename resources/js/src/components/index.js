@@ -10,7 +10,7 @@ import { TitlePage } from "./elements/titles/TitlePage";
 /* Elements: AlertSection */
 import { AlertSection } from "./elements/alert/AlertSection";
 /* Elements: Menu de tables */
-import { MenuTable_EA, MenuTable_DEPT } from "./elements/table/MenuTable";
+import { MenuTable_EA, MenuTable_DEPT, MenuTable_RESERVA } from "./elements/table/MenuTable";
 /* Elements: Contenido de tabla */
 import { ContenidoTable } from "./elements/table/ContenidoTable";
 /* Elements: Boton de Activacion */
@@ -68,12 +68,18 @@ import { ReservarBusquedaClienteSection } from "./reserva/section/ReservarBusque
 import { ReservarBusquedaClienteForm } from "./reserva/form/ReservarBusquedaClienteForm";
 import { ReservarDatosClienteForm } from "./reserva/form/ReservarDatosClienteForm";
 import { ReservarDatosReservaSection } from "./reserva/section/ReservarDatosReservaSection";
+import { DisponibilidadTable } from "./reserva/section/DisponibilidadTable";
+import { DetalleReservaTable } from "./reserva/table/DetalleReservaTable";
 
 /* Reservas: Consultar Reservas */
 import { ConsultarReservaSection } from "./reserva/section/ConsultarReservaSection";
 import { ConsultaReservacionesTable } from "./reserva/table/ConsultaReservacionesTable";
 import { ConsultaClientesTable } from "./reserva/table/ConsultaClientesTable";
 import { ReservasInformacionTable } from "./reserva/table/ReservasInformacionTable";
+
+/* Reservas Finalizar Estado */
+import { ReservaFinalizarModal } from "./reserva/modal/ReservaFinalizarModal";
+import { ReservaFinalizarForm } from "./reserva/form/ReservaFinalizarForm";
 
 /* Consumos */
 import { ConsumosDrawer } from "./consumo/drawer/ConsumosDrawer";
@@ -93,6 +99,13 @@ import { DepartamentoForm } from "./departamento/form/DepartamentoForm";
 import { DepartamentoDrawer } from "./departamento/drawer/DepartamentoDrawer";
 import { DepartamentoServiciosForm } from "./departamento/form/DepartamentoServiciosForm";
 
+/* Departamentos para Disponibilidad */
+import { accionesDepartamento } from "./departamento/features/accionesDepartamento";
+import { getEstadoColor } from "./departamento/helpers/getEstadoColor";
+import { DepartamentoMenu } from "./departamento/menu/DepartamentoMenu";
+import { ReservaMenu } from "./departamento/menu/ReservaMenu";
+import { useDisponibilidadColumns } from "./departamento/table/useDisponibilidadColumns";
+
 export {
     /* Elements */
     CssLoader,
@@ -104,6 +117,7 @@ export {
     AlertSection,
     MenuTable_EA,
     MenuTable_DEPT,
+    MenuTable_RESERVA,
     ContenidoTable,
     BtnActivarElemento,
     ActivarElementoModal,
@@ -155,12 +169,18 @@ export {
     ReservarBusquedaClienteForm,
     ReservarDatosClienteForm,
     ReservarDatosReservaSection,
+    DisponibilidadTable,
+    DetalleReservaTable,
 
     /* Reservas: Consultar Reservas */
     ConsultarReservaSection,
     ConsultaReservacionesTable,
     ConsultaClientesTable,
     ReservasInformacionTable,
+
+    /* Reservas Finalizar Estado */
+    ReservaFinalizarModal,
+    ReservaFinalizarForm,
 
     /* Consumos */
     ConsumosDrawer,
@@ -178,5 +198,12 @@ export {
     DepartamentoModal,
     DepartamentoForm,
     DepartamentoDrawer,
-    DepartamentoServiciosForm
+    DepartamentoServiciosForm,
+
+    /* Departamentos para Disponibilidad */
+    DepartamentoMenu,
+    ReservaMenu,
+    useDisponibilidadColumns,
+    accionesDepartamento,
+    getEstadoColor,
 };

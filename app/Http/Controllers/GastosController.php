@@ -14,24 +14,21 @@ class GastosController extends Controller
     {
         // Obtener gastos con filtros opcionales de fecha, reserva_id y codigo_reserva
         try {
-            $query = Gasto::with(['reserva', 'tipoDano']);
-
-            if ($request->has('fecha_inicio') && $request->has('fecha_fin')) {
-                $query->whereBetween('fecha_creacion', [$request->fecha_inicio, $request->fecha_fin]);
-            }
-
-            if ($request->has('reserva_id')) {
-                $query->where('reserva_id', $request->reserva_id);
-            }
-
-            if ($request->has('codigo_reserva')) {
-                $codigoReserva = $request->codigo_reserva;
-                $query->whereHas('reserva', function ($q) use ($codigoReserva) {
-                    $q->where('codigo_reserva', $codigoReserva);
-                });
-            }
-
-            $gastos = $query->get();
+            $gastos = Gasto::from('gastos as g')
+                ->join('reservas as r', 'g.reserva_id', '=', 'r.id')
+                ->join('tipos_danos as td', 'g.tipo_dano_id', '=', 'td.id', 'left')
+                ->select('g.*', 'r.codigo_reserva', 'td.nombre_tipo_dano as tipo_dano')
+                ->when($request->filled('fecha_inicio') && $request->filled('fecha_fin'), function ($query) use ($request) {
+                    $query->whereBetween('g.fecha_creacion', [$request->fecha_inicio, $request->fecha_fin]);
+                })
+                ->when($request->filled('reserva_id'), function ($query) use ($request) {
+                    $query->where('g.reserva_id', $request->reserva_id);
+                })
+                ->when($request->filled('codigo_reserva'), function ($query) use ($request) {
+                    $query->where('r.codigo_reserva', 'like', '%' . $request->codigo_reserva . '%');
+                })
+                ->orderBy('g.fecha_creacion', 'desc')
+                ->get();
 
             return response()->json([
                 'status' => HTTPStatus::Success,

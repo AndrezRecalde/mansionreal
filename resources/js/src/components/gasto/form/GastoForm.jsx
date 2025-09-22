@@ -4,7 +4,7 @@ import { BtnSubmit } from "../../../components";
 import { useGastoStore, useTiposDanoStore } from "../../../hooks";
 
 export const GastoForm = ({ form }) => {
-    const { activarGasto } = useGastoStore();
+    const { activarGasto, fnAgregarGasto } = useGastoStore();
     const { tiposDano } = useTiposDanoStore();
 
     useEffect(() => {
@@ -19,7 +19,8 @@ export const GastoForm = ({ form }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Lógica para manejar el envío del formulario
+        console.log(form.getTransformedValues());
+        fnAgregarGasto(form.getTransformedValues());
     };
 
     return (
@@ -58,7 +59,7 @@ export const GastoForm = ({ form }) => {
                         label: tipo.nombre_tipo_dano,
                     }))}
                     nothingFoundMessage="No se encontraron tipos de daño"
-                    {...form.getInputProps("tipo_dano")}
+                    {...form.getInputProps("tipo_dano_id")}
                 />
                 <BtnSubmit>Guardar Categoria</BtnSubmit>
             </Stack>

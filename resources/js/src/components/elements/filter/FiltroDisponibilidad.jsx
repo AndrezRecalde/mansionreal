@@ -9,7 +9,6 @@ import classes from "../modules/LabelsInput.module.css";
 export const FiltroDisponibilidad = ({
     titulo = "",
     fnHandleAction = () => {},
-    cargando = false,
 }) => {
     const form = useForm({
         initialValues: {
@@ -38,12 +37,6 @@ export const FiltroDisponibilidad = ({
                 onSubmit={form.onSubmit((_, e) => handleSubmit(e))}
             >
                 <SimpleGrid cols={{ base: 1, sm: 1, md: 1, lg: 1 }} mt={10}>
-                    {/* <TextInput
-                        label="Numero de departamento"
-                        placeholder="Buscar..."
-                        classNames={classes}
-                        {...form.getInputProps("numero_departamento")}
-                    /> */}
                     <DateInput
                         clearable
                         withAsterisk

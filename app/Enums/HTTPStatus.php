@@ -14,3 +14,8 @@ enum HTTPStatus:string {
     case NotFound = 'No Encontrado';
 
 }
+
+enum TIPOSRESERVA:string {
+    case HOSPEDAJE = 'HOSPEDAJE';
+    case ESTADIA = 'ESTADIA';
+}

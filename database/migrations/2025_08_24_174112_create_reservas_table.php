@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('codigo_reserva', 100)->unique();
 
-            $table->unsignedBigInteger('tipo_reserva_id');
+            $table->enum('tipo_reserva', ['HOSPEDAJE', 'ESTADIA'])->default('HOSPEDAJE');
 
             $table->unsignedBigInteger('huesped_id');
-            $table->unsignedBigInteger('departamento_id');
+            $table->unsignedBigInteger('departamento_id')->nullable();
             $table->date('fecha_checkin');
             $table->date('fecha_checkout');
             $table->integer('total_noches')->default(1);

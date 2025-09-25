@@ -29,7 +29,8 @@
         }
 
         .logo {
-            height: 120px;
+            width: 140px;
+            margin-bottom: 10px;
         }
 
         .datos {

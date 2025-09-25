@@ -1,14 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-export const reservaSlice = createSlice({
-    name: "reserva",
+export const estadiaSlice = createSlice({
+    name: "estadia",
     initialState: {
         cargando: false,
         cargandoPDFNotaVenta: false,
         cargandoPDFReporte: false,
-        reservas: [],
-        activarReserva: null,
-        activarTipoReserva: null,
+        estadias: [],
+        activarEstadia: null,
         mensaje: undefined,
         errores: undefined,
     },
@@ -22,33 +21,28 @@ export const reservaSlice = createSlice({
         rtkCargandoPDFReporte: (state, { payload }) => {
             state.cargandoPDFReporte = payload;
         },
-        rtkCargarReservas: (state, { payload }) => {
-            state.reservas = payload;
-        },
-        rtkAgregarReserva: (state, { payload }) => {
-            state.reservas.push(payload);
+        rtkCargarEstadias: (state, { payload }) => {
+            state.estadias = payload;
             state.cargando = false;
         },
-        rtkActualizarReserva: (state, { payload }) => {
-            state.reservas = state.reservas.map((reserva) =>
-                reserva.id === payload.id ? payload : reserva
+        rtkAgregarEstadia: (state, { payload }) => {
+            state.estadias.push(payload);
+            state.cargando = false;
+        },
+        rtkActualizarEstadia: (state, { payload }) => {
+            state.estadias = state.estadias.map((estadia) =>
+                estadia.id === payload.id ? payload : estadia
             );
             state.cargando = false;
         },
-        rtkAsignarReserva: (state, { payload }) => {
-            state.activarReserva = payload;
+        rtkAsignarEstadia: (state, { payload }) => {
+            state.activarEstadia = payload;
             state.errores = undefined;
             state.mensaje = undefined;
         },
-        rtkAsignarTipoReserva: (state, { payload }) => {
-            state.activarTipoReserva = payload;
-            state.errores = undefined;
-            state.mensaje = undefined;
-        },
-        rtkLimpiarReservas: (state) => {
-            state.reservas = [];
-            state.activarReserva = null;
-            state.activarTipoReserva = null;
+        rtkLimpiarEstadias: (state) => {
+            state.estadias = [];
+            state.activarEstadia = null;
             state.mensaje = undefined;
             state.errores = undefined;
         },
@@ -65,12 +59,11 @@ export const {
     rtkCargando,
     rtkCargandoPDFNotaVenta,
     rtkCargandoPDFReporte,
-    rtkCargarReservas,
-    rtkAgregarReserva,
-    rtkActualizarReserva,
-    rtkAsignarReserva,
-    rtkAsignarTipoReserva,
-    rtkLimpiarReservas,
+    rtkCargarEstadias,
+    rtkAgregarEstadia,
+    rtkActualizarEstadia,
+    rtkAsignarEstadia,
+    rtkLimpiarEstadias,
     rtkCargarMensaje,
     rtkCargarErrores,
-} = reservaSlice.actions;
+} = estadiaSlice.actions;

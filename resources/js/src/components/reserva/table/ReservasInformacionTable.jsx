@@ -32,8 +32,7 @@ export const ReservasInformacionTable = ({ cargando }) => {
             },
             {
                 header: "Departamento",
-                accessorFn: (row) =>
-                    row?.departamento || "NO CONTIENE INFORMACION",
+                accessorFn: (row) => row?.departamento || "ESTADIA",
                 size: 80,
             },
             {
@@ -54,8 +53,7 @@ export const ReservasInformacionTable = ({ cargando }) => {
             },
             {
                 header: "Total Noches",
-                accessorFn: (row) =>
-                    row?.total_noches || "NO CONTIENE INFORMACION",
+                accessorFn: (row) => row?.total_noches,
                 size: 80,
             },
         ],

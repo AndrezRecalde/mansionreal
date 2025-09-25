@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useErrorException } from "../error/useErrorException";
 import {
     rtkAsignarReserva,
+    rtkAsignarTipoReserva,
     rtkCargando,
     rtkCargandoPDFNotaVenta,
     rtkCargarErrores,
@@ -19,6 +20,7 @@ export const useReservaDepartamentoStore = () => {
         cargandoPDFReporte,
         reservas,
         activarReserva,
+        activarTipoReserva,
         mensaje,
         errores,
     } = useSelector((state) => state.reserva);
@@ -144,6 +146,10 @@ export const useReservaDepartamentoStore = () => {
         dispatch(rtkAsignarReserva(reserva));
     };
 
+    const fnAsignarTipoReserva = (tipo_reserva) => {
+        dispatch(rtkAsignarTipoReserva(tipo_reserva))
+    }
+
     const fnLimpiarReservas = () => {
         dispatch(rtkLimpiarReservas());
     };
@@ -154,6 +160,7 @@ export const useReservaDepartamentoStore = () => {
         cargandoPDFReporte,
         reservas,
         activarReserva,
+        activarTipoReserva,
         mensaje,
         errores,
 
@@ -163,6 +170,7 @@ export const useReservaDepartamentoStore = () => {
         fnBuscarReservas,
         fnExportarNotaVentaPDF,
         fnAsignarReserva,
+        fnAsignarTipoReserva,
         fnLimpiarReservas,
     };
 };

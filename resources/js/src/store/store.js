@@ -14,6 +14,7 @@ import {
     dashRankingProductosSlice,
     dashResumenKPISlice,
     departamentoSlice,
+    estadiaSlice,
     gastoSlice,
     huespedSlice,
     inventarioSlice,
@@ -28,6 +29,7 @@ import {
     uiConfiguracionIvaSlice,
     uiConsumoSlice,
     uiDepartamentoSlice,
+    uiEstadiaSlice,
     uiGastoSlice,
     uiHeaderMenuSlice,
     uiHuespedSlice,
@@ -97,6 +99,10 @@ export const store = configureStore({
         /* Reservas */
         reserva: reservaSlice.reducer,
         uiReserva: uiReservaSlice.reducer,
+
+        /* Estadias */
+        estadia: estadiaSlice.reducer,
+        uiEstadia: uiEstadiaSlice.reducer,
 
         /* Consumos */
         consumo: consumoSlice.reducer,

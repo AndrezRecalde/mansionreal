@@ -6,6 +6,7 @@ use App\Http\Controllers\ConfiguracionIvaController;
 use App\Http\Controllers\ConsumosController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartamentoController;
+use App\Http\Controllers\EstadiaController;
 use App\Http\Controllers\GastosController;
 use App\Http\Controllers\HuespedController;
 use App\Http\Controllers\InventarioController;
@@ -126,6 +127,11 @@ Route::group(['prefix' => 'gerencia', 'middleware' => ['auth:sanctum', CheckRole
     /* Exportar PDF Reservas */
     Route::post('/exportar-nota-venta', [ReservasController::class, 'exportarNotaVentaPDF']);
 
+    /* Estadias */
+    Route::post('/estadias', [EstadiaController::class, 'getEstadias']);
+    Route::post('/estadia/nueva', [EstadiaController::class, 'storeEstadia']);
+    Route::put('/estadia/{id}', [EstadiaController::class, 'updateEstadia']);
+
     /* Consumos */
     Route::post('/consumo-reserva', [ConsumosController::class, 'buscarConsumosPorReserva']);
     Route::post('/consumo', [ConsumosController::class, 'registrarConsumos']);
@@ -148,7 +154,8 @@ Route::group(['prefix' => 'gerencia', 'middleware' => ['auth:sanctum', CheckRole
     Route::put('/producto/inventario/{id}/status', [InventarioController::class, 'updateStatus']);
 
 
+
     /* Tipos Reservas */
-    Route::post('/tipos-reservas', [TipoReservaController::class, 'getTiposReservas']);
+    //Route::post('/tipos-reservas', [TipoReservaController::class, 'getTiposReservas']);
 
 });

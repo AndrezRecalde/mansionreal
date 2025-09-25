@@ -82,6 +82,9 @@ import { ReservasInformacionTable } from "./reserva/table/ReservasInformacionTab
 import { ReservaFinalizarModal } from "./reserva/modal/ReservaFinalizarModal";
 import { ReservaFinalizarForm } from "./reserva/form/ReservaFinalizarForm";
 
+/* Reservas de Estadias */
+import { EstadiasReservadasCards } from "./reserva/cards/EstadiasReservadasCards";
+
 /* Consumos */
 import { ConsumosDrawer } from "./consumo/drawer/ConsumosDrawer";
 import { ConsumosDrawerTable } from "./consumo/table/ConsumosDrawerTable";
@@ -191,6 +194,9 @@ export {
     /* Reservas Finalizar Estado */
     ReservaFinalizarModal,
     ReservaFinalizarForm,
+
+    /* Reservas de Estadias */
+    EstadiasReservadasCards,
 
     /* Consumos */
     ConsumosDrawer,

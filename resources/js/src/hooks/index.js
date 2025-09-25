@@ -56,6 +56,9 @@ import { useUiInventario } from "./inventario/useUiInventario";
 import { useReservaDepartamentoStore } from "./reserva/useReservaDepartamentoStore";
 import { useUiReservaDepartamento } from "./reserva/useUiReservaDepartamento";
 
+/* Estadia */
+import { useEstadiaStore } from "./reserva/useEstadiaStore";
+
 /* Consumo */
 import { useConsumoStore } from "./consumo/useConsumoStore";
 import { useUiConsumo } from "./consumo/useUiConsumo";
@@ -126,6 +129,9 @@ export {
     /* Reserva */
     useReservaDepartamentoStore,
     useUiReservaDepartamento,
+
+    /* Estadia */
+    useEstadiaStore,
 
     /* Consumo */
     useConsumoStore,

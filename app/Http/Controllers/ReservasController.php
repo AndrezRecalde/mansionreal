@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Enums\HTTPStatus;
+use App\Enums\TIPOSRESERVA;
 use App\Http\Requests\ReservaRequest;
 use App\Models\ConfiguracionIva;
 use App\Models\Consumo;
 use App\Models\Estado;
 use App\Models\Huesped;
+use App\Models\Inventario;
 use App\Models\Reserva;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -45,13 +47,14 @@ class ReservasController extends Controller
             }
 
             // 3. Crear huésped si no existe
-            if ($request->huesped['huesped_id'] == null) {
+            if (empty($request->huesped['huesped_id'])) {
                 $huesped = Huesped::create([
                     'nombres'       => $request->huesped['nombres'],
                     'apellidos'     => $request->huesped['apellidos'],
                     'dni'           => $request->huesped['dni'],
                     'telefono'      => $request->huesped['telefono'],
                     'email'         => $request->huesped['email'],
+                    'direccion'     => $request->direccion['direccion'],
                     'provincia_id'  => $request->huesped['provincia_id'],
                 ]);
             }
@@ -66,6 +69,7 @@ class ReservasController extends Controller
                 ->value('id');
             $reserva->fecha_creacion = now();
             $reserva->usuario_creador_id = Auth::id();
+            $reserva->tipo_reserva = TIPOSRESERVA::HOSPEDAJE;
             //$reserva->save();
 
             // 5. Generar código de reserva
@@ -278,13 +282,13 @@ class ReservasController extends Controller
             ], 404);
         }
 
-        $dpto = $reserva->departamento;
+       // $dpto = $reserva->departamento;
 
         // 3. Armar estructura igual a consultarDisponibilidadDepartamentosPorFecha
         $resultado = [
-            'id'                  => $dpto->id,
+            /* 'id'                  => $dpto->id,
             'numero_departamento' => $dpto->numero_departamento,
-            'capacidad'           => $dpto->capacidad,
+            'capacidad'           => $dpto->capacidad, */
             'reserva'             => [
                 'id'             => $reserva->id,
                 'codigo_reserva' => $reserva->codigo_reserva,
@@ -327,6 +331,4 @@ class ReservasController extends Controller
 
         return $pdf->download("nota_de_venta_{$reserva->codigo_reserva}.pdf");
     }
-
-
 }

@@ -9,6 +9,7 @@ class Reserva extends Model
 {
     protected $fillable = [
         'huesped_id',
+        'tipo_reserva',
         'departamento_id',
         'usuario_creador_id',
         'fecha_checkin',
@@ -19,11 +20,6 @@ class Reserva extends Model
         'total_adultos',
         'total_ninos',
         'total_mascotas',
-        //'subtotal',
-        //'aplica_iva',
-        //'tasa_iva',
-        //'iva',
-        //'total',
     ];
 
     public function huesped()

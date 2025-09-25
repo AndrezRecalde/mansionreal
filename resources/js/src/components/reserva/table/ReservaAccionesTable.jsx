@@ -1,7 +1,11 @@
 import { ActionIcon, Group, Tooltip } from "@mantine/core";
 import { TextSection } from "../../../components";
 import { IconChecks, IconFileText } from "@tabler/icons-react";
-import { useReservaDepartamentoStore, useUiConsumo, useUiReservaDepartamento } from "../../../hooks";
+import {
+    useReservaDepartamentoStore,
+    useUiConsumo,
+    useUiReservaDepartamento,
+} from "../../../hooks";
 
 export const ReservaAccionesTable = ({
     datos,
@@ -9,8 +13,7 @@ export const ReservaAccionesTable = ({
     //handleExportarNota,
 }) => {
     const { fnAbrirDrawerConsumosDepartamento } = useUiConsumo();
-    const { fnAbrirModalReservaFinalizar } =
-        useUiReservaDepartamento();
+    const { fnAbrirModalReservaFinalizar } = useUiReservaDepartamento();
     const { fnExportarNotaVentaPDF } = useReservaDepartamentoStore();
 
     const handleFinalizarReservaClick = () => {
@@ -20,8 +23,9 @@ export const ReservaAccionesTable = ({
     };
 
     const handleExportarNotaVentaPDF = (dato) => {
-        fnExportarNotaVentaPDF({ reserva_id: dato })
-    }
+        //fnExportarNotaVentaPDF({ reserva_id: dato });
+        console.log(dato);
+    };
 
     return (
         <Group justify="space-between" align="center">
@@ -33,7 +37,9 @@ export const ReservaAccionesTable = ({
                     fz={18}
                     fw={800}
                 >
-                    Departamento No. {datos.numero_departamento}
+                    {datos.numero_departamento
+                        ? `Departamento No. ${datos.numero_departamento}`
+                        : "Resumen de Estadia"}
                 </TextSection>
             </Group>
             <Group gap={25}>
@@ -57,7 +63,9 @@ export const ReservaAccionesTable = ({
                         size="xl"
                         radius="xs"
                         aria-label="Exportar Nota de Venta"
-                        onClick={() => handleExportarNotaVentaPDF(datos.reserva_id)}
+                        onClick={() =>
+                            handleExportarNotaVentaPDF(datos.reserva_id)
+                        }
                     >
                         <IconFileText
                             style={{ width: "80%", height: "80%" }}

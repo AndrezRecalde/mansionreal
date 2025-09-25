@@ -84,8 +84,8 @@ export const headerGerenciaRoutes = {
         {
             icon: IconEyeSearch,
             title: "Disponibilidad Actual",
-            path: "disponibilidad-actual",
-            link: "/gerencia/disponibilidad-actual",
+            path: "disponibilidad-departamento",
+            link: "/gerencia/disponibilidad-departamento",
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
         },
         {

@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rule;
 
 class HuespedRequest extends FormRequest
 {
@@ -26,9 +27,10 @@ class HuespedRequest extends FormRequest
         return [
             'apellidos'     => 'required|string|max:100',
             'nombres'       => 'required|string|max:100',
-            'dni'           => 'required|string|max:20|unique:huespedes,dni,' . $this->route('id'),
+            'dni'           => ['required', Rule::unique('huespedes')->ignore($this->request->get('id'))],
             'telefono'      => 'nullable|string|max:20',
             'email'         => 'nullable|email|max:100',
+            'direccion'     => 'required',
             'provincia_id'  => 'nullable|exists:provincias,id',
             'activo'        => 'sometimes|boolean'
         ];
@@ -44,13 +46,12 @@ class HuespedRequest extends FormRequest
             'nombres.string'        => 'Los nombres deben ser una cadena de texto.',
             'nombres.max'           => 'Los nombres no deben exceder los 100 caracteres.',
             'dni.required'          => 'El DNI es obligatorio.',
-            'dni.string'            => 'El DNI debe ser una cadena de texto.',
-            'dni.max'               => 'El DNI no debe exceder los 20 caracteres.',
             'dni.unique'            => 'El DNI ya existe.',
             'telefono.string'       => 'El teléfono debe ser una cadena de texto.',
             'telefono.max'          => 'El teléfono no debe exceder los 20 caracteres.',
             'email.email'           => 'El correo electrónico debe ser una dirección de correo válida.',
             'email.max'             => 'El correo electrónico no debe exceder los 100 caracteres.',
+            'direccion.required'    =>  'La dirección del huesped es obligatoria',
             'provincia_id.exists'   => 'La provincia seleccionada no es válida.',
             'activo.boolean'        => 'El campo activo debe ser verdadero o falso.'
         ];

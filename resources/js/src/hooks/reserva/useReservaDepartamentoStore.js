@@ -91,31 +91,6 @@ export const useReservaDepartamentoStore = () => {
         }
     };
 
-    const fnCargarReporteDepartamentosPorFechas = async ({
-        fecha_inicio = null,
-        fecha_fin = null,
-        anio,
-    }) => {
-        try {
-            dispatch(rtkCargando(true));
-            const { data } = await apiAxios.post(
-                "/gerencia/reporte-departamentos",
-                {
-                    fecha_inicio,
-                    fecha_fin,
-                    anio,
-                }
-            );
-            const { result } = data;
-            dispatch(rtkCargarReservas(result));
-        } catch (error) {
-            console.log(error);
-            ExceptionMessageError(error);
-        } finally {
-            dispatch(rtkCargando(false));
-        }
-    };
-
     const fnBuscarReservas = async ({
         fecha_inicio = null,
         fecha_fin = null,
@@ -138,7 +113,7 @@ export const useReservaDepartamentoStore = () => {
         }
     };
 
-    const fnExportarNotaVentaPDF = async (reserva_id) => {
+    const fnExportarNotaVentaPDF = async ({ reserva_id }) => {
         try {
             dispatch(rtkCargandoPDFNotaVenta(true));
             const response = await apiAxios.post(
@@ -185,7 +160,6 @@ export const useReservaDepartamentoStore = () => {
         fnAgregarReserva,
         fnCambiarEstadoReserva,
         fnEliminarReserva,
-        fnCargarReporteDepartamentosPorFechas,
         fnBuscarReservas,
         fnExportarNotaVentaPDF,
         fnAsignarReserva,

@@ -21,6 +21,7 @@ class HuespedController extends Controller
                     'h.dni',
                     'h.telefono',
                     'h.email',
+                    'h.direccion',
                     'h.provincia_id',
                     'p.nombre_provincia as provincia'
                 )
@@ -42,7 +43,7 @@ class HuespedController extends Controller
     function store(HuespedRequest $request): JsonResponse
     {
         try {
-            $huesped = Huesped::create($request->validated());
+            Huesped::create($request->validated());
 
             return response()->json([
                 'status' => HTTPStatus::Success,
@@ -71,7 +72,7 @@ class HuespedController extends Controller
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'msg'   => HTTPStatus::Actualizado,
+                'msg'    => HTTPStatus::Actualizado,
             ]);
         } catch (\Throwable $th) {
             return response()->json([

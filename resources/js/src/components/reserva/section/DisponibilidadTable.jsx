@@ -21,8 +21,10 @@ export const DisponibilidadTable = ({ setOpened }) => {
         fnAsignarDepartamento,
         fnCambiarEstadoDepartamento,
     } = useDepartamentoStore();
-    const { fnAbrirModalReservarDepartamento } = useUiReservaDepartamento();
-    const { fnCambiarEstadoReserva } = useReservaDepartamentoStore();
+    const { fnAbrirModalReservarDepartamento, fnAbrirModalReservaFinalizar } =
+        useUiReservaDepartamento();
+    const { fnAsignarReserva, fnCambiarEstadoReserva } =
+        useReservaDepartamentoStore();
     const theme = useMantineTheme();
 
     const handleReservarClick = (selected) => {
@@ -34,8 +36,10 @@ export const DisponibilidadTable = ({ setOpened }) => {
         fnCambiarEstadoDepartamento({ id, nombre_estado });
     };
 
-    const handleFinalizarReservaClick = ({ id, nombre_estado }) => {
-        fnCambiarEstadoReserva({ id, nombre_estado });
+    const handleFinalizarReservaClick = (selected) => {
+        //fnCambiarEstadoReserva({ id, nombre_estado });
+        fnAsignarReserva(selected);
+        fnAbrirModalReservaFinalizar(true);
     };
 
     const columns = useDisponibilidadColumns({

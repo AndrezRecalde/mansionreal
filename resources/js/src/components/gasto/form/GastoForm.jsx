@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 import { Box, NumberInput, Select, Stack, Textarea } from "@mantine/core";
 import { BtnSubmit } from "../../../components";
-import { useGastoStore, useTiposDanoStore } from "../../../hooks";
+import { useGastoStore, useTiposDanoStore, useUiGasto } from "../../../hooks";
 
 export const GastoForm = ({ form }) => {
     const { activarGasto, fnAgregarGasto } = useGastoStore();
+    const { fnAbrirModalGasto } = useUiGasto();
     const { tiposDano } = useTiposDanoStore();
 
     useEffect(() => {
@@ -21,6 +22,8 @@ export const GastoForm = ({ form }) => {
         e.preventDefault();
         console.log(form.getTransformedValues());
         fnAgregarGasto(form.getTransformedValues());
+        form.reset();
+        fnAbrirModalGasto(false);
     };
 
     return (

@@ -11,6 +11,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\ConfiguracionIva;
 use App\Models\Inventario;
+use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Svg\Tag\Rect;
 
 class ConsumosController extends Controller
 {
@@ -28,7 +31,9 @@ class ConsumosController extends Controller
             ->map(function ($c) {
                 return [
                     'id'              => $c->id,
+                    'inventario_id'   => $c->inventario->id,
                     'nombre_producto' => $c->inventario ? $c->inventario->nombre_producto : null,
+                    'reserva_id'      => $c->reserva ? $c->reserva->id : null,
                     'huespued'        => $c->reserva ? $c->reserva->huesped->nombres . ' ' . $c->reserva->huesped->apellidos : null,
                     'cantidad'        => $c->cantidad,
                     'subtotal'        => $c->subtotal,
@@ -52,7 +57,7 @@ class ConsumosController extends Controller
         DB::beginTransaction();
         try {
             $consumos = $request->validated()['consumos'];
-
+            $reserva_id = $request->reserva_id;
             // Obtener la tasa de IVA activa
             $ivaConfig = ConfiguracionIva::where('activo', true)->first();
             $tasa_iva = $ivaConfig ? $ivaConfig->tasa_iva : 0;
@@ -63,7 +68,7 @@ class ConsumosController extends Controller
                 $cantidadNueva = $c['cantidad'];
 
                 // Buscar si ya existe un consumo con la misma reserva e inventario
-                $consumo = Consumo::where('reserva_id', $c['reserva_id'])
+                $consumo = Consumo::where('reserva_id', $reserva_id)
                     ->where('inventario_id', $c['inventario_id'])
                     ->first();
 
@@ -84,7 +89,7 @@ class ConsumosController extends Controller
                     $consumo->subtotal = $cantidadFinal * $precioUnitario;
                     $consumo->tasa_iva = $tasa_iva;
                     $consumo->iva = $consumo->subtotal * ($tasa_iva / 100);
-                    $consumo->total_iva = $consumo->iva;
+                    $consumo->total = $consumo->iva + $consumo->subtotal;
                     $consumo->aplica_iva = $tasa_iva > 0 ? true : false;
                     $consumo->save();
 
@@ -93,18 +98,18 @@ class ConsumosController extends Controller
                     // Crear nuevo consumo
                     $subtotal = $cantidadNueva * $precioUnitario;
                     $iva = $subtotal * ($tasa_iva / 100);
-                    $total_iva = $iva;
+                    $total = $iva + $subtotal;
                     $aplica_iva = $tasa_iva > 0 ? true : false;
 
                     $nuevoConsumo = Consumo::create([
-                        'reserva_id'      => $c['reserva_id'],
+                        'reserva_id'      => $reserva_id,
                         'inventario_id'   => $c['inventario_id'],
                         'cantidad'        => $cantidadNueva,
                         'fecha_creacion'  => now(),
                         'subtotal'        => $subtotal,
                         'tasa_iva'        => $tasa_iva,
                         'iva'             => $iva,
-                        'total_iva'       => $total_iva,
+                        'total'           => $total,
                         'aplica_iva'      => $aplica_iva,
                     ]);
 
@@ -127,10 +132,11 @@ class ConsumosController extends Controller
         }
     }
 
-    function update(ConsumoRequest $request, int $id): JsonResponse
+    function update(Request $request, int $id): JsonResponse
     {
         try {
             $consumo = Consumo::find($id);
+
             if (!$consumo) {
                 return response()->json([
                     'status' => HTTPStatus::Error,
@@ -138,11 +144,26 @@ class ConsumosController extends Controller
                 ], 404);
             }
 
-            $consumo->update($request->validated());
+            //$consumo->fill($request->validated());
+            // Obtener la tasa de IVA activa
+            $ivaConfig = ConfiguracionIva::where('activo', true)->first();
+            $tasa_iva = $ivaConfig ? $ivaConfig->tasa_iva : 0;
+
+            /* Obtener Precio Unitario del producto */
+            $inventario = Inventario::findOrFail($request->inventario_id);
+            $precioUnitario = $inventario->precio_unitario;
+
+            $consumo->cantidad = $request->cantidad;
+            $consumo->subtotal = $request->cantidad * $precioUnitario;
+            $consumo->tasa_iva = $tasa_iva;
+            $consumo->iva      = $consumo->subtotal * ($tasa_iva / 100);
+            $consumo->total = $consumo->iva + $consumo->subtotal;
+            $consumo->aplica_iva = $tasa_iva > 0 ? true : false;
+            $consumo->save();
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'data'   => $consumo
+                'msg'   => HTTPStatus::Actualizado
             ]);
         } catch (\Throwable $th) {
             return response()->json([
@@ -152,10 +173,11 @@ class ConsumosController extends Controller
         }
     }
 
-    function delete(int $id): JsonResponse
+    function delete(Request $request, int $id): JsonResponse
     {
         try {
             $consumo = Consumo::find($id);
+
             if (!$consumo) {
                 return response()->json([
                     'status' => HTTPStatus::Error,
@@ -163,11 +185,23 @@ class ConsumosController extends Controller
                 ], 404);
             }
 
+            // Buscar al usuario con ese DNI
+            $user = User::where('dni', $request->dni)->where('activo', 1)->first();
+
+            // Validar existencia y rol GERENTE
+            if (!$user || !$user->hasRole('GERENTE')) {
+                return response()->json([
+                    'status' => HTTPStatus::Error,
+                    'msg'    => 'El DNI no corresponde a un usuario con rol GERENTE o no existe.'
+                ], 403);
+            }
+
+            // Eliminar el consumo
             $consumo->delete();
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'msg'   => HTTPStatus::Eliminado,
+                'msg'    => HTTPStatus::Eliminado,
             ]);
         } catch (\Throwable $th) {
             return response()->json([

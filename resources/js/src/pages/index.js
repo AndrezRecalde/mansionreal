@@ -8,11 +8,9 @@ import AuthPage from "./auth/AuthPage";
 /* Huespedes */
 import HuespedesPage from "./huesped/HuespedesPage";
 
-/* Reservas */
-import ReservasPage from "./reserva/ReservasPage";
-
 /* Departamentos */
 import DepartamentosPage from "./departamento/DepartamentosPage";
+import ReporteDepartamentosPage from "./departamento/ReporteDepartamentosPage"
 
 /* Usuarios */
 import UsuariosPage from "./usuario/UsuariosPage";
@@ -24,8 +22,8 @@ export {
     ErrorNotFound,
     AuthPage,
     HuespedesPage,
-    ReservasPage,
     DepartamentosPage,
+    ReporteDepartamentosPage,
     UsuariosPage,
     PerfilPage,
     CambioContrasenaPage,

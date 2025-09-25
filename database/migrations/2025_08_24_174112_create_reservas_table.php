@@ -14,6 +14,9 @@ return new class extends Migration
         Schema::create('reservas', function (Blueprint $table) {
             $table->id();
             $table->string('codigo_reserva', 100)->unique();
+
+            $table->unsignedBigInteger('tipo_reserva_id');
+
             $table->unsignedBigInteger('huesped_id');
             $table->unsignedBigInteger('departamento_id');
             $table->date('fecha_checkin');
@@ -26,11 +29,6 @@ return new class extends Migration
             $table->integer('total_mascotas')->default(0);
             $table->unsignedBigInteger('usuario_creador_id');
             $table->unsignedBigInteger('usuario_modificador_id')->nullable();
-            /* $table->decimal('subtotal', 10, 2)->default(0);
-            $table->boolean('aplica_iva')->default(true);
-            $table->decimal('tasa_iva', 5, 2)->default(15.00);
-            $table->decimal('iva', 10, 2)->default(0);
-            $table->decimal('total', 10, 2)->default(0); */
             $table->timestamps();
 
             $table->foreign('huesped_id')->references('id')->on('huespedes')->onDelete('cascade');

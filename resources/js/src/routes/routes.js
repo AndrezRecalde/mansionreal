@@ -1,4 +1,4 @@
-import { lazy } from "react";
+import { Component, lazy } from "react";
 import { Roles } from "../helpers/getPrefix";
 
 const AuthPage = lazy(() =>
@@ -37,9 +37,9 @@ const HuespedesPage = lazy(() =>
     )
 );
 
-const ReservasPage = lazy(() =>
+const ReporteDepartamentosPage = lazy(() =>
     import(
-        /* webpackChunkName: "ReservasPage" */ "../pages/reserva/ReservasPage"
+        /* webpackChunkName: "ReporteDepartamentosPage" */ "../pages/departamento/ReporteDepartamentosPage"
     )
 );
 
@@ -77,6 +77,12 @@ const IvaPage = lazy(() =>
     import(/* webpackChunkName: "IvaPage" */ "../pages/iva/ConfigIvaPage")
 );
 
+const DisponibilidadDepartamentoPage = lazy(() =>
+    import(
+        /* webpackChunkName: "DisponibilidadDepartamentoPage" */ "../pages/departamento/DisponibilidadDepartamentoPage"
+    )
+);
+
 const ErrorNotFound = lazy(() =>
     import(
         /* webpackChunkName: "ErrorNotFound" */ "../pages/error/ErrorNotFound"
@@ -97,11 +103,14 @@ export const PREFIX_ROUTES = {
 };
 
 export const MENU_PATH = {
+
+    DISPONIBILIDAD_DEPARTAMENTO: "disponibilidad-departamento",
+
     DASHBOARD: "dashboard",
     CATEGORIAS: "categorias",
     SERVICIOS: "servicios",
     HUESPEDES: "huespedes",
-    RESERVAS: "reservas",
+    REPORTE_DEPARTAMENTOS: "reporte-departamentos",
     HISTORIAL_RESERVAS: "historial-reservas",
     DISPONIBILIDAD_ACTUAL: "disponibilidad-actual",
     DEPARTAMENTOS: "departamentos",
@@ -122,14 +131,16 @@ export const authRoutes = {
 const gerenciaRoutes = generateRoutes(
     "gerencia",
     [
+        { path: MENU_PATH.DISPONIBILIDAD_DEPARTAMENTO, Component: DisponibilidadDepartamentoPage },
+
         { path: MENU_PATH.DASHBOARD, Component: DashboardPage },
         { path: MENU_PATH.CATEGORIAS, Component: CategoriasPage },
         { path: MENU_PATH.SERVICIOS, Component: ServiciosPage },
         { path: MENU_PATH.USUARIOS, Component: UsuariosPage },
         { path: MENU_PATH.HUESPEDES, Component: HuespedesPage },
-        { path: MENU_PATH.RESERVAS, Component: ReservasPage },
         { path: MENU_PATH.HISTORIAL_RESERVAS, Component: HistorialConsumosPage },
         { path: MENU_PATH.DEPARTAMENTOS, Component: DepartamentosPage },
+        { path: MENU_PATH.REPORTE_DEPARTAMENTOS, Component: ReporteDepartamentosPage },
         { path: MENU_PATH.DISPONIBILIDAD_ACTUAL, Component: DisponibilidadActualPage },
         { path: MENU_PATH.INVENTARIO, Component: InventarioPage },
         { path: MENU_PATH.IVA, Component: IvaPage },

@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     cargando: false,
+    cargandoExportacion: false,
     departamentos: [],
     activarDepartamento: null,
     mensaje: undefined,
@@ -14,6 +15,9 @@ export const departamentoSlice = createSlice({
     reducers: {
         rtkCargando: (state, { payload }) => {
             state.cargando = payload;
+        },
+        rtkCargandoExportacion: (state, { payload }) => {
+            state.cargandoExportacion = payload;
         },
         rtkCargarDepartamentos: (state, { payload }) => {
             state.departamentos = payload;
@@ -51,6 +55,7 @@ export const departamentoSlice = createSlice({
 
 export const {
     rtkCargando,
+    rtkCargandoExportacion,
     rtkCargarDepartamentos,
     rtkAgregarDepartamento,
     rtkActualizarDepartamento,

@@ -23,11 +23,13 @@ export const HuespedForm = ({ form }) => {
     useEffect(() => {
         if (activarHuesped !== null) {
             form.setValues({
+                ...activarHuesped,
                 nombres: activarHuesped.nombres,
                 apellidos: activarHuesped.apellidos,
                 dni: activarHuesped.dni,
                 telefono: activarHuesped.telefono || "",
                 email: activarHuesped.email,
+                direccion: activarHuesped.direccion || "",
                 provincia_id: activarHuesped.provincia
                     ? activarHuesped.provincia_id.toString()
                     : null,
@@ -37,7 +39,8 @@ export const HuespedForm = ({ form }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        fnAgregarHuesped(form.getValues());
+        console.log(form.getTransformedValues());
+        fnAgregarHuesped(form.getTransformedValues());
         fnAsignarHuesped(null);
         form.reset();
         fnModalHuesped(false);
@@ -101,6 +104,11 @@ export const HuespedForm = ({ form }) => {
                     rightSection={
                         cargandoProvincias ? <Loader size={18} /> : null
                     }
+                />
+                <TextInput
+                    label="Direccion del huesped"
+                    placeholder="Ingrese la direccion de domicilio del huesped"
+                    {...form.getInputProps("direccion")}
                 />
                 <BtnSubmit>Guardar Huesped</BtnSubmit>
             </Stack>

@@ -3,6 +3,7 @@ import { useErrorException } from "../error/useErrorException";
 import {
     rtkActivarDepartamento,
     rtkCargando,
+    rtkCargandoExportacion,
     rtkCargarDepartamentos,
     rtkCargarErrores,
     rtkCargarMensaje,
@@ -11,8 +12,14 @@ import {
 import apiAxios from "../../api/apiAxios";
 
 export const useDepartamentoStore = () => {
-    const { cargando, departamentos, activarDepartamento, mensaje, errores } =
-        useSelector((state) => state.departamento);
+    const {
+        cargando,
+        cargandoExportacion,
+        departamentos,
+        activarDepartamento,
+        mensaje,
+        errores,
+    } = useSelector((state) => state.departamento);
 
     const dispatch = useDispatch();
 
@@ -138,6 +145,98 @@ export const useDepartamentoStore = () => {
         }
     };
 
+    const fnCargarReporteDepartamentosPorFechas = async ({
+        p_fecha_inicio = null,
+        p_fecha_fin = null,
+        p_anio,
+    }) => {
+        try {
+            dispatch(rtkCargando(true));
+            const { data } = await apiAxios.post(
+                "/gerencia/reporte-departamentos",
+                {
+                    p_fecha_inicio,
+                    p_fecha_fin,
+                    p_anio,
+                }
+            );
+            const { result } = data;
+            dispatch(rtkCargarDepartamentos(result));
+        } catch (error) {
+            console.log(error);
+            ExceptionMessageError(error);
+        } finally {
+            dispatch(rtkCargando(false));
+        }
+    };
+
+    // EN LA VISTA DE REPORTE DE DEPARTAMENTOS
+    const fnExportarKpiYDepartamentosPdf = async (datos) => {
+        try {
+            dispatch(rtkCargandoExportacion(true));
+            const response = await apiAxios.post(
+                "/gerencia/reservas-reporte/pdf",
+                datos,
+                {
+                    responseType: "blob", // Importante para manejar archivos binarios
+                }
+            );
+
+            // Crear un enlace para descargar el PDF
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", "reporte_departamentos.pdf"); // Nombre del archivo a descargar
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+        } catch (error) {
+            console.log(error);
+            ExceptionMessageError(error);
+        } finally {
+            dispatch(rtkCargandoExportacion(false));
+        }
+    };
+
+    // EN LA VISTA DE REPORTE DE DEPARTAMENTOS
+    const fnExportarConsumosPorDepartamentoPDF = async ({
+        p_fecha_inicio = null,
+        p_fecha_fin = null,
+        p_anio = null,
+        departamento_id,
+    }) => {
+        try {
+            dispatch(rtkCargandoExportacion(true));
+            const response = await apiAxios.post(
+                "/gerencia/consumos-por-departamento/pdf",
+                {
+                    p_fecha_inicio,
+                    p_fecha_fin,
+                    p_anio,
+                    departamento_id,
+                },
+                {
+                    responseType: "blob", // Importante para manejar archivos binarios
+                }
+            );
+
+            // Crear un enlace para descargar el archivo PDF
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", "consumos_por_departamento.pdf"); // Nombre del archivo a descargar
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+            window.URL.revokeObjectURL(url); // Limpia el objeto URL
+        } catch (error) {
+            console.log(error);
+            ExceptionMessageError(error);
+        } finally {
+            dispatch(rtkCargandoExportacion(false));
+        }
+    };
+
     const fnAsignarDepartamento = (departamento) => {
         dispatch(rtkActivarDepartamento(departamento));
     };
@@ -148,6 +247,7 @@ export const useDepartamentoStore = () => {
 
     return {
         cargando,
+        cargandoExportacion,
         departamentos,
         activarDepartamento,
         mensaje,
@@ -161,6 +261,9 @@ export const useDepartamentoStore = () => {
         fnAgregarServiciosDepartamento,
         fnCambiarEstadoDepartamento,
         fnConsultarDisponibilidadDepartamentos,
+        fnCargarReporteDepartamentosPorFechas,
+        fnExportarKpiYDepartamentosPdf,
+        fnExportarConsumosPorDepartamentoPDF,
         fnAsignarDepartamento,
         fnLimpiarDepartamentos,
     };

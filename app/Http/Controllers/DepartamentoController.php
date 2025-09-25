@@ -10,7 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class DepartamentoController extends Controller
 {
@@ -345,5 +345,123 @@ class DepartamentoController extends Controller
             'status' => HTTPStatus::Success,
             'departamentos'   => $resultado
         ], 200);
+    }
+
+    //ESTE ES PARA MOSTRAR EL REPORTE DE DEPARTAMENTOS CON SU TOTAL DE RESERVAS Y PAGOS EN UN RANGO DE FECHAS
+    // PARA LA VISTA DE REPORTES DE RESERVAS
+    function reporteDepartamentosPorFechas(Request $request): JsonResponse
+    {
+        try {
+            $fecha_inicio = $request->p_fecha_inicio;
+            $fecha_fin = $request->p_fecha_fin;
+            $anio = $request->p_anio;
+            $result = DB::select('CALL reporte_departamentos_por_fechas(?, ?, ?)', [
+                $fecha_inicio,
+                $fecha_fin,
+                $anio
+            ]);
+            return response()->json([
+                'status' => HTTPStatus::Success,
+                'result' => $result
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => HTTPStatus::Error,
+                'msg'    => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    // PARA LA VISTA DE REPORTE DE DEPARTAMENTOS - BOTON PARA EXPORTAR TODO EL REPORTE EN PDF
+    public function exportarKpiYDepartamentosPdf(Request $request)
+    {
+        // Parámetros de entrada
+        $fecha_inicio = $request->p_fecha_inicio;
+        $fecha_fin = $request->p_fecha_fin;
+        $anio = $request->p_anio;
+
+        // Ejecutar procedimientos almacenados
+        $kpi = DB::select('CALL sp_kpi_resumen(?, ?, ?)', [$fecha_inicio, $fecha_fin, $anio]);
+        $departamentos = DB::select('CALL reporte_departamentos_por_fechas(?, ?, ?)', [$fecha_inicio, $fecha_fin, $anio]);
+
+        // Preparar datos para la vista
+        $data = [
+            'logo' => public_path('/assets/images/logo_hotel.jpeg'),
+            'hotel_nombre' => 'Hotel Mansion Real',
+            'fecha_inicio' => $fecha_inicio,
+            'fecha_fin' => $fecha_fin,
+            'anio' => $anio,
+            'kpi' => $kpi[0] ?? null,
+            'departamentos' => $departamentos
+        ];
+
+        $pdf = Pdf::loadView('pdf.reportes.pdf_kpi_departamentos', $data)
+            ->setPaper('a4', 'portrait');
+
+        return $pdf->download('reporte_mansionreal.pdf');
+    }
+
+    // PARA LA VISTA DE REPORTE DE DEPARTAMENTOS - PDF EN EL PIE DE CADA TARJETA DE DEPARTAMENTO
+    public function exportConsumosPorDepartamentoPDF(Request $request)
+    {
+        $fecha_inicio     = $request->p_fecha_inicio;
+        $fecha_fin        = $request->p_fecha_fin;
+        $anio             = $request->p_anio;
+        $departamento_id  = $request->departamento_id; // o numero_departamento
+
+        $query = DB::table('consumos as c')
+            ->join('reservas as r', 'c.reserva_id', '=', 'r.id')
+            ->join('departamentos as d', 'r.departamento_id', '=', 'd.id')
+            ->join('inventarios as i', 'c.inventario_id', '=', 'i.id')
+            ->join('estados as e', 'r.estado_id', '=', 'e.id')
+            ->select(
+                'd.numero_departamento',
+                'i.nombre_producto',
+                DB::raw('SUM(c.cantidad) as total_consumido'),
+                DB::raw('SUM(c.subtotal) as subtotal_consumido'),
+                DB::raw('SUM(c.total) as total_importe'),
+                DB::raw('SUM(c.iva) as total_iva')
+            )
+            ->where('e.nombre_estado', 'PAGADO');
+
+        // Filtrar por departamento específico
+        if ($departamento_id) {
+            $query->where('d.id', $departamento_id);
+            // O si prefieres por número: $query->where('d.numero_departamento', $numero_departamento);
+        }
+
+        // Filtro por rango de fechas o año
+        if ($fecha_inicio && $fecha_fin) {
+            $query->whereBetween('c.fecha_creacion', [$fecha_inicio, $fecha_fin]);
+        } elseif ($anio) {
+            $query->whereYear('c.fecha_creacion', $anio);
+        }
+
+        $query->groupBy('d.numero_departamento', 'i.nombre_producto')
+            ->orderBy('d.numero_departamento');
+
+        $consumos = $query->get();
+
+        // Agrupar para mostrar en el PDF por departamento
+        $departamentos = [];
+        foreach ($consumos as $consumo) {
+            $departamentos[$consumo->numero_departamento][] = [
+                'producto' => $consumo->nombre_producto,
+                'cantidad' => $consumo->total_consumido,
+                'subtotal' => $consumo->subtotal_consumido,
+                'importe'  => $consumo->total_importe,
+                'iva'      => $consumo->total_iva
+            ];
+        }
+
+        $pdf = Pdf::loadView('pdf.departamento.consumos_departamentos_pdf', [
+            'departamentos' => $departamentos,
+            'fecha_inicio'  => $fecha_inicio,
+            'fecha_fin'     => $fecha_fin,
+            'anio'          => $anio,
+            'departamento_id' => $departamento_id
+        ]);
+
+        return $pdf->download('consumos_departamento_' . $departamento_id . '.pdf');
     }
 }

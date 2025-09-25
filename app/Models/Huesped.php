@@ -14,6 +14,7 @@ class Huesped extends Model
         'dni',
         'telefono',
         'email',
+        'direccion',
         'provincia_id',
     ];
 

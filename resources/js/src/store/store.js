@@ -21,6 +21,7 @@ import {
     reservaSlice,
     roleSlice,
     servicioSlice,
+    storageFieldsSlice,
     tipoDepartamentoSlice,
     tiposDanoSlice,
     uiCategoriaSlice,
@@ -107,6 +108,9 @@ export const store = configureStore({
         /* Gastos */
         gasto: gastoSlice.reducer,
         uiGasto: uiGastoSlice.reducer,
+
+        /* Storage */
+        storageFields: storageFieldsSlice.reducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

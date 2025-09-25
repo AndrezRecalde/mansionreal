@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { Container, Divider } from "@mantine/core";
 import {
+    ConsumoEditarModal,
+    ConsumoEliminarModal,
     ConsumosDrawer,
     FiltrarPorFechasCodigo,
     ReservaFinalizarModal,
@@ -18,6 +20,16 @@ const HistorialConsumosPage = () => {
         fnBuscarReservas,
         fnLimpiarReservas,
     } = useReservaDepartamentoStore();
+
+    const datos_reserva = {
+        numero_departamento: activarReserva?.numero_departamento,
+        codigo_reserva: activarReserva?.codigo_reserva,
+        reserva_id: activarReserva?.id,
+        huesped: activarReserva?.huesped,
+        fecha_checkin: activarReserva?.fecha_checkin,
+        fecha_checkout: activarReserva?.fecha_checkout,
+        total_noches: activarReserva?.total_noches,
+    };
 
     useEffect(() => {
         return () => {
@@ -37,11 +49,13 @@ const HistorialConsumosPage = () => {
             <ReservasInformacionTable cargando={cargando} />
 
             <ConsumosDrawer
-                activarElemento={activarReserva?.id}
+                datos_reserva={datos_reserva}
                 fnAsignarElemento={fnAsignarReserva}
             />
 
-            <ReservaFinalizarModal />
+            <ReservaFinalizarModal datos_reserva={datos_reserva} />
+            <ConsumoEditarModal />
+            <ConsumoEliminarModal />
         </Container>
     );
 };

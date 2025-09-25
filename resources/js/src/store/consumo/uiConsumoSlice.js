@@ -3,6 +3,9 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
     abrirModalConsumo: false,
     abrirDrawerConsumosDepartamento: false,
+
+    abrirModalEditarConsumo: false,
+    abrirModalEliminarConsumo: false,
 };
 
 export const uiConsumoSlice = createSlice({
@@ -15,8 +18,18 @@ export const uiConsumoSlice = createSlice({
         rtkAbrirDrawerConsumosDepartamento: (state, { payload }) => {
             state.abrirDrawerConsumosDepartamento = payload;
         },
+        rtkAbrirModalEditarConsumo: (state, { payload }) => {
+            state.abrirModalEditarConsumo = payload;
+        },
+        rtkAbrirModalEliminarConsumo: (state, { payload }) => {
+            state.abrirModalEliminarConsumo = payload;
+        },
     },
 });
 
-export const { rtkAbrirModalConsumo, rtkAbrirDrawerConsumosDepartamento } =
-    uiConsumoSlice.actions;
+export const {
+    rtkAbrirModalConsumo,
+    rtkAbrirDrawerConsumosDepartamento,
+    rtkAbrirModalEditarConsumo,
+    rtkAbrirModalEliminarConsumo,
+} = uiConsumoSlice.actions;

@@ -2,14 +2,9 @@ import { useEffect } from "react";
 import {
     Grid,
     Card,
-    Group,
     Title,
     Container,
-    ActionIcon,
-    Paper,
-    rem,
 } from "@mantine/core";
-import { DateInput, YearPickerInput } from "@mantine/dates";
 import {
     useDashboardKPIStore,
     useDashHuepedGananciaStore,
@@ -18,7 +13,6 @@ import {
     useDashRankingProductosStore,
     useTitleHook,
 } from "../../hooks";
-import { IconSearch } from "@tabler/icons-react";
 import KPICard from "../../components/dashboard/KPICard";
 import OccupancyLineChart from "../../components/dashboard/OccupancyLineChart";
 import DepartmentBarChart from "../../components/dashboard/DepartmentBarChart";

@@ -52,7 +52,7 @@ export const ReservarDatosClienteForm = ({
                                         disabled={disabledInput}
                                         label="Nombres"
                                         placeholder="Nombres"
-                                        key={reservaForm.key('huesped.nombres')}
+                                        key={reservaForm.key("huesped.nombres")}
                                         {...reservaForm.getInputProps(
                                             "huesped.nombres"
                                         )}
@@ -62,7 +62,9 @@ export const ReservarDatosClienteForm = ({
                                         disabled={disabledInput}
                                         label="Apellidos"
                                         placeholder="Apellidos"
-                                        key={reservaForm.key('huesped.apellidos')}
+                                        key={reservaForm.key(
+                                            "huesped.apellidos"
+                                        )}
                                         {...reservaForm.getInputProps(
                                             "huesped.apellidos"
                                         )}
@@ -72,7 +74,7 @@ export const ReservarDatosClienteForm = ({
                                         disabled={disabledInput}
                                         label="Correo"
                                         placeholder="Correo"
-                                        key={reservaForm.key('huesped.correo')}
+                                        key={reservaForm.key("huesped.correo")}
                                         {...reservaForm.getInputProps(
                                             "huesped.email"
                                         )}
@@ -81,7 +83,9 @@ export const ReservarDatosClienteForm = ({
                                         disabled={disabledInput}
                                         label="Teléfono"
                                         placeholder="Teléfono"
-                                        key={reservaForm.key('huesped.telefono')}
+                                        key={reservaForm.key(
+                                            "huesped.telefono"
+                                        )}
                                         {...reservaForm.getInputProps(
                                             "huesped.telefono"
                                         )}
@@ -96,9 +100,22 @@ export const ReservarDatosClienteForm = ({
                                             value: provincia.id.toString(),
                                             label: provincia.nombre_provincia,
                                         }))}
-                                        key={reservaForm.key('huesped.provincia_id')}
+                                        key={reservaForm.key(
+                                            "huesped.provincia_id"
+                                        )}
                                         {...reservaForm.getInputProps(
                                             "huesped.provincia_id"
+                                        )}
+                                    />
+                                    <TextInput
+                                        disabled={disabledInput}
+                                        label="Direccion del huesped"
+                                        placeholder="Ingrese la direccion del huesped"
+                                        key={reservaForm.key(
+                                            "huesped.direccion"
+                                        )}
+                                        {...reservaForm.getInputProps(
+                                            "huesped.direccion"
                                         )}
                                     />
                                 </SimpleGrid>

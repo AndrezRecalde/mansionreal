@@ -17,7 +17,7 @@ class CategoriasController extends Controller
             $categorias = Categoria::buscarActivos($request->activo)->skip(1)->take(10000)->get();
 
             return response()->json([
-                'status' => HTTPStatus::Success,
+                'status'       => HTTPStatus::Success,
                 'categorias'   => $categorias
             ]);
         } catch (\Throwable $th) {

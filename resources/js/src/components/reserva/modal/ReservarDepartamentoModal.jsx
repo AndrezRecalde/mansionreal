@@ -27,6 +27,7 @@ export const ReservarDepartamentoModal = () => {
                 dni: "",
                 email: "",
                 telefono: "",
+                direccion: "",
                 provincia_id: "",
             },
             departamento_id: "",
@@ -50,6 +51,10 @@ export const ReservarDepartamentoModal = () => {
                     value ? null : "El apellido del huésped es obligatorio",
                 email: (value) =>
                     /^\S+@\S+$/.test(value) ? null : "Email inválido",
+                direccion: (value) =>
+                    value.length < 2
+                        ? "La direccion debe tener al menos 2 caracteres"
+                        : null,
             },
             fecha_checkin: (value) =>
                 value ? null : "La fecha de check-in es obligatoria",
@@ -114,7 +119,7 @@ export const ReservarDepartamentoModal = () => {
             opened={abrirModalReservarDepartamento}
             onClose={handleCerrarModal}
             title={
-                <TextSection tt="" fz={16} fw={700}>
+                <TextSection tt="" fz={18} fw={300}>
                     Reservar Departamento
                 </TextSection>
             }

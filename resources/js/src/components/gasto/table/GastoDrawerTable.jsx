@@ -1,13 +1,20 @@
 import { useCallback, useMemo } from "react";
-import { Button } from "@mantine/core";
+import { ActionIcon, Stack, Tooltip } from "@mantine/core";
 import { useMantineReactTable } from "mantine-react-table";
-import { ContenidoTable, MenuTable_EA } from "../../../components";
+import { ContenidoTable, MenuTable_EA, TextSection } from "../../../components";
 import { useGastoStore, useUiGasto } from "../../../hooks";
 import { IconListDetails } from "@tabler/icons-react";
 
 export const GastoDrawerTable = () => {
     const { cargando, gastos } = useGastoStore();
     const { fnAbrirModalGasto, fnAbrirEliminarModalGasto } = useUiGasto();
+
+    // Calcula la suma de todos los totales (no solo los de la página actual)
+    const totalGastos = useMemo(() => {
+        if (!Array.isArray(gastos)) return 0;
+        return gastos.reduce((acc, curr) => acc + Number(curr.monto ?? 0), 0);
+    }, [gastos]);
+
     const columns = useMemo(
         () => [
             {
@@ -16,21 +23,37 @@ export const GastoDrawerTable = () => {
                 size: 80,
                 //filterVariant: "autocomplete",
             },
-            {
-                header: "Monto",
-                accessorKey: "monto",
-                size: 80,
-                //filterVariant: "autocomplete",
-            },
+
             {
                 header: "Tipo de daño",
                 accessorKey: "tipo_dano",
                 //filterVariant: "autocomplete",
             },
             {
-                header: "Fecha de creación",
-                accessorKey: "fecha_creacion",
-                //filterVariant: "autocomplete",
+                header: "Monto",
+                accessorKey: "monto",
+                size: 80,
+                Cell: ({ cell }) => (
+                    <span>
+                        {Number(cell.getValue()).toLocaleString("es-EC", {
+                            style: "currency",
+                            currency: "USD",
+                            minimumFractionDigits: 2,
+                        })}
+                    </span>
+                ),
+                Footer: () => (
+                    <Stack>
+                        Total Gastos:
+                        <TextSection tt="" fw={500} fz={16}>
+                            {totalGastos.toLocaleString("es-EC", {
+                                style: "currency",
+                                currency: "USD",
+                                minimumFractionDigits: 2,
+                            })}
+                        </TextSection>
+                    </Stack>
+                ),
             },
         ],
         [gastos]
@@ -65,14 +88,20 @@ export const GastoDrawerTable = () => {
         enableRowActions: true,
         enableColumnActions: false,
         renderTopToolbarCustomActions: ({ table }) => (
-            <Button
-                leftSection={<IconListDetails size={20} stroke={1.8} />}
-                variant="filled"
-                color="gray.7"
-                onClick={handleAbrirGasto}
-            >
-                Agregar Gasto
-            </Button>
+            <Tooltip label="Agregar Gasto">
+                <ActionIcon
+                    variant="default"
+                    size="xl"
+                    radius="xs"
+                    aria-label="Gasto"
+                    onClick={handleAbrirGasto}
+                >
+                    <IconListDetails
+                        style={{ width: "80%", height: "80%" }}
+                        stroke={1.5}
+                    />
+                </ActionIcon>
+            </Tooltip>
         ),
         renderRowActionMenuItems: ({ row }) => (
             <MenuTable_EA

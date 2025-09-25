@@ -3,15 +3,15 @@ import { useForm } from "@mantine/form";
 import { TextSection, ReservaFinalizarForm } from "../../../components";
 import { useUiReservaDepartamento } from "../../../hooks";
 
-export const ReservaFinalizarModal = () => {
+export const ReservaFinalizarModal = ({ datos_reserva }) => {
     const { abrirModalReservaFinalizar, fnAbrirModalReservaFinalizar } =
         useUiReservaDepartamento();
     const form = useForm({
         initialValues: {
-            estado: "",
+            nombre_estado: "",
         },
         validate: {
-            estado: (value) =>
+            nombre_estado: (value) =>
                 value.length === 0 ? "Debe seleccionar un estado" : null,
         },
     });
@@ -23,11 +23,11 @@ export const ReservaFinalizarModal = () => {
 
     return (
         <Modal
-            size="md"
+            size="lg"
             opened={abrirModalReservaFinalizar}
             onClose={handleCerrarModal}
             title={
-                <TextSection tt="" fz={16} fw={700}>
+                <TextSection tt="" fz={18} fw={300}>
                     Finalizar Reserva
                 </TextSection>
             }
@@ -36,7 +36,7 @@ export const ReservaFinalizarModal = () => {
                 blur: 3,
             }}
         >
-            <ReservaFinalizarForm form={form} />
+            <ReservaFinalizarForm form={form} datos_reserva={datos_reserva} />
         </Modal>
     );
 };

@@ -60,8 +60,25 @@ export const useConsumoStore = () => {
         }
     };
 
-    const fnAsignarActivarConsumo = (activar) => {
-        dispatch(rtkActivarConsumo(activar));
+    const fnEliminarConsumo = async (consumo) => {
+        try {
+            dispatch(rtkCargando(true));
+            const { data } = await apiAxios.delete(
+                `/gerencia/consumo/${consumo.id}`,
+                consumo
+            );
+            dispatch(rtkCargarMensaje(data));
+            setTimeout(() => {
+                dispatch(rtkCargarMensaje(undefined));
+            }, 2000);
+        } catch (error) {
+            console.log(error);
+            ExceptionMessageError(error);
+        }
+    };
+
+    const fnAsignarConsumo = (consumo) => {
+        dispatch(rtkActivarConsumo(consumo));
     };
 
     const fnLimpiarConsumos = () => {
@@ -77,7 +94,8 @@ export const useConsumoStore = () => {
 
         fnCargarConsumos,
         fnAgregarConsumo,
-        fnAsignarActivarConsumo,
+        fnEliminarConsumo,
+        fnAsignarConsumo,
         fnLimpiarConsumos,
     };
 };

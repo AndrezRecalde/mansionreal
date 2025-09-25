@@ -7,6 +7,7 @@ import {
     DisponibilidadTable,
     FiltroDisponibilidad,
     GastoModal,
+    ReservaFinalizarModal,
     ReservarDepartamentoModal,
     TitlePage,
 } from "../../components";
@@ -18,21 +19,6 @@ import {
 } from "../../hooks";
 import Swal from "sweetalert2";
 
-// DATA DE EJEMPLO
-const categoriasEjemplo = [
-    { id: 1, nombre: "Bebidas" },
-    { id: 2, nombre: "Snacks" },
-    { id: 3, nombre: "Limpieza" },
-];
-
-const inventariosEjemplo = [
-    { id: 1, nombre: "Coca Cola", precio_unitario: 1.5, categoria_id: 1 },
-    { id: 2, nombre: "Agua Mineral", precio_unitario: 1.0, categoria_id: 1 },
-    { id: 3, nombre: "Papas Fritas", precio_unitario: 0.8, categoria_id: 2 },
-    { id: 4, nombre: "Chocolate", precio_unitario: 1.2, categoria_id: 2 },
-    { id: 5, nombre: "Jabón Líquido", precio_unitario: 2.5, categoria_id: 3 },
-    { id: 6, nombre: "Desinfectante", precio_unitario: 3.0, categoria_id: 3 },
-];
 
 const DisponibilidadActualPage = () => {
     useTitleHook("Disponibilidad - Mansión Real");
@@ -41,12 +27,20 @@ const DisponibilidadActualPage = () => {
     const { fnConsultarDisponibilidadDepartamentos, fnLimpiarDepartamentos } =
         useDepartamentoStore();
     const {
-        fnAbrirModalConsumo,
-        abrirModalConsumo,
         fnAbrirDrawerConsumosDepartamento,
     } = useUiConsumo();
 
     const { mensaje, errores } = useReservaDepartamentoStore();
+
+    const datos_reserva = {
+        numero_departamento: activarDepartamento?.numero_departamento,
+        codigo_reserva: activarDepartamento?.reserva?.codigo_reserva,
+        reserva_id: activarDepartamento?.reserva?.id,
+        huesped: activarDepartamento?.reserva?.huesped,
+        fecha_checkin: activarDepartamento?.reserva?.fecha_checkin,
+        fecha_checkout: activarDepartamento?.reserva?.fecha_checkout,
+        total_noches: activarDepartamento?.reserva?.total_noches,
+    }
 
     useEffect(() => {
         fnConsultarDisponibilidadDepartamentos();
@@ -99,20 +93,12 @@ const DisponibilidadActualPage = () => {
 
             <ReservarDepartamentoModal />
             <ConsumosDrawer
-                activarElemento={activarDepartamento?.reserva?.id}
+                datos_reserva={datos_reserva}
                 fnAsignarElemento={fnAsignarDepartamento}
             />
-            <ConsumoModal
-                opened={abrirModalConsumo}
-                onClose={() => fnAbrirModalConsumo(false)}
-                categorias={categoriasEjemplo}
-                inventarios={inventariosEjemplo}
-                iva={12}
-                onGuardarConsumo={(data) => {
-                    console.log("Datos enviados al backend:", data);
-                }}
-            />
+            <ConsumoModal reserva_id={datos_reserva.reserva_id} />
             <GastoModal />
+            <ReservaFinalizarModal datos_reserva={datos_reserva} />
         </Container>
     );
 };

@@ -3,6 +3,8 @@ import { useMantineReactTable } from "mantine-react-table";
 import { ContenidoTable, MenuTable_EA, TextSection } from "../../../components";
 import { MRT_Localization_ES } from "mantine-react-table/locales/es/index.cjs";
 
+
+// SIN USAR
 export const ConsumosInformacionTable = ({ data = {} }) => {
     const { original = {} } = data ?? {};
     const consumos = Array.isArray(original.consumos) ? original.consumos : [];

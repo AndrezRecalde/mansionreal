@@ -67,6 +67,9 @@ import { useUiGasto } from "./gasto/useUiGasto";
 /* Tipos de dano */
 import { useTiposDanoStore } from "./tiposDano/useTiposDanoStore";
 
+/* Storage Fields */
+import { useStorageField } from "./storage/useStorageField";
+
 export {
     useAuthStore,
 
@@ -134,4 +137,7 @@ export {
 
     /* Tipos de dano */
     useTiposDanoStore,
+
+    /* Storage Fields */
+    useStorageField,
 }

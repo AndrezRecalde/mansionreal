@@ -26,6 +26,7 @@ export const ReservarBusquedaClienteSection = ({
                     dni: activarHuesped.dni,
                     email: activarHuesped.email,
                     telefono: activarHuesped.telefono || "",
+                    direccion: activarHuesped.direccion || "",
                     provincia_id: activarHuesped.provincia_id
                         ? activarHuesped.provincia_id.toString()
                         : null,
@@ -48,6 +49,7 @@ export const ReservarBusquedaClienteSection = ({
                 dni: "",
                 email: "",
                 telefono: "",
+                direccion: "",
                 provincia_id: "",
             },
             departamento_id: "",

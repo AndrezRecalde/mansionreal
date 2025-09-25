@@ -1,7 +1,7 @@
 import { useMemo } from "react";
-import { Badge, Button, Image, Text } from "@mantine/core";
-import { IconBookmarksFilled } from "@tabler/icons-react";
-import { ReservaMenu } from "../../../components";
+import { Badge, Image, Text } from "@mantine/core";
+import { IconBookmarksFilled, IconCheckbox } from "@tabler/icons-react";
+import { BtnSection, ReservaMenu } from "../../../components";
 
 export function useDisponibilidadColumns({
     theme,
@@ -105,26 +105,34 @@ export function useDisponibilidadColumns({
                         departamento.estado.nombre === "RESERVADO"
                     ) {
                         return (
-                            <ReservaMenu
-                                departamento={departamento}
-                                theme={theme}
-                                onFinalizarReserva={handleFinalizarReservaClick}
-                            />
+                            <BtnSection
+                                fullWidth
+                                heigh={30}
+                                fontSize={12}
+                                IconSection={IconCheckbox}
+                                disabled={
+                                    departamento.estado.nombre === "OCUPADO" ||
+                                    departamento.estado.nombre === "RESERVADO" ? false : true
+                                }
+                                handleAction={() => handleFinalizarReservaClick(departamento)}
+                            >
+                                Finalizar Reserva
+                            </BtnSection>
                         );
                     }
                     return (
-                        <Button
-                            variant="default"
-                            radius="sm"
-                            size="xs"
-                            leftSection={<IconBookmarksFilled size={18} />}
+                        <BtnSection
+                            fullWidth
+                            heigh={30}
+                            fontSize={12}
+                            IconSection={IconBookmarksFilled}
                             disabled={
                                 departamento.estado.nombre !== "DISPONIBLE"
                             }
-                            onClick={() => handleReservarClick(departamento)}
+                            handleAction={() => handleReservarClick(departamento)}
                         >
                             Reservar
-                        </Button>
+                        </BtnSection>
                     );
                 },
                 enableColumnActions: false,

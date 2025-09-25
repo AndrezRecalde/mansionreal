@@ -1,82 +1,180 @@
 import {
-    Box,
     Image,
     Title,
-    Paper,
-    Grid,
     SimpleGrid,
     Group,
+    Text,
+    Card,
+    Center,
+    Badge,
+    Grid,
 } from "@mantine/core";
-import { BtnSection, ConsultaReservacionesTable } from "../../../components";
-import { useReservaDepartamentoStore } from "../../../hooks";
-import { IconPackageExport } from "@tabler/icons-react";
+import { BtnSection, ConsumosTotalTable } from "../../../components";
+import {
+    useDashboardKPIStore,
+    useDepartamentoStore,
+    useStorageField,
+} from "../../../hooks";
+import { IconBuilding, IconPackageExport } from "@tabler/icons-react";
+import classes from "../modules/ConsultaReservaSection.module.css";
+import KPICard from "../../dashboard/KPICard";
 
 export const ConsultarReservaSection = () => {
-    const { reservas } = useReservaDepartamentoStore();
+    const {
+        departamentos,
+        fnExportarConsumosPorDepartamentoPDF,
+        fnExportarKpiYDepartamentosPdf,
+    } = useDepartamentoStore();
+    const { kpis } = useDashboardKPIStore();
+    const { storageFields } = useStorageField();
+
+    const handleExportarPorDepartamentoPDF = (departamento) => {
+        //console.log("Exportar PDF una reserva", departamento);
+        fnExportarConsumosPorDepartamentoPDF({
+            p_fecha_inicio: storageFields?.p_fecha_inicio,
+            p_fecha_fin: storageFields?.p_fecha_fin,
+            p_anio: storageFields?.p_anio,
+            departamento_id: departamento.id,
+        });
+    };
+
+    const handleExportarKpiYDepartamentosPDF = () => {
+        //console.log("Exportar PDF todas las reservas");
+        fnExportarKpiYDepartamentosPdf({
+            p_fecha_inicio: storageFields?.p_fecha_inicio,
+            p_fecha_fin: storageFields?.p_fecha_fin,
+            p_anio: storageFields?.p_anio,
+            departamento_id: null,
+        });
+    };
 
     return (
         <div>
-            <BtnSection
-                fullWidth={true}
-                fontSize={12}
-                mb={10}
-                mt={10}
-                IconSection={IconPackageExport}
-                variant="default"
-                handleAction={() =>
-                    console.log("Exportar PDF todas las reservas")
-                }
-            >
-                Exportar PDF Todas las Reservas
-            </BtnSection>
-            <SimpleGrid cols={{ base: 1, sm: 1, md: 1, lg: 1 }} mt={10}>
-                {reservas.length > 0 ? (
-                    reservas.map((reserva) => (
-                        <Paper withBorder radius="md" p="md" key={reserva.id}>
-                            <Grid>
-                                <Grid.Col span={{ base: 12, md: 4, lg: 4 }}>
-                                    {/* Sección izquierda: imagen */}
-                                    <Box>
-                                        <Image
-                                            src={`/storage/${reserva.imagen_departamento}`}
-                                            alt={`departamento-${reserva.nombre_departamento}`}
-                                            radius="md"
-                                            fit="cover"
-                                            w="100%"
-                                            // Ajusta la altura mínima para que luzca bien incluso con poco contenido a la derecha
-                                            h={{ base: 180, sm: 180, md: 230 }}
-                                            styles={{
-                                                image: {
-                                                    objectPosition: "center",
-                                                },
-                                            }}
-                                            mt={20}
-                                        />
-                                    </Box>
-                                </Grid.Col>
-                                {/* Sección derecha: Tabs */}
-                                <Grid.Col span={{ base: 12, md: 8, lg: 8 }}>
-                                    <Box>
-                                        <ConsultaReservacionesTable
-                                            reserva={reserva}
-                                        />
-                                    </Box>
-                                </Grid.Col>
-                            </Grid>
-                            <Group justify="flex-end">
-                                <BtnSection
-                                    heigh={30}
-                                    fontSize={12}
-                                    mb={10}
-                                    mt={10}
-                                    IconSection={IconPackageExport}
-                                    variant="default"
-                                    // handleAction={() => fnExportarPDF(reserva.id)}
-                                >
-                                    Exportar PDF
-                                </BtnSection>
+            {/* Botón superior fuera de la grilla */}
+            {departamentos.length > 0 && (
+                <div>
+                    <BtnSection
+                        fullWidth
+                        fontSize={12}
+                        mb={10}
+                        mt={10}
+                        IconSection={IconPackageExport}
+                        variant="default"
+                        handleAction={handleExportarKpiYDepartamentosPDF}
+                    >
+                        Exportar PDF Todas las Reservas
+                    </BtnSection>
+                    <Grid mb="md" grow>
+                        {kpis.map((kpi) => (
+                            <Grid.Col span={2} key={kpi.label}>
+                                <KPICard
+                                    label={kpi.label}
+                                    value={kpi.value}
+                                    color={kpi.color}
+                                />
+                            </Grid.Col>
+                        ))}
+                    </Grid>
+                </div>
+            )}
+
+            {/* Grilla de reservas */}
+            <SimpleGrid cols={{ base: 1, sm: 1, md: 2, lg: 2 }} mt={10}>
+                {departamentos.length > 0 ? (
+                    departamentos.map((departamento) => (
+                        <Card
+                            withBorder
+                            radius="md"
+                            className={classes.card}
+                            key={departamento.id}
+                        >
+                            <Card.Section className={classes.imageSection}>
+                                <Image
+                                    src={`/storage/${departamento.imagen_departamento}`}
+                                    alt={`departamento-${departamento.nombre_departamento}`}
+                                    fit="cover"
+                                    w="100%"
+                                    h={{ base: 90, sm: 90, md: 120 }}
+                                    styles={{
+                                        image: { objectPosition: "center" },
+                                    }}
+                                />
+                            </Card.Section>
+                            <Group justify="space-between" mt="md">
+                                <div>
+                                    <Text fw={500}>
+                                        Departamento -{" "}
+                                        {departamento.nombre_departamento}
+                                    </Text>
+                                    <Text fz="xs" c="dimmed">
+                                        Numero Departamento
+                                    </Text>
+                                </div>
+                                <Badge variant="outline">
+                                    {departamento.tipo_departamento}
+                                </Badge>
                             </Group>
-                        </Paper>
+
+                            <Group gap={8} mb={-8} mt={5}>
+                                <Center>
+                                    <IconBuilding
+                                        size={16}
+                                        className={classes.icon}
+                                        stroke={1.5}
+                                    />
+                                    <Text size="xs">
+                                        capacidad: {departamento.capacidad}{" "}
+                                        personas
+                                    </Text>
+                                </Center>
+                            </Group>
+                            <Card.Section className={classes.section} mt="md">
+                                <Text
+                                    fz="sm"
+                                    c="dimmed"
+                                    className={classes.label}
+                                >
+                                    Total Consumos
+                                </Text>
+                                <ConsumosTotalTable
+                                    departamento={departamento}
+                                />
+                            </Card.Section>
+                            <Card.Section className={classes.section}>
+                                <Group gap={30} justify="space-between">
+                                    <div>
+                                        <Text
+                                            fz="xl"
+                                            fw={700}
+                                            style={{ lineHeight: 1 }}
+                                        >
+                                            ${departamento.precio_unitario}
+                                        </Text>
+                                        <Text
+                                            fz="sm"
+                                            c="dimmed"
+                                            fw={500}
+                                            style={{ lineHeight: 1 }}
+                                            mt={3}
+                                        >
+                                            por noche
+                                        </Text>
+                                    </div>
+                                    <BtnSection
+                                        radius="sm"
+                                        heigh={30}
+                                        IconSection={IconPackageExport}
+                                        handleAction={() =>
+                                            handleExportarPorDepartamentoPDF(
+                                                departamento
+                                            )
+                                        }
+                                    >
+                                        Exportar PDF
+                                    </BtnSection>
+                                </Group>
+                            </Card.Section>
+                        </Card>
                     ))
                 ) : (
                     <Title order={4} align="center" mt={20} mb={20}>

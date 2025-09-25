@@ -10,7 +10,7 @@ import { TitlePage } from "./elements/titles/TitlePage";
 /* Elements: AlertSection */
 import { AlertSection } from "./elements/alert/AlertSection";
 /* Elements: Menu de tables */
-import { MenuTable_EA, MenuTable_DEPT, MenuTable_RESERVA } from "./elements/table/MenuTable";
+import { MenuTable_EA, MenuTable_DEPT, MenuTable_RESERVA, MenuTable_EE } from "./elements/table/MenuTable";
 /* Elements: Contenido de tabla */
 import { ContenidoTable } from "./elements/table/ContenidoTable";
 /* Elements: Boton de Activacion */
@@ -70,10 +70,11 @@ import { ReservarDatosClienteForm } from "./reserva/form/ReservarDatosClienteFor
 import { ReservarDatosReservaSection } from "./reserva/section/ReservarDatosReservaSection";
 import { DisponibilidadTable } from "./reserva/section/DisponibilidadTable";
 import { DetalleReservaTable } from "./reserva/table/DetalleReservaTable";
+import { ReservaAccionesTable } from "./reserva/table/ReservaAccionesTable";
+import { ReservaInfoHuespedTable } from "./reserva/table/ReservaInfoHuespedTable";
 
 /* Reservas: Consultar Reservas */
 import { ConsultarReservaSection } from "./reserva/section/ConsultarReservaSection";
-import { ConsultaReservacionesTable } from "./reserva/table/ConsultaReservacionesTable";
 import { ConsultaClientesTable } from "./reserva/table/ConsultaClientesTable";
 import { ReservasInformacionTable } from "./reserva/table/ReservasInformacionTable";
 
@@ -86,6 +87,12 @@ import { ConsumosDrawer } from "./consumo/drawer/ConsumosDrawer";
 import { ConsumosDrawerTable } from "./consumo/table/ConsumosDrawerTable";
 import { ConsumoModal } from "./consumo/modal/ConsumoModal";
 import { ConsumosInformacionTable } from "./consumo/table/ConsumosInformacionTable";
+import { ConsumosDetalleTable } from "./consumo/table/ConsumosDetalleTable";
+import { ConsumosTotalTable } from "./consumo/table/ConsumosTotalTable";
+import { ConsumoEditarModal } from "./consumo/modal/ConsumoEditarModal";
+import { ConsumoEliminarModal } from "./consumo/modal/ConsumoEliminarModal";
+import { ConsumoEditarForm } from "./consumo/form/ConsumoEditarForm";
+import { ConsumoEliminarForm } from "./consumo/form/ConsumoEliminarForm";
 
 /* Gastos de Danos */
 import { GastoDrawerTable } from "./gasto/table/GastoDrawerTable";
@@ -98,6 +105,7 @@ import { DepartamentoModal } from "./departamento/modal/DepartamentoModal";
 import { DepartamentoForm } from "./departamento/form/DepartamentoForm";
 import { DepartamentoDrawer } from "./departamento/drawer/DepartamentoDrawer";
 import { DepartamentoServiciosForm } from "./departamento/form/DepartamentoServiciosForm";
+import { DepartamentosDisponiblesCards } from "./departamento/cards/DepartamentosDisponiblesCards";
 
 /* Departamentos para Disponibilidad */
 import { accionesDepartamento } from "./departamento/features/accionesDepartamento";
@@ -118,6 +126,7 @@ export {
     MenuTable_EA,
     MenuTable_DEPT,
     MenuTable_RESERVA,
+    MenuTable_EE,
     ContenidoTable,
     BtnActivarElemento,
     ActivarElementoModal,
@@ -171,10 +180,11 @@ export {
     ReservarDatosReservaSection,
     DisponibilidadTable,
     DetalleReservaTable,
+    ReservaAccionesTable,
+    ReservaInfoHuespedTable,
 
     /* Reservas: Consultar Reservas */
     ConsultarReservaSection,
-    ConsultaReservacionesTable,
     ConsultaClientesTable,
     ReservasInformacionTable,
 
@@ -187,6 +197,12 @@ export {
     ConsumoModal,
     ConsumosDrawerTable,
     ConsumosInformacionTable,
+    ConsumosDetalleTable,
+    ConsumosTotalTable,
+    ConsumoEditarModal,
+    ConsumoEliminarModal,
+    ConsumoEditarForm,
+    ConsumoEliminarForm,
 
     /* Gastos */
     GastoDrawerTable,
@@ -199,6 +215,7 @@ export {
     DepartamentoForm,
     DepartamentoDrawer,
     DepartamentoServiciosForm,
+    DepartamentosDisponiblesCards,
 
     /* Departamentos para Disponibilidad */
     DepartamentoMenu,

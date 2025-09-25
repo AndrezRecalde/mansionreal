@@ -1,13 +1,21 @@
 import { useCallback, useMemo } from "react";
-import { Button, Stack } from "@mantine/core";
+import { ActionIcon, Stack, Tooltip } from "@mantine/core";
 import { useMantineReactTable } from "mantine-react-table";
-import { ContenidoTable, MenuTable_EA } from "../../../components";
+import {
+    ContenidoTable,
+    MenuTable_EE,
+    TextSection,
+} from "../../../components";
 import { IconShoppingCartPlus } from "@tabler/icons-react";
 import { useConsumoStore, useUiConsumo } from "../../../hooks";
 
 export const ConsumosDrawerTable = () => {
-    const { cargando, consumos } = useConsumoStore();
-    const { fnAbrirModalConsumo } = useUiConsumo();
+    const { cargando, consumos, fnAsignarConsumo } = useConsumoStore();
+    const {
+        fnAbrirModalConsumo,
+        fnAbrirModalEditarConsumo,
+        fnAbrirModalEliminarConsumo,
+    } = useUiConsumo();
 
     // Calcula la suma de todos los totales (no solo los de la página actual)
     const totalConsumos = useMemo(() => {
@@ -42,13 +50,13 @@ export const ConsumosDrawerTable = () => {
                 Footer: () => (
                     <Stack>
                         Total Consumos:
-                        <strong>
+                        <TextSection tt="" fw={500} fz={16}>
                             {totalConsumos.toLocaleString("es-EC", {
                                 style: "currency",
                                 currency: "USD",
                                 minimumFractionDigits: 2,
                             })}
-                        </strong>
+                        </TextSection>
                     </Stack>
                 ),
             },
@@ -60,8 +68,16 @@ export const ConsumosDrawerTable = () => {
         fnAbrirModalConsumo(true);
     }, [fnAbrirModalConsumo]);
 
+    const handleEditarConsumo = useCallback((selected) => {
+        console.log("Editar consumo:", selected);
+        fnAsignarConsumo(selected);
+        fnAbrirModalEditarConsumo(true);
+    }, []);
+
     const handleEliminarConsumo = useCallback((selected) => {
         console.log("Eliminar consumo:", selected);
+        fnAsignarConsumo(selected);
+        fnAbrirModalEliminarConsumo(true);
     }, []);
 
     const table = useMantineReactTable({
@@ -78,20 +94,26 @@ export const ConsumosDrawerTable = () => {
         enableColumnActions: false,
         enableColumnFooters: true, // Habilita los footers de columna
         renderTopToolbarCustomActions: () => (
-            <Button
-                leftSection={<IconShoppingCartPlus size={20} stroke={1.8} />}
-                variant="filled"
-                color="gray.7"
-                onClick={handleAbrirConsumo}
-            >
-                Agregar Consumo
-            </Button>
+            <Tooltip label="Agregar Consumo">
+                <ActionIcon
+                    variant="default"
+                    size="xl"
+                    radius="xs"
+                    aria-label="Consumo"
+                    onClick={handleAbrirConsumo}
+                >
+                    <IconShoppingCartPlus
+                        style={{ width: "80%", height: "80%" }}
+                        stroke={1.5}
+                    />
+                </ActionIcon>
+            </Tooltip>
         ),
         renderRowActionMenuItems: ({ row }) => (
-            <MenuTable_EA
+            <MenuTable_EE
                 row={row}
-                titulo="Eliminar"
-                handleAction={handleEliminarConsumo}
+                handleEditar={handleEditarConsumo}
+                handleEliminar={handleEliminarConsumo}
             />
         ),
         mantineTableProps: {

@@ -12,7 +12,6 @@ use App\Models\Reserva;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 
@@ -204,32 +203,6 @@ class ReservasController extends Controller
         }
     }
 
-    //ESTE ES PARA MOSTRAR EL REPORTE DE DEPARTAMENTOS CON SU TOTAL DE RESERVAS Y PAGOS EN UN RANGO DE FECHAS
-    // PARA LA VISTA DE REPORTES DE RESERVAS
-    function reporteDepartamentosPorFechas(Request $request): JsonResponse
-    {
-        try {
-            $fecha_inicio = $request->fecha_inicio;
-            $fecha_fin = $request->fecha_fin;
-            $anio = $request->anio;
-            $result = DB::select('CALL reporte_departamentos_por_fechas(?, ?, ?)', [
-                $fecha_inicio,
-                $fecha_fin,
-                $anio
-            ]);
-            return response()->json([
-                'status' => HTTPStatus::Success,
-                'result' => $result
-            ], 200);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => HTTPStatus::Error,
-                'msg'    => $th->getMessage()
-            ], 500);
-        }
-    }
-
-
     // ESTE ES PARA EL HISTORIAL DE CONSUMOS EN LAS RESERVAS
     public function buscarReservas(Request $request)
     {
@@ -283,7 +256,7 @@ class ReservasController extends Controller
 
     public function exportarNotaVentaPDF(Request $request)
     {
-        $reservaId = $request->input('reserva_id');
+        $reservaId = $request->reserva_id;
         if (!$reservaId) {
             return response()->json([
                 'status' => HTTPStatus::Error,
@@ -354,4 +327,6 @@ class ReservasController extends Controller
 
         return $pdf->download("nota_de_venta_{$reserva->codigo_reserva}.pdf");
     }
+
+
 }

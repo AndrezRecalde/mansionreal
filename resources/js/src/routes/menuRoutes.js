@@ -1,5 +1,4 @@
 import {
-    IconBookmarks,
     IconBuildings,
     IconBuildingStore,
     IconCategory,
@@ -90,10 +89,10 @@ export const headerGerenciaRoutes = {
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
         },
         {
-            icon: IconBookmarks,
-            title: "Reporte Reservas",
-            path: "reservas",
-            link: "/gerencia/reservas",
+            icon: IconBuildings,
+            title: "Reporte Departamentos",
+            path: "reporte-departamentos",
+            link: "/gerencia/reporte-departamentos",
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
         },
         {

@@ -2,10 +2,7 @@ import { useEffect } from "react";
 import { Modal } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { HuespedForm, TextSection } from "../../../components";
-import {
-    useHuespedStore,
-    useUiHuesped,
-} from "../../../hooks";
+import { useHuespedStore, useUiHuesped } from "../../../hooks";
 
 export const HuespedModal = () => {
     const { abrirModalHuesped, fnModalHuesped } = useUiHuesped();
@@ -18,7 +15,8 @@ export const HuespedModal = () => {
             dni: "",
             telefono: "",
             email: "",
-            provincia_id: null,
+            direccion: "",
+            provincia_id: "",
         },
         validate: {
             nombres: (value) =>
@@ -35,6 +33,10 @@ export const HuespedModal = () => {
                     : null,
             email: (value) =>
                 /^\S+@\S+$/.test(value) ? null : "El email no es valido",
+            direccion: (value) =>
+                value.length < 2
+                    ? "La direccion debe tener al menos 2 caracteres"
+                    : null,
         },
         transformValues: (values) => ({
             ...values,
@@ -48,8 +50,7 @@ export const HuespedModal = () => {
         if (abrirModalHuesped) {
         }
 
-        return () => {
-        };
+        return () => {};
     }, [abrirModalHuesped]);
 
     const handleCerrarModal = () => {

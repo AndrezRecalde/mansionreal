@@ -24,8 +24,8 @@ class ConsumoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'reserva_id'    => 'required|exists:reservas,id',
-            'inventario_id' => 'required|exists:inventarios,id',
+            //'reserva_id'    => 'required|exists:reservas,id',
+            //'inventario_id' => 'required|exists:inventarios,id',
             'cantidad'      => 'required|integer|min:1',
         ];
     }
@@ -33,10 +33,10 @@ class ConsumoRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'reserva_id.required'    => 'El campo reserva_id es obligatorio.',
-            'reserva_id.exists'      => 'El reserva_id proporcionado no existe.',
-            'inventario_id.required' => 'El campo inventario_id es obligatorio.',
-            'inventario_id.exists'   => 'El inventario_id proporcionado no existe.',
+            //'reserva_id.required'    => 'El campo reserva_id es obligatorio.',
+            //'reserva_id.exists'      => 'El reserva_id proporcionado no existe.',
+            //'inventario_id.required' => 'El campo inventario_id es obligatorio.',
+            //'inventario_id.exists'   => 'El inventario_id proporcionado no existe.',
             'cantidad.required'      => 'El campo cantidad es obligatorio.',
             'cantidad.integer'       => 'El campo cantidad debe ser un número entero.',
             'cantidad.min'           => 'El campo cantidad debe ser al menos 1.',

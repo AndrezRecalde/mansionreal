@@ -68,7 +68,7 @@ export const GastoModal = () => {
             opened={abrirModalGasto}
             onClose={handleCerrarModal}
             title={
-                <TextSection tt="" fz={16} fw={700}>
+                <TextSection tt="" fz={18} fw={300}>
                     Registrar Gastos por Daños
                 </TextSection>
             }

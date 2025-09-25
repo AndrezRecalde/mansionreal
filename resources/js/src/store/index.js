@@ -66,6 +66,9 @@ import { tiposDanoSlice } from "./tiposDano/tiposDanoSlice";
 import { gastoSlice } from "./gasto/gastoSlice";
 import { uiGastoSlice } from "./gasto/uiGastoSlice";
 
+/* Storage Fields */
+import { storageFieldsSlice } from "./storage/storageFieldsSlice";
+
 export {
     /* Autenticacion */
     authSlice,
@@ -135,4 +138,7 @@ export {
     /* Gasto */
     gastoSlice,
     uiGastoSlice,
+
+    /* Storage Fields */
+    storageFieldsSlice,
 };

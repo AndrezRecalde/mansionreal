@@ -1,10 +1,5 @@
 import { Menu, rem } from "@mantine/core";
-import {
-    IconBorderLeftPlus,
-    IconCategoryPlus,
-    IconChecks,
-    IconEdit,
-} from "@tabler/icons-react";
+import { IconCategoryPlus, IconEdit, IconEyeSearch, IconTrash } from "@tabler/icons-react";
 
 export const MenuTable_EA = ({ row, titulo, handleAction }) => {
     return (
@@ -50,7 +45,6 @@ export const MenuTable_RESERVA = ({
     row,
     handleEditar,
     handleAgregarConsumos,
-    handleFinalizarReserva,
 }) => {
     return (
         <>
@@ -70,7 +64,7 @@ export const MenuTable_RESERVA = ({
             </Menu.Item>
             <Menu.Item
                 leftSection={
-                    <IconBorderLeftPlus
+                    <IconEyeSearch
                         style={{ width: rem(15), height: rem(15) }}
                     />
                 }
@@ -82,21 +76,30 @@ export const MenuTable_RESERVA = ({
                 }
                 onClick={() => handleAgregarConsumos(row.original)}
             >
-                Agregar Consumos
+                Ver Reserva
+            </Menu.Item>
+        </>
+    );
+};
+
+export const MenuTable_EE = ({ row, titulo, handleEditar, handleEliminar }) => {
+    return (
+        <>
+            <Menu.Item
+                leftSection={
+                    <IconEdit style={{ width: rem(15), height: rem(15) }} />
+                }
+                onClick={() => handleEditar(row.original)}
+            >
+                Editar
             </Menu.Item>
             <Menu.Item
                 leftSection={
-                    <IconChecks style={{ width: rem(15), height: rem(15) }} />
+                    <IconTrash style={{ width: rem(15), height: rem(15) }} />
                 }
-                disabled={
-                    row.original.estado === "PAGADO" ||
-                    row.original.estado === "CANCELADO"
-                        ? true
-                        : false
-                }
-                onClick={() => handleFinalizarReserva(row.original)}
+                onClick={() => handleEliminar(row.original)}
             >
-                Finalizar Reserva
+                Eliminar
             </Menu.Item>
         </>
     );

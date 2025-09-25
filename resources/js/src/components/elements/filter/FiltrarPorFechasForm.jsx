@@ -13,25 +13,25 @@ export const FiltrarPorFechasForm = ({
 }) => {
     const form = useForm({
         initialValues: {
-            fecha_inicio: "",
-            fecha_fin: "",
-            anio: new Date(),
+            p_fecha_inicio: "",
+            p_fecha_fin: "",
+            p_anio: new Date(),
         },
         validate: {
-            anio: isNotEmpty("Por favor ingresar el año"),
+            p_anio: isNotEmpty("Por favor ingresar el año"),
         },
         transformValues: (values) => ({
-            fecha_inicio: dayjs(values.fecha_inicio).isValid()
-                ? dayjs(values.fecha_inicio).format("YYYY-MM-DD")
+            p_fecha_inicio: dayjs(values.p_fecha_inicio).isValid()
+                ? dayjs(values.p_fecha_inicio).format("YYYY-MM-DD")
                 : null,
-            fecha_fin: dayjs(values.fecha_fin).isValid()
-                ? dayjs(values.fecha_fin).add(1, "day").format("YYYY-MM-DD")
+            p_fecha_fin: dayjs(values.p_fecha_fin).isValid()
+                ? dayjs(values.p_fecha_fin).add(1, "day").format("YYYY-MM-DD")
                 : null,
-            anio: values.anio.getFullYear(),
+            p_anio: values.p_anio.getFullYear(),
         }),
     });
 
-    const { fecha_inicio } = form.values;
+    const { p_fecha_inicio } = form.values;
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -58,7 +58,7 @@ export const FiltrarPorFechasForm = ({
                     <YearPickerInput
                         required
                         placeholder="Seleccione el año"
-                        {...form.getInputProps("anio")}
+                        {...form.getInputProps("p_anio")}
                     />
                 </Group>
                 <SimpleGrid cols={{ base: 1, sm: 2, md: 2, lg: 2 }} mt={10}>
@@ -68,16 +68,16 @@ export const FiltrarPorFechasForm = ({
                         label="Fecha inicio"
                         placeholder="Seleccione fecha de inicio"
                         classNames={classes}
-                        {...form.getInputProps("fecha_inicio")}
+                        {...form.getInputProps("p_fecha_inicio")}
                     />
                     <DateInput
-                        minDate={new Date(fecha_inicio)}
+                        minDate={new Date(p_fecha_inicio)}
                         withAsterisk
                         valueFormat="YYYY-MM-DD"
                         label="Fecha final"
                         placeholder="Seleccione fecha de fin"
                         classNames={classes}
-                        {...form.getInputProps("fecha_fin")}
+                        {...form.getInputProps("p_fecha_fin")}
                     />
                 </SimpleGrid>
 

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('dni', 15)->unique();
             $table->string('telefono', 15)->nullable();
             $table->string('email')->nullable();
+            $table->text('direccion')->nullable();
             $table->unsignedBigInteger('provincia_id')->nullable();
             $table->timestamps();
 

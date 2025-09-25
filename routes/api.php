@@ -13,6 +13,7 @@ use App\Http\Controllers\ProvinciaController;
 use App\Http\Controllers\ReservasController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ServiciosController;
+use App\Http\Controllers\TipoReservaController;
 use App\Http\Controllers\TiposDanoController;
 use App\Http\Controllers\TiposDepartamentosController;
 use App\Http\Controllers\UsuarioController;
@@ -94,6 +95,10 @@ Route::group(['prefix' => 'gerencia', 'middleware' => ['auth:sanctum', CheckRole
     Route::post('/disponibilidad-departamentos', [DepartamentoController::class, 'obtenerDepartamentosDisponibles']);
     Route::post('/departamento-servicios', [DepartamentoController::class, 'agregarServiciosDepartamento']);
     Route::put('/departamento/{id}/status', [DepartamentoController::class, 'cambiarEstadoDepartamento']);
+    Route::post('/reporte-departamentos', [DepartamentoController::class, 'reporteDepartamentosPorFechas']);
+    Route::post('/reservas-reporte/pdf', [DepartamentoController::class, 'exportarKpiYDepartamentosPdf']);
+    Route::post('/consumos-por-departamento/pdf', [DepartamentoController::class, 'exportConsumosPorDepartamentoPDF']);
+
 
     /* Tipos de Departamentos */
     Route::get('/tipos-departamentos', [TiposDepartamentosController::class, 'getTiposDepartamentos']);
@@ -116,7 +121,6 @@ Route::group(['prefix' => 'gerencia', 'middleware' => ['auth:sanctum', CheckRole
     Route::put('/reserva/{id}', [ReservasController::class, 'update']);
     Route::put('/reserva/{id}/estado', [ReservasController::class, 'cambiarEstadoReserva']);
     Route::delete('/reserva/{id}', [ReservasController::class, 'eliminarReserva']);
-    Route::post('/reporte-departamentos', [ReservasController::class, 'reporteDepartamentosPorFechas']);
     Route::post('/reservas/buscar', [ReservasController::class, 'buscarReservas']);
 
     /* Exportar PDF Reservas */
@@ -142,4 +146,9 @@ Route::group(['prefix' => 'gerencia', 'middleware' => ['auth:sanctum', CheckRole
     Route::post('/producto/inventario', [InventarioController::class, 'store']);
     Route::put('/producto/inventario/{id}', [InventarioController::class, 'update']);
     Route::put('/producto/inventario/{id}/status', [InventarioController::class, 'updateStatus']);
+
+
+    /* Tipos Reservas */
+    Route::post('/tipos-reservas', [TipoReservaController::class, 'getTiposReservas']);
+
 });

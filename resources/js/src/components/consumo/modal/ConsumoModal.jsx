@@ -1,281 +1,295 @@
-import React, { useState, useMemo } from "react";
+import React, { useEffect } from "react";
 import {
     Modal,
-    Chip,
-    Select,
-    NumberInput,
     Button,
     Group,
-    Text,
+    Select,
+    NumberInput,
     Stack,
-    Title,
-    Card,
-    Divider,
-    ThemeIcon,
-    Center,
-    Box,
-    rem,
+    Text,
     ActionIcon,
+    Card,
+    Title,
+    Divider,
+    Box,
+    Badge,
+    Tooltip,
+    rem,
 } from "@mantine/core";
+import { useForm } from "@mantine/form";
 import {
-    IconBottle,
-    IconCookie,
-    IconSpray,
-    IconShoppingCart,
     IconPlus,
-    IconMinus,
+    IconTrash,
+    IconShoppingCart,
+    IconCheck,
 } from "@tabler/icons-react";
+import {
+    useUiConsumo,
+    useCategoriaStore,
+    useInventarioStore,
+    useConsumoStore,
+} from "../../../hooks"; // Ajusta la ruta si es necesario
+import Swal from "sweetalert2";
 
-// Helper para iconos de categoría
-function getCategoriaIcon(id) {
-    if (id === 1) return <IconBottle size={18} />;
-    if (id === 2) return <IconCookie size={18} />;
-    if (id === 3) return <IconSpray size={18} />;
-    return <IconShoppingCart size={18} />;
-}
+const MAX_CONSUMOS = 4;
 
-export function ConsumoModal({
-    opened,
-    onClose,
-    categorias,
-    inventarios,
-    iva,
-    onGuardarConsumo,
-}) {
-    const [categoria, setCategoria] = useState(null);
-    const [producto, setProducto] = useState(null);
-    const [cantidad, setCantidad] = useState(1);
+export function ConsumoModal({ reserva_id }) {
+    const { abrirModalConsumo, fnAbrirModalConsumo } = useUiConsumo();
+    const { fnCargarCategorias, fnLimpiarCategorias, categorias } =
+        useCategoriaStore();
+    const { fnCargarProductosInventario, fnLimpiarInventarios, inventarios } =
+        useInventarioStore();
+    const { fnAgregarConsumo } = useConsumoStore();
 
-    const productosFiltrados = useMemo(
-        () =>
-            categoria
-                ? inventarios.filter(
-                      (inv) => String(inv.categoria_id) === String(categoria)
-                  )
-                : [],
-        [categoria, inventarios]
-    );
+    const form = useForm({
+        initialValues: {
+            reserva_id: "",
+            consumos: [{ categoria_id: "", inventario_id: "", cantidad: 1 }],
+        },
+        validate: {
+            consumos: {
+                categoria_id: (value) =>
+                    !value ? "Seleccione una categoría" : null,
+                inventario_id: (value) =>
+                    !value ? "Seleccione un producto" : null,
+                cantidad: (value) => (value < 1 ? "Debe ser al menos 1" : null),
+            },
+        },
+    });
 
-    const productoSeleccionado = useMemo(
-        () => inventarios.find((inv) => String(inv.id) === String(producto)),
-        [producto, inventarios]
-    );
+    useEffect(() => {
+        if (abrirModalConsumo) {
+            form.setFieldValue("reserva_id", reserva_id);
+            fnCargarCategorias({ activo: 1 });
+        }
+        return () => {
+            fnLimpiarCategorias();
+            fnLimpiarInventarios();
+            form.reset();
+        };
+        // eslint-disable-next-line
+    }, [abrirModalConsumo]);
 
-    const precioUnitario = productoSeleccionado?.precio_unitario || 0;
-    const subtotal = precioUnitario * cantidad;
-    const valorIva = subtotal * (iva / 100);
-    const total = subtotal + valorIva;
+    // Carga productos al cambiar categoría
+    useEffect(() => {
+        const lastConsumo = form.values.consumos.at(-1);
+        if (lastConsumo?.categoria_id) {
+            fnCargarProductosInventario({
+                categoria_id: lastConsumo.categoria_id,
+            });
+        } else {
+            fnLimpiarInventarios();
+        }
+        // eslint-disable-next-line
+    }, [form.values.consumos.map((c) => c.categoria_id).join(",")]);
 
-    const sumar = () => setCantidad((c) => c + 1);
-    const restar = () => setCantidad((c) => (c > 1 ? c - 1 : 1));
+    const handleAddConsumo = () => {
+        if (form.values.consumos.length < MAX_CONSUMOS) {
+            form.insertListItem("consumos", {
+                categoria_id: "",
+                inventario_id: "",
+                cantidad: 1,
+            });
+        }
+    };
 
-    const handleGuardar = () => {
-        if (!productoSeleccionado) return;
-        onGuardarConsumo({
-            inventario_id: productoSeleccionado.id,
-            cantidad,
+    const handleRemoveConsumo = (idx) => {
+        form.removeListItem("consumos", idx);
+    };
+
+    const handleSubmit = (values) => {
+        Swal.fire({
+            icon: "question",
+            title: "¿Confirmar?",
+            text: "¿Desea registrar estos consumos?",
+            showCancelButton: true,
+            confirmButtonText: "Sí, registrar",
+            cancelButtonText: "Cancelar",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fnAgregarConsumo(values).then(() => {
+                    fnAbrirModalConsumo(false);
+                    form.reset();
+                });
+            }
         });
-        setCategoria(null);
-        setProducto(null);
-        setCantidad(1);
-        onClose();
     };
 
     return (
         <Modal
-            opened={opened}
-            onClose={onClose}
-            title={
-                <Group spacing="xs">
-                    <ThemeIcon color="gray.7" radius="xl" size={36}>
-                        <IconShoppingCart size={20} />
-                    </ThemeIcon>
-                    <Title order={3}>Administrar Consumo</Title>
-                </Group>
-            }
-            centered
+            opened={abrirModalConsumo}
+            onClose={() => fnAbrirModalConsumo(false)}
             size="lg"
-            radius="md"
-            padding="lg"
             overlayProps={{
-                backgroundOpacity: 0.55,
                 blur: 3,
+                backgroundOpacity: 0.55,
             }}
+            withCloseButton={false}
         >
-            <Stack gap="md">
-                <Text c="dimmed" size="sm" mb={4}>
-                    Selecciona una categoría para ver productos disponibles e
-                    ingresa la cantidad a consumir.
-                </Text>
-                <Chip.Group value={categoria} onChange={setCategoria} mb={8}>
-                    <Group spacing="sm">
-                        {categorias.map((cat) => (
-                            <Chip
-                                key={cat.id}
-                                value={String(cat.id)}
-                                icon={getCategoriaIcon(cat.id)}
-                                radius="md"
-                                size="md"
-                                variant={
-                                    categoria === String(cat.id)
-                                        ? "filled"
-                                        : "light"
-                                }
-                                color={
-                                    categoria === String(cat.id)
-                                        ? "indigo"
-                                        : "gray"
-                                }
-                                style={{
-                                    minWidth: rem(120),
-                                    justifyContent: "center",
-                                    fontWeight: 500,
-                                }}
-                            >
-                                {cat.nombre}
-                            </Chip>
-                        ))}
+            {/* Cabecera del modal con icono y título */}
+            <Box mb={rem(20)}>
+                <Group justify="space-between">
+                    <Group>
+                        <IconShoppingCart size={25} />
+                        <Title order={4} fw={700}>
+                            Registrar Consumo
+                        </Title>
                     </Group>
-                </Chip.Group>
-
-                <Select
-                    label="Producto"
-                    data={productosFiltrados.map((p) => ({
-                        label: p.nombre + " ",
-                        value: String(p.id),
-                        description: `$${Number(p.precio_unitario).toFixed(2)}`,
-                        leftSection: (
-                            <ThemeIcon color="gray" size="sm">
-                                <IconShoppingCart size={14} />
-                            </ThemeIcon>
-                        ),
-                    }))}
-                    value={producto}
-                    onChange={setProducto}
-                    placeholder={
-                        categoria
-                            ? "Selecciona un producto"
-                            : "Primero elige una categoría"
-                    }
-                    required
-                    disabled={!categoria}
-                    nothingFoundMessage="No hay productos"
-                    searchable
-                />
-
-                <Center>
-                    <Group mt="sm" spacing="xs">
-                        <ActionIcon
-                            onClick={restar}
-                            disabled={cantidad <= 1}
-                            radius="xl"
-                            variant="outline"
-                            size="lg"
-                        >
-                            <IconMinus size="1rem" />
-                        </ActionIcon>
-                        <NumberInput
-                            value={cantidad}
-                            min={1}
-                            onChange={setCantidad}
-                            hideControls
-                            size="md"
-                            styles={{
-                                input: {
-                                    textAlign: "center",
-                                    fontSize: rem(20),
-                                    width: rem(70),
-                                },
-                            }}
-                        />
-                        <ActionIcon
-                            onClick={sumar}
-                            radius="xl"
-                            variant="filled"
-                            size="lg"
-                        >
-                            <IconPlus size="1rem" />
-                        </ActionIcon>
-                    </Group>
-                </Center>
-
-                <Divider my={8} />
-
-                <Group grow spacing="md">
-                    <Card
-                        shadow="xs"
-                        padding="md"
-                        radius="md"
-                        withBorder
-                        style={{ background: "#f4f7fe" }}
-                    >
-                        <Text size="xs" color="dimmed">
-                            Precio unitario
-                        </Text>
-                        <Text weight={600} size="lg">
-                            ${precioUnitario.toFixed(2)}
-                        </Text>
-                    </Card>
-                    <Card
-                        shadow="xs"
-                        padding="md"
-                        radius="md"
-                        withBorder
-                        style={{ background: "#f8fafc" }}
-                    >
-                        <Text size="xs" color="dimmed">
-                            Subtotal
-                        </Text>
-                        <Text weight={600} size="lg">
-                            ${subtotal.toFixed(2)}
-                        </Text>
-                    </Card>
-                    <Card
-                        shadow="xs"
-                        padding="md"
-                        radius="md"
-                        withBorder
-                        style={{ background: "#fef8f4" }}
-                    >
-                        <Text size="xs" color="dimmed">
-                            IVA ({iva}%)
-                        </Text>
-                        <Text weight={600} size="lg" color="orange">
-                            ${valorIva.toFixed(2)}
-                        </Text>
-                    </Card>
-                    <Card
-                        shadow="xs"
-                        padding="md"
-                        radius="md"
-                        withBorder
-                        style={{ background: "#f6fef4" }}
-                    >
-                        <Text size="xs" color="dimmed">
-                            Total
-                        </Text>
-                        <Text weight={700} size="lg" color="green">
-                            ${total.toFixed(2)}
-                        </Text>
-                    </Card>
-                </Group>
-
-                <Box>
                     <Button
-                        mt="lg"
-                        fullWidth
-                        size="xl"
-                        radius="md"
-                        leftSection={<IconShoppingCart size={22} />}
-                        onClick={handleGuardar}
-                        disabled={!productoSeleccionado}
-                        gradient={{ from: "indigo", to: "indigo", deg: 90 }}
-                        variant="gradient"
+                        variant="subtle"
+                        color="gray"
+                        size="xs"
+                        onClick={() => fnAbrirModalConsumo(false)}
                     >
-                        Guardar consumo
+                        Cerrar
                     </Button>
-                </Box>
-            </Stack>
+                </Group>
+                <Text mt={rem(5)} c="dimmed" size="sm">
+                    Agrega hasta 4 consumos con categoría, producto y cantidad.
+                </Text>
+            </Box>
+            <Divider mb={rem(15)} />
+            <form onSubmit={form.onSubmit(handleSubmit)}>
+                <Stack>
+                    {form.values.consumos.map((consumo, idx) => (
+                        <Card
+                            key={idx}
+                            shadow="sm"
+                            withBorder
+                            mb="xs"
+                            style={{
+                                borderLeft: `4px solid #8b959e`,
+                                background: "#f8fafc",
+                                position: "relative",
+                            }}
+                        >
+                            <Group align="center" justify="space-between">
+                                <Group>
+                                    <Badge
+                                        color="blue"
+                                        radius="sm"
+                                        variant="default"
+                                    >
+                                        Consumo {idx + 1}
+                                    </Badge>
+                                </Group>
+                                {form.values.consumos.length > 1 && (
+                                    <Tooltip label="Eliminar consumo" withArrow>
+                                        <ActionIcon
+                                            color="red"
+                                            variant="light"
+                                            onClick={() =>
+                                                handleRemoveConsumo(idx)
+                                            }
+                                            aria-label="Eliminar consumo"
+                                            size="lg"
+                                        >
+                                            <IconTrash size={18} />
+                                        </ActionIcon>
+                                    </Tooltip>
+                                )}
+                            </Group>
+                            <Divider my={rem(8)} />
+                            <Group grow align="end">
+                                <Select
+                                    searchable
+                                    label="Categoría"
+                                    placeholder="Seleccione..."
+                                    data={categorias.map((cat) => ({
+                                        label: cat.nombre_categoria,
+                                        value: String(cat.id),
+                                    }))}
+                                    value={consumo.categoria_id}
+                                    onChange={(value) => {
+                                        form.setFieldValue(
+                                            `consumos.${idx}.categoria_id`,
+                                            value || ""
+                                        );
+                                        form.setFieldValue(
+                                            `consumos.${idx}.inventario_id`,
+                                            ""
+                                        );
+                                        if (value) {
+                                            fnCargarProductosInventario({
+                                                categoria_id: value,
+                                            });
+                                        } else {
+                                            fnLimpiarInventarios();
+                                        }
+                                    }}
+                                    required
+                                    error={
+                                        form.errors.consumos?.[idx]
+                                            ?.categoria_id
+                                    }
+                                />
+                                <Select
+                                    searchable
+                                    label="Producto"
+                                    placeholder="Seleccione..."
+                                    data={inventarios.map((inv) => ({
+                                        label: inv.nombre_producto,
+                                        value: String(inv.id),
+                                    }))}
+                                    value={consumo.inventario_id}
+                                    onChange={(value) =>
+                                        form.setFieldValue(
+                                            `consumos.${idx}.inventario_id`,
+                                            value || ""
+                                        )
+                                    }
+                                    required
+                                    error={
+                                        form.errors.consumos?.[idx]
+                                            ?.inventario_id
+                                    }
+                                    disabled={!consumo.categoria_id}
+                                />
+                            </Group>
+                            <NumberInput
+                                label="Cantidad"
+                                min={1}
+                                value={consumo.cantidad}
+                                onChange={(value) =>
+                                    form.setFieldValue(
+                                        `consumos.${idx}.cantidad`,
+                                        Number(value) || 1
+                                    )
+                                }
+                                required
+                                error={form.errors.consumos?.[idx]?.cantidad}
+                            />
+                        </Card>
+                    ))}
+                    <Group justify="apart">
+                        <Button
+                            variant="light"
+                            leftSection={<IconPlus size={16} />}
+                            onClick={handleAddConsumo}
+                            disabled={
+                                form.values.consumos.length >= MAX_CONSUMOS
+                            }
+                            color="blue"
+                            radius="sm"
+                        >
+                            Agregar consumo
+                        </Button>
+                        <Button
+                            type="submit"
+                            leftSection={<IconCheck size={16} />}
+                            color="indigo"
+                            radius="sm"
+                        >
+                            Guardar consumos
+                        </Button>
+                    </Group>
+                    {form.values.consumos.length >= MAX_CONSUMOS && (
+                        <Text c="indigo.6" size="xs" ta="right">
+                            Máximo 4 consumos permitidos por reserva.
+                        </Text>
+                    )}
+                </Stack>
+            </form>
         </Modal>
     );
 }

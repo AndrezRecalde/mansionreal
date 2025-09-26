@@ -4,14 +4,21 @@ import {
     ReservarBusquedaClienteSection,
     ReservarDatosReservaSection,
 } from "../../../components";
-import { useHuespedStore, useReservaDepartamentoStore, useUiReservaDepartamento } from "../../../hooks";
+import {
+    useEstadiaStore,
+    useHuespedStore,
+    useReservaDepartamentoStore,
+    useUiReservaDepartamento,
+} from "../../../hooks";
 import classes from "../modules/ReservarDepartamento.module.css";
 import Swal from "sweetalert2";
 
 export const ReservarDepartamentoForm = ({ reservaForm }) => {
     const { fnBuscarHuespedPorDni, activarHuesped } = useHuespedStore();
-    const { fnAgregarReserva } = useReservaDepartamentoStore();
+    const { fnAgregarReserva, fnAsignarTipoReserva, activarTipoReserva } =
+        useReservaDepartamentoStore();
     const { fnAbrirModalReservarDepartamento } = useUiReservaDepartamento();
+    const { fnAgregarEstadia } = useEstadiaStore();
     const [showDetails, setShowDetails] = useState(false);
 
     const disabledInput = activarHuesped !== null;
@@ -35,8 +42,21 @@ export const ReservarDepartamentoForm = ({ reservaForm }) => {
             cancelButtonText: "Cancelar",
         }).then((result) => {
             if (result.isConfirmed) {
-                fnAgregarReserva(reservaForm.getTransformedValues());
-                console.log("Formulario de reserva enviado:", reservaForm.getTransformedValues());
+                console.log(activarTipoReserva);
+                if (activarTipoReserva === "HOSPEDAJE") {
+                    fnAgregarReserva(reservaForm.getTransformedValues());
+                    console.log(
+                        "HOSPEDAJE:",
+                        reservaForm.getTransformedValues()
+                    );
+                } else {
+                    fnAgregarEstadia(reservaForm.getTransformedValues());
+                    console.log(
+                        "ESTADIA:",
+                        reservaForm.getTransformedValues()
+                    );
+                }
+                //fnAsignarTipoReserva(null);
                 reservaForm.reset();
                 setShowDetails(false);
                 fnAbrirModalReservarDepartamento(false);

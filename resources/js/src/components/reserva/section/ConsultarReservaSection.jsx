@@ -1,6 +1,5 @@
 import {
     Image,
-    Title,
     SimpleGrid,
     Group,
     Text,
@@ -29,7 +28,6 @@ export const ConsultarReservaSection = () => {
     const { storageFields } = useStorageField();
 
     const handleExportarPorDepartamentoPDF = (departamento) => {
-        //console.log("Exportar PDF una reserva", departamento);
         fnExportarConsumosPorDepartamentoPDF({
             p_fecha_inicio: storageFields?.p_fecha_inicio,
             p_fecha_fin: storageFields?.p_fecha_fin,
@@ -39,7 +37,6 @@ export const ConsultarReservaSection = () => {
     };
 
     const handleExportarKpiYDepartamentosPDF = () => {
-        //console.log("Exportar PDF todas las reservas");
         fnExportarKpiYDepartamentosPdf({
             p_fecha_inicio: storageFields?.p_fecha_inicio,
             p_fecha_fin: storageFields?.p_fecha_fin,
@@ -64,6 +61,7 @@ export const ConsultarReservaSection = () => {
                     >
                         Exportar PDF Todas las Reservas
                     </BtnSection>
+
                     <Grid mb="md" grow>
                         {kpis.map((kpi) => (
                             <Grid.Col span={2} key={kpi.label}>
@@ -79,14 +77,18 @@ export const ConsultarReservaSection = () => {
             )}
 
             {/* Grilla de reservas */}
-            <SimpleGrid cols={{ base: 1, sm: 1, md: 2, lg: 2 }} mt={10}>
-                {departamentos.length > 0 ? (
-                    departamentos.map((departamento) => (
+            {departamentos.length > 0 ? (
+                <SimpleGrid
+                    cols={{ base: 1, sm: 1, md: 2, lg: 2 }}
+                    spacing="lg"
+                    mt={10}
+                >
+                    {departamentos.map((departamento) => (
                         <Card
+                            key={departamento.id}
                             withBorder
                             radius="md"
                             className={classes.card}
-                            key={departamento.id}
                         >
                             <Card.Section className={classes.imageSection}>
                                 <Image
@@ -100,14 +102,15 @@ export const ConsultarReservaSection = () => {
                                     }}
                                 />
                             </Card.Section>
+
                             <Group justify="space-between" mt="md">
                                 <div>
                                     <Text fw={500}>
                                         Departamento -{" "}
                                         {departamento.nombre_departamento}
                                     </Text>
-                                    <Text fz="xs" c="dimmed">
-                                        Numero Departamento
+                                    <Text size="xs" c="dimmed">
+                                        Número Departamento
                                     </Text>
                                 </div>
                                 <Badge variant="outline">
@@ -128,9 +131,10 @@ export const ConsultarReservaSection = () => {
                                     </Text>
                                 </Center>
                             </Group>
+
                             <Card.Section className={classes.section} mt="md">
                                 <Text
-                                    fz="sm"
+                                    size="sm"
                                     c="dimmed"
                                     className={classes.label}
                                 >
@@ -140,18 +144,19 @@ export const ConsultarReservaSection = () => {
                                     departamento={departamento}
                                 />
                             </Card.Section>
+
                             <Card.Section className={classes.section}>
                                 <Group gap={30} justify="space-between">
                                     <div>
                                         <Text
-                                            fz="xl"
+                                            size="xl"
                                             fw={700}
                                             style={{ lineHeight: 1 }}
                                         >
                                             ${departamento.precio_unitario}
                                         </Text>
                                         <Text
-                                            fz="sm"
+                                            size="sm"
                                             c="dimmed"
                                             fw={500}
                                             style={{ lineHeight: 1 }}
@@ -162,7 +167,7 @@ export const ConsultarReservaSection = () => {
                                     </div>
                                     <BtnSection
                                         radius="sm"
-                                        heigh={30}
+                                        h={30}
                                         IconSection={IconPackageExport}
                                         handleAction={() =>
                                             handleExportarPorDepartamentoPDF(
@@ -175,13 +180,22 @@ export const ConsultarReservaSection = () => {
                                 </Group>
                             </Card.Section>
                         </Card>
-                    ))
-                ) : (
-                    <Title order={4} align="center" mt={20} mb={20}>
-                        No hay reservas para mostrar
-                    </Title>
-                )}
-            </SimpleGrid>
+                    ))}
+                </SimpleGrid>
+            ) : (
+                <Card shadow="sm" radius="md" p="lg" withBorder mb={20}>
+                    <Card.Section inheritPadding py="xs">
+                        <Text fw={600} size="lg">
+                            Reservas
+                        </Text>
+                    </Card.Section>
+                    <Card.Section inheritPadding py="md">
+                        <Text size="sm" c="dimmed">
+                            No hay datos de reservas que mostrar
+                        </Text>
+                    </Card.Section>
+                </Card>
+            )}
         </div>
     );
 };

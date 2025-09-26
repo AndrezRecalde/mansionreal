@@ -25,7 +25,7 @@ class EstadiaRequest extends FormRequest
     {
         return [
             'fecha_checkin'      => 'required|date|after_or_equal:today',
-            'fecha_checkout'     => 'required|date|after:fecha_checkin',
+            'fecha_checkout'     => 'required|date|after_or_equal:fecha_checkin',
             'total_adultos'      => 'required',
             'total_ninos'        => 'required',
             'total_mascotas'     => 'required',
@@ -46,7 +46,7 @@ class EstadiaRequest extends FormRequest
 
             'fecha_checkout.required'   => 'La fecha de check-out es obligatoria.',
             'fecha_checkout.date'       => 'La fecha de check-out debe ser una fecha válida.',
-            'fecha_checkout.after'      => 'La fecha de check-out debe ser posterior a la fecha de check-in.',
+            'fecha_checkout.after_or_equal'  => 'La fecha de check-out debe ser posterior o igual a la fecha de check-in.',
 
 
         ];

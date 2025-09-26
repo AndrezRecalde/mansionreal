@@ -12,6 +12,7 @@ import {
 } from "@mantine/core";
 import {
     useDepartamentoStore,
+    useReservaDepartamentoStore,
     useUiConsumo,
     useUiReservaDepartamento,
 } from "../../../hooks";
@@ -28,6 +29,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/es"; // importar español
 import classes from "./modules/DepartamentoDisponibiles.module.css";
 import Swal from "sweetalert2";
+import { useEffect } from "react";
 dayjs.locale("es");
 
 export const DepartamentosDisponiblesCards = () => {
@@ -36,9 +38,33 @@ export const DepartamentosDisponiblesCards = () => {
         fnAsignarDepartamento,
         fnCambiarEstadoDepartamento,
     } = useDepartamentoStore();
+    const { fnAsignarTipoReserva, mensaje, errores } =
+        useReservaDepartamentoStore();
     const { fnAbrirModalReservarDepartamento } = useUiReservaDepartamento();
     const { fnAbrirDrawerConsumosDepartamento } = useUiConsumo();
     const theme = useMantineTheme();
+
+    useEffect(() => {
+        if (mensaje !== undefined) {
+            Swal.fire({
+                icon: mensaje.status,
+                text: mensaje.msg,
+                showConfirmButton: true,
+            });
+            return;
+        }
+    }, [mensaje]);
+
+    useEffect(() => {
+        if (errores !== undefined) {
+            Swal.fire({
+                icon: "error",
+                text: errores,
+                showConfirmButton: true,
+            });
+            return;
+        }
+    }, [errores]);
 
     const getEstadoColor = (theme, estadoColor) => {
         if (theme.colors[estadoColor]) {
@@ -67,6 +93,7 @@ export const DepartamentosDisponiblesCards = () => {
     };
 
     const handleReservarDepartamento = (departamento) => {
+        fnAsignarTipoReserva("HOSPEDAJE");
         fnAsignarDepartamento(departamento);
         fnAbrirModalReservarDepartamento(true);
     };
@@ -166,14 +193,17 @@ export const DepartamentosDisponiblesCards = () => {
                             }
                         >
                             <Image
-                                src={`/storage/${departamento.imagenes[0]}`}
+                                src={
+                                    departamento.imagenes?.[0]
+                                        ? `/storage/${departamento.imagenes[0]}`
+                                        : "/images/default-departamento.jpg" // ruta de imagen por defecto
+                                }
                                 alt={`departamento-${departamento.numero_departamento}`}
+                                fallbackSrc="https://placehold.co/600x400?text=Placeholder"
                                 fit="cover"
                                 w="100%"
                                 h={{ base: 90, sm: 90, md: 120 }}
-                                styles={{
-                                    image: { objectPosition: "center" },
-                                }}
+                                styles={{ image: { objectPosition: "center" } }}
                             />
                         </Card.Section>
 
@@ -237,22 +267,24 @@ export const DepartamentosDisponiblesCards = () => {
                         <Card.Section
                             withBorder
                             className={classes.section}
-                            bg={getEstadoColor(
-                                theme,
-                                departamento.estado.color
-                            )}
+                            bg={
+                                departamento.estado?.color
+                                    ? getEstadoColor(
+                                          theme,
+                                          departamento.estado.color
+                                      )
+                                    : theme.colors.gray[2]
+                            }
                         >
                             <Badge
                                 variant="filled"
-                                color={departamento.estado.color}
+                                color={departamento.estado?.color || "gray"}
                                 size="lg"
                                 radius="lg"
                                 fullWidth
-                                style={{
-                                    backgroundColor: "transparent",
-                                }}
+                                style={{ backgroundColor: "transparent" }}
                             >
-                                {departamento.estado.nombre}
+                                {departamento.estado?.nombre || "Sin Estado"}
                             </Badge>
                         </Card.Section>
                         <Card.Section className={classes.section_footer}>
@@ -281,7 +313,7 @@ export const DepartamentosDisponiblesCards = () => {
                                     style={{ flex: 1 }}
                                 >
                                     {["LIMPIEZA", "MANTENIMIENTO"].includes(
-                                        departamento.estado.nombre
+                                        departamento.estado?.nombre
                                     ) ? (
                                         <Tooltip label="Departamento Disponible">
                                             <ActionIcon
@@ -308,8 +340,7 @@ export const DepartamentosDisponiblesCards = () => {
                                                             "LIMPIEZA",
                                                             "MANTENIMIENTO",
                                                         ].includes(
-                                                            departamento.estado
-                                                                .nombre
+                                                            departamento.estado?.nombre
                                                         )
                                                             ? true
                                                             : false
@@ -335,8 +366,7 @@ export const DepartamentosDisponiblesCards = () => {
                                                             "LIMPIEZA",
                                                             "MANTENIMIENTO",
                                                         ].includes(
-                                                            departamento.estado
-                                                                .nombre
+                                                            departamento.estado?.nombre
                                                         )
                                                             ? true
                                                             : false
@@ -364,7 +394,7 @@ export const DepartamentosDisponiblesCards = () => {
                                                     "LIMPIEZA",
                                                     "MANTENIMIENTO",
                                                 ].includes(
-                                                    departamento.estado.nombre
+                                                    departamento.estado?.nombre
                                                 )
                                                     ? true
                                                     : false

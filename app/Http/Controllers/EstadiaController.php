@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\HTTPStatus;
-use App\Enums\TiposReserva;
+use App\Enums\TIPOSRESERVA;
 use App\Http\Requests\EstadiaRequest;
 use App\Models\ConfiguracionIva;
 use App\Models\Consumo;
@@ -15,6 +15,8 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+
 
 class EstadiaController extends Controller
 {
@@ -30,8 +32,21 @@ class EstadiaController extends Controller
             $estadias = Reserva::with(['huesped', 'estado'])
                 ->where('tipo_reserva', 'estadia')
                 ->whereDate('fecha_checkin', $fecha)
-                ->select('id', 'codigo_reserva', 'huesped_id', 'estado_id', 'fecha_checkin', 'fecha_checkout',
-                         'total_noches', 'total_adultos', 'total_ninos', 'total_mascotas')
+                ->whereHas('estado', function ($query) {
+                    $query->where('nombre_estado', 'RESERVADO');
+                })
+                ->select(
+                    'id',
+                    'codigo_reserva',
+                    'huesped_id',
+                    'estado_id',
+                    'fecha_checkin',
+                    'fecha_checkout',
+                    'total_noches',
+                    'total_adultos',
+                    'total_ninos',
+                    'total_mascotas'
+                )
                 ->get()
                 ->map(function ($reserva) {
                     return [
@@ -68,14 +83,14 @@ class EstadiaController extends Controller
     {
         try {
             // 1. Validar datos del huésped
-            if (empty($request->huesped['huesped_id'])) {
+            if ($request->huesped['huesped_id'] == null) {
                 $huesped = Huesped::create([
                     'nombres'       => $request->huesped['nombres'],
                     'apellidos'     => $request->huesped['apellidos'],
                     'dni'           => $request->huesped['dni'],
                     'telefono'      => $request->huesped['telefono'],
                     'email'         => $request->huesped['email'],
-                    'direccion'     => $request->direccion['direccion'],
+                    'direccion'     => $request->huesped['direccion'],
                     'provincia_id'  => $request->huesped['provincia_id'],
                 ]);
             }
@@ -98,14 +113,12 @@ class EstadiaController extends Controller
             $reserva->fecha_checkout = now();
             $reserva->total_noches = 0;        // No aplica para estadía
             // --------------------------------------------------------
-
             $reserva->save();
-
             // 3. Generar código de reserva
-            $reserva->codigo_reserva = now()->year
+            /* $reserva->codigo_reserva = now()->year
                 . str_pad($reserva->id, 5, '0', STR_PAD_LEFT)
                 . str_pad(rand(0, 99), 2, '0', STR_PAD_LEFT);
-            $reserva->save();
+            $reserva->save(); */
 
             // 4. Obtener inventario de estadía
             $inventarioAdulto = Inventario::where('nombre_producto', 'Estadia Adultos')->first();
@@ -235,6 +248,29 @@ class EstadiaController extends Controller
             return response()->json([
                 'status' => HTTPStatus::Error,
                 'msg'    => $th->getMessage(),
+            ], 500);
+        }
+    }
+
+    function reporteEstadiasPorFechas(Request $request): JsonResponse
+    {
+        try {
+            $fecha_inicio = $request->p_fecha_inicio;
+            $fecha_fin = $request->p_fecha_fin;
+            $anio = $request->p_anio;
+            $result = DB::select('CALL reporte_estadias_por_fechas(?, ?, ?)', [
+                $fecha_inicio,
+                $fecha_fin,
+                $anio
+            ]);
+            return response()->json([
+                'status' => HTTPStatus::Success,
+                'result' => $result
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => HTTPStatus::Error,
+                'msg'    => $th->getMessage()
             ], 500);
         }
     }

@@ -17,9 +17,12 @@ import {
 import {
     useDepartamentoStore,
     useEstadiaStore,
+    useReservaDepartamentoStore,
     useTitleHook,
+    useUiReservaDepartamento,
 } from "../../hooks";
 import { IconBeach } from "@tabler/icons-react";
+import classes from "./modules/Tabs.module.css";
 
 const DisponibilidadDepartamentoPage = () => {
     useTitleHook("Disponibilidad - Mansion Real");
@@ -37,6 +40,9 @@ const DisponibilidadDepartamentoPage = () => {
         fnCargarEstadias,
         fnLimpiarEstadias,
     } = useEstadiaStore();
+
+    const { fnAsignarTipoReserva } = useReservaDepartamentoStore();
+    const { fnAbrirModalReservarDepartamento } = useUiReservaDepartamento();
 
     const datos_reserva = activarDepartamento?.reserva
         ? {
@@ -68,13 +74,18 @@ const DisponibilidadDepartamentoPage = () => {
         };
     }, []);
 
+    const handleReservarEstadia = () => {
+        fnAsignarTipoReserva("ESTADIA");
+        fnAbrirModalReservarDepartamento(true);
+    };
+
     return (
         <Container size="xl" my={20}>
             <Group justify="space-between">
                 <TitlePage order={2}>Disponibilidad</TitlePage>
                 <BtnSection
                     IconSection={IconBeach}
-                    handleAction={() => console.log("estadia")}
+                    handleAction={handleReservarEstadia}
                 >
                     Agregar Estadia
                 </BtnSection>
@@ -82,12 +93,8 @@ const DisponibilidadDepartamentoPage = () => {
 
             <Divider my={10} />
 
-            <FiltroDisponibilidad
-                titulo="Buscar disponibilidad"
-                fnHandleAction={fnConsultarDisponibilidadDepartamentos}
-            />
-
             <Tabs
+                variant="unstyled"
                 defaultValue="HOSPEDAJE"
                 mt="md"
                 onChange={(value) => {
@@ -95,6 +102,7 @@ const DisponibilidadDepartamentoPage = () => {
                         fnConsultarDisponibilidadDepartamentos();
                     if (value === "ESTADIA") fnCargarEstadias();
                 }}
+                classNames={classes}
             >
                 <Tabs.List grow>
                     <Tabs.Tab value="HOSPEDAJE">Hospedajes</Tabs.Tab>
@@ -102,6 +110,10 @@ const DisponibilidadDepartamentoPage = () => {
                 </Tabs.List>
 
                 <Tabs.Panel value="HOSPEDAJE" pt="xs">
+                    <FiltroDisponibilidad
+                        titulo="Buscar disponibilidad"
+                        fnHandleAction={fnConsultarDisponibilidadDepartamentos}
+                    />
                     {cargandoDepartamentos ? (
                         <Group gap={20}>
                             <Skeleton

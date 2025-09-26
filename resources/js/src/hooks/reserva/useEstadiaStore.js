@@ -70,6 +70,28 @@ export const useEstadiaStore = () => {
         }
     };
 
+    const fnCargarReporteEstadiasPorFechas = async ({
+        p_fecha_inicio = null,
+        p_fecha_fin = null,
+        p_anio,
+    }) => {
+        try {
+            dispatch(rtkCargando(true));
+            const { data } = await apiAxios.post("/gerencia/reporte-estadias", {
+                p_fecha_inicio,
+                p_fecha_fin,
+                p_anio,
+            });
+            const { result } = data;
+            dispatch(rtkCargarEstadias(result));
+        } catch (error) {
+            console.log(error);
+            ExceptionMessageError(error);
+        } finally {
+            dispatch(rtkCargando(false));
+        }
+    };
+
     const fnAsignarEstadia = (estadia) => {
         dispatch(rtkAsignarEstadia(estadia));
     };
@@ -90,6 +112,7 @@ export const useEstadiaStore = () => {
         fnCargarEstadias,
         fnAgregarEstadia,
         fnAsignarEstadia,
+        fnCargarReporteEstadiasPorFechas,
         fnLimpiarEstadias,
     };
 };

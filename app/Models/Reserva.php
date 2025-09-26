@@ -76,4 +76,17 @@ class Reserva extends Model
         }
         return $query;
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($reserva) {
+            $reserva->codigo_reserva = now()->year
+                . str_pad($reserva->id, 5, '0', STR_PAD_LEFT)
+                . str_pad(rand(0, 99), 2, '0', STR_PAD_LEFT);
+
+            $reserva->save();
+        });
+    }
 }

@@ -47,14 +47,14 @@ class ReservasController extends Controller
             }
 
             // 3. Crear huésped si no existe
-            if (empty($request->huesped['huesped_id'])) {
+            if ($request->huesped['huesped_id'] == null) {
                 $huesped = Huesped::create([
                     'nombres'       => $request->huesped['nombres'],
                     'apellidos'     => $request->huesped['apellidos'],
                     'dni'           => $request->huesped['dni'],
                     'telefono'      => $request->huesped['telefono'],
                     'email'         => $request->huesped['email'],
-                    'direccion'     => $request->direccion['direccion'],
+                    'direccion'     => $request->huesped['direccion'],
                     'provincia_id'  => $request->huesped['provincia_id'],
                 ]);
             }
@@ -70,14 +70,14 @@ class ReservasController extends Controller
             $reserva->fecha_creacion = now();
             $reserva->usuario_creador_id = Auth::id();
             $reserva->tipo_reserva = TIPOSRESERVA::HOSPEDAJE;
-            //$reserva->save();
+            $reserva->save();
 
             // 5. Generar código de reserva
-            $codigo = now()->year
+            /* $codigo = now()->year
                 . str_pad($reserva->id, 5, '0', STR_PAD_LEFT)
                 . str_pad(rand(0, 99), 2, '0', STR_PAD_LEFT);
             $reserva->codigo_reserva = $codigo;
-            $reserva->save();
+            $reserva->save(); */
 
             // 6. Obtener inventario usando relaciones Eloquent
             $inventario = $reserva->departamento
@@ -282,7 +282,7 @@ class ReservasController extends Controller
             ], 404);
         }
 
-       // $dpto = $reserva->departamento;
+        // $dpto = $reserva->departamento;
 
         // 3. Armar estructura igual a consultarDisponibilidadDepartamentosPorFecha
         $resultado = [

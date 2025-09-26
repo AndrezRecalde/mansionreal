@@ -84,6 +84,7 @@ import { ReservaFinalizarForm } from "./reserva/form/ReservaFinalizarForm";
 
 /* Reservas de Estadias */
 import { EstadiasReservadasCards } from "./reserva/cards/EstadiasReservadasCards";
+import { ConsultarEstadiasSection } from "./reserva/section/ConsultarEstadiasSection";
 
 /* Consumos */
 import { ConsumosDrawer } from "./consumo/drawer/ConsumosDrawer";
@@ -197,6 +198,7 @@ export {
 
     /* Reservas de Estadias */
     EstadiasReservadasCards,
+    ConsultarEstadiasSection,
 
     /* Consumos */
     ConsumosDrawer,

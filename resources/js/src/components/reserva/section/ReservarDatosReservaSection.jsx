@@ -12,7 +12,11 @@ import {
 import { DateInput } from "@mantine/dates";
 import { IconMinus, IconPlus } from "@tabler/icons-react";
 import { BtnSubmit, TextSection } from "../..";
-import { useDepartamentoStore } from "../../../hooks";
+import {
+    useDepartamentoStore,
+    useReservaDepartamentoStore,
+} from "../../../hooks";
+import dayjs from "dayjs";
 
 export const ReservarDatosReservaSection = ({
     classes,
@@ -20,6 +24,9 @@ export const ReservarDatosReservaSection = ({
     handleSubmitReserva,
 }) => {
     const { activarDepartamento } = useDepartamentoStore();
+    const { activarTipoReserva } = useReservaDepartamentoStore();
+
+    const { fecha_checkin } = reservaForm.values;
     // Handlers para cada contador usando el form
     const changeAdults = (next) => {
         const value = Math.max(1, Math.min(10, next));
@@ -51,18 +58,23 @@ export const ReservarDatosReservaSection = ({
 
     // useEffect para escuchar cambios en fecha_checkin y fecha_checkout
     useEffect(() => {
-        calcularNoches(
-            reservaForm.values.fecha_checkin,
-            reservaForm.values.fecha_checkout
-        );
-    }, [reservaForm.values.fecha_checkin, reservaForm.values.fecha_checkout]);
+        if (activarTipoReserva === "HOSPEDAJE") {
+            calcularNoches(
+                reservaForm.values.fecha_checkin,
+                reservaForm.values.fecha_checkout
+            );
+        }
+    }, [reservaForm.values.fecha_checkin, reservaForm.values.fecha_checkout, activarTipoReserva]);
 
     // Calcular total_pago al cambiar total_noches
     useEffect(() => {
-        const totalPago =
-            reservaForm.values.total_noches * activarDepartamento.precio_noche;
-        reservaForm.setFieldValue("total_pago", totalPago);
-    }, [reservaForm.values.total_noches]);
+        if (activarTipoReserva === "HOSPEDAJE") {
+            const totalPago =
+                reservaForm.values.total_noches *
+                activarDepartamento.precio_noche;
+            reservaForm.setFieldValue("total_pago", totalPago);
+        }
+    }, [reservaForm.values.total_noches, activarTipoReserva]);
 
     return (
         <Fieldset
@@ -92,23 +104,32 @@ export const ReservarDatosReservaSection = ({
                         valueFormat="YYYY-MM-DD"
                         label="Hasta"
                         placeholder="Seleccione fecha de salida"
+                        minDate={
+                            fecha_checkin
+                                ? dayjs(fecha_checkin).startOf("day").toDate()
+                                : undefined
+                        }
                         key={reservaForm.key("fecha_checkout")}
                         {...reservaForm.getInputProps("fecha_checkout")}
                     />
-                    <NumberInput
-                        disabled
-                        label="Total de noches"
-                        placeholder="Se calcula el total de noches"
-                        key={reservaForm.key("total_noches")}
-                        {...reservaForm.getInputProps("total_noches")}
-                    />
-                    <NumberInput
-                        disabled
-                        label="Total a pagar por noche(s/.)"
-                        placeholder="Se calcula el total a pagar"
-                        key={reservaForm.key("total_pago")}
-                        {...reservaForm.getInputProps("total_pago")}
-                    />
+                    {activarTipoReserva === "HOSPEDAJE" ? (
+                        <>
+                            <NumberInput
+                                disabled
+                                label="Total de noches"
+                                placeholder="Se calcula el total de noches"
+                                key={reservaForm.key("total_noches")}
+                                {...reservaForm.getInputProps("total_noches")}
+                            />
+                            <NumberInput
+                                disabled
+                                label="Total a pagar por noche(s/.)"
+                                placeholder="Se calcula el total a pagar"
+                                key={reservaForm.key("total_pago")}
+                                {...reservaForm.getInputProps("total_pago")}
+                            />
+                        </>
+                    ) : null}
                 </SimpleGrid>
                 <SimpleGrid
                     cols={3}

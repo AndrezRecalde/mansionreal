@@ -1,13 +1,14 @@
 import { Container, Divider } from "@mantine/core";
 import {
+    ConsultarEstadiasSection,
     ConsultarReservaSection,
     FiltrarPorFechasForm,
     TitlePage,
 } from "../../components";
 import {
-    useConsumoStore,
     useDashboardKPIStore,
     useDepartamentoStore,
+    useEstadiaStore,
     useStorageField,
 } from "../../hooks";
 import { useEffect } from "react";
@@ -20,6 +21,7 @@ const ReporteDepartamentosPage = () => {
         fnCargarReporteDepartamentosPorFechas,
         fnLimpiarDepartamentos,
     } = useDepartamentoStore();
+    const { fnCargarReporteEstadiasPorFechas, fnLimpiarEstadias } = useEstadiaStore();
     const { fnCargarResumenKPI, fnLimpiarResumenKPI } = useDashboardKPIStore();
     const { fnSetStorageFields } = useStorageField();
 
@@ -27,6 +29,7 @@ const ReporteDepartamentosPage = () => {
         return () => {
             fnLimpiarDepartamentos();
             fnLimpiarResumenKPI();
+            fnLimpiarEstadias();
             fnSetStorageFields(null);
         };
     }, []);
@@ -55,12 +58,14 @@ const ReporteDepartamentosPage = () => {
                 cargando={cargando}
                 fnHandleAction={(values) => {
                     fnCargarReporteDepartamentosPorFechas(values);
+                    fnCargarReporteEstadiasPorFechas(values);
                     fnCargarResumenKPI(values);
                     fnSetStorageFields(values);
                 }}
             />
             {/* <ConsultarReservaSection /> */}
             <ConsultarReservaSection />
+            <ConsultarEstadiasSection />
         </Container>
     );
 };

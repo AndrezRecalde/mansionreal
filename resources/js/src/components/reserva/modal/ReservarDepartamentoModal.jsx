@@ -5,6 +5,7 @@ import {
     useDepartamentoStore,
     useHuespedStore,
     useProvinciaStore,
+    useReservaDepartamentoStore,
     useUiReservaDepartamento,
 } from "../../../hooks";
 import { hasLength, useForm } from "@mantine/form";
@@ -12,6 +13,7 @@ import dayjs from "dayjs";
 
 export const ReservarDepartamentoModal = () => {
     const { activarDepartamento } = useDepartamentoStore();
+    const { activarTipoReserva } = useReservaDepartamentoStore();
     const { abrirModalReservarDepartamento, fnAbrirModalReservarDepartamento } =
         useUiReservaDepartamento();
     const { fnCargarProvincias } = useProvinciaStore();
@@ -30,6 +32,7 @@ export const ReservarDepartamentoModal = () => {
                 direccion: "",
                 provincia_id: "",
             },
+            tipo_reserva: "",
             departamento_id: "",
             fecha_checkin: "",
             fecha_checkout: "",
@@ -72,6 +75,7 @@ export const ReservarDepartamentoModal = () => {
                     ? parseInt(values.huesped.provincia_id)
                     : null,
             },
+            tipo_reserva: activarTipoReserva,
             departamento_id: values.departamento_id
                 ? parseInt(values.departamento_id)
                 : null,
@@ -96,13 +100,16 @@ export const ReservarDepartamentoModal = () => {
     });
 
     useEffect(() => {
-        if (abrirModalReservarDepartamento) {
-            fnCargarProvincias();
+        if (
+            abrirModalReservarDepartamento &&
+            activarTipoReserva === "HOSPEDAJE"
+        ) {
             reservaForm.setFieldValue(
                 "departamento_id",
                 activarDepartamento.id
             );
         }
+        fnCargarProvincias();
     }, [abrirModalReservarDepartamento]);
 
     const handleCerrarModal = () => {

@@ -132,6 +132,8 @@ Route::group(['prefix' => 'gerencia', 'middleware' => ['auth:sanctum', CheckRole
     Route::post('/estadia/nueva', [EstadiaController::class, 'storeEstadia']);
     Route::put('/estadia/{id}', [EstadiaController::class, 'updateEstadia']);
     Route::post('/reporte-estadias', [EstadiaController::class, 'reporteEstadiasPorFechas']);
+    Route::post('/reporte-estadias-pdf', [EstadiaController::class, 'exportConsumosEstadiasPDF']);
+
 
     /* Consumos */
     Route::post('/consumo-reserva', [ConsumosController::class, 'buscarConsumosPorReserva']);

@@ -77,6 +77,7 @@ import { ReservaInfoHuespedTable } from "./reserva/table/ReservaInfoHuespedTable
 import { ConsultarReservaSection } from "./reserva/section/ConsultarReservaSection";
 import { ConsultaClientesTable } from "./reserva/table/ConsultaClientesTable";
 import { ReservasInformacionTable } from "./reserva/table/ReservasInformacionTable";
+import { BtnExportacionPDF } from "./reserva/btn/BtnExportacionPDF";
 
 /* Reservas Finalizar Estado */
 import { ReservaFinalizarModal } from "./reserva/modal/ReservaFinalizarModal";
@@ -191,6 +192,7 @@ export {
     ConsultarReservaSection,
     ConsultaClientesTable,
     ReservasInformacionTable,
+    BtnExportacionPDF,
 
     /* Reservas Finalizar Estado */
     ReservaFinalizarModal,

@@ -156,6 +156,38 @@
                 @endforeach
             </tbody>
         </table>
+        <hr>
+    </div>
+
+
+    <div>
+        <span class="section-title">Detalle de las Estadías</span>
+        <p class="section-paragraph">
+            A continuación se presenta el desglose de un resumen general de las estadías.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Total Estadías</th>
+                    <th>Subtotal</th>
+                    <th>Iva Recaudado</th>
+                    <th>Total Consumos</th>
+                    <th>Total Huespedes</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($estadias as $estadia)
+                    <tr>
+                        <td>{{ $estadia->total_estadias }}</td>
+                        <td>{{ number_format($estadia->subtotal_consumos, 2) }}</td>
+                        <td>${{ number_format($estadia->iva_recaudado, 2) }}</td>
+                        <td>${{ number_format($estadia->total_consumos, 2) }}</td>
+                        <td>${{ number_format($estadia->total_huespedes, 2) }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
 </body>
 

@@ -3,6 +3,7 @@ import { useErrorException } from "../error/useErrorException";
 import {
     rtkAsignarEstadia,
     rtkCargando,
+    rtkCargandoPDFReporte,
     rtkCargarErrores,
     rtkCargarEstadias,
     rtkCargarMensaje,
@@ -92,6 +93,40 @@ export const useEstadiaStore = () => {
         }
     };
 
+    const fnExportarConsumosEstadiasPDF = async ({
+        p_fecha_inicio,
+        p_fecha_fin,
+        p_anio,
+    }) => {
+        try {
+            dispatch(rtkCargandoPDFReporte(true));
+            const response = await apiAxios.post(
+                "/gerencia/reporte-estadias-pdf",
+                {
+                    p_fecha_inicio,
+                    p_fecha_fin,
+                    p_anio,
+                },
+                {
+                    responseType: "blob",
+                }
+            );
+            // Crear un enlace para descargar el PDF
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", "consumos_estadias.pdf"); // Nombre del archivo a descargar
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+        } catch (error) {
+            console.log(error);
+            ExceptionMessageError(error);
+        } finally {
+            dispatch(rtkCargandoPDFReporte(true));
+        }
+    };
+
     const fnAsignarEstadia = (estadia) => {
         dispatch(rtkAsignarEstadia(estadia));
     };
@@ -111,8 +146,9 @@ export const useEstadiaStore = () => {
 
         fnCargarEstadias,
         fnAgregarEstadia,
-        fnAsignarEstadia,
         fnCargarReporteEstadiasPorFechas,
+        fnExportarConsumosEstadiasPDF,
+        fnAsignarEstadia,
         fnLimpiarEstadias,
     };
 };

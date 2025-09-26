@@ -1,5 +1,6 @@
-import { Container, Divider } from "@mantine/core";
+import { Container, Divider, Grid } from "@mantine/core";
 import {
+    BtnExportacionPDF,
     ConsultarEstadiasSection,
     ConsultarReservaSection,
     FiltrarPorFechasForm,
@@ -12,18 +13,23 @@ import {
     useStorageField,
 } from "../../hooks";
 import { useEffect } from "react";
+import KPICard from "../../components/dashboard/KPICard";
 import Swal from "sweetalert2";
 
 const ReporteDepartamentosPage = () => {
     const {
         cargando,
+        departamentos,
         cargandoExportacion,
         fnCargarReporteDepartamentosPorFechas,
+        fnExportarKpiYDepartamentosPdf,
         fnLimpiarDepartamentos,
     } = useDepartamentoStore();
-    const { fnCargarReporteEstadiasPorFechas, fnLimpiarEstadias } = useEstadiaStore();
-    const { fnCargarResumenKPI, fnLimpiarResumenKPI } = useDashboardKPIStore();
-    const { fnSetStorageFields } = useStorageField();
+    const { fnCargarReporteEstadiasPorFechas, fnLimpiarEstadias } =
+        useEstadiaStore();
+    const { kpis, fnCargarResumenKPI, fnLimpiarResumenKPI } =
+        useDashboardKPIStore();
+    const { storageFields, fnSetStorageFields } = useStorageField();
 
     useEffect(() => {
         return () => {
@@ -49,6 +55,15 @@ const ReporteDepartamentosPage = () => {
         }
     }, [cargandoExportacion]);
 
+    const handleExportarKpiYDepartamentosPDF = () => {
+        fnExportarKpiYDepartamentosPdf({
+            p_fecha_inicio: storageFields?.p_fecha_inicio,
+            p_fecha_fin: storageFields?.p_fecha_fin,
+            p_anio: storageFields?.p_anio,
+            departamento_id: null,
+        });
+    };
+
     return (
         <Container size="lg" my={20}>
             <TitlePage order={2}>Reporte Departamentos</TitlePage>
@@ -64,6 +79,25 @@ const ReporteDepartamentosPage = () => {
                 }}
             />
             {/* <ConsultarReservaSection /> */}
+
+            {departamentos.length > 0 && (
+                <div>
+                    <BtnExportacionPDF
+                        handleActionExport={handleExportarKpiYDepartamentosPDF}
+                    />
+                    <Grid mb="md" grow>
+                        {kpis.map((kpi) => (
+                            <Grid.Col span={2} key={kpi.label}>
+                                <KPICard
+                                    label={kpi.label}
+                                    value={kpi.value}
+                                    color={kpi.color}
+                                />
+                            </Grid.Col>
+                        ))}
+                    </Grid>
+                </div>
+            )}
             <ConsultarReservaSection />
             <ConsultarEstadiasSection />
         </Container>

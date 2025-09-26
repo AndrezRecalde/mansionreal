@@ -225,6 +225,7 @@ class ReservasController extends Controller
         ])
             ->codigoReserva($codigo_reserva)
             ->fechaCheckin($fecha_inicio, $fecha_fin)
+            ->orderBy('fecha_checkin', 'DESC')
             ->get()
             ->map(function ($r) {
                 return [
@@ -321,7 +322,7 @@ class ReservasController extends Controller
         $logo = public_path('/assets/images/logo_hotel.jpeg'); // Ajusta nombre si es necesario
 
         // 5. Generar PDF
-        $pdf = Pdf::loadView('pdf.reportes.nota_venta_pdf', [
+        $pdf = Pdf::loadView('pdf.nota_venta.nota_venta_pdf', [
             'ruc'           => $ruc,
             'direccion'     => $direccion,
             'logo'          => $logo,

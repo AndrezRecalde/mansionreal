@@ -6,25 +6,20 @@ import {
     Card,
     Center,
     Badge,
-    Grid,
 } from "@mantine/core";
 import { BtnSection, ConsumosTotalTable } from "../../../components";
 import {
-    useDashboardKPIStore,
     useDepartamentoStore,
     useStorageField,
 } from "../../../hooks";
 import { IconBuilding, IconPackageExport } from "@tabler/icons-react";
 import classes from "../modules/ConsultaReservaSection.module.css";
-import KPICard from "../../dashboard/KPICard";
 
 export const ConsultarReservaSection = () => {
     const {
         departamentos,
         fnExportarConsumosPorDepartamentoPDF,
-        fnExportarKpiYDepartamentosPdf,
     } = useDepartamentoStore();
-    const { kpis } = useDashboardKPIStore();
     const { storageFields } = useStorageField();
 
     const handleExportarPorDepartamentoPDF = (departamento) => {
@@ -36,46 +31,8 @@ export const ConsultarReservaSection = () => {
         });
     };
 
-    const handleExportarKpiYDepartamentosPDF = () => {
-        fnExportarKpiYDepartamentosPdf({
-            p_fecha_inicio: storageFields?.p_fecha_inicio,
-            p_fecha_fin: storageFields?.p_fecha_fin,
-            p_anio: storageFields?.p_anio,
-            departamento_id: null,
-        });
-    };
-
     return (
         <div>
-            {/* Botón superior fuera de la grilla */}
-            {departamentos.length > 0 && (
-                <div>
-                    <BtnSection
-                        fullWidth
-                        fontSize={12}
-                        mb={10}
-                        mt={10}
-                        IconSection={IconPackageExport}
-                        variant="default"
-                        handleAction={handleExportarKpiYDepartamentosPDF}
-                    >
-                        Exportar PDF Todas las Reservas
-                    </BtnSection>
-
-                    <Grid mb="md" grow>
-                        {kpis.map((kpi) => (
-                            <Grid.Col span={2} key={kpi.label}>
-                                <KPICard
-                                    label={kpi.label}
-                                    value={kpi.value}
-                                    color={kpi.color}
-                                />
-                            </Grid.Col>
-                        ))}
-                    </Grid>
-                </div>
-            )}
-
             {/* Grilla de reservas */}
             {departamentos.length > 0 ? (
                 <SimpleGrid

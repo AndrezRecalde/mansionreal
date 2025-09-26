@@ -383,6 +383,7 @@ class DepartamentoController extends Controller
         // Ejecutar procedimientos almacenados
         $kpi = DB::select('CALL sp_kpi_resumen(?, ?, ?)', [$fecha_inicio, $fecha_fin, $anio]);
         $departamentos = DB::select('CALL reporte_departamentos_por_fechas(?, ?, ?)', [$fecha_inicio, $fecha_fin, $anio]);
+        $estadias = DB::select('CALL reporte_estadias_por_fechas(?, ?, ?)', [$fecha_inicio, $fecha_fin, $anio]);
 
         // Preparar datos para la vista
         $data = [
@@ -392,10 +393,11 @@ class DepartamentoController extends Controller
             'fecha_fin' => $fecha_fin,
             'anio' => $anio,
             'kpi' => $kpi[0] ?? null,
-            'departamentos' => $departamentos
+            'departamentos' => $departamentos,
+            'estadias'      => $estadias
         ];
 
-        $pdf = Pdf::loadView('pdf.reportes.pdf_kpi_departamentos', $data)
+        $pdf = Pdf::loadView('pdf.reportes.kpi.pdf_kpi_departamentos', $data)
             ->setPaper('a4', 'portrait');
 
         return $pdf->download('reporte_mansionreal.pdf');
@@ -422,8 +424,8 @@ class DepartamentoController extends Controller
                 DB::raw('SUM(c.total) as total_importe'),
                 DB::raw('SUM(c.iva) as total_iva')
             )
-            ->where('e.nombre_estado', 'PAGADO');
-
+            ->where('e.nombre_estado', 'PAGADO')
+            ->where('r.tipo_reserva', 'HOSPEDAJE');
         // Filtrar por departamento específico
         if ($departamento_id) {
             $query->where('d.id', $departamento_id);
@@ -454,7 +456,7 @@ class DepartamentoController extends Controller
             ];
         }
 
-        $pdf = Pdf::loadView('pdf.departamento.consumos_departamentos_pdf', [
+        $pdf = Pdf::loadView('pdf.reportes.departamento.consumos_departamentos_pdf', [
             'departamentos' => $departamentos,
             'fecha_inicio'  => $fecha_inicio,
             'fecha_fin'     => $fecha_fin,

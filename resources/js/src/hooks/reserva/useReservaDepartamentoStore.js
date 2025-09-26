@@ -70,7 +70,11 @@ export const useReservaDepartamentoStore = () => {
             setTimeout(() => {
                 dispatch(rtkCargarMensaje(undefined));
             }, 2000);
+
+            /* AGREGAR UN CONDICIONAL PARA SABER QUE DEBE DE CARGAR */
             fnConsultarDisponibilidadDepartamentos();
+
+
         } catch (error) {
             console.log(error);
             ExceptionMessageError(error);

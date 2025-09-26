@@ -16,6 +16,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 
 class EstadiaController extends Controller
@@ -30,7 +31,7 @@ class EstadiaController extends Controller
 
             // 2. Consultar reservas tipo ESTADIA en esa fecha con relaciones
             $estadias = Reserva::with(['huesped', 'estado'])
-                ->where('tipo_reserva', 'estadia')
+                ->where('tipo_reserva', 'ESTADIA')
                 ->whereDate('fecha_checkin', $fecha)
                 ->whereHas('estado', function ($query) {
                     $query->where('nombre_estado', 'RESERVADO');
@@ -57,9 +58,9 @@ class EstadiaController extends Controller
                         'fecha_checkin'  => $reserva->fecha_checkin,
                         'fecha_checkout' => $reserva->fecha_checkout,
                         'total_noches'   => $reserva->total_noches,
-                        'total_adultos'    => $reserva->total_adultos,
-                        'total_ninos'      => $reserva->total_ninos,
-                        'total_mascotas'   => $reserva->total_mascotas,
+                        'total_adultos'  => $reserva->total_adultos,
+                        'total_ninos'    => $reserva->total_ninos,
+                        'total_mascotas' => $reserva->total_mascotas,
                         'estado'         => $reserva->estado->nombre_estado ?? 'SIN ESTADO',
                         'estado_color'   => $reserva->estado->color
                     ];
@@ -273,5 +274,47 @@ class EstadiaController extends Controller
                 'msg'    => $th->getMessage()
             ], 500);
         }
+    }
+
+    public function exportConsumosEstadiasPDF(Request $request)
+    {
+        $fecha_inicio = $request->p_fecha_inicio;
+        $fecha_fin    = $request->p_fecha_fin;
+        $anio         = $request->p_anio;
+
+        $query = DB::table('consumos as c')
+            ->join('reservas as r', 'c.reserva_id', '=', 'r.id')
+            ->join('inventarios as i', 'c.inventario_id', '=', 'i.id')
+            ->join('estados as e', 'r.estado_id', '=', 'e.id')
+            ->select(
+                'i.nombre_producto',
+                DB::raw('SUM(c.cantidad) as total_consumido'),
+                DB::raw('SUM(c.subtotal) as subtotal_consumido'),
+                DB::raw('SUM(c.iva) as total_iva'),
+                DB::raw('SUM(c.total) as total_importe')
+            )
+            ->where('e.nombre_estado', 'PAGADO')
+            ->where('r.tipo_reserva', 'ESTADIA');
+
+        // Filtro por rango de fechas o año
+        if ($fecha_inicio && $fecha_fin) {
+            $query->whereBetween('c.fecha_creacion', [$fecha_inicio, $fecha_fin]);
+        } elseif ($anio) {
+            $query->whereYear('c.fecha_creacion', $anio);
+        }
+
+        $query->groupBy('i.nombre_producto')
+            ->orderBy('i.nombre_producto', 'asc');
+
+        $consumos = $query->get();
+
+        $pdf = Pdf::loadView('pdf.reportes.estadia.consumos_estadias_pdf', [
+            'consumos'      => $consumos,
+            'fecha_inicio'  => $fecha_inicio,
+            'fecha_fin'     => $fecha_fin,
+            'anio'          => $anio,
+        ]);
+
+        return $pdf->download('consumos_estadias.pdf');
     }
 }

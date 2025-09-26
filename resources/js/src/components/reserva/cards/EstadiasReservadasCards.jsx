@@ -2,7 +2,6 @@ import {
     Badge,
     Card,
     Center,
-    Paper,
     SimpleGrid,
     Text,
     ThemeIcon,

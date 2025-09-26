@@ -23,9 +23,8 @@ const AuthPage = () => {
                         Bienvenido!
                     </Title>
                     <Text size="sm" c="gray.4">
-                        This is a simple authentication page built with Mantine
+                        Un atardecer inolvidable
                         v7. <br />
-                        Customize it as you like for your app.
                     </Text>
                 </div>
             </Paper>

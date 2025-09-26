@@ -1,9 +1,20 @@
-import { Card, CardSection, Text, Table } from "@mantine/core";
-import { useEstadiaStore } from "../../../hooks";
+import { Card, CardSection, Text, Table, Group } from "@mantine/core";
+import { BtnSection } from "../../../components";
+import { useEstadiaStore, useStorageField } from "../../../hooks";
+import { IconPackageExport } from "@tabler/icons-react";
 
 export const ConsultarEstadiasSection = () => {
-    const { estadias } = useEstadiaStore();
+    const { estadias, fnExportarConsumosEstadiasPDF } = useEstadiaStore();
     const resumen = estadias?.[0]; // tomo el primer elemento
+    const { storageFields } = useStorageField();
+
+    const handleExportarEstadiasPDF = () => {
+        fnExportarConsumosEstadiasPDF({
+            p_fecha_inicio: storageFields?.p_fecha_inicio,
+            p_fecha_fin: storageFields?.p_fecha_fin,
+            p_anio: storageFields?.p_anio,
+        });
+    };
 
     if (!resumen) {
         return (
@@ -26,12 +37,22 @@ export const ConsultarEstadiasSection = () => {
         <Card shadow="sm" radius="md" p="lg" mt={20} withBorder>
             {/* Header */}
             <CardSection inheritPadding py="xs">
-                <div>
-                    <Text fw={500}>Estadías</Text>
-                    <Text fz="xs" c="dimmed">
-                        Reporte General
-                    </Text>
-                </div>
+                <Group justify="space-between">
+                    <div>
+                        <Text fw={500}>Estadías</Text>
+                        <Text fz="xs" c="dimmed">
+                            Reporte General
+                        </Text>
+                    </div>
+                    <BtnSection
+                        radius="sm"
+                        h={30}
+                        IconSection={IconPackageExport}
+                        handleAction={handleExportarEstadiasPDF}
+                    >
+                        Exportar PDF
+                    </BtnSection>
+                </Group>
             </CardSection>
 
             {/* Tabla de Totales */}

@@ -58,7 +58,7 @@ export default function DashboardPage() {
                 Panel Administrativo
             </Title>
             {/* Filtros */}
-            <FiltrarPorFechasForm
+            {/* <FiltrarPorFechasForm
                 titulo="Filtrar por Año"
                 fnHandleAction={(values) => {
                     fnCargarResumenKPI(values);
@@ -67,7 +67,7 @@ export default function DashboardPage() {
                     fnCargarIngresosPorDepartamento({ anio: values.anio });
                     fnCargarHuespedesRecurrentes({ anio: values.anio });
                 }}
-            />
+            /> */}
 
             {/* KPIs */}
             <Grid mb="md" grow>

@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class RegistrarConsumosRequest extends FormRequest
 {
@@ -41,5 +43,11 @@ class RegistrarConsumosRequest extends FormRequest
             'consumos.*.cantidad.required' => 'El campo cantidad es obligatorio.',
             'consumos.*.cantidad.min' => 'La cantidad debe ser al menos 1.',
         ];
+    }
+
+    protected function failedValidation(Validator $validator): HttpResponseException
+    {
+        /* $errors = (new ValidationException($validator))->errors(); */
+        throw new HttpResponseException(response()->json(['errores' => $validator->errors()], 422));
     }
 }

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoriasController;
+use App\Http\Controllers\ConceptoPagoController;
 use App\Http\Controllers\ConfiguracionIvaController;
 use App\Http\Controllers\ConsumosController;
 use App\Http\Controllers\DashboardController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\EstadiaController;
 use App\Http\Controllers\GastosController;
 use App\Http\Controllers\HuespedController;
 use App\Http\Controllers\InventarioController;
+use App\Http\Controllers\PagoController;
 use App\Http\Controllers\ProvinciaController;
 use App\Http\Controllers\ReservasController;
 use App\Http\Controllers\RoleController;
@@ -146,6 +148,15 @@ Route::group(['prefix' => 'gerencia', 'middleware' => ['auth:sanctum', CheckRole
     Route::post('/gasto', [GastosController::class, 'store']);
     Route::put('/gasto/{id}', [GastosController::class, 'update']);
     Route::delete('/gasto/{id}', [GastosController::class, 'delete']);
+
+    /* Conceptos de pagos */
+    Route::post('/conceptos-pagos', [ConceptoPagoController::class, 'getConceptosPagos']);
+
+    /* Pagos */
+    Route::post('/pagos', [PagoController::class, 'getPagos']);
+    Route::post('/reserva/{reservaId}/pago', [PagoController::class, 'store']);
+    Route::put('/reserva/{reservaId}/pago/{pagoId}', [PagoController::class, 'update']);
+    Route::delete('/pago/{id}', [PagoController::class, 'delete']);
 
     /* Tipos de danos */
     Route::post('/tipos-dano', [TiposDanoController::class, 'getTiposDano']);

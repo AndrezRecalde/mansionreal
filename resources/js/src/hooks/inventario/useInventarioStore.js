@@ -21,15 +21,18 @@ export const useInventarioStore = () => {
     const fnCargarProductosInventario = async ({
         categoria_id = null,
         nombre_producto = null,
-        activo = null
+        activo = null,
     }) => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.post("/gerencia/productos/inventario", {
-                categoria_id,
-                nombre_producto,
-                activo
-            });
+            const { data } = await apiAxios.post(
+                "/gerencia/productos/inventario",
+                {
+                    categoria_id,
+                    nombre_producto,
+                    activo,
+                }
+            );
             const { productos } = data;
             dispatch(rtkCargarInventarios(productos));
         } catch (error) {
@@ -59,7 +62,12 @@ export const useInventarioStore = () => {
                 "/gerencia/producto/inventario",
                 producto
             );
-            fnCargarProductosInventario({});
+            if (producto.storageFields !== null) {
+                fnCargarProductosInventario(producto.storageFields);
+            } else {
+                fnCargarProductosInventario({});
+            }
+
             dispatch(rtkCargarMensaje(data));
             setTimeout(() => {
                 dispatch(rtkCargarMensaje(undefined));

@@ -10,6 +10,8 @@ import {
     EstadiasReservadasCards,
     FiltroDisponibilidad,
     GastoModal,
+    PagoEditarModal,
+    PagoModal,
     ReservaFinalizarModal,
     ReservarDepartamentoModal,
     TitlePage,
@@ -82,7 +84,7 @@ const DisponibilidadDepartamentoPage = () => {
     return (
         <Container size="xl" my={20}>
             <Group justify="space-between">
-                <TitlePage order={2}>Disponibilidad</TitlePage>
+                <TitlePage order={2}>Disponibilidad Actual - Mansion Real</TitlePage>
                 <BtnSection
                     IconSection={IconBeach}
                     handleAction={handleReservarEstadia}
@@ -176,14 +178,16 @@ const DisponibilidadDepartamentoPage = () => {
                         datos_reserva={datos_reserva}
                         fnAsignarElemento={fnAsignarDepartamento}
                     />
+                    <PagoModal reservaId={datos_reserva.reserva_id} />
+                    <PagoEditarModal reservaId={datos_reserva.reserva_id} />
                     <ConsumoModal reserva_id={datos_reserva.reserva_id} />
                     <ReservaFinalizarModal datos_reserva={datos_reserva} />
+
+                    <GastoModal />
+                    <ConsumoEditarModal />
+                    <ConsumoEliminarModal />
                 </>
             )}
-
-            <GastoModal />
-            <ConsumoEditarModal />
-            <ConsumoEliminarModal />
         </Container>
     );
 };

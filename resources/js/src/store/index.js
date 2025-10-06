@@ -70,6 +70,13 @@ import { tiposDanoSlice } from "./tiposDano/tiposDanoSlice";
 import { gastoSlice } from "./gasto/gastoSlice";
 import { uiGastoSlice } from "./gasto/uiGastoSlice";
 
+/* Conceptos Pagos */
+import { conceptoPagoSlice } from "./pago/conceptoPagoSlice";
+
+/* Pagos */
+import { pagoSlice } from "./pago/pagoSlice";
+import { uiPagoSlice } from "./pago/uiPagoSlice";
+
 /* Storage Fields */
 import { storageFieldsSlice } from "./storage/storageFieldsSlice";
 
@@ -146,6 +153,13 @@ export {
     /* Gasto */
     gastoSlice,
     uiGastoSlice,
+
+    /* Concepto Pago */
+    conceptoPagoSlice,
+
+    /* Pago */
+    pagoSlice,
+    uiPagoSlice,
 
     /* Storage Fields */
     storageFieldsSlice,

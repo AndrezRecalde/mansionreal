@@ -10,7 +10,7 @@ import {
     rtkCargarReservas,
     rtkLimpiarReservas,
 } from "../../store/reserva/reservaSlice";
-import { useDepartamentoStore } from "../../hooks";
+import { useDepartamentoStore, useEstadiaStore } from "../../hooks";
 import apiAxios from "../../api/apiAxios";
 
 export const useReservaDepartamentoStore = () => {
@@ -25,6 +25,7 @@ export const useReservaDepartamentoStore = () => {
         errores,
     } = useSelector((state) => state.reserva);
     const { fnConsultarDisponibilidadDepartamentos } = useDepartamentoStore();
+    const { fnCargarEstadias } = useEstadiaStore();
     const dispatch = useDispatch();
     const { ExceptionMessageError } = useErrorException(rtkCargarErrores);
 
@@ -59,7 +60,12 @@ export const useReservaDepartamentoStore = () => {
         }
     };
 
-    const fnCambiarEstadoReserva = async ({ id, nombre_estado }) => {
+    const fnCambiarEstadoReserva = async ({
+        id,
+        nombre_estado,
+        storageFields = null,
+        carga_pagina = "DEPARTAMENTOS",
+    }) => {
         try {
             const { data } = await apiAxios.put(
                 `/gerencia/reserva/${id}/estado`,
@@ -71,10 +77,12 @@ export const useReservaDepartamentoStore = () => {
                 dispatch(rtkCargarMensaje(undefined));
             }, 2000);
 
-            /* AGREGAR UN CONDICIONAL PARA SABER QUE DEBE DE CARGAR */
-            fnConsultarDisponibilidadDepartamentos();
-
-
+            if (carga_pagina === "DEPARTAMENTOS") {
+                fnConsultarDisponibilidadDepartamentos();
+                fnCargarEstadias();
+            } else {
+                fnBuscarReservas(storageFields);
+            }
         } catch (error) {
             console.log(error);
             ExceptionMessageError(error);
@@ -151,8 +159,8 @@ export const useReservaDepartamentoStore = () => {
     };
 
     const fnAsignarTipoReserva = (tipo_reserva) => {
-        dispatch(rtkAsignarTipoReserva(tipo_reserva))
-    }
+        dispatch(rtkAsignarTipoReserva(tipo_reserva));
+    };
 
     const fnLimpiarReservas = () => {
         dispatch(rtkLimpiarReservas());

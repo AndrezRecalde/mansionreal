@@ -67,6 +67,13 @@ import { useUiConsumo } from "./consumo/useUiConsumo";
 import { useGastoStore } from "./gasto/useGastoStore";
 import { useUiGasto } from "./gasto/useUiGasto";
 
+/* Conceptos de Pago */
+import { useConceptoPagoStore } from "./pago/useConceptoPagoStore";
+
+/* Pagos */
+import { usePagoStore } from "./pago/usePagoStore";
+import { useUiPago } from "./pago/useUiPago";
+
 /* Tipos de dano */
 import { useTiposDanoStore } from "./tiposDano/useTiposDanoStore";
 
@@ -140,6 +147,13 @@ export {
     /* Gastos */
     useGastoStore,
     useUiGasto,
+
+    /* Conceptos de Pago */
+    useConceptoPagoStore,
+
+    /* Pagos */
+    usePagoStore,
+    useUiPago,
 
     /* Tipos de dano */
     useTiposDanoStore,

@@ -119,6 +119,13 @@ import { DepartamentoMenu } from "./departamento/menu/DepartamentoMenu";
 import { ReservaMenu } from "./departamento/menu/ReservaMenu";
 import { useDisponibilidadColumns } from "./departamento/table/useDisponibilidadColumns";
 
+/* Pagos */
+import { PagoModal } from "./pago/modal/PagoModal";
+import { PagoEditarModal } from "./pago/modal/PagoEditarModal";
+import { PagoForm } from "./pago/form/PagoForm";
+import { PagoEditarForm } from "./pago/form/PagoEditarForm";
+import { PagosTable } from "./pago/table/PagosTable";
+
 export {
     /* Elements */
     CssLoader,
@@ -233,4 +240,11 @@ export {
     useDisponibilidadColumns,
     accionesDepartamento,
     getEstadoColor,
+
+    /* Pagos */
+    PagoModal,
+    PagoEditarModal,
+    PagoForm,
+    PagoEditarForm,
+    PagosTable,
 };

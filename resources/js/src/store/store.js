@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import {
     authSlice,
     categoriaSlice,
+    conceptoPagoSlice,
     configuracionIvaSlice,
     consumoSlice,
     //dashGastosDaniosSlice,
@@ -18,6 +19,7 @@ import {
     gastoSlice,
     huespedSlice,
     inventarioSlice,
+    pagoSlice,
     provinciaSlice,
     reservaSlice,
     roleSlice,
@@ -34,6 +36,7 @@ import {
     uiHeaderMenuSlice,
     uiHuespedSlice,
     uiInventarioSlice,
+    uiPagoSlice,
     uiReservaSlice,
     uiServicioSlice,
     uiUsuarioSlice,
@@ -55,7 +58,6 @@ export const store = configureStore({
         dashRankingProductos: dashRankingProductosSlice.reducer,
         dashIngresosPorDepartamento: dashIngresosPorDepartamentoSlice.reducer,
         dashHuespedes: dashHuespedesSlice.reducer,
-
 
         //dashGastosDanios: dashGastosDaniosSlice.reducer,
         //dashIngresosTotales: dashIngresosTotalesSlice.reducer,
@@ -114,6 +116,13 @@ export const store = configureStore({
         /* Gastos */
         gasto: gastoSlice.reducer,
         uiGasto: uiGastoSlice.reducer,
+
+        /* Conceptos de Pago */
+        conceptoPago: conceptoPagoSlice.reducer,
+
+        /* Pagos */
+        pago: pagoSlice.reducer,
+        uiPago: uiPagoSlice.reducer,
 
         /* Storage */
         storageFields: storageFieldsSlice.reducer,

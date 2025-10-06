@@ -23,7 +23,7 @@ export const DisponibilidadTable = ({ setOpened }) => {
     } = useDepartamentoStore();
     const { fnAbrirModalReservarDepartamento, fnAbrirModalReservaFinalizar } =
         useUiReservaDepartamento();
-    const { fnAsignarReserva, fnCambiarEstadoReserva } =
+    const { fnAsignarReserva } =
         useReservaDepartamentoStore();
     const theme = useMantineTheme();
 
@@ -37,7 +37,6 @@ export const DisponibilidadTable = ({ setOpened }) => {
     };
 
     const handleFinalizarReservaClick = (selected) => {
-        //fnCambiarEstadoReserva({ id, nombre_estado });
         fnAsignarReserva(selected);
         fnAbrirModalReservaFinalizar(true);
     };

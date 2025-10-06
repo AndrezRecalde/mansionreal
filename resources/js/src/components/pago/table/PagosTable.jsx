@@ -1,38 +1,38 @@
 import { useCallback, useMemo } from "react";
+import { ContenidoTable, MenuTable_EE, TextSection } from "../../../components";
 import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
 import { useMantineReactTable } from "mantine-react-table";
-import { ContenidoTable, MenuTable_EA, TextSection } from "../../../components";
-import { useGastoStore, useUiGasto } from "../../../hooks";
-import { IconListDetails } from "@tabler/icons-react";
+import { IconCashRegister } from "@tabler/icons-react";
+import { usePagoStore, useUiPago } from "../../../hooks";
 
-export const GastoDrawerTable = () => {
-    const { cargando, gastos } = useGastoStore();
-    const { fnAbrirModalGasto, fnAbrirEliminarModalGasto } = useUiGasto();
+export const PagosTable = () => {
+    const { cargando, pagos, fnAsignarPago } = usePagoStore();
+    const {
+        fnAbrirModalRegistroPago,
+        fnAbrirModalEditarRegistroPago,
+        fnAbrirModalEliminarRegistroPago,
+    } = useUiPago();
 
     // Calcula la suma de todos los totales (no solo los de la página actual)
-    const totalGastos = useMemo(() => {
-        if (!Array.isArray(gastos)) return 0;
-        return gastos.reduce((acc, curr) => acc + Number(curr.monto ?? 0), 0);
-    }, [gastos]);
+    const totalPagos = useMemo(() => {
+        if (!Array.isArray(pagos)) return 0;
+        return pagos.reduce((acc, curr) => acc + Number(curr.monto ?? 0), 0);
+    }, [pagos]);
 
     const columns = useMemo(
         () => [
             {
-                header: "Descripción",
-                accessorKey: "descripcion",
+                header: "Codigo Voucher",
+                accessorKey: "codigo_voucher",
                 size: 80,
-                //filterVariant: "autocomplete",
             },
-
             {
-                header: "Tipo de daño",
-                accessorKey: "tipo_dano",
-                //filterVariant: "autocomplete",
+                header: "Concepto",
+                accessorFn: (row) => row.concepto_pago.nombre_concepto,
             },
             {
                 header: "Monto",
                 accessorKey: "monto",
-                size: 80,
                 Cell: ({ cell }) => (
                     <span>
                         {Number(cell.getValue()).toLocaleString("es-EC", {
@@ -42,11 +42,12 @@ export const GastoDrawerTable = () => {
                         })}
                     </span>
                 ),
+                // Footer nativo de la columna, suma total de todos los pagos
                 Footer: () => (
                     <Stack>
-                        Total Gastos:
+                        Total Pagos:
                         <TextSection tt="" fw={500} fz={16}>
-                            {totalGastos.toLocaleString("es-EC", {
+                            {totalPagos.toLocaleString("es-EC", {
                                 style: "currency",
                                 currency: "USD",
                                 minimumFractionDigits: 2,
@@ -56,28 +57,36 @@ export const GastoDrawerTable = () => {
                 ),
             },
         ],
-        [gastos]
+        [pagos, totalPagos]
     );
 
-    const handleAbrirGasto = useCallback(
+    const handleAgregarVoucherClick = () => {
+        // Lógica para agregar voucher
+        console.log("Agregar Voucher clicked");
+        fnAbrirModalRegistroPago(true);
+    };
+
+    const handleEditarPago = useCallback(
         (selected) => {
-            console.log("clic editar");
-            fnAbrirModalGasto(true);
+            console.log("Editar voucher:", selected);
+            fnAbrirModalEditarRegistroPago(true);
+            fnAsignarPago(selected);
         },
-        [gastos]
+        [pagos]
     );
 
-    const handleEliminarGasto = useCallback(
+    const handleEliminarPago = useCallback(
         (selected) => {
-            console.log("clic eliminar");
-            fnAbrirEliminarModalGasto(true);
+            console.log("Eliminar voucher:", selected);
+            fnAbrirModalEliminarRegistroPago(true);
+            fnAsignarPago(selected);
         },
-        [gastos]
+        [pagos]
     );
 
     const table = useMantineReactTable({
         columns,
-        data: gastos, //must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
+        data: pagos,
         state: { showProgressBars: cargando },
         enableFacetedValues: false,
         enableDensityToggle: false,
@@ -87,32 +96,33 @@ export const GastoDrawerTable = () => {
         enableGlobalFilter: false,
         enableRowActions: true,
         enableColumnActions: false,
-        renderTopToolbarCustomActions: ({ table }) => (
+        enableColumnFooters: true, // Habilita los footers de columna
+        renderTopToolbarCustomActions: () => (
             <Group gap={20} mr={8}>
-                <Tooltip label="Agregar Gasto">
+                <Tooltip label="Agregar Voucher">
                     <ActionIcon
                         variant="default"
                         size="xl"
                         radius="xs"
-                        aria-label="Gasto"
-                        onClick={handleAbrirGasto}
+                        aria-label="Agregar Voucher"
+                        onClick={handleAgregarVoucherClick}
                     >
-                        <IconListDetails
+                        <IconCashRegister
                             style={{ width: "80%", height: "80%" }}
                             stroke={1.5}
                         />
                     </ActionIcon>
                 </Tooltip>
                 <TextSection tt="" fw={500} fz={16}>
-                    Registro de Gastos
+                    Registro de Pagos
                 </TextSection>
             </Group>
         ),
         renderRowActionMenuItems: ({ row }) => (
-            <MenuTable_EA
+            <MenuTable_EE
                 row={row}
-                titulo="Eliminar"
-                handleAction={handleEliminarGasto}
+                handleEditar={handleEditarPago}
+                handleEliminar={handleEliminarPago}
             />
         ),
         mantineTableProps: {
@@ -131,5 +141,6 @@ export const GastoDrawerTable = () => {
             },
         },
     });
+
     return <ContenidoTable table={table} />;
 };

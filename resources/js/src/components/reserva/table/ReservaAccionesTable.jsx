@@ -23,7 +23,7 @@ export const ReservaAccionesTable = ({
     };
 
     const handleExportarNotaVentaPDF = (dato) => {
-        //fnExportarNotaVentaPDF({ reserva_id: dato });
+        fnExportarNotaVentaPDF({ reserva_id: dato });
         console.log(dato);
     };
 

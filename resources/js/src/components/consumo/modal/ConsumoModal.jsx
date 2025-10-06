@@ -124,26 +124,17 @@ export function ConsumoModal({ reserva_id }) {
                 blur: 3,
                 backgroundOpacity: 0.55,
             }}
-            withCloseButton={false}
+            title={
+                <Group>
+                    <IconShoppingCart size={25} />
+                    <Title order={4} fw={700}>
+                        Registrar Consumo
+                    </Title>
+                </Group>
+            }
         >
             {/* Cabecera del modal con icono y título */}
             <Box mb={rem(20)}>
-                <Group justify="space-between">
-                    <Group>
-                        <IconShoppingCart size={25} />
-                        <Title order={4} fw={700}>
-                            Registrar Consumo
-                        </Title>
-                    </Group>
-                    <Button
-                        variant="subtle"
-                        color="gray"
-                        size="xs"
-                        onClick={() => fnAbrirModalConsumo(false)}
-                    >
-                        Cerrar
-                    </Button>
-                </Group>
                 <Text mt={rem(5)} c="dimmed" size="sm">
                     Agrega hasta 4 consumos con categoría, producto y cantidad.
                 </Text>

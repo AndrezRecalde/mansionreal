@@ -1,9 +1,10 @@
 import { useEffect, useMemo } from "react";
 import { Card, Drawer, Stack } from "@mantine/core";
 import { ConsumosDrawerTable } from "../table/ConsumosDrawerTable";
-import { useConsumoStore, useGastoStore, useUiConsumo } from "../../../hooks";
+import { useConsumoStore, useGastoStore, usePagoStore, useUiConsumo } from "../../../hooks";
 import {
     GastoDrawerTable,
+    PagosTable,
     ReservaAccionesTable,
     ReservaInfoHuespedTable,
 } from "../../../components";
@@ -22,6 +23,7 @@ export const ConsumosDrawer = ({ datos_reserva, fnAsignarElemento }) => {
     const { fnCargarConsumos } = useConsumoStore();
 
     const { fnCargarGastos } = useGastoStore();
+    const { fnCargarPagos } = usePagoStore();
 
     useEffect(() => {
         if (abrirDrawerConsumosDepartamento) {
@@ -31,6 +33,7 @@ export const ConsumosDrawer = ({ datos_reserva, fnAsignarElemento }) => {
                 usuario.role === Roles.ADMINISTRADOR
             ) {
                 fnCargarGastos({ reserva_id: datos_reserva.reserva_id });
+                fnCargarPagos({ reserva_id: datos_reserva.reserva_id });
             }
         }
     }, [abrirDrawerConsumosDepartamento]);
@@ -55,6 +58,7 @@ export const ConsumosDrawer = ({ datos_reserva, fnAsignarElemento }) => {
                     <ReservaAccionesTable datos={datos_reserva} />
                 </Card>
                 <ReservaInfoHuespedTable datos={datos_reserva} />
+                <PagosTable />
                 <ConsumosDrawerTable />
                 <GastoDrawerTable />
             </Stack>

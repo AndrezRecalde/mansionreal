@@ -7,10 +7,11 @@ import {
     Textarea,
     TextInput,
 } from "@mantine/core";
-import { BtnSubmit } from "../../elements/buttons/BtnServices";
+import { BtnSubmit } from "../../../components";
 import {
     useCategoriaStore,
     useInventarioStore,
+    useStorageField,
     useUiInventario,
 } from "../../../hooks";
 
@@ -22,6 +23,7 @@ export const InventarioForm = ({ form }) => {
     } = useInventarioStore();
     const { fnModalInventario } = useUiInventario();
     const { categorias } = useCategoriaStore();
+    const { storageFields } = useStorageField();
 
     useEffect(() => {
         if (activarInventario !== null) {
@@ -37,7 +39,8 @@ export const InventarioForm = ({ form }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        fnAgregarProductoInventario(form.getTransformedValues());
+        let objetoFinal = { ...form.getTransformedValues(), storageFields };
+        fnAgregarProductoInventario(objetoFinal);
         fnAsignarProductoInventario(null);
         fnModalInventario(false);
         form.reset();

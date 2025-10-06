@@ -26,7 +26,7 @@ class InventarioRequest extends FormRequest
         return [
             'nombre_producto' => 'required|string|max:255',
             'descripcion'     => 'nullable|string',
-            'precio_unitario' => 'required|integer|min:0',
+            'precio_unitario' => 'required',
             'stock'           => 'required|integer|min:0',
             'categoria_id'    => 'required|exists:categorias,id',
             //'activo'         => 'boolean',
@@ -41,8 +41,6 @@ class InventarioRequest extends FormRequest
             'nombre_producto.max'      => 'El nombre del producto no debe exceder los 255 caracteres.',
             'descripcion.string'       => 'La descripción debe ser una cadena de texto.',
             'precio_unitario.required' => 'El precio unitario es obligatorio.',
-            'precio_unitario.integer'  => 'El precio unitario debe ser un número entero.',
-            'precio_unitario.min'      => 'El precio unitario no puede ser negativo.',
             'stock.required'           => 'El stock es obligatorio.',
             'stock.integer'            => 'El stock debe ser un número entero.',
             'stock.min'                => 'El stock no puede ser negativo.',

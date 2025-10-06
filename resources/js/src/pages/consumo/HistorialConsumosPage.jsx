@@ -9,7 +9,7 @@ import {
     ReservasInformacionTable,
     TitlePage,
 } from "../../components";
-import { useReservaDepartamentoStore, useTitleHook } from "../../hooks";
+import { useReservaDepartamentoStore, useStorageField, useTitleHook } from "../../hooks";
 
 const HistorialConsumosPage = () => {
     useTitleHook("Historial Reservas - Mansion Real");
@@ -20,6 +20,7 @@ const HistorialConsumosPage = () => {
         fnBuscarReservas,
         fnLimpiarReservas,
     } = useReservaDepartamentoStore();
+    const { fnSetStorageFields } = useStorageField();
 
     const datos_reserva = {
         numero_departamento: activarReserva?.numero_departamento,
@@ -34,6 +35,7 @@ const HistorialConsumosPage = () => {
     useEffect(() => {
         return () => {
             fnLimpiarReservas();
+            fnSetStorageFields(null);
         };
     }, []);
 

@@ -1,11 +1,7 @@
 import { useCallback, useMemo } from "react";
-import { ActionIcon, Stack, Tooltip } from "@mantine/core";
+import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
 import { useMantineReactTable } from "mantine-react-table";
-import {
-    ContenidoTable,
-    MenuTable_EE,
-    TextSection,
-} from "../../../components";
+import { ContenidoTable, MenuTable_EE, TextSection } from "../../../components";
 import { IconShoppingCartPlus } from "@tabler/icons-react";
 import { useConsumoStore, useUiConsumo } from "../../../hooks";
 
@@ -94,20 +90,25 @@ export const ConsumosDrawerTable = () => {
         enableColumnActions: false,
         enableColumnFooters: true, // Habilita los footers de columna
         renderTopToolbarCustomActions: () => (
-            <Tooltip label="Agregar Consumo">
-                <ActionIcon
-                    variant="default"
-                    size="xl"
-                    radius="xs"
-                    aria-label="Consumo"
-                    onClick={handleAbrirConsumo}
-                >
-                    <IconShoppingCartPlus
-                        style={{ width: "80%", height: "80%" }}
-                        stroke={1.5}
-                    />
-                </ActionIcon>
-            </Tooltip>
+            <Group gap={20} mr={8}>
+                <Tooltip label="Agregar Consumo">
+                    <ActionIcon
+                        variant="default"
+                        size="xl"
+                        radius="xs"
+                        aria-label="Consumo"
+                        onClick={handleAbrirConsumo}
+                    >
+                        <IconShoppingCartPlus
+                            style={{ width: "80%", height: "80%" }}
+                            stroke={1.5}
+                        />
+                    </ActionIcon>
+                </Tooltip>
+                <TextSection tt="" fw={500} fz={16}>
+                    Registro de Consumos
+                </TextSection>
+            </Group>
         ),
         renderRowActionMenuItems: ({ row }) => (
             <MenuTable_EE

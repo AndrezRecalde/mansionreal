@@ -136,7 +136,7 @@ class ReservasController extends Controller
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'data'   => $reserva
+                'reserva'   => $reserva
             ]);
         } catch (\Throwable $th) {
             return response()->json([

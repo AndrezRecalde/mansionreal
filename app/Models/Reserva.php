@@ -47,6 +47,11 @@ class Reserva extends Model
         return $this->hasMany(Gasto::class);
     }
 
+    public function pagos()
+    {
+        return $this->hasMany(Pago::class, 'reserva_id');
+    }
+
     public function scopeBuscarPorHuesped(Builder $query, $huespedId)
     {
         return $query->where('huesped_id', $huespedId);

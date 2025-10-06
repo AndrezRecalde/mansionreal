@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Modal } from "@mantine/core";
+import { Group, Modal, Title } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { TextSection, GastoForm } from "../../../components";
 import {
@@ -8,6 +8,7 @@ import {
     useTiposDanoStore,
     useUiGasto,
 } from "../../../hooks";
+import { IconOutbound } from "@tabler/icons-react";
 
 export const GastoModal = () => {
     const { abrirModalGasto, fnAbrirModalGasto } = useUiGasto();
@@ -64,13 +65,15 @@ export const GastoModal = () => {
 
     return (
         <Modal
-            centered
             opened={abrirModalGasto}
             onClose={handleCerrarModal}
             title={
-                <TextSection tt="" fz={18} fw={300}>
-                    Registrar Gastos por Daños
-                </TextSection>
+                <Group>
+                    <IconOutbound size={25} />
+                    <Title order={4} fw={700}>
+                        Registrar Gastos
+                    </Title>
+                </Group>
             }
             overlayProps={{
                 backgroundOpacity: 0.55,

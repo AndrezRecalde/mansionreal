@@ -3,6 +3,7 @@ import { BtnSubmit, TextSection } from "../../../components";
 import { DateInput } from "@mantine/dates";
 import { useForm } from "@mantine/form";
 import { IconSearch } from "@tabler/icons-react";
+import { useStorageField } from "../../../hooks";
 import classes from "../modules/LabelsInput.module.css";
 import dayjs from "dayjs";
 
@@ -11,6 +12,7 @@ export const FiltrarPorFechasCodigo = ({
     fnHandleAction = () => {},
     cargando = false,
 }) => {
+    const { fnSetStorageFields } = useStorageField();
     const form = useForm({
         initialValues: {
             codigo_reserva: "",
@@ -50,7 +52,12 @@ export const FiltrarPorFechasCodigo = ({
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        let objetoFinal = {
+            ...form.getTransformedValues(),
+            carga_pagina: "RESERVAS",
+        };
         fnHandleAction(form.getTransformedValues());
+        fnSetStorageFields(objetoFinal);
         console.log(form.getTransformedValues());
     };
 

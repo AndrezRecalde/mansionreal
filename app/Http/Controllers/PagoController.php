@@ -10,6 +10,7 @@ use App\Models\Reserva;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PagoController extends Controller
 {
@@ -18,8 +19,8 @@ class PagoController extends Controller
     {
         try {
             $pagos = Pago::with('conceptoPago')
-                    ->where('reserva_id', $request->reserva_id)
-                    ->get();
+                ->where('reserva_id', $request->reserva_id)
+                ->get();
 
             return response()->json([
                 'status' => HTTPStatus::Success,
@@ -56,22 +57,29 @@ class PagoController extends Controller
         ], 201);
     }
 
-    public function update(PagoUpdateRequest $request, $reservaId, $pagoId): JsonResponse
+    public function update(PagoUpdateRequest $request, int $id): JsonResponse
     {
-        $pago = Pago::where('reserva_id', $reservaId)->findOrFail($pagoId);
+        try {
+            $pago = Pago::findOrFail($id);
 
-        $pago->update([
-            'codigo_voucher'   => $request->codigo_voucher,
-            'concepto_pago_id' => $request->concepto_pago_id,
-            'monto'            => $request->monto,
-            'metodo_pago'      => $request->metodo_pago,
-            'observaciones'    => $request->observaciones,
-        ]);
+            $pago->update([
+                'codigo_voucher'   => $request->codigo_voucher,
+                'concepto_pago_id' => $request->concepto_pago_id,
+                'monto'            => $request->monto,
+                'metodo_pago'      => $request->metodo_pago,
+                'observaciones'    => $request->observaciones,
+            ]);
 
-        return response()->json([
-            'status' => HTTPStatus::Success,
-            'msg'    => HTTPStatus::Actualizado
-        ], 200);
+            return response()->json([
+                'status' => HTTPStatus::Success,
+                'msg'    => HTTPStatus::Actualizado
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => HTTPStatus::Error,
+                'msg'    => $th->getMessage()
+            ], 500);
+        }
     }
 
     function delete(Request $request, int $id): JsonResponse
@@ -102,6 +110,25 @@ class PagoController extends Controller
                 'status' => HTTPStatus::Success,
                 'msg'    => HTTPStatus::Eliminado,
             ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => HTTPStatus::Error,
+                'msg'    => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    function getTotalesPorReserva(Request $request): JsonResponse
+    {
+        try {
+            $p_reserva_id = $request->reserva_id;
+            $result = DB::select('CALL sp_GetTotalesPorReserva(?)', [
+                $p_reserva_id
+            ]);
+            return response()->json([
+                'status' => HTTPStatus::Success,
+                'result' => $result
+            ], 200);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => HTTPStatus::Error,

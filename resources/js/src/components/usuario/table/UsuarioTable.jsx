@@ -2,8 +2,12 @@ import { useCallback, useMemo } from "react";
 import { MRT_Localization_ES } from "mantine-react-table/locales/es/index.cjs";
 import { useMantineReactTable } from "mantine-react-table";
 import { useUiUsuario, useUsuarioStore } from "../../../hooks";
-import { BtnActivarElemento, ContenidoTable, MenuTable_EA } from "../../../components";
-
+import {
+    BtnActivarElemento,
+    ContenidoTable,
+    MenuTable_EA,
+} from "../../../components";
+import { Badge } from "@mantine/core";
 
 export const UsuarioTable = () => {
     const { cargando, usuarios, fnAsignarUsuario } = useUsuarioStore();
@@ -23,6 +27,16 @@ export const UsuarioTable = () => {
             {
                 header: "Email",
                 accessorKey: "email", //normal accessorKey
+            },
+            {
+                header: "Roles",
+                accessorKey: "role", //normal accessorKey
+                Cell: ({ cell }) => (
+                    <Badge color="indigo.7" radius="sm" variant="light">
+                        {cell.getValue()}
+                    </Badge>
+                ),
+                //filterVariant: "autocomplete",
             },
             {
                 id: "activo", //id is still required when using accessorFn instead of accessorKey

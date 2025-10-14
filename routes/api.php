@@ -75,6 +75,17 @@ Route::group(['prefix' => 'gerencia', 'middleware' => ['auth:sanctum', CheckRole
     Route::put('/usuario/{id}/password', [UsuarioController::class, 'updatePassword']);
     Route::put('/usuario/{id}/status', [UsuarioController::class, 'updateStatus']);
 
+    /* Obtener Usuarios con GERENTE */
+    Route::get('/usuarios/gerentes', [UsuarioController::class, 'getGerentes']);
+
+    // Reporte de TODOS los gerentes
+    Route::post('/reportes/pagos/gerentes', [UsuarioController::class, 'pagosPorGerente']);
+    Route::post('/reportes/pagos/gerentes/pdf', [UsuarioController::class, 'exportarPagosPorGerentePDF']);
+
+    // Reporte de un gerente específico
+    //Route::post('/reportes/pagos/gerentes/{usuarioId}', [UsuarioController::class, 'pagosPorGerente']);
+
+
     /* Roles */
     Route::get('/roles', [RoleController::class, 'getRoles']);
 
@@ -89,6 +100,7 @@ Route::group(['prefix' => 'gerencia', 'middleware' => ['auth:sanctum', CheckRole
     Route::post('/configuracion-iva', [ConfiguracionIvaController::class, 'store']);
     Route::put('/configuracion-iva/{id}', [ConfiguracionIvaController::class, 'update']);
     Route::put('/configuracion-iva/{id}/status', [ConfiguracionIvaController::class, 'updateStatus']);
+    Route::get('/configuracion-iva/activa', [ConfiguracionIvaController::class, 'getConfiguracionIvaActiva']);
 
     /* Departamentos */
     Route::get('/departamentos', [DepartamentoController::class, 'getDepartamentos']);
@@ -155,8 +167,9 @@ Route::group(['prefix' => 'gerencia', 'middleware' => ['auth:sanctum', CheckRole
     /* Pagos */
     Route::post('/pagos', [PagoController::class, 'getPagos']);
     Route::post('/reserva/{reservaId}/pago', [PagoController::class, 'store']);
-    Route::put('/reserva/{reservaId}/pago/{pagoId}', [PagoController::class, 'update']);
+    Route::put('/pago/{id}', [PagoController::class, 'update']);
     Route::delete('/pago/{id}', [PagoController::class, 'delete']);
+    Route::post('/totales-pagos', [PagoController::class, 'getTotalesPorReserva']);
 
     /* Tipos de danos */
     Route::post('/tipos-dano', [TiposDanoController::class, 'getTiposDano']);
@@ -166,8 +179,6 @@ Route::group(['prefix' => 'gerencia', 'middleware' => ['auth:sanctum', CheckRole
     Route::post('/producto/inventario', [InventarioController::class, 'store']);
     Route::put('/producto/inventario/{id}', [InventarioController::class, 'update']);
     Route::put('/producto/inventario/{id}/status', [InventarioController::class, 'updateStatus']);
-
-
 
     /* Tipos Reservas */
     //Route::post('/tipos-reservas', [TipoReservaController::class, 'getTiposReservas']);

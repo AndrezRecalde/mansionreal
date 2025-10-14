@@ -20,6 +20,8 @@ return new class extends Migration
             $table->enum('metodo_pago', ['EFECTIVO', 'TRANSFERENCIA', 'TARJETA', 'OTRO'])->default('EFECTIVO');
             $table->timestamp('fecha_pago')->useCurrent();
             $table->text('observaciones')->nullable();
+            $table->unsignedBigInteger('usuario_creador_id');
+            $table->unsignedBigInteger('usuario_modificador_id')->nullable();
             $table->timestamps();
 
             $table->foreign('reserva_id')->references('id')->on('reservas')->onDelete('cascade');

@@ -1,4 +1,4 @@
-import { Component, lazy } from "react";
+import { lazy } from "react";
 import { Roles } from "../helpers/getPrefix";
 
 const AuthPage = lazy(() =>
@@ -6,7 +6,9 @@ const AuthPage = lazy(() =>
 );
 
 const DashboardPage = lazy(() =>
-    import(/* webpackChunkName: "DashboardPage" */ "../pages/home/DashboardPage")
+    import(
+        /* webpackChunkName: "DashboardPage" */ "../pages/home/DashboardPage"
+    )
 );
 
 const PerfilPage = lazy(() =>
@@ -83,6 +85,12 @@ const DisponibilidadDepartamentoPage = lazy(() =>
     )
 );
 
+const ReportesGerentesPage = lazy(() =>
+    import(
+        /* webpackChunkName: "ReportesGerentesPage" */ "../pages/usuario/ReportesGerentesPage"
+    )
+);
+
 const ErrorNotFound = lazy(() =>
     import(
         /* webpackChunkName: "ErrorNotFound" */ "../pages/error/ErrorNotFound"
@@ -103,7 +111,6 @@ export const PREFIX_ROUTES = {
 };
 
 export const MENU_PATH = {
-
     DISPONIBILIDAD_DEPARTAMENTO: "disponibilidad-departamento",
 
     DASHBOARD: "dashboard",
@@ -120,6 +127,7 @@ export const MENU_PATH = {
 
     PERFIL: "perfil",
     CAMBIAR_CONTRASENA: "cambiar-contrasena",
+    REPORTES_GERENTES: "reportes-gerentes",
 };
 
 export const authRoutes = {
@@ -131,19 +139,36 @@ export const authRoutes = {
 const gerenciaRoutes = generateRoutes(
     "gerencia",
     [
-        { path: MENU_PATH.DISPONIBILIDAD_DEPARTAMENTO, Component: DisponibilidadDepartamentoPage },
+        {
+            path: MENU_PATH.DISPONIBILIDAD_DEPARTAMENTO,
+            Component: DisponibilidadDepartamentoPage,
+        },
 
         { path: MENU_PATH.DASHBOARD, Component: DashboardPage },
         { path: MENU_PATH.CATEGORIAS, Component: CategoriasPage },
         { path: MENU_PATH.SERVICIOS, Component: ServiciosPage },
         { path: MENU_PATH.USUARIOS, Component: UsuariosPage },
         { path: MENU_PATH.HUESPEDES, Component: HuespedesPage },
-        { path: MENU_PATH.HISTORIAL_RESERVAS, Component: HistorialConsumosPage },
+        {
+            path: MENU_PATH.HISTORIAL_RESERVAS,
+            Component: HistorialConsumosPage,
+        },
         { path: MENU_PATH.DEPARTAMENTOS, Component: DepartamentosPage },
-        { path: MENU_PATH.REPORTE_DEPARTAMENTOS, Component: ReporteDepartamentosPage },
-        { path: MENU_PATH.DISPONIBILIDAD_ACTUAL, Component: DisponibilidadActualPage },
+        {
+            path: MENU_PATH.REPORTE_DEPARTAMENTOS,
+            Component: ReporteDepartamentosPage,
+        },
+        {
+            path: MENU_PATH.DISPONIBILIDAD_ACTUAL,
+            Component: DisponibilidadActualPage,
+        },
         { path: MENU_PATH.INVENTARIO, Component: InventarioPage },
         { path: MENU_PATH.IVA, Component: IvaPage },
+
+         {
+            path: MENU_PATH.REPORTES_GERENTES,
+            Component: ReportesGerentesPage,
+        },
     ],
     [Roles.ADMINISTRADOR, Roles.GERENCIA]
 );
@@ -171,5 +196,3 @@ export const errorRoutes = [
         Component: ErrorNotFound,
     },
 ];
-
-

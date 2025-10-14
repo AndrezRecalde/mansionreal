@@ -15,7 +15,9 @@ class Pago extends Model
         'monto',
         'metodo_pago',
         'fecha_pago',
-        'observaciones'
+        'observaciones',
+        'usuario_creador_id',
+        'usuario_modificador_id',
     ];
 
     public function reserva()
@@ -26,5 +28,15 @@ class Pago extends Model
     public function conceptoPago()
     {
         return $this->belongsTo(ConceptoPago::class, 'concepto_pago_id');
+    }
+
+    public function usuarioCreador()
+    {
+        return $this->belongsTo(User::class, 'usuario_creador_id');
+    }
+
+    public function usuarioModificador()
+    {
+        return $this->belongsTo(User::class, 'usuario_modificador_id');
     }
 }

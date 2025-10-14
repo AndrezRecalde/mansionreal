@@ -13,6 +13,7 @@ import { DateInput } from "@mantine/dates";
 import { IconMinus, IconPlus } from "@tabler/icons-react";
 import { BtnSubmit, TextSection } from "../..";
 import {
+    useConfiguracionIvaStore,
     useDepartamentoStore,
     useReservaDepartamentoStore,
 } from "../../../hooks";
@@ -25,6 +26,7 @@ export const ReservarDatosReservaSection = ({
 }) => {
     const { activarDepartamento } = useDepartamentoStore();
     const { activarTipoReserva } = useReservaDepartamentoStore();
+    const { activarIva } = useConfiguracionIvaStore();
 
     const { fecha_checkin } = reservaForm.values;
     // Handlers para cada contador usando el form
@@ -64,17 +66,31 @@ export const ReservarDatosReservaSection = ({
                 reservaForm.values.fecha_checkout
             );
         }
-    }, [reservaForm.values.fecha_checkin, reservaForm.values.fecha_checkout, activarTipoReserva]);
+    }, [
+        reservaForm.values.fecha_checkin,
+        reservaForm.values.fecha_checkout,
+        activarTipoReserva,
+    ]);
 
     // Calcular total_pago al cambiar total_noches
     useEffect(() => {
         if (activarTipoReserva === "HOSPEDAJE") {
-            const totalPago =
+            const subtotal =
                 reservaForm.values.total_noches *
                 activarDepartamento.precio_noche;
+            const iva = subtotal * (Number(activarIva) / 100);
+            const totalPago = subtotal + iva;
             reservaForm.setFieldValue("total_pago", totalPago);
+            // Opcionalmente puedes guardar también el subtotal y el iva si lo necesitas
+            // reservaForm.setFieldValue("subtotal", subtotal);
+            // reservaForm.setFieldValue("iva", iva);
         }
-    }, [reservaForm.values.total_noches, activarTipoReserva]);
+    }, [
+        reservaForm.values.total_noches,
+        activarTipoReserva,
+        activarDepartamento.precio_noche,
+        activarIva,
+    ]);
 
     return (
         <Fieldset
@@ -123,7 +139,7 @@ export const ReservarDatosReservaSection = ({
                             />
                             <NumberInput
                                 disabled
-                                label="Total a pagar por noche(s/.)"
+                                label="Total a pagar por noche"
                                 placeholder="Se calcula el total a pagar"
                                 key={reservaForm.key("total_pago")}
                                 {...reservaForm.getInputProps("total_pago")}

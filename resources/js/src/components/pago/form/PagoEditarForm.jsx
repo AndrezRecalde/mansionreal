@@ -18,6 +18,7 @@ export const PagoEditarForm = ({ form, handleCerrarModal }) => {
     useEffect(() => {
         if (activarPago !== null) {
             form.setValues({
+                id: activarPago.id,
                 codigo_voucher: activarPago.codigo_voucher,
                 concepto_pago_id: activarPago.concepto_pago_id.toString(),
                 monto: activarPago.monto,
@@ -32,6 +33,7 @@ export const PagoEditarForm = ({ form, handleCerrarModal }) => {
         e.preventDefault();
         console.log(form.getTransformedValues());
         // Aquí llamarías a tu API para actualizar el pago
+        fnAgregarPago(form.getTransformedValues());
         handleCerrarModal();
     };
 

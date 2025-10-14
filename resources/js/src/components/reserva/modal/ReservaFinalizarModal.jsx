@@ -1,11 +1,14 @@
 import { Modal } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { TextSection, ReservaFinalizarForm } from "../../../components";
-import { useUiReservaDepartamento } from "../../../hooks";
+import { usePagoStore, useUiReservaDepartamento } from "../../../hooks";
+import { useEffect } from "react";
 
 export const ReservaFinalizarModal = ({ datos_reserva }) => {
     const { abrirModalReservaFinalizar, fnAbrirModalReservaFinalizar } =
         useUiReservaDepartamento();
+    const { fnCargarTotalesPorReserva, fnLimpiarPago } = usePagoStore();
+
     const form = useForm({
         initialValues: {
             nombre_estado: "",
@@ -15,6 +18,16 @@ export const ReservaFinalizarModal = ({ datos_reserva }) => {
                 value.length === 0 ? "Debe seleccionar un estado" : null,
         },
     });
+
+    useEffect(() => {
+        if (abrirModalReservaFinalizar) {
+            fnCargarTotalesPorReserva({ reserva_id: datos_reserva.reserva_id });
+        }
+
+        return () => {
+            fnLimpiarPago();
+        };
+    }, [abrirModalReservaFinalizar]);
 
     const handleCerrarModal = () => {
         form.reset();

@@ -30,7 +30,7 @@ export const ReservarDepartamentoModal = () => {
                 email: "",
                 telefono: "",
                 direccion: "",
-                provincia_id: "",
+                nacionalidad: "",
             },
             tipo_reserva: "",
             departamento_id: "",
@@ -70,9 +70,6 @@ export const ReservarDepartamentoModal = () => {
                 ...values.huesped,
                 huesped_id: values.huesped.huesped_id
                     ? parseInt(values.huesped.huesped_id)
-                    : null,
-                provincia_id: values.huesped.provincia_id
-                    ? parseInt(values.huesped.provincia_id)
                     : null,
             },
             tipo_reserva: activarTipoReserva,

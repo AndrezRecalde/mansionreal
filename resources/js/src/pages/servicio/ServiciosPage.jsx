@@ -50,7 +50,7 @@ const ServiciosPage = () => {
     };
 
     return (
-        <Container size="lg" my={20}>
+        <Container size="xl" my={20}>
             <Group justify="space-between" mb={10}>
                 <TitlePage>Servicios</TitlePage>
                 <BtnSection

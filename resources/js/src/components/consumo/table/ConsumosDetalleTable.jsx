@@ -1,9 +1,8 @@
 import { useMemo } from "react";
 import { Table } from "@mantine/core";
-import { TextSection } from "../../../components";
 import { useConsumoStore } from "../../../hooks";
 
-export const ConsumosDetalleTable = ({ activarReserva }) => {
+export const ConsumosDetalleTable = () => {
     const { consumos } = useConsumoStore();
 
     const totalConsumos = useMemo(() => {

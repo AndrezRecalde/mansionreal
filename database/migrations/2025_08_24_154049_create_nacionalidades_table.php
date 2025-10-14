@@ -11,14 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('configuracion_ivas', function (Blueprint $table) {
+        Schema::create('nacionalidades', function (Blueprint $table) {
             $table->id();
-            $table->string('descripcion');
-            $table->decimal('tasa_iva', 5, 2)->default(15.00);
-            $table->date('fecha_inicio')->nullable();
-            $table->date('fecha_fin')->nullable();
+            $table->string('nombre_nacionalidad', 100);
             $table->boolean('activo')->default(true);
-            $table->boolean('es_estandar')->default(false);
             $table->timestamps();
         });
     }
@@ -28,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('configuracion_ivas');
+        Schema::dropIfExists('nacionalidades');
     }
 };

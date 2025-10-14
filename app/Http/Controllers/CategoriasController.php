@@ -14,7 +14,7 @@ class CategoriasController extends Controller
     function getCategorias(Request $request): JsonResponse
     {
         try {
-            $categorias = Categoria::buscarActivos($request->activo)->skip(1)->take(10000)->get();
+            $categorias = Categoria::buscarActivos($request->activo)->skip(2)->take(100)->get();
 
             return response()->json([
                 'status'       => HTTPStatus::Success,

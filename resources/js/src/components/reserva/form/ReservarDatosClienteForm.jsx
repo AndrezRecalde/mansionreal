@@ -94,17 +94,23 @@ export const ReservarDatosClienteForm = ({
                                         searchable
                                         clearable
                                         disabled={disabledInput}
-                                        label="Provincia"
-                                        placeholder="Provincia"
-                                        data={provincias.map((provincia) => ({
-                                            value: provincia.id.toString(),
-                                            label: provincia.nombre_provincia,
-                                        }))}
+                                        label="Nacionalidad"
+                                        placeholder="Nacionalidad"
+                                        data={[
+                                            {
+                                                value: "ECUATORIANO",
+                                                label: "ECUATORIANO",
+                                            },
+                                            {
+                                                value: "EXTRANJERO",
+                                                label: "EXTRANJERO",
+                                            },
+                                        ]}
                                         key={reservaForm.key(
-                                            "huesped.provincia_id"
+                                            "huesped.nacionalidad"
                                         )}
                                         {...reservaForm.getInputProps(
-                                            "huesped.provincia_id"
+                                            "huesped.nacionalidad"
                                         )}
                                     />
                                     <TextInput

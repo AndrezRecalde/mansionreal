@@ -8,10 +8,11 @@ import {
     UsuarioTable,
 } from "../../components";
 import { IconCubePlus } from "@tabler/icons-react";
-import { useRoleStore, useUiUsuario, useUsuarioStore } from "../../hooks";
+import { useRoleStore, useTitleHook, useUiUsuario, useUsuarioStore } from "../../hooks";
 import Swal from "sweetalert2";
 
 const UsuariosPage = () => {
+    useTitleHook("Usuarios - Mansion Real");
     const {
         fnCargarUsuarios,
         fnLimpiarUsuarios,
@@ -64,7 +65,7 @@ const UsuariosPage = () => {
         fnModalUsuario(true);
     };
     return (
-        <Container size="lg" my={20}>
+        <Container size="xl" my={20}>
             <Group justify="space-between" mb={10}>
                 <TitlePage order={2}>Usuarios del Sistema</TitlePage>
                 <BtnSection

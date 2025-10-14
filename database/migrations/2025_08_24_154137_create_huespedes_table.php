@@ -19,12 +19,8 @@ return new class extends Migration
             $table->string('telefono', 15)->nullable();
             $table->string('email')->nullable();
             $table->text('direccion')->nullable();
-            $table->unsignedBigInteger('provincia_id')->nullable();
+            $table->enum('nacionalidad', ['ECUATORIANO', 'EXTRANJERO'])->default('ECUATORIANO');
             $table->timestamps();
-
-            $table->foreign('provincia_id')->references('id')->on('provincias')->onDelete('cascade');
-
-            $table->index('provincia_id');
         });
     }
 

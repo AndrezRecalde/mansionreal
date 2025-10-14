@@ -10,7 +10,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\ConfiguracionIva;
+use App\Models\Huesped;
 use App\Models\Inventario;
+use App\Models\Reserva;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Svg\Tag\Rect;
@@ -58,9 +60,21 @@ class ConsumosController extends Controller
         try {
             $consumos = $request->validated()['consumos'];
             $reserva_id = $request->reserva_id;
+
+            // Obtener la reserva y la nacionalidad del huésped
+            $reserva = Reserva::findOrFail($reserva_id);
+            $huesped = Huesped::findOrFail($reserva->huesped_id);
+
             // Obtener la tasa de IVA activa
             $ivaConfig = ConfiguracionIva::where('activo', true)->first();
-            $tasa_iva = $ivaConfig ? $ivaConfig->tasa_iva : 0;
+
+            // Determinar tasa de IVA según nacionalidad
+            $nacionalidad = $huesped->nacionalidad; // ECUATORIANO o EXTRANJERO
+            if ($nacionalidad === 'ECUATORIANO') {
+                $tasa_iva = $ivaConfig ? $ivaConfig->tasa_iva : 0;
+            } else {
+                $tasa_iva = 0;
+            }
 
             $consumosProcesados = [];
 

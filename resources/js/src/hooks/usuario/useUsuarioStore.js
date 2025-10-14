@@ -3,16 +3,25 @@ import { useErrorException } from "../error/useErrorException";
 import {
     rtkActivarUsuario,
     rtkCargando,
+    rtkCargandoReportes,
     rtkCargarErrores,
     rtkCargarMensaje,
+    rtkCargarReportes,
     rtkCargarUsuarios,
     rtkLimpiarUsuarios,
 } from "../../store/usuario/usuarioSlice";
 import apiAxios from "../../api/apiAxios";
 
 export const useUsuarioStore = () => {
-    const { cargando, usuarios, activarUsuario, mensaje, errores } =
-        useSelector((state) => state.usuario);
+    const {
+        cargando,
+        cargandoReportes,
+        usuarios,
+        reportes,
+        activarUsuario,
+        mensaje,
+        errores,
+    } = useSelector((state) => state.usuario);
 
     const dispatch = useDispatch();
 
@@ -93,6 +102,85 @@ export const useUsuarioStore = () => {
         }
     };
 
+    const fnCargarReportes = async ({
+        p_fecha_inicio,
+        p_fecha_fin,
+        p_anio,
+        p_usuario_id = null,
+    }) => {
+        try {
+            dispatch(rtkCargandoReportes(true));
+
+            const { data } = await apiAxios.post(
+                "/gerencia/reportes/pagos/gerentes",
+                {
+                    p_fecha_inicio,
+                    p_fecha_fin,
+                    p_anio,
+                    p_usuario_id,
+                }
+            );
+            const { results } = data;
+            dispatch(rtkCargarReportes(results));
+        } catch (error) {
+            console.log(error);
+            ExceptionMessageError(error);
+        } finally {
+            dispatch(rtkCargandoReportes(false));
+        }
+    };
+
+    const fnCargarGerentes = async () => {
+        try {
+            dispatch(rtkCargando(true));
+            const { data } = await apiAxios.get("/gerencia/usuarios/gerentes");
+            const { usuarios } = data;
+            dispatch(rtkCargarUsuarios(usuarios));
+        } catch (error) {
+            console.log(error);
+            dispatch(rtkCargando(false));
+            ExceptionMessageError(error);
+        }
+    };
+
+    const fnExportarPDFReportesPorGerente = async ({
+        p_fecha_inicio,
+        p_fecha_fin,
+        p_anio,
+        p_usuario_id = null,
+    }) => {
+        try {
+            dispatch(rtkCargandoReportes(true));
+
+            const response = await apiAxios.post(
+                "/gerencia/reportes/pagos/gerentes/pdf",
+                {
+                    p_fecha_inicio,
+                    p_fecha_fin,
+                    p_anio,
+                    p_usuario_id,
+                },
+                {
+                    responseType: "blob", // importante
+                }
+            );
+
+            // Crear un enlace para descargar el archivo PDF
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", "reporte_pagos_gerentes.pdf"); // nombre del archivo
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+        } catch (error) {
+            console.log(error);
+            ExceptionMessageError(error);
+        } finally {
+            dispatch(rtkCargandoReportes(false));
+        }
+    };
+
     const fnAsignarUsuario = (usuario) => {
         dispatch(rtkActivarUsuario(usuario));
     };
@@ -103,7 +191,9 @@ export const useUsuarioStore = () => {
 
     return {
         cargando,
+        cargandoReportes,
         usuarios,
+        reportes,
         activarUsuario,
         mensaje,
         errores,
@@ -112,6 +202,9 @@ export const useUsuarioStore = () => {
         fnAgregarUsuario,
         fnCambiarPassword,
         fnCambiarStatus,
+        fnCargarReportes,
+        fnCargarGerentes,
+        fnExportarPDFReportesPorGerente,
         fnAsignarUsuario,
         fnLimpiarUsuarios,
     };

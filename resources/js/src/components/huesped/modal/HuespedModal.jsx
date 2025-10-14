@@ -16,7 +16,7 @@ export const HuespedModal = () => {
             telefono: "",
             email: "",
             direccion: "",
-            provincia_id: "",
+            nacionalidad: "",
         },
         validate: {
             nombres: (value) =>
@@ -37,13 +37,9 @@ export const HuespedModal = () => {
                 value.length < 2
                     ? "La direccion debe tener al menos 2 caracteres"
                     : null,
+            nacionalidad: (value) =>
+                value === "" ? "La nacionalidad es obligatoria" : null,
         },
-        transformValues: (values) => ({
-            ...values,
-            provincia_id: values.provincia_id
-                ? parseInt(values.provincia_id)
-                : null,
-        }),
     });
 
     useEffect(() => {

@@ -1,21 +1,26 @@
-import { Box, Fieldset, Group, SimpleGrid, Stack } from "@mantine/core";
-import { BtnSubmit, TextSection } from "../../../components";
-import { DateInput, YearPickerInput } from "@mantine/dates";
-import { IconSearch } from "@tabler/icons-react";
+import { Box, Fieldset, Group, Select, SimpleGrid, Stack } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
+import { DateInput, YearPickerInput } from "@mantine/dates";
+import { BtnSubmit, TextSection } from "../../../components";
+import { useStorageField, useUsuarioStore } from "../../../hooks";
+import { IconSearch } from "@tabler/icons-react";
 import classes from "../modules/LabelsInput.module.css";
 import dayjs from "dayjs";
 
-export const FiltrarPorFechasForm = ({
+export const FiltrarPorGerentes = ({
     titulo = "",
     cargando,
     fnHandleAction,
 }) => {
+    const { usuarios } = useUsuarioStore();
+    const { fnSetStorageFields } = useStorageField();
+
     const form = useForm({
         initialValues: {
             p_fecha_inicio: "",
             p_fecha_fin: "",
             p_anio: new Date(),
+            p_usuario_id: "",
         },
         validate: {
             p_anio: isNotEmpty("Por favor ingresar el año"),
@@ -28,6 +33,7 @@ export const FiltrarPorFechasForm = ({
                 ? dayjs(values.p_fecha_fin).add(1, "day").format("YYYY-MM-DD")
                 : null,
             p_anio: values.p_anio.getFullYear(),
+            p_usuario_id: Number(values.p_usuario_id) || null,
         }),
     });
 
@@ -37,6 +43,7 @@ export const FiltrarPorFechasForm = ({
         e.preventDefault();
         fnHandleAction(form.getTransformedValues());
         console.log(form.getTransformedValues());
+        fnSetStorageFields(form.getTransformedValues());
         //form.reset();
     };
 
@@ -54,7 +61,12 @@ export const FiltrarPorFechasForm = ({
                 component="form"
                 onSubmit={form.onSubmit((_, e) => handleSubmit(e))}
             >
-                <Stack>
+                <Stack
+                    bg="var(--mantine-color-body)"
+                    align="stretch"
+                    justify="center"
+                    gap="md"
+                >
                     <Group justify="flex-end">
                         <YearPickerInput
                             required
@@ -81,6 +93,20 @@ export const FiltrarPorFechasForm = ({
                             {...form.getInputProps("p_fecha_fin")}
                         />
                     </SimpleGrid>
+                    <Select
+                        searchable
+                        clearable
+                        label="Seleccione el gerente"
+                        placeholder="Seleccione el gerente"
+                        data={
+                            usuarios.map((usuario) => ({
+                                value: String(usuario.id),
+                                label: `${usuario.nombres} ${usuario.apellidos}`,
+                            })) || []
+                        }
+                        classNames={classes}
+                        {...form.getInputProps("p_usuario_id")}
+                    />
 
                     <BtnSubmit
                         mt={0}

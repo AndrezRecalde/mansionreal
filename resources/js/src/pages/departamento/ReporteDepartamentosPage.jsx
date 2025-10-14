@@ -65,7 +65,7 @@ const ReporteDepartamentosPage = () => {
     };
 
     return (
-        <Container size="lg" my={20}>
+        <Container size="xl" my={20}>
             <TitlePage order={2}>Reporte Departamentos</TitlePage>
             <Divider my={10} />
             <FiltrarPorFechasForm

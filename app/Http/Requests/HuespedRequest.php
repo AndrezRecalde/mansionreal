@@ -31,7 +31,7 @@ class HuespedRequest extends FormRequest
             'telefono'      => 'nullable|string|max:20',
             'email'         => 'nullable|email|max:100',
             'direccion'     => 'required',
-            'provincia_id'  => 'nullable|exists:provincias,id',
+            'nacionalidad'  => 'required|in:ECUATORIANO,EXTRANJERO',
             'activo'        => 'sometimes|boolean'
         ];
     }
@@ -52,7 +52,9 @@ class HuespedRequest extends FormRequest
             'email.email'           => 'El correo electrónico debe ser una dirección de correo válida.',
             'email.max'             => 'El correo electrónico no debe exceder los 100 caracteres.',
             'direccion.required'    =>  'La dirección del huesped es obligatoria',
-            'provincia_id.exists'   => 'La provincia seleccionada no es válida.',
+            'nacionalidad.required' => 'La nacionalidad es obligatoria.',
+            'nacionalidad.in'       => 'La nacionalidad debe ser ECUATORIANO o EXTRANJERO.',
+            'nacionalidad.exists'   => 'La nacionalidad seleccionada no es válida.',
             'activo.boolean'        => 'El campo activo debe ser verdadero o falso.'
         ];
     }

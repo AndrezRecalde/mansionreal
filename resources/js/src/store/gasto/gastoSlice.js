@@ -36,6 +36,7 @@ export const gastoSlice = createSlice({
         },
         rtkLimpiarGastos: (state) => {
             state.gastos = [];
+            state.cargando = false;
             state.activarGasto = null;
             state.errores = undefined;
             state.mensaje = undefined;

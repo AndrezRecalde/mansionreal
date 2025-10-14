@@ -92,7 +92,7 @@ class EstadiaController extends Controller
                     'telefono'      => $request->huesped['telefono'],
                     'email'         => $request->huesped['email'],
                     'direccion'     => $request->huesped['direccion'],
-                    'provincia_id'  => $request->huesped['provincia_id'],
+                    'nacionalidad'  => $request->huesped['nacionalidad'],
                 ]);
             }
 
@@ -115,21 +115,22 @@ class EstadiaController extends Controller
             $reserva->total_noches = 0;        // No aplica para estadía
             // --------------------------------------------------------
             $reserva->save();
-            // 3. Generar código de reserva
-            /* $reserva->codigo_reserva = now()->year
-                . str_pad($reserva->id, 5, '0', STR_PAD_LEFT)
-                . str_pad(rand(0, 99), 2, '0', STR_PAD_LEFT);
-            $reserva->save(); */
 
-            // 4. Obtener inventario de estadía
+            // 3. Obtener inventario de estadía
             $inventarioAdulto = Inventario::where('nombre_producto', 'Estadia Adultos')->first();
             $inventarioNino   = Inventario::where('nombre_producto', 'Estadia Ninos')->first();
 
-            // 5. Obtener tasa de IVA activa
+            // 4. Obtener tasa de IVA activa
             $ivaConfig = ConfiguracionIva::where('activo', true)->first();
-            $tasa_iva = $ivaConfig ? $ivaConfig->tasa_iva : 0;
+            // --- Modificación: tasa de IVA según nacionalidad ---
+            $nacionalidad = $huesped->nacionalidad; // ECUATORIANO o EXTRANJERO
+            if ($nacionalidad === 'ECUATORIANO') {
+                $tasa_iva = $ivaConfig ? $ivaConfig->tasa_iva : 0;
+            } else {
+                $tasa_iva = 0;
+            }
 
-            // 6. Crear consumos automáticos
+            // 5. Crear consumos automáticos
             if ($reserva->total_adultos > 0 && $inventarioAdulto) {
                 $subtotal = $reserva->total_adultos * $inventarioAdulto->precio_unitario;
                 $iva      = $subtotal * ($tasa_iva / 100);

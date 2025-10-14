@@ -1,12 +1,8 @@
 import { useCallback, useMemo } from "react";
 import { useMantineReactTable } from "mantine-react-table";
 import { MRT_Localization_ES } from "mantine-react-table/locales/es/index.cjs";
-import {
-    ContenidoTable,
-    MenuTable_EA,
-} from "../../../components";
+import { ContenidoTable, MenuTable_EA } from "../../../components";
 import { useServicioStore, useUiServicio } from "../../../hooks";
-
 
 export const ServicioTable = () => {
     const { cargando, servicios, fnAsignarServicio } = useServicioStore();
@@ -24,18 +20,6 @@ export const ServicioTable = () => {
                 accessorKey: "tipo_servicio", //normal accessorKey
                 //filterVariant: "autocomplete",
             },
-            /* {
-                id: "activo", //id is still required when using accessorFn instead of accessorKey
-                header: "Activo",
-                accessorKey: "activo",
-                Cell: ({ cell }) => (
-                    <BtnActivarElemento
-                        cell={cell}
-                        handleActivar={handleActivar}
-                    />
-                ),
-                size: 80,
-            }, */
         ],
         [servicios]
     );

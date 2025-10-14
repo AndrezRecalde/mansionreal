@@ -47,6 +47,5 @@ class ConfiguracionIvaSeeder extends Seeder
         ];
 
         DB::table('configuracion_ivas')->insert($configuracionIvas);
-
     }
 }

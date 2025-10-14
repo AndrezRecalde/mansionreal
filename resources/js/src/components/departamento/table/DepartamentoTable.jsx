@@ -19,6 +19,13 @@ export const DepartamentoTable = () => {
         fnDrawerAbrirServiciosDepartamento,
     } = useUiDepartamento();
 
+    // formateador de moneda
+    const formatoMoneda = (valor) =>
+        new Intl.NumberFormat("es-EC", {
+            style: "currency",
+            currency: "USD",
+        }).format(valor);
+
     const columns = useMemo(
         () => [
             {
@@ -39,6 +46,7 @@ export const DepartamentoTable = () => {
                 header: "Precio por Noche",
                 accessorKey: "precio_noche",
                 size: 80,
+                Cell: ({ cell }) => formatoMoneda(cell.getValue()),
             },
             {
                 header: "Total de servicios",

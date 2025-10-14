@@ -1,24 +1,18 @@
 import { useEffect } from "react";
 import {
     Box,
-    Loader,
     Select,
     SimpleGrid,
     Stack,
     TextInput,
 } from "@mantine/core";
 import { BtnSubmit } from "../../../components";
-import {
-    useHuespedStore,
-    useProvinciaStore,
-    useUiHuesped,
-} from "../../../hooks";
+import { useHuespedStore, useUiHuesped } from "../../../hooks";
 
 export const HuespedForm = ({ form }) => {
     const { activarHuesped, fnAgregarHuesped, fnAsignarHuesped } =
         useHuespedStore();
     const { fnModalHuesped } = useUiHuesped();
-    const { cargando: cargandoProvincias, provincias } = useProvinciaStore();
 
     useEffect(() => {
         if (activarHuesped !== null) {
@@ -30,9 +24,7 @@ export const HuespedForm = ({ form }) => {
                 telefono: activarHuesped.telefono || "",
                 email: activarHuesped.email,
                 direccion: activarHuesped.direccion || "",
-                provincia_id: activarHuesped.provincia
-                    ? activarHuesped.provincia_id.toString()
-                    : null,
+                nacionalidad: activarHuesped.nacionalidad || "",
             });
         }
     }, [activarHuesped]);
@@ -94,16 +86,13 @@ export const HuespedForm = ({ form }) => {
                 <Select
                     searchable
                     clearable
-                    label="Provincia (Opcional)"
-                    placeholder="Seleccione una provincia"
-                    {...form.getInputProps("provincia_id")}
-                    data={provincias.map((provincia) => ({
-                        value: provincia.id.toString(),
-                        label: provincia.nombre_provincia,
-                    }))}
-                    rightSection={
-                        cargandoProvincias ? <Loader size={18} /> : null
-                    }
+                    label="Nacionalidad"
+                    placeholder="Seleccione una nacionalidad"
+                    {...form.getInputProps("nacionalidad")}
+                    data={[
+                        { value: "ECUATORIANO", label: "ECUATORIANO" },
+                        { value: "EXTRANJERO", label: "EXTRANJERO" },
+                    ]}
                 />
                 <TextInput
                     label="Direccion del huesped"

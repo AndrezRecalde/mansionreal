@@ -57,7 +57,7 @@ const ConfigIvaPage = () => {
     }, [errores]);
 
     return (
-        <Container size="lg" my={20}>
+        <Container size="xl" my={20}>
             <TitlePage order={2}>Configuracion del Iva</TitlePage>
             <Divider my={10} />
 

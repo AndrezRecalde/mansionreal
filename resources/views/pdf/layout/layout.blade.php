@@ -5,11 +5,15 @@
     <meta charset="UTF-8">
     <title>@yield('title') - Mansion Real</title>
     <style>
+        @page {
+            size: 21cm 29.7cm;
+            margin: 30px;
+        }
+
         body {
             font-family: DejaVu Sans, sans-serif;
             font-size: 12px;
             color: #333;
-            margin: 30px;
         }
 
         .header {

@@ -76,4 +76,9 @@ class User extends Authenticatable
     {
         return $this->attributes['password'] = Hash::needsRehash($password) ? Hash::make($password) : $password;
     }
+
+    public function pagosRegistrados()
+    {
+        return $this->hasMany(Pago::class, 'usuario_creador_id');
+    }
 }

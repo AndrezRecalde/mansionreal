@@ -2,7 +2,9 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     cargando: false,
+    cargandoReportes: false,
     usuarios: [],
+    reportes: [],
     activarUsuario: null,
     mensaje: undefined,
     errores: undefined,
@@ -15,9 +17,16 @@ export const usuarioSlice = createSlice({
         rtkCargando: (state, { payload }) => {
             state.cargando = payload;
         },
+        rtkCargandoReportes: (state, { payload }) => {
+            state.cargandoReportes = payload;
+        },
         rtkCargarUsuarios: (state, { payload }) => {
             state.usuarios = payload;
             state.cargando = false;
+        },
+        rtkCargarReportes: (state, { payload }) => {
+            state.reportes = payload;
+            state.cargandoReportes = false;
         },
         rtkAgregarUsuario: (state, { payload }) => {
             state.usuarios.push(payload);
@@ -36,6 +45,9 @@ export const usuarioSlice = createSlice({
         },
         rtkLimpiarUsuarios: (state) => {
             state.usuarios = [];
+            state.cargando = false;
+            state.reportes = [];
+            state.cargandoReportes = false;
             state.activarUsuario = null;
             state.errores = undefined;
             state.mensaje = undefined;
@@ -51,7 +63,9 @@ export const usuarioSlice = createSlice({
 
 export const {
     rtkCargando,
+    rtkCargandoReportes,
     rtkCargarUsuarios,
+    rtkCargarReportes,
     rtkAgregarUsuario,
     rtkActualizarUsuario,
     rtkActivarUsuario,

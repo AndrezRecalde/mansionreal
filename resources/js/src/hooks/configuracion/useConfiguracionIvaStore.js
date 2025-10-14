@@ -83,6 +83,22 @@ export const useConfiguracionIvaStore = () => {
         }
     };
 
+    const fnCargarConfiguracionIvaActiva = async () => {
+        try {
+            dispatch(rtkCargando(true));
+            const { data } = await apiAxios.get(
+                "/gerencia/configuracion-iva/activa"
+            );
+            const { configuracionIva } = data;
+            dispatch(rtkActivarIva(configuracionIva.tasa_iva));
+        } catch (error) {
+            console.log(error);
+            ExceptionMessageError(error);
+        } finally {
+            dispatch(rtkCargando(false));
+        }
+    };
+
     const fnAsignarIva = (iva) => {
         dispatch(rtkActivarIva(iva));
     };
@@ -103,6 +119,7 @@ export const useConfiguracionIvaStore = () => {
         fnAgregarIva,
         fnActualizarStatusIva,
         fnAsignarIva,
+        fnCargarConfiguracionIvaActiva,
         fnLimpiarIvas,
     };
 };

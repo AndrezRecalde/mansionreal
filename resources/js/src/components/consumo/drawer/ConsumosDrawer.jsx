@@ -1,7 +1,12 @@
 import { useEffect, useMemo } from "react";
 import { Card, Drawer, Stack } from "@mantine/core";
 import { ConsumosDrawerTable } from "../table/ConsumosDrawerTable";
-import { useConsumoStore, useGastoStore, usePagoStore, useUiConsumo } from "../../../hooks";
+import {
+    useConsumoStore,
+    useGastoStore,
+    usePagoStore,
+    useUiConsumo,
+} from "../../../hooks";
 import {
     GastoDrawerTable,
     PagosTable,
@@ -20,10 +25,9 @@ export const ConsumosDrawer = ({ datos_reserva, fnAsignarElemento }) => {
         abrirDrawerConsumosDepartamento,
     } = useUiConsumo();
 
-    const { fnCargarConsumos } = useConsumoStore();
-
-    const { fnCargarGastos } = useGastoStore();
-    const { fnCargarPagos } = usePagoStore();
+    const { fnCargarConsumos, fnLimpiarConsumos } = useConsumoStore();
+    const { fnCargarGastos, fnLimpiarGastos } = useGastoStore();
+    const { fnCargarPagos, fnLimpiarPago } = usePagoStore();
 
     useEffect(() => {
         if (abrirDrawerConsumosDepartamento) {
@@ -36,6 +40,17 @@ export const ConsumosDrawer = ({ datos_reserva, fnAsignarElemento }) => {
                 fnCargarPagos({ reserva_id: datos_reserva.reserva_id });
             }
         }
+
+        return () => {
+            fnLimpiarConsumos();
+            if (
+                usuario.role === Roles.GERENCIA ||
+                usuario.role === Roles.ADMINISTRADOR
+            ) {
+                fnLimpiarGastos();
+                fnLimpiarPago();
+            }
+        };
     }, [abrirDrawerConsumosDepartamento]);
 
     const handleCerrarDrawer = () => {
@@ -58,8 +73,8 @@ export const ConsumosDrawer = ({ datos_reserva, fnAsignarElemento }) => {
                     <ReservaAccionesTable datos={datos_reserva} />
                 </Card>
                 <ReservaInfoHuespedTable datos={datos_reserva} />
-                <PagosTable />
                 <ConsumosDrawerTable />
+                <PagosTable />
                 <GastoDrawerTable />
             </Stack>
         </Drawer>

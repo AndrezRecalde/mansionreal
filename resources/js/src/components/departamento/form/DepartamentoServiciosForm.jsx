@@ -62,7 +62,7 @@ export const DepartamentoServiciosForm = ({ form }) => {
                         </Checkbox.Group>
                     </Group>
                 ))}
-                <BtnSubmit>Enviar</BtnSubmit>
+                <BtnSubmit>Guardar</BtnSubmit>
             </Stack>
         </Box>
     );

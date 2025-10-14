@@ -15,12 +15,12 @@ class Huesped extends Model
         'telefono',
         'email',
         'direccion',
-        'provincia_id',
+        'nacionalidad',
     ];
 
-    public function provincia()
+    public function nacionalidad()
     {
-        return $this->belongsTo(Provincia::class);
+        return $this->belongsTo(Nacionalidad::class);
     }
 
     public function reservas()

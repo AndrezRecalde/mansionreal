@@ -30,8 +30,8 @@ export const HuespedTable = () => {
                 accessorKey: "email", //normal accessorKey
             },
             {
-                header: "Provincia",
-                 accessorFn: (row) => row.provincia || "SIN DATOS", //normal accessorKey
+                header: "Nacionalidad",
+                accessorFn: (row) => row.nacionalidad || "SIN DATOS", //normal accessorKey
             },
         ],
         [huespedes]

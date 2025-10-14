@@ -24,6 +24,9 @@ import { FiltrarPorFechasForm } from "./elements/filter/FiltrarPorFechasForm";
 import { FiltrarPorFechasCodigo } from "./elements/filter/FiltrarPorFechasCodigo";
 /* Elements: Filtrar disponibilidad departamentos */
 import { FiltroDisponibilidad } from "./elements/filter/FiltroDisponibilidad";
+/* Elements: Filtrar por Gerentes */
+import { FiltrarPorGerentes } from "./elements/filter/FiltrarPorGerentes";
+
 
 /* Autenticacion */
 import { AuthForm } from "./auth/AuthForm";
@@ -33,6 +36,7 @@ import { ContrasenaForm } from "./usuario/password/ContrasenaForm";
 import { UsuarioModal } from "./usuario/modal/UsuarioModal";
 import { UsuarioForm } from "./usuario/form/UsuarioForm";
 import { UsuarioTable } from "./usuario/table/UsuarioTable";
+import { ReportesPagosTable } from "./usuario/table/ReportesPagosTable";
 
 /* Categorias */
 import { CategoriaModal } from "./categoria/modal/CategoriaModal";
@@ -125,6 +129,7 @@ import { PagoEditarModal } from "./pago/modal/PagoEditarModal";
 import { PagoForm } from "./pago/form/PagoForm";
 import { PagoEditarForm } from "./pago/form/PagoEditarForm";
 import { PagosTable } from "./pago/table/PagosTable";
+import { PagosTotalesReserva } from "./pago/table/PagosTotalesReserva";
 
 export {
     /* Elements */
@@ -146,6 +151,7 @@ export {
     FiltrarPorFechasForm,
     FiltrarPorFechasCodigo,
     FiltroDisponibilidad,
+    FiltrarPorGerentes,
 
     /* Autenticacion */
     AuthForm,
@@ -155,6 +161,7 @@ export {
     UsuarioModal,
     UsuarioForm,
     UsuarioTable,
+    ReportesPagosTable,
 
     /* Categorias */
     CategoriaModal,
@@ -247,4 +254,5 @@ export {
     PagoForm,
     PagoEditarForm,
     PagosTable,
+    PagosTotalesReserva,
 };

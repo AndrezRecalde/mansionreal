@@ -84,7 +84,9 @@ const DisponibilidadDepartamentoPage = () => {
     return (
         <Container size="xl" my={20}>
             <Group justify="space-between">
-                <TitlePage order={2}>Disponibilidad Actual - Mansion Real</TitlePage>
+                <TitlePage order={2}>
+                    Disponibilidad Actual - Mansion Real
+                </TitlePage>
                 <BtnSection
                     IconSection={IconBeach}
                     handleAction={handleReservarEstadia}

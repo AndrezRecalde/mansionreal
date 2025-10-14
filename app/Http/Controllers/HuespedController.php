@@ -13,20 +13,7 @@ class HuespedController extends Controller
     function getHuespedes(): JsonResponse
     {
         try {
-            $huespedes = Huesped::from('huespedes as h')
-                ->select(
-                    'h.id',
-                    'h.apellidos',
-                    'h.nombres',
-                    'h.dni',
-                    'h.telefono',
-                    'h.email',
-                    'h.direccion',
-                    'h.provincia_id',
-                    'p.nombre_provincia as provincia'
-                )
-                ->leftJoin('provincias as p', 'h.provincia_id', '=', 'p.id')
-                ->get();
+            $huespedes = Huesped::all();
 
             return response()->json([
                 'status' => HTTPStatus::Success,

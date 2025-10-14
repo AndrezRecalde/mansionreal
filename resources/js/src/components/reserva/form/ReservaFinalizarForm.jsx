@@ -3,9 +3,11 @@ import { Box, Divider, Select, Stack } from "@mantine/core";
 import {
     BtnSubmit,
     ConsumosDetalleTable,
+    PagosTotalesReserva,
     ReservaInfoHuespedTable,
 } from "../../../components";
 import {
+    usePagoStore,
     useReservaDepartamentoStore,
     useStorageField,
     useUiReservaDepartamento,
@@ -14,6 +16,7 @@ import {
 export const ReservaFinalizarForm = ({ form, datos_reserva }) => {
     const { fnCambiarEstadoReserva, fnExportarNotaVentaPDF } =
         useReservaDepartamentoStore();
+    const { totalesPagos } = usePagoStore();
     const { fnAbrirModalReservaFinalizar } = useUiReservaDepartamento();
     const { storageFields } = useStorageField();
 
@@ -25,6 +28,16 @@ export const ReservaFinalizarForm = ({ form, datos_reserva }) => {
             });
         }
     }, [datos_reserva]);
+
+    const round = (val) => Number(Number(val).toFixed(2));
+
+    const isDisabled =
+        !totalesPagos ||
+        !(
+            round(totalesPagos.saldo_pendiente) === 0 ||
+            round(totalesPagos.total_consumos) ===
+                round(totalesPagos.total_pagos)
+        );
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -66,10 +79,11 @@ export const ReservaFinalizarForm = ({ form, datos_reserva }) => {
                     {...form.getInputProps("nombre_estado")}
                 />
                 <ReservaInfoHuespedTable datos={datos_reserva} />
-                <ConsumosDetalleTable />
+                <PagosTotalesReserva totalesPagos={totalesPagos} />
+                {/* <ConsumosDetalleTable /> */}
                 <Divider />
 
-                <BtnSubmit>Finalizar Reserva</BtnSubmit>
+                <BtnSubmit disabled={isDisabled}>Finalizar Reserva</BtnSubmit>
             </Stack>
         </Box>
     );

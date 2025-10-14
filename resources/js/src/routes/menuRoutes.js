@@ -3,6 +3,7 @@ import {
     IconBuildingStore,
     IconCategory,
     IconEyeSearch,
+    IconFileIsr,
     IconListCheck,
     IconLogout,
     IconPercentage,
@@ -12,7 +13,6 @@ import {
     IconUserPentagon,
 } from "@tabler/icons-react";
 import { Roles } from "../helpers/getPrefix";
-
 
 export const menuProfile = [
     /* Menu Perfil Cabecera */
@@ -89,19 +89,13 @@ export const headerGerenciaRoutes = {
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
         },
         {
-            icon: IconBuildings,
-            title: "Reporte Departamentos",
-            path: "reporte-departamentos",
-            link: "/gerencia/reporte-departamentos",
-            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
-        },
-        {
             icon: IconListCheck,
             title: "Historial Reservas",
             path: "historial-reservas",
             link: "/gerencia/historial-reservas",
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
         },
+
         {
             icon: IconUserPentagon,
             title: "Huespedes",
@@ -114,6 +108,23 @@ export const headerGerenciaRoutes = {
             title: "Inventario",
             path: "inventario",
             link: "/gerencia/inventario",
+            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+        },
+    ],
+
+    REPORTES: [
+        {
+            icon: IconBuildings,
+            title: "Reporte Departamentos",
+            path: "reporte-departamentos",
+            link: "/gerencia/reporte-departamentos",
+            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+        },
+        {
+            icon: IconFileIsr,
+            title: "Reportes de Gerente",
+            path: "reportes-gerentes",
+            link: "/gerencia/reportes-gerentes",
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
         },
     ],

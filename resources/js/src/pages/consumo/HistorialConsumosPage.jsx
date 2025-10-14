@@ -3,13 +3,21 @@ import { Container, Divider } from "@mantine/core";
 import {
     ConsumoEditarModal,
     ConsumoEliminarModal,
+    ConsumoModal,
     ConsumosDrawer,
     FiltrarPorFechasCodigo,
+    GastoModal,
+    PagoEditarModal,
+    PagoModal,
     ReservaFinalizarModal,
     ReservasInformacionTable,
     TitlePage,
 } from "../../components";
-import { useReservaDepartamentoStore, useStorageField, useTitleHook } from "../../hooks";
+import {
+    useReservaDepartamentoStore,
+    useStorageField,
+    useTitleHook,
+} from "../../hooks";
 
 const HistorialConsumosPage = () => {
     useTitleHook("Historial Reservas - Mansion Real");
@@ -40,7 +48,7 @@ const HistorialConsumosPage = () => {
     }, []);
 
     return (
-        <Container size="lg" my={20}>
+        <Container size="xl" my={20}>
             <TitlePage order={2}>Historial Reservas</TitlePage>
             <Divider my={10} />
             <FiltrarPorFechasCodigo
@@ -49,15 +57,22 @@ const HistorialConsumosPage = () => {
                 fnHandleAction={fnBuscarReservas}
             />
             <ReservasInformacionTable cargando={cargando} />
+            {datos_reserva && (
+                <>
+                    <ConsumosDrawer
+                        datos_reserva={datos_reserva}
+                        fnAsignarElemento={fnAsignarReserva}
+                    />
+                    <PagoModal reservaId={datos_reserva.reserva_id} />
+                    <PagoEditarModal reservaId={datos_reserva.reserva_id} />
+                    <ConsumoModal reserva_id={datos_reserva.reserva_id} />
+                    <ReservaFinalizarModal datos_reserva={datos_reserva} />
 
-            <ConsumosDrawer
-                datos_reserva={datos_reserva}
-                fnAsignarElemento={fnAsignarReserva}
-            />
-
-            <ReservaFinalizarModal datos_reserva={datos_reserva} />
-            <ConsumoEditarModal />
-            <ConsumoEliminarModal />
+                    <GastoModal />
+                    <ConsumoEditarModal />
+                    <ConsumoEliminarModal />
+                </>
+            )}
         </Container>
     );
 };

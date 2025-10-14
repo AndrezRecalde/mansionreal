@@ -19,6 +19,24 @@ class CategoriaSeeder extends Seeder
         //Categorias para los productos del inventario para un mini market
         $categorias = [
             [
+                'nombre_categoria' => 'Hospedaje',
+                'activo' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'nombre_categoria' => 'Estadía',
+                'activo' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'nombre_categoria' => 'Alimentos',
+                'activo' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
                 'nombre_categoria' => 'Bebidas',
                 'activo' => true,
                 'created_at' => now(),
@@ -26,12 +44,6 @@ class CategoriaSeeder extends Seeder
             ],
             [
                 'nombre_categoria' => 'Snacks',
-                'activo' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'nombre_categoria' => 'Lácteos',
                 'activo' => true,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -50,6 +62,24 @@ class CategoriaSeeder extends Seeder
             ],
             [
                 'nombre_categoria' => 'Cuidado Infantil',
+                'activo' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'nombre_categoria' => 'Articulos de Oficina',
+                'activo' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'nombre_categoria' => 'Equipos y Accesorios',
+                'activo' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'nombre_categoria' => 'Servicios',
                 'activo' => true,
                 'created_at' => now(),
                 'updated_at' => now(),

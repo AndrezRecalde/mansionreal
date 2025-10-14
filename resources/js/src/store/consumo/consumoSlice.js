@@ -36,6 +36,8 @@ export const consumoSlice = createSlice({
             state.mensaje = undefined;
         },
         rtkLimpiarConsumos: (state) => {
+            state.consumos = [];
+            state.cargando = false;
             state.activarConsumo = false;
             state.errores = undefined;
             state.mensaje = undefined;

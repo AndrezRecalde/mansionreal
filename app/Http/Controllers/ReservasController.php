@@ -9,7 +9,7 @@ use App\Models\ConfiguracionIva;
 use App\Models\Consumo;
 use App\Models\Estado;
 use App\Models\Huesped;
-use App\Models\Inventario;
+//use App\Models\Inventario;
 use App\Models\Reserva;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -55,7 +55,7 @@ class ReservasController extends Controller
                     'telefono'      => $request->huesped['telefono'],
                     'email'         => $request->huesped['email'],
                     'direccion'     => $request->huesped['direccion'],
-                    'provincia_id'  => $request->huesped['provincia_id'],
+                    'nacionalidad'  => $request->huesped['nacionalidad'],
                 ]);
             }
 
@@ -72,22 +72,23 @@ class ReservasController extends Controller
             $reserva->tipo_reserva = TIPOSRESERVA::HOSPEDAJE;
             $reserva->save();
 
-            // 5. Generar código de reserva
-            /* $codigo = now()->year
-                . str_pad($reserva->id, 5, '0', STR_PAD_LEFT)
-                . str_pad(rand(0, 99), 2, '0', STR_PAD_LEFT);
-            $reserva->codigo_reserva = $codigo;
-            $reserva->save(); */
-
-            // 6. Obtener inventario usando relaciones Eloquent
+            // 5. Obtener inventario usando relaciones Eloquent
             $inventario = $reserva->departamento
                 ->tipoDepartamento
                 ->inventario;
 
-            // 7. Obtener la tasa de IVA activa
+            // 6. Obtener la tasa de IVA activa
             $ivaConfig = ConfiguracionIva::where('activo', true)->first();
 
-            // 8. Calcular valores para consumo
+            // 6.1. Determinar tasa de IVA según nacionalidad
+            $nacionalidad = $huesped->nacionalidad; // ECUATORIANO o EXTRANJERO
+            if ($nacionalidad === 'ECUATORIANO') {
+                $tasa_iva = $ivaConfig ? $ivaConfig->tasa_iva : 0;
+            } else {
+                $tasa_iva = 0;
+            }
+
+            // 7. Calcular valores para consumo
             $cantidad = $reserva->total_noches;
             $precioUnitario = $inventario->precio_unitario;
             $subtotal = $cantidad * $precioUnitario;
@@ -96,7 +97,7 @@ class ReservasController extends Controller
             $total_iva = $subtotal + $iva;
             $aplica_iva = $tasa_iva > 0 ? true : false;
 
-            // 9. Guardar registro en consumos
+            // 8. Guardar registro en consumos
             Consumo::create([
                 'reserva_id'      => $reserva->id,
                 'inventario_id'   => $inventario->id,

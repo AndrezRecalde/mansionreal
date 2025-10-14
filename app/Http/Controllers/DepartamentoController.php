@@ -32,8 +32,8 @@ class DepartamentoController extends Controller
             )
             ->with(['imagenes', 'servicios'])
             ->leftJoin('tipos_departamentos as td', 'd.tipo_departamento_id', 'td.id')
-            ->leftJoin('inventarios as i', 'td.inventario_id', '=', 'i.id')
-            ->leftJoin('estados as e', 'd.estado_id', '=', 'e.id')
+            ->leftJoin('inventarios as i', 'td.inventario_id', 'i.id')
+            ->leftJoin('estados as e', 'd.estado_id', 'e.id')
             ->orderBy('d.numero_departamento', 'ASC')
             ->get();
 
@@ -90,7 +90,7 @@ class DepartamentoController extends Controller
 
             // --- IMÁGENES ---
 
-            // 1️⃣ Eliminar imágenes que no están en "imagenesExistentes"
+            // 1️Eliminar imágenes que no están en "imagenesExistentes"
             $imagenesExistentes = $request->input('imagenesExistentes', []);
             $departamento->imagenes()
                 ->whereNotIn('id', $imagenesExistentes)
@@ -101,7 +101,7 @@ class DepartamentoController extends Controller
                     $img->delete();
                 });
 
-            // 2️⃣ Subir nuevas imágenes si las hay
+            // Subir nuevas imágenes si las hay
             if ($request->hasFile('imagenesNuevas')) {
                 foreach ($request->file('imagenesNuevas') as $file) {
                     $path = $file->store('departamentos', 'public');

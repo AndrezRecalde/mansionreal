@@ -1,11 +1,17 @@
 import { useEffect } from "react";
-import { Box, Card, Divider, Fieldset } from "@mantine/core";
-import { useHuespedStore, useReservaDepartamentoStore } from "../../../hooks";
+import { Card, Divider, Fieldset } from "@mantine/core";
 import {
+    useConfiguracionIvaStore,
+    useHuespedStore,
+    useReservaDepartamentoStore,
+} from "../../../hooks";
+import {
+    AlertSection,
     ReservarBusquedaClienteForm,
     ReservarDatosClienteForm,
     TextSection,
 } from "../../../components";
+import { IconAlertCircle } from "@tabler/icons-react";
 
 export const ReservarBusquedaClienteSection = ({
     reservaForm,
@@ -14,8 +20,11 @@ export const ReservarBusquedaClienteSection = ({
     disabledInput,
     handleSubmitHuesped,
 }) => {
+    const { nacionalidad } = reservaForm.values.huesped;
     const { activarHuesped, fnAsignarHuesped, cargando } = useHuespedStore();
-    const { activarTipoReserva, } = useReservaDepartamentoStore();
+    const { activarTipoReserva } = useReservaDepartamentoStore();
+    const { fnCargarConfiguracionIvaActiva, fnAsignarIva } =
+        useConfiguracionIvaStore();
 
     useEffect(() => {
         if (activarHuesped !== null) {
@@ -29,9 +38,7 @@ export const ReservarBusquedaClienteSection = ({
                     email: activarHuesped.email,
                     telefono: activarHuesped.telefono || "",
                     direccion: activarHuesped.direccion || "",
-                    provincia_id: activarHuesped.provincia_id
-                        ? activarHuesped.provincia_id.toString()
-                        : null,
+                    nacionalidad: activarHuesped.nacionalidad || "",
                 },
             });
             fnAsignarHuesped(activarHuesped);
@@ -52,7 +59,7 @@ export const ReservarBusquedaClienteSection = ({
                 email: "",
                 telefono: "",
                 direccion: "",
-                provincia_id: "",
+                nacionalidad: "",
             },
             tipo_reserva: activarTipoReserva,
             departamento_id: "",
@@ -68,6 +75,16 @@ export const ReservarBusquedaClienteSection = ({
         setShowDetails(false);
     };
 
+    useEffect(() => {
+        nacionalidad === "ECUATORIANO"
+            ? fnCargarConfiguracionIvaActiva()
+            : fnAsignarIva(0);
+
+        return () => {
+            fnAsignarIva(null);
+        };
+    }, [nacionalidad]);
+
     return (
         <Fieldset
             legend={
@@ -77,6 +94,21 @@ export const ReservarBusquedaClienteSection = ({
             }
         >
             <Card withBorder radius="sm" shadow="sm" p={15} mb={15}>
+                {nacionalidad ? (
+                    <AlertSection
+                        variant="light"
+                        color="yellow"
+                        icon={IconAlertCircle}
+                        title="Atención"
+                    >
+                        <TextSection tt="" fz={12} fw={300}>
+                            El cliente tiene una nacionalidad {nacionalidad}{" "}
+                            {nacionalidad === "ECUATORIANO"
+                                ? "Esta obligado a pagar la tasa de IVA fijada correspondiente al Ecuador"
+                                : "No está obligado a pagar la tasa de IVA"}
+                        </TextSection>
+                    </AlertSection>
+                ) : null}
                 <ReservarBusquedaClienteForm
                     reservaForm={reservaForm}
                     showDetails={showDetails}

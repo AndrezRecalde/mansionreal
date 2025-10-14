@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
     cargando: false,
     pagos: [],
+    totalesPagos: [],
     activarPago: false,
     mensaje: undefined,
     errores: undefined,
@@ -19,6 +20,10 @@ export const pagoSlice = createSlice({
             state.pagos = payload;
             state.cargando = false;
         },
+        rtkCargarTotalesPagos: (state, { payload }) => {
+            state.totalesPagos = payload;
+            state.cargando = false;
+        },
         rtkAgregarPago: (state, { payload }) => {
             state.pagos.push(payload);
             state.cargando = false;
@@ -30,6 +35,9 @@ export const pagoSlice = createSlice({
             state.mensaje = undefined;
         },
         rtkLimpiarPagos: (state) => {
+            state.pagos = [];
+            state.totalesPagos = [];
+            state.cargando = false;
             state.activarPago = false;
             state.errores = undefined;
             state.mensaje = undefined;
@@ -46,6 +54,7 @@ export const pagoSlice = createSlice({
 export const {
     rtkCargando,
     rtkCargarPagos,
+    rtkCargarTotalesPagos,
     rtkAgregarPago,
     rtkActivarPago,
     rtkLimpiarPagos,

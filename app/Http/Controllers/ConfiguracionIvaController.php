@@ -99,4 +99,27 @@ class ConfiguracionIvaController extends Controller
             ], 500);
         }
     }
+
+    function getConfiguracionIvaActiva(): JsonResponse
+    {
+        try {
+            $configuracionIva = ConfiguracionIva::where('activo', true)->first();
+            if (!$configuracionIva) {
+                return response()->json([
+                    'status' => HTTPStatus::Error,
+                    'msg'    => HTTPStatus::NotFound
+                ], 404);
+            }
+
+            return response()->json([
+                'status' => HTTPStatus::Success,
+                'configuracionIva'   => $configuracionIva
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => HTTPStatus::Error,
+                'msg'    => $th->getMessage()
+            ], 500);
+        }
+    }
 }

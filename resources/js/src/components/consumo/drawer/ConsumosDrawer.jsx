@@ -69,13 +69,13 @@ export const ConsumosDrawer = ({ datos_reserva, fnAsignarElemento }) => {
             title="Historial de Consumos"
         >
             <Stack>
-                <Card withBorder shadow="sm" radius="sm" p="sm">
+                <Card withBorder shadow="sm" radius="sm" p="sm" bg="gray.3">
                     <ReservaAccionesTable datos={datos_reserva} />
                 </Card>
                 <ReservaInfoHuespedTable datos={datos_reserva} />
-                <ConsumosDrawerTable />
-                <PagosTable />
-                <GastoDrawerTable />
+                <ConsumosDrawerTable estado={datos_reserva.estado} />
+                <PagosTable estado={datos_reserva.estado} />
+                <GastoDrawerTable estado={datos_reserva.estado} />
             </Stack>
         </Drawer>
     );

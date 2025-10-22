@@ -1,6 +1,7 @@
 export const Roles = {
     ADMINISTRADOR: "ADMINISTRADOR",
     GERENCIA: "GERENTE",
+    ASISTENTE: "ASISTENTE",
 }
 
 export const Estados = {

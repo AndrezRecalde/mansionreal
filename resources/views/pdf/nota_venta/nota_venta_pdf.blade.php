@@ -1,11 +1,12 @@
 @extends('pdf.layout.layout')
-
+@section('title', 'Nota de Venta')
 @section('report-title', 'Nota de Venta')
 
 @section('summary')
     <strong>No. Nota de Venta:</strong> {{ $reserva['codigo_reserva'] }} <br>
     <strong>Cliente:</strong> {{ $reserva['huesped'] }} <br>
-    <strong>DNI:</strong> {{ $reserva['huesped_dni'] }} <br>
+    <strong>Cédula:</strong> {{ $reserva['huesped_dni'] }} <br>
+    <strong>Dirección:</strong> {{ $reserva['direccion'] }} <br>
     <strong>Check-in:</strong> {{ $reserva['fecha_checkin'] }} <br>
     <strong>Check-out:</strong> {{ $reserva['fecha_checkout'] }}
 @endsection

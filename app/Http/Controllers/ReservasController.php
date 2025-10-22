@@ -15,7 +15,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
-
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ReservasController extends Controller
 {
@@ -23,14 +24,14 @@ class ReservasController extends Controller
     public function store(ReservaRequest $request): JsonResponse
     {
         try {
-            // 1. Obtener IDs de estados activos tipo RESERVA una sola vez
+            // 1. Obtener IDs de estados activos tipo RESERVA
             $estadoReservaIds = Estado::where('activo', 1)
                 ->where('tipo_estado', 'RESERVA')
                 ->whereIn('nombre_estado', ['RESERVADO', 'CONFIRMADO'])
                 ->pluck('id')
                 ->toArray();
 
-            // 2. Validar traslape de reservas (consulta optimizada)
+            // 2. Validar traslape de reservas
             $traslape = Reserva::where('departamento_id', $request->departamento_id)
                 ->whereIn('estado_id', $estadoReservaIds)
                 ->where(function ($query) use ($request) {
@@ -46,8 +47,9 @@ class ReservasController extends Controller
                 ], 409);
             }
 
-            // 3. Crear huésped si no existe
+            // 3. Obtener o crear huésped
             if ($request->huesped['huesped_id'] == null) {
+                // Crear nuevo huésped
                 $huesped = Huesped::create([
                     'nombres'       => $request->huesped['nombres'],
                     'apellidos'     => $request->huesped['apellidos'],
@@ -57,12 +59,15 @@ class ReservasController extends Controller
                     'direccion'     => $request->huesped['direccion'],
                     'nacionalidad'  => $request->huesped['nacionalidad'],
                 ]);
+            } else {
+                // Obtener huésped existente
+                $huesped = Huesped::findOrFail($request->huesped['huesped_id']);
             }
 
             // 4. Guardar la reserva
             $reserva = new Reserva();
             $reserva->fill($request->validated());
-            $reserva->huesped_id = $request->huesped['huesped_id'] ?? $huesped->id;
+            $reserva->huesped_id = $huesped->id; // ← Ahora $huesped siempre existe
             $reserva->estado_id = Estado::where('activo', 1)
                 ->where('tipo_estado', 'RESERVA')
                 ->where('nombre_estado', 'RESERVADO')
@@ -81,7 +86,7 @@ class ReservasController extends Controller
             $ivaConfig = ConfiguracionIva::where('activo', true)->first();
 
             // 6.1. Determinar tasa de IVA según nacionalidad
-            $nacionalidad = $huesped->nacionalidad; // ECUATORIANO o EXTRANJERO
+            $nacionalidad = $huesped->nacionalidad; // ← Ahora funciona correctamente
             if ($nacionalidad === 'ECUATORIANO') {
                 $tasa_iva = $ivaConfig ? $ivaConfig->tasa_iva : 0;
             } else {
@@ -92,7 +97,6 @@ class ReservasController extends Controller
             $cantidad = $reserva->total_noches;
             $precioUnitario = $inventario->precio_unitario;
             $subtotal = $cantidad * $precioUnitario;
-            $tasa_iva = $ivaConfig ? $ivaConfig->tasa_iva : 0;
             $iva = $subtotal * ($tasa_iva / 100);
             $total_iva = $subtotal + $iva;
             $aplica_iva = $tasa_iva > 0 ? true : false;
@@ -106,7 +110,7 @@ class ReservasController extends Controller
                 'subtotal'        => $subtotal,
                 'tasa_iva'        => $tasa_iva,
                 'iva'             => $iva,
-                'total'          => $total_iva,
+                'total'           => $total_iva,
                 'aplica_iva'      => $aplica_iva,
             ]);
 
@@ -233,12 +237,18 @@ class ReservasController extends Controller
                     'id'             => $r->id,
                     'codigo_reserva' => $r->codigo_reserva,
                     'huesped'        => $r->huesped ? $r->huesped->nombres . ' ' . $r->huesped->apellidos : null,
-                    'departamento'   => $r->departamento ? $r->departamento->numero_departamento : null,
+                    'numero_departamento'   => $r->departamento ? $r->departamento->numero_departamento : null,
                     'fecha_checkin'  => $r->fecha_checkin,
                     'fecha_checkout' => $r->fecha_checkout,
                     'total_noches'   => $r->total_noches,
-                    'estado'         => $r->estado ? $r->estado->nombre_estado : null,
-                    'color_estado'   => $r->estado ? $r->estado->color : null,
+                    'fecha_creacion' => $r->fecha_creacion,
+                    'usuario_creador' => $r->usuarioCreador ? $r->usuarioCreador->apellidos . ' ' . $r->usuarioCreador->nombres : null,
+                    'motivo_cancelacion' => $r->motivo_cancelacion ? $r->motivo_cancelacion : null,
+                    'observacion_cancelacion' => $r->observacion_cancelacion ? $r->observacion_cancelacion : null,
+                    'fecha_cancelacion' => $r->fecha_cancelacion ? $r->fecha_cancelacion : null,
+                    'usuario_cancelador' => $r->usuarioCancelador ? $r->usuarioCancelador->apellidos . ' ' . $r->usuarioCancelador->nombres : null,
+                    'estado'         => $r->estado ? $r->estado : null,
+                    //'color_estado'   => $r->estado ? $r->estado->color : null,
                     'consumos'       => $r->consumos->map(function ($c) {
                         return [
                             'nombre_producto' => $c->inventario ? $c->inventario->nombre_producto : null,
@@ -257,6 +267,144 @@ class ReservasController extends Controller
         ]);
     }
 
+    /**
+     * Cancela una reserva existente
+     * Devuelve al inventario los productos consumidos que NO sean de categoría Hospedaje/Estadía
+     *
+     * @param Request $request
+     * @param Reserva $reserva
+     * @return JsonResponse
+     */
+    public function cancelar(Request $request, Reserva $reserva): JsonResponse
+    {
+        $request->validate([
+            'motivo_cancelacion' => 'required|in:ERROR_TIPEO,CAMBIO_FECHAS,CAMBIO_HUESPED,SOLICITUD_CLIENTE,FUERZA_MAYOR,OTRO',
+            'observacion' => 'nullable|string|max:500',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            // 1. Validar que la reserva pueda cancelarse
+            $estadoActual = $reserva->estado->nombre_estado;
+
+            if ($estadoActual === 'CANCELADO') {
+                return response()->json([
+                    'status' => HTTPStatus::Error,
+                    'msg' => 'La reserva ya está cancelada'
+                ], 400);
+            }
+
+            // 2. Obtener estado CANCELADO
+            $estadoCancelado = Estado::where('activo', 1)
+                ->where('tipo_estado', 'RESERVA')
+                ->where('nombre_estado', 'CANCELADO')
+                ->firstOrFail();
+
+            // 3. Devolver productos al inventario (excepto Hospedaje/Estadía)
+            $productosDevueltos = $this->devolverProductosAlInventario($reserva);
+
+            // 4. Actualizar reserva a cancelado
+            $reserva->update([
+                'estado_id' => $estadoCancelado->id,
+                'motivo_cancelacion' => $request->motivo_cancelacion,
+                'observacion_cancelacion' => $request->observacion,
+                'fecha_cancelacion' => now(),
+                'usuario_cancelador_id' => Auth::id(),
+            ]);
+
+            Log::info("Reserva cancelada", [
+                'codigo_reserva' => $reserva->codigo_reserva,
+                'motivo' => $request->motivo_cancelacion,
+                'productos_devueltos' => $productosDevueltos,
+                'usuario' => Auth::user()->name ?? Auth::id(),
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'status' => HTTPStatus::Success,
+                'msg' => 'Reserva #' . $reserva->codigo_reserva . ' cancelada correctamente',
+                'data' => [
+                    'reserva' => [
+                        'id' => $reserva->id,
+                        'codigo_reserva' => $reserva->codigo_reserva,
+                        'motivo_cancelacion' => $reserva->motivo_cancelacion,
+                        'observacion_cancelacion' => $reserva->observacion_cancelacion,
+                        'fecha_cancelacion' => $reserva->fecha_cancelacion->format('Y-m-d H:i:s'),
+                        'usuario_cancelador' => $reserva->usuarioCancelador->name ?? null,
+                    ],
+                    'productos_devueltos' => $productosDevueltos,
+                ]
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            Log::error("Error al cancelar reserva", [
+                'codigo_reserva' => $reserva->codigo_reserva ?? null,
+                'error' => $th->getMessage(),
+                'trace' => $th->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'status' => HTTPStatus::Error,
+                'msg' => 'Error al cancelar la reserva: ' . $th->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Devuelve productos al inventario que NO sean de categorías Hospedaje o Estadía
+     *
+     * @param Reserva $reserva
+     * @return array Lista de productos devueltos con sus cantidades
+     */
+    private function devolverProductosAlInventario(Reserva $reserva): array
+    {
+        $productosDevueltos = [];
+
+        // Obtener consumos de la reserva con sus inventarios y categorías
+        $consumos = Consumo::where('reserva_id', $reserva->id)
+            ->with(['inventario.categoria'])
+            ->get();
+
+        foreach ($consumos as $consumo) {
+            $inventario = $consumo->inventario;
+            $categoria = $inventario->categoria;
+
+            // Solo devolver stock si NO es de categoría Hospedaje o Estadía
+            $categoriasExcluidas = ['HOSPEDAJE', 'ESTADIA', 'Hospedaje', 'Estadía'];
+
+            if (!in_array(strtoupper($categoria->nombre_categoria ?? ''), array_map('strtoupper', $categoriasExcluidas))) {
+
+                // Registrar devolución al inventario usando el método del modelo
+                $movimiento = $inventario->registrarEntrada(
+                    cantidad: $consumo->cantidad,
+                    motivo: 'Devolución por cancelación de reserva',
+                    observaciones: "Reserva cancelada: {$reserva->codigo_reserva}. Motivo: {$reserva->motivo_cancelacion}",
+                    usuarioId: Auth::id()
+                );
+
+                $productosDevueltos[] = [
+                    'producto' => $inventario->nombre_producto,
+                    'cantidad' => $consumo->cantidad,
+                    'stock_anterior' => $movimiento->stock_anterior,
+                    'stock_nuevo' => $movimiento->stock_nuevo,
+                ];
+
+                Log::info("Producto devuelto al inventario", [
+                    'reserva' => $reserva->codigo_reserva,
+                    'producto' => $inventario->nombre_producto,
+                    'cantidad' => $consumo->cantidad,
+                    'stock_anterior' => $movimiento->stock_anterior,
+                    'stock_nuevo' => $movimiento->stock_nuevo,
+                ]);
+            }
+        }
+
+        return $productosDevueltos;
+    }
+
 
     /* Exportar PDF */
 
@@ -269,7 +417,6 @@ class ReservasController extends Controller
                 'msg'    => 'El ID de la reserva es obligatorio'
             ], 422);
         }
-
         // 2. Consulta la reserva específica con sus consumos y departamento relacionado
         $reserva = Reserva::with([
             'departamento',
@@ -283,14 +430,8 @@ class ReservasController extends Controller
                 'error' => 'Reserva no encontrada'
             ], 404);
         }
-
-        // $dpto = $reserva->departamento;
-
         // 3. Armar estructura igual a consultarDisponibilidadDepartamentosPorFecha
         $resultado = [
-            /* 'id'                  => $dpto->id,
-            'numero_departamento' => $dpto->numero_departamento,
-            'capacidad'           => $dpto->capacidad, */
             'reserva'             => [
                 'id'             => $reserva->id,
                 'codigo_reserva' => $reserva->codigo_reserva,
@@ -299,6 +440,7 @@ class ReservasController extends Controller
                 'fecha_checkin'  => $reserva->fecha_checkin,
                 'fecha_checkout' => $reserva->fecha_checkout,
                 'total_noches'   => $reserva->total_noches,
+                'direccion'      => $reserva->huesped?->direccion,
                 'estado'         => [
                     'id'      => $reserva->estado?->id,
                     'nombre'  => $reserva->estado?->nombre_estado,

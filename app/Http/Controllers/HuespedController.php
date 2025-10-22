@@ -10,14 +10,25 @@ use Illuminate\Http\Request;
 
 class HuespedController extends Controller
 {
-    function getHuespedes(): JsonResponse
+    function getHuespedes(Request $request): JsonResponse
     {
         try {
-            $huespedes = Huesped::all();
+            $perPage = intval($request->input('per_page', 20));
+            $page = intval($request->input('page', 1));
+
+            $huespedes = Huesped::paginate($perPage, ['*'], 'page', $page);
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'huespedes'   => $huespedes
+                'huespedes'   => $huespedes->items(),
+                'paginacion' => [
+                    'total' => $huespedes->total(),
+                    'por_pagina' => $huespedes->perPage(),
+                    'pagina_actual' => $huespedes->currentPage(),
+                    'ultima_pagina' => $huespedes->lastPage(),
+                    'desde' => $huespedes->firstItem(),
+                    'hasta' => $huespedes->lastItem()
+                ]
             ]);
         } catch (\Throwable $th) {
             return response()->json([

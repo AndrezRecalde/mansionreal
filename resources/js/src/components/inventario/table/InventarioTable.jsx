@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
     BtnActivarElemento,
     ContenidoTable,
@@ -7,39 +7,71 @@ import {
 import { useMantineReactTable } from "mantine-react-table";
 import { MRT_Localization_ES } from "mantine-react-table/locales/es/index.cjs";
 import { useInventarioStore, useUiInventario } from "../../../hooks";
+import { UnstyledButton } from "@mantine/core";
 
 export const InventarioTable = () => {
     const {
         cargando,
         inventarios: productos,
+        paginacion,
         fnAsignarProductoInventario,
+        fnCargarProductosInventario,
     } = useInventarioStore();
-    const { fnModalInventario, fnModalAbrirActivarInventario } =
-        useUiInventario();
+
+    const {
+        fnModalInventario,
+        fnModalAbrirActivarInventario,
+        fnAbrirModalAgregarStock,
+    } = useUiInventario();
+
+    const [pagination, setPagination] = useState({
+        pageIndex: 0, // MRT usa índice 0
+        pageSize: 20, // Items por página
+    });
+
+    const [filtros, setFiltros] = useState({
+        categoria_id: null,
+        nombre_producto: null,
+        activo: null,
+    });
+
+    useEffect(() => {
+        fnCargarProductosInventario({
+            ...filtros,
+            page: pagination.pageIndex + 1, // Convertir de 0-indexed a 1-indexed
+            per_page: pagination.pageSize,
+        });
+    }, [pagination, filtros]);
 
     const columns = useMemo(
         () => [
             {
                 header: "Nombre del producto",
-                accessorKey: "nombre_producto", //normal accessorKey
-                //filterVariant: "autocomplete",
+                accessorKey: "nombre_producto",
             },
             {
                 header: "Precio unitario",
-                accessorKey: "precio_unitario", //normal accessorKey
+                accessorKey: "precio_unitario",
                 size: 80,
             },
             {
                 header: "Stock",
-                accessorKey: "stock", //normal accessorKey
+                accessorKey: "stock",
                 size: 80,
+                Cell: ({ cell }) => (
+                    <UnstyledButton
+                        onClick={() => handleAgregarStock(cell.row.original)}
+                    >
+                        {cell.getValue()}
+                    </UnstyledButton>
+                ),
             },
             {
                 header: "Categoria",
-                accessorKey: "nombre_categoria", //normal accessorKey
+                accessorKey: "nombre_categoria",
             },
             {
-                id: "activo", //id is still required when using accessorFn instead of accessorKey
+                id: "activo",
                 header: "Activo",
                 accessorKey: "activo",
                 Cell: ({ cell }) => (
@@ -51,7 +83,7 @@ export const InventarioTable = () => {
                 size: 80,
             },
         ],
-        [productos]
+        []
     );
 
     const handleEditar = useCallback(
@@ -60,7 +92,16 @@ export const InventarioTable = () => {
             fnAsignarProductoInventario(selected);
             fnModalInventario(true);
         },
-        [productos]
+        []
+    );
+
+    const handleAgregarStock = useCallback(
+        (selected) => {
+            console.log("clic agregar stock");
+            fnAsignarProductoInventario(selected);
+            fnAbrirModalAgregarStock(true);
+        },
+        []
     );
 
     const handleActivar = useCallback(
@@ -69,16 +110,28 @@ export const InventarioTable = () => {
             fnAsignarProductoInventario(selected);
             fnModalAbrirActivarInventario(true);
         },
-        [productos]
+        []
     );
 
     const table = useMantineReactTable({
         columns,
-        data: productos, //must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
-        state: { showProgressBars: cargando },
+        data: productos ?? [],
+
+        // PAGINACIÓN REMOTA
+        manualPagination: true,
+        rowCount: paginacion?.total ?? 0,
+
+        state: {
+            showProgressBars: cargando,
+            pagination,
+        },
+
+        onPaginationChange: setPagination,
+
         enableFacetedValues: true,
         enableRowActions: true,
         localization: MRT_Localization_ES,
+
         renderRowActionMenuItems: ({ row }) => (
             <MenuTable_EA
                 row={row}
@@ -86,11 +139,11 @@ export const InventarioTable = () => {
                 handleAction={handleEditar}
             />
         ),
+
         mantineTableProps: {
             withColumnBorders: true,
             striped: true,
             withTableBorder: true,
-            //withTableBorder: colorScheme === "light",
             sx: {
                 "thead > tr": {
                     backgroundColor: "inherit",

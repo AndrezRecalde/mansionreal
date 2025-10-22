@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
     cargando: false,
     huespedes: [],
+    paginacion: {},
     activarHuesped: null,
     mensaje: undefined,
     errores: undefined,
@@ -18,6 +19,9 @@ export const huespedSlice = createSlice({
         rtkCargarHuespedes: (state, { payload }) => {
             state.huespedes = payload;
             state.cargando = false;
+        },
+        rtkCargarPaginacion: (state, { payload }) => {
+            state.paginacion = payload;
         },
         rtkAgregarHuesped: (state, { payload }) => {
             state.huespedes.push(payload);
@@ -37,6 +41,8 @@ export const huespedSlice = createSlice({
         },
         rtkLimpiarHuespedes: (state) => {
             state.huespedes = [];
+            state.paginacion = {};
+            state.cargando = false;
             state.activarHuesped = null;
             state.errores = undefined;
             state.mensaje = undefined;
@@ -53,6 +59,7 @@ export const huespedSlice = createSlice({
 export const {
     rtkCargando,
     rtkCargarHuespedes,
+    rtkCargarPaginacion,
     rtkAgregarHuesped,
     rtkActualizarHuesped,
     rtkActivarHuesped,

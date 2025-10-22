@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Container, Divider, Group } from "@mantine/core";
 import {
     BtnSection,
@@ -20,8 +20,13 @@ const HuespedPage = () => {
         fnModalHuesped(true);
     };
 
+    // Estado local para controlar la paginación
+    const [pagination, setPagination] = useState({
+        pageIndex: 0,
+        pageSize: 20,
+    });
+
     useEffect(() => {
-        fnCargarHuespedes();
         fnCargarProvincias();
 
         return () => {
@@ -29,6 +34,15 @@ const HuespedPage = () => {
             fnLimpiarProvincias();
         };
     }, []);
+
+    // Cargar huéspedes cuando cambia la paginación local
+    useEffect(() => {
+        fnCargarHuespedes({
+            page: pagination.pageIndex + 1, // Backend usa base 1
+            per_page: pagination.pageSize,
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pagination.pageIndex, pagination.pageSize]);
 
     useEffect(() => {
         if (mensaje !== undefined) {
@@ -64,7 +78,10 @@ const HuespedPage = () => {
                 </BtnSection>
             </Group>
             <Divider my={10} />
-            <HuespedTable />
+            <HuespedTable
+                pagination={pagination}
+                setPagination={setPagination}
+            />
 
             <HuespedModal />
         </Container>

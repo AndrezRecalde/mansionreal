@@ -19,6 +19,7 @@ import {
     gastoSlice,
     huespedSlice,
     inventarioSlice,
+    limpiezaSlice,
     pagoSlice,
     provinciaSlice,
     reservaSlice,
@@ -36,6 +37,7 @@ import {
     uiHeaderMenuSlice,
     uiHuespedSlice,
     uiInventarioSlice,
+    uiLimpiezaSlice,
     uiPagoSlice,
     uiReservaSlice,
     uiServicioSlice,
@@ -123,6 +125,10 @@ export const store = configureStore({
         /* Pagos */
         pago: pagoSlice.reducer,
         uiPago: uiPagoSlice.reducer,
+
+        /* Limpieza */
+        limpieza: limpiezaSlice.reducer,
+        uiLimpieza: uiLimpiezaSlice.reducer,
 
         /* Storage */
         storageFields: storageFieldsSlice.reducer,

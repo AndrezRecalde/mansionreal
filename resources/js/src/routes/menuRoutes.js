@@ -4,10 +4,12 @@ import {
     IconCategory,
     IconEyeSearch,
     IconFileIsr,
+    IconHistory,
     IconListCheck,
     IconLogout,
     IconPercentage,
     IconSettings,
+    IconSpray,
     IconUserCheck,
     IconUserCircle,
     IconUserPentagon,
@@ -48,13 +50,7 @@ export const headerConfigRoutes = {
             link: "/gerencia/usuarios",
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
         },
-        {
-            icon: IconCategory,
-            title: "Categorias",
-            path: "categorias",
-            link: "/gerencia/categorias",
-            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
-        },
+
         {
             icon: IconBuildings,
             title: "Departamentos",
@@ -76,6 +72,13 @@ export const headerConfigRoutes = {
             link: "/gerencia/config-iva",
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
         },
+        {
+            icon: IconSpray,
+            title: "Limpiezas",
+            path: "limpiezas",
+            link: "/gerencia/limpiezas",
+            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+        },
     ],
 };
 
@@ -86,7 +89,7 @@ export const headerGerenciaRoutes = {
             title: "Disponibilidad Actual",
             path: "disponibilidad-departamento",
             link: "/gerencia/disponibilidad-departamento",
-            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA, Roles.ASISTENTE],
         },
         {
             icon: IconListCheck,
@@ -101,13 +104,6 @@ export const headerGerenciaRoutes = {
             title: "Huespedes",
             path: "huespedes",
             link: "/gerencia/huespedes",
-            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
-        },
-        {
-            icon: IconBuildingStore,
-            title: "Inventario",
-            path: "inventario",
-            link: "/gerencia/inventario",
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
         },
     ],
@@ -125,6 +121,32 @@ export const headerGerenciaRoutes = {
             title: "Reportes de Gerente",
             path: "reportes-gerentes",
             link: "/gerencia/reportes-gerentes",
+            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+        },
+    ],
+};
+
+export const headerInventarioRoutes = {
+    INVENTARIO: [
+        {
+            icon: IconCategory,
+            title: "Categorias",
+            path: "categorias",
+            link: "/gerencia/categorias",
+            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+        },
+        {
+            icon: IconBuildingStore,
+            title: "Inventario",
+            path: "inventario",
+            link: "/gerencia/inventario",
+            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+        },
+        {
+            icon: IconHistory,
+            title: "Historial de Movimientos",
+            path: "historial-movimientos",
+            link: "/gerencia/historial-movimientos",
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
         },
     ],

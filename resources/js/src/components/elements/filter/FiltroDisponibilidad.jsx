@@ -1,4 +1,4 @@
-import { Box, Fieldset, SimpleGrid, TextInput } from "@mantine/core";
+import { Box, Fieldset, SimpleGrid } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { BtnSubmit } from "../buttons/BtnServices";
 import { IconSearch } from "@tabler/icons-react";
@@ -13,7 +13,7 @@ export const FiltroDisponibilidad = ({
     const form = useForm({
         initialValues: {
             numero_departamento: "",
-            fecha: "",
+            fecha: dayjs().toDate(),
         },
         transformValues: (values) => ({
             ...values,

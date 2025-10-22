@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class PagoController extends Controller
 {
@@ -48,6 +49,7 @@ class PagoController extends Controller
                 'metodo_pago'      => $pagoData['metodo_pago'],
                 'fecha_pago'       => now(),
                 'observaciones'    => $pagoData['observaciones'] ?? null,
+                'usuario_creador_id' => Auth::id(),
             ]);
         }
 
@@ -68,6 +70,7 @@ class PagoController extends Controller
                 'monto'            => $request->monto,
                 'metodo_pago'      => $request->metodo_pago,
                 'observaciones'    => $request->observaciones,
+                'usuario_modificador_id' => Auth::id(),
             ]);
 
             return response()->json([

@@ -291,7 +291,7 @@ class DepartamentoController extends Controller
 
                     'estado'              => [
                         'id'    => $estadoDepto->id,
-                        'nombre' => $estadoDepto->nombre_estado,
+                        'nombre_estado' => $estadoDepto->nombre_estado,
                         'color' => $estadoDepto->color,
                     ],
                     'reserva'             => null,
@@ -311,7 +311,7 @@ class DepartamentoController extends Controller
                 'precio_noche'        => $dpto->tipoDepartamento?->inventario?->precio_unitario,
                 'estado'              => [
                     'id'    => $reservada ? $estadoOcupado->id : $estadoDisponible->id,
-                    'nombre' => $reservada ? $estadoOcupado->nombre_estado : $estadoDisponible->nombre_estado,
+                    'nombre_estado' => $reservada ? $estadoOcupado->nombre_estado : $estadoDisponible->nombre_estado,
                     'color' => $reservada ? $estadoOcupado->color : $estadoDisponible->color,
                 ],
                 'reserva'             => $reservada ? [
@@ -324,7 +324,7 @@ class DepartamentoController extends Controller
                     'total_noches'   => $reserva->total_noches,
                     'estado'         => [
                         'id'      => $reserva->estado?->id,
-                        'nombre'  => $reserva->estado?->nombre_estado,
+                        'nombre_estado'  => $reserva->estado?->nombre_estado,
                         'color'   => $reserva->estado?->color,
                     ],
                     'consumos'      => $reserva->consumos ? $reserva->consumos->map(function ($consumo) {

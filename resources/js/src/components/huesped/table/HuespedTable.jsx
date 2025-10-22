@@ -4,37 +4,42 @@ import { MRT_Localization_ES } from "mantine-react-table/locales/es/index.cjs";
 import { ContenidoTable, MenuTable_EA } from "../../../components";
 import { useHuespedStore, useUiHuesped } from "../../../hooks";
 
+export const HuespedTable = ({ pagination, setPagination }) => {
+    const {
+        cargando,
+        huespedes,
+        paginacion, // { total, por_pagina, pagina_actual, ultima_pagina, desde, hasta }
+        fnAsignarHuesped,
+    } = useHuespedStore();
 
-
-export const HuespedTable = () => {
-    const { cargando, huespedes, fnAsignarHuesped } = useHuespedStore();
     const { fnModalHuesped } = useUiHuesped();
 
     const columns = useMemo(
         () => [
             {
                 header: "Nombres Completos",
-                accessorFn: (row) => row.apellidos + " " + row.nombres, //normal accessorKey
-                //filterVariant: "autocomplete",
+                accessorFn: (row) => row.apellidos + " " + row.nombres,
+                filterVariant: "autocomplete",
             },
             {
                 header: "Cedula",
-                accessorKey: "dni", //normal accessorKey
+                accessorKey: "dni",
+                filterVariant: "autocomplete",
             },
             {
                 header: "Telefono",
-                accessorFn: (row) => row.telefono || "SIN DATOS", //normal accessorKey
+                accessorFn: (row) => row.telefono || "SIN DATOS",
             },
             {
                 header: "Email",
-                accessorKey: "email", //normal accessorKey
+                accessorKey: "email",
             },
             {
                 header: "Nacionalidad",
-                accessorFn: (row) => row.nacionalidad || "SIN DATOS", //normal accessorKey
+                accessorFn: (row) => row.nacionalidad || "SIN DATOS",
             },
         ],
-        [huespedes]
+        []
     );
 
     const handleEditar = useCallback(
@@ -42,13 +47,19 @@ export const HuespedTable = () => {
             fnAsignarHuesped(selected);
             fnModalHuesped(true);
         },
-        [huespedes]
+        [fnAsignarHuesped, fnModalHuesped]
     );
 
     const table = useMantineReactTable({
         columns,
-        data: huespedes, //must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
-        state: { showProgressBars: cargando },
+        data: huespedes ?? [],
+        state: {
+            showProgressBars: cargando,
+            pagination, // Usamos el estado local
+        },
+        onPaginationChange: setPagination, // Actualiza el estado local
+        rowCount: paginacion.total ?? 0,
+        manualPagination: true,
         enableFacetedValues: true,
         enableRowActions: true,
         localization: MRT_Localization_ES,
@@ -63,7 +74,6 @@ export const HuespedTable = () => {
             withColumnBorders: true,
             striped: true,
             withTableBorder: true,
-            //withTableBorder: colorScheme === "light",
             sx: {
                 "thead > tr": {
                     backgroundColor: "inherit",

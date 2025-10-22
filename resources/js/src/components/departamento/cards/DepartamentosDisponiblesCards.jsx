@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
     ActionIcon,
     Badge,
@@ -14,6 +15,7 @@ import {
     useDepartamentoStore,
     useReservaDepartamentoStore,
     useUiConsumo,
+    useUiLimpieza,
     useUiReservaDepartamento,
 } from "../../../hooks";
 import {
@@ -29,7 +31,6 @@ import dayjs from "dayjs";
 import "dayjs/locale/es"; // importar español
 import classes from "./modules/DepartamentoDisponibiles.module.css";
 import Swal from "sweetalert2";
-import { useEffect } from "react";
 dayjs.locale("es");
 
 export const DepartamentosDisponiblesCards = () => {
@@ -42,6 +43,7 @@ export const DepartamentosDisponiblesCards = () => {
         useReservaDepartamentoStore();
     const { fnAbrirModalReservarDepartamento } = useUiReservaDepartamento();
     const { fnAbrirDrawerConsumosDepartamento } = useUiConsumo();
+    const { fnAbrirModalLimpieza } = useUiLimpieza();
     const theme = useMantineTheme();
 
     useEffect(() => {
@@ -80,7 +82,7 @@ export const DepartamentosDisponiblesCards = () => {
             .replace(/-./, (s) => s.toUpperCase());
 
     const handleAbrirConsumos = (departamento) => {
-        if (["OCUPADO", "RESERVADO"].includes(departamento.estado.nombre)) {
+        if (["OCUPADO", "RESERVADO"].includes(departamento.estado?.nombre_estado)) {
             fnAsignarDepartamento(departamento);
             fnAbrirDrawerConsumosDepartamento(true);
         } else {
@@ -136,16 +138,10 @@ export const DepartamentosDisponiblesCards = () => {
             cancelButtonText: "Cancelar",
         }).then((result) => {
             if (result.isConfirmed) {
+                fnAbrirModalLimpieza(true);
+                fnAsignarDepartamento(departamento);
                 // Aquí puedes llamar a la función para cambiar el estado del departamento
-                fnCambiarEstadoDepartamento({
-                    id: departamento.id,
-                    nombre_estado: "LIMPIEZA",
-                });
-                Swal.fire(
-                    "¡Hecho!",
-                    `El departamento ${departamento.numero_departamento} está en limpieza.`,
-                    "success"
-                );
+
             }
         });
     };
@@ -284,7 +280,7 @@ export const DepartamentosDisponiblesCards = () => {
                                 fullWidth
                                 style={{ backgroundColor: "transparent" }}
                             >
-                                {departamento.estado?.nombre || "Sin Estado"}
+                                {departamento.estado?.nombre_estado || "Sin Estado"}
                             </Badge>
                         </Card.Section>
                         <Card.Section className={classes.section_footer}>
@@ -340,7 +336,8 @@ export const DepartamentosDisponiblesCards = () => {
                                                             "LIMPIEZA",
                                                             "MANTENIMIENTO",
                                                         ].includes(
-                                                            departamento.estado?.nombre
+                                                            departamento.estado
+                                                                ?.nombre
                                                         )
                                                             ? true
                                                             : false
@@ -366,7 +363,8 @@ export const DepartamentosDisponiblesCards = () => {
                                                             "LIMPIEZA",
                                                             "MANTENIMIENTO",
                                                         ].includes(
-                                                            departamento.estado?.nombre
+                                                            departamento.estado
+                                                                ?.nombre
                                                         )
                                                             ? true
                                                             : false

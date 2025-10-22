@@ -1,5 +1,10 @@
 import { Menu, rem } from "@mantine/core";
-import { IconCategoryPlus, IconEdit, IconEyeSearch, IconTrash } from "@tabler/icons-react";
+import {
+    IconCategoryPlus,
+    IconEdit,
+    IconEyeSearch,
+    IconTrash,
+} from "@tabler/icons-react";
 
 export const MenuTable_EA = ({ row, titulo, handleAction }) => {
     return (
@@ -43,12 +48,12 @@ export const MenuTable_DEPT = ({ row, handleEditar, handleServicios }) => {
 
 export const MenuTable_RESERVA = ({
     row,
-    handleEditar,
+    //handleEditar,
     handleAgregarConsumos,
 }) => {
     return (
         <>
-            <Menu.Item
+            {/* <Menu.Item
                 leftSection={
                     <IconEdit style={{ width: rem(15), height: rem(15) }} />
                 }
@@ -61,18 +66,12 @@ export const MenuTable_RESERVA = ({
                 onClick={() => handleEditar(row.original)}
             >
                 Editar
-            </Menu.Item>
+            </Menu.Item> */}
             <Menu.Item
                 leftSection={
                     <IconEyeSearch
                         style={{ width: rem(15), height: rem(15) }}
                     />
-                }
-                disabled={
-                    row.original.estado === "PAGADO" ||
-                    row.original.estado === "CANCELADO"
-                        ? true
-                        : false
                 }
                 onClick={() => handleAgregarConsumos(row.original)}
             >

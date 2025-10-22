@@ -63,6 +63,8 @@ import { InventarioTable } from "./inventario/table/InventarioTable";
 import { InventarioModal } from "./inventario/modal/InventarioModal";
 import { InventarioForm } from "./inventario/form/InventarioForm";
 import { InventarioBusquedaForm } from "./inventario/form/InventarioBusquedaForm";
+import { InventarioAgregarStockModal } from "./inventario/modal/InventarioAgregarStockModal";
+import { InventarioStockForm } from "./inventario/form/InventarioStockForm";
 
 /* Reservas */
 import { DisponibilidadCards } from "./reserva/section/DisponibilidadCards";
@@ -131,6 +133,12 @@ import { PagoEditarForm } from "./pago/form/PagoEditarForm";
 import { PagosTable } from "./pago/table/PagosTable";
 import { PagosTotalesReserva } from "./pago/table/PagosTotalesReserva";
 
+/* Limpieza */
+import { LimpiezaModal } from "./limpieza/modal/LimpiezaModal";
+import { LimpiezaForm } from "./limpieza/form/LimpiezaForm";
+import { LimpiezaTable } from "./limpieza/table/LimpiezaTable";
+
+
 export {
     /* Elements */
     CssLoader,
@@ -188,6 +196,8 @@ export {
     InventarioModal,
     InventarioForm,
     InventarioBusquedaForm,
+    InventarioAgregarStockModal,
+    InventarioStockForm,
 
     /* Reservas */
     DisponibilidadCards,
@@ -255,4 +265,9 @@ export {
     PagoEditarForm,
     PagosTable,
     PagosTotalesReserva,
+
+    /* Limpieza */
+    LimpiezaModal,
+    LimpiezaForm,
+    LimpiezaTable,
 };

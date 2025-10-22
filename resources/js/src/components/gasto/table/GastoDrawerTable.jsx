@@ -4,8 +4,9 @@ import { useMantineReactTable } from "mantine-react-table";
 import { ContenidoTable, MenuTable_EA, TextSection } from "../../../components";
 import { useGastoStore, useUiGasto } from "../../../hooks";
 import { IconListDetails } from "@tabler/icons-react";
+import { Estados } from "../../../helpers/getPrefix";
 
-export const GastoDrawerTable = () => {
+export const GastoDrawerTable = ({ estado }) => {
     const { cargando, gastos } = useGastoStore();
     const { fnAbrirModalGasto, fnAbrirEliminarModalGasto } = useUiGasto();
 
@@ -96,6 +97,10 @@ export const GastoDrawerTable = () => {
                         radius="xs"
                         aria-label="Gasto"
                         onClick={handleAbrirGasto}
+                        disabled={
+                            estado?.nombre_estado === Estados.CANCELADO ||
+                            estado?.nombre_estado === Estados.PAGADO
+                        }
                     >
                         <IconListDetails
                             style={{ width: "80%", height: "80%" }}

@@ -28,4 +28,21 @@ class Consumo extends Model
         return $this->belongsTo(Inventario::class);
     }
 
+    /* protected static function booted()
+    {
+        // Al crear un consumo, registrar el movimiento de inventario
+        static::created(function ($consumo) {
+            $inventario = $consumo->inventario;
+
+            if ($inventario && !$inventario->sin_stock) {
+                $inventario->registrarSalida(
+                    cantidad: $consumo->cantidad,
+                    motivo: 'Consumo en reserva',
+                    observaciones: "Consumo ID: {$consumo->id}",
+                    reservaId: $consumo->reserva_id,
+                    consumoId: $consumo->id
+                );
+            }
+        });
+    } */
 }

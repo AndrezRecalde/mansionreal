@@ -8,10 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Reserva extends Model
 {
     protected $fillable = [
-        'huesped_id',
+        'codigo_reserva',
         'tipo_reserva',
+        'huesped_id',
         'departamento_id',
-        'usuario_creador_id',
         'fecha_checkin',
         'fecha_checkout',
         'total_noches',
@@ -20,6 +20,11 @@ class Reserva extends Model
         'total_adultos',
         'total_ninos',
         'total_mascotas',
+        'usuario_creador_id',
+        'motivo_cancelacion',
+        'observacion_cancelacion',
+        'fecha_cancelacion',
+        'usuario_cancelador_id',
     ];
 
     public function huesped()
@@ -52,6 +57,31 @@ class Reserva extends Model
         return $this->hasMany(Pago::class, 'reserva_id');
     }
 
+    public function usuarioCreador()
+    {
+        return $this->belongsTo(User::class, 'usuario_creador_id');
+    }
+
+    public function usuarioCancelador()
+    {
+        return $this->belongsTo(User::class, 'usuario_cancelador_id');
+    }
+
+    public function scopeActivas(Builder $query)
+    {
+        return $query->whereHas('estado', function ($q) {
+            $q->where('nombre_estado', '!=', 'CANCELADO');
+        });
+    }
+
+    public function scopeCanceladas(Builder $query)
+    {
+        return $query->whereHas('estado', function ($q) {
+            $q->where('nombre_estado', 'CANCELADO');
+        });
+    }
+
+
     public function scopeBuscarPorHuesped(Builder $query, $huespedId)
     {
         return $query->where('huesped_id', $huespedId);
@@ -62,6 +92,17 @@ class Reserva extends Model
         return $query->whereHas('departamento', function (Builder $q) use ($numeroDepartamento) {
             $q->where('numero_departamento', 'like', '%' . $numeroDepartamento . '%');
         });
+    }
+
+    public function scopeEntreFechas(Builder $query, $inicio, $fin)
+    {
+        return $query->whereBetween('fecha_checkin', [$inicio, $fin]);
+    }
+
+    // Accessor para verificar si está cancelada
+    public function getEstaCanceladaAttribute(): bool
+    {
+        return $this->estado?->nombre_estado === 'CANCELADO';
     }
 
     /** Scope para filtrar por rango de fechas */

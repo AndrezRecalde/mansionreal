@@ -3,6 +3,15 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
     cargando: false,
     inventarios: [],
+    movimientos: [],
+    paginacion: {},
+    ultimosFiltros: {
+        categoria_id: null,
+        nombre_producto: null,
+        activo: null,
+        page: 1,
+        per_page: 20,
+    },
     activarInventario: null,
     mensaje: undefined,
     errores: undefined,
@@ -18,6 +27,16 @@ export const inventarioSlice = createSlice({
         rtkCargarInventarios: (state, { payload }) => {
             state.inventarios = payload;
             state.cargando = false;
+        },
+        rtkCargarMovimientos: (state, { payload }) => {
+            state.movimientos = payload;
+            state.cargando = false;
+        },
+        rtkCargarPaginacion: (state, { payload }) => {
+            state.paginacion = payload;
+        },
+        rtkGuardarUltimosFiltros: (state, action) => {
+            state.ultimosFiltros = action.payload;
         },
         rtkAgregarInventario: (state, { payload }) => {
             state.inventarios.push(payload);
@@ -36,6 +55,16 @@ export const inventarioSlice = createSlice({
         },
         rtkLimpiarInventarios: (state) => {
             state.inventarios = [];
+            state.movimientos = [];
+            state.paginacion = {};
+            state.ultimosFiltros = {
+                categoria_id: null,
+                nombre_producto: null,
+                activo: null,
+                page: 1,
+                per_page: 20,
+            };
+            state.cargando = false;
             state.activarInventario = null;
             state.errores = undefined;
             state.mensaje = undefined;
@@ -52,6 +81,9 @@ export const inventarioSlice = createSlice({
 export const {
     rtkCargando,
     rtkCargarInventarios,
+    rtkCargarMovimientos,
+    rtkCargarPaginacion,
+    rtkGuardarUltimosFiltros,
     rtkAgregarInventario,
     rtkActualizarInventario,
     rtkActivarInventario,

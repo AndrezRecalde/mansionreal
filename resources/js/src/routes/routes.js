@@ -75,6 +75,12 @@ const InventarioPage = lazy(() =>
     )
 );
 
+const HistorialMovimientosInvPage = lazy(() =>
+    import(
+        /* webpackChunkName: "HistorialMovimientosInvPage" */ "../pages/inventario/HistorialMovimientosInvPage"
+    )
+);
+
 const IvaPage = lazy(() =>
     import(/* webpackChunkName: "IvaPage" */ "../pages/iva/ConfigIvaPage")
 );
@@ -88,6 +94,12 @@ const DisponibilidadDepartamentoPage = lazy(() =>
 const ReportesGerentesPage = lazy(() =>
     import(
         /* webpackChunkName: "ReportesGerentesPage" */ "../pages/usuario/ReportesGerentesPage"
+    )
+);
+
+const LimpiezaPage = lazy(() =>
+    import(
+        /* webpackChunkName: "LimpiezaPage" */ "../pages/limpieza/LimpiezaPage"
     )
 );
 
@@ -116,6 +128,7 @@ export const MENU_PATH = {
     DASHBOARD: "dashboard",
     CATEGORIAS: "categorias",
     SERVICIOS: "servicios",
+    LIMPIEZA: "limpiezas",
     HUESPEDES: "huespedes",
     REPORTE_DEPARTAMENTOS: "reporte-departamentos",
     HISTORIAL_RESERVAS: "historial-reservas",
@@ -123,6 +136,7 @@ export const MENU_PATH = {
     DEPARTAMENTOS: "departamentos",
     USUARIOS: "usuarios",
     INVENTARIO: "inventario",
+    HISTORIAL_MOVIMIENTOS: "historial-movimientos",
     IVA: "config-iva",
 
     PERFIL: "perfil",
@@ -149,6 +163,8 @@ const gerenciaRoutes = generateRoutes(
         { path: MENU_PATH.SERVICIOS, Component: ServiciosPage },
         { path: MENU_PATH.USUARIOS, Component: UsuariosPage },
         { path: MENU_PATH.HUESPEDES, Component: HuespedesPage },
+        { path: MENU_PATH.LIMPIEZA, Component: LimpiezaPage },
+
         {
             path: MENU_PATH.HISTORIAL_RESERVAS,
             Component: HistorialConsumosPage,
@@ -163,9 +179,13 @@ const gerenciaRoutes = generateRoutes(
             Component: DisponibilidadActualPage,
         },
         { path: MENU_PATH.INVENTARIO, Component: InventarioPage },
+        {
+            path: MENU_PATH.HISTORIAL_MOVIMIENTOS,
+            Component: HistorialMovimientosInvPage,
+        },
         { path: MENU_PATH.IVA, Component: IvaPage },
 
-         {
+        {
             path: MENU_PATH.REPORTES_GERENTES,
             Component: ReportesGerentesPage,
         },

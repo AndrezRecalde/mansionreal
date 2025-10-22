@@ -3,6 +3,7 @@ import { Container, Divider, Group } from "@mantine/core";
 import {
     ActivarElementoModal,
     BtnSection,
+    InventarioAgregarStockModal,
     InventarioBusquedaForm,
     InventarioModal,
     InventarioTable,
@@ -35,7 +36,7 @@ const InventarioPage = () => {
     const { fnCargarCategorias, fnLimpiarCategorias } = useCategoriaStore();
 
     useEffect(() => {
-        fnCargarCategorias({ activo: 1 });
+        fnCargarCategorias({ busqueda: "INVENTARIO", activo: 1 });
 
         return () => {
             fnLimpiarCategorias();
@@ -84,6 +85,8 @@ const InventarioPage = () => {
             <InventarioTable />
 
             <InventarioModal />
+
+            <InventarioAgregarStockModal />
 
             <ActivarElementoModal
                 titulo="Activar Inventario"

@@ -77,8 +77,8 @@ export const FiltrarPorFechasCodigo = ({
             >
                 <TextInput
                     withAsterisk
-                    label="Código"
-                    placeholder="Ingrese código"
+                    label="Código Reserva"
+                    placeholder="Ingrese código de la reserva"
                     classNames={classes}
                     {...form.getInputProps("codigo_reserva")}
                 />

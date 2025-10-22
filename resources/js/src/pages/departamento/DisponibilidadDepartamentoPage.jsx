@@ -10,6 +10,7 @@ import {
     EstadiasReservadasCards,
     FiltroDisponibilidad,
     GastoModal,
+    LimpiezaModal,
     PagoEditarModal,
     PagoModal,
     ReservaFinalizarModal,
@@ -48,6 +49,7 @@ const DisponibilidadDepartamentoPage = () => {
 
     const datos_reserva = activarDepartamento?.reserva
         ? {
+              departamento_id: activarDepartamento.id,
               numero_departamento: activarDepartamento.numero_departamento,
               codigo_reserva: activarDepartamento.reserva.codigo_reserva,
               reserva_id: activarDepartamento.reserva.id,
@@ -55,6 +57,7 @@ const DisponibilidadDepartamentoPage = () => {
               fecha_checkin: activarDepartamento.reserva.fecha_checkin,
               fecha_checkout: activarDepartamento.reserva.fecha_checkout,
               total_noches: activarDepartamento.reserva.total_noches,
+              estado: activarDepartamento.reserva.estado,
           }
         : activarEstadia
         ? {
@@ -64,6 +67,7 @@ const DisponibilidadDepartamentoPage = () => {
               fecha_checkin: activarEstadia.fecha_checkin,
               fecha_checkout: activarEstadia.fecha_checkout,
               total_noches: activarEstadia.total_noches,
+              estado: activarEstadia.estado,
           }
         : null;
 
@@ -120,24 +124,15 @@ const DisponibilidadDepartamentoPage = () => {
                     />
                     {cargandoDepartamentos ? (
                         <Group gap={20}>
-                            <Skeleton
-                                height={80}
-                                mt={6}
-                                width="30%"
-                                radius="md"
-                            />
-                            <Skeleton
-                                height={80}
-                                mt={6}
-                                width="30%"
-                                radius="md"
-                            />
-                            <Skeleton
-                                height={80}
-                                mt={6}
-                                width="30%"
-                                radius="md"
-                            />
+                            {[1, 2, 3].map((item) => (
+                                <Skeleton
+                                    key={item}
+                                    height={80}
+                                    mt={6}
+                                    width="30%"
+                                    radius="md"
+                                />
+                            ))}
                         </Group>
                     ) : (
                         <DepartamentosDisponiblesCards />
@@ -147,24 +142,15 @@ const DisponibilidadDepartamentoPage = () => {
                 <Tabs.Panel value="ESTADIA" pt="xs">
                     {cargandoEstadias ? (
                         <Group gap={20}>
-                            <Skeleton
-                                height={80}
-                                mt={6}
-                                width="30%"
-                                radius="md"
-                            />
-                            <Skeleton
-                                height={80}
-                                mt={6}
-                                width="30%"
-                                radius="md"
-                            />
-                            <Skeleton
-                                height={80}
-                                mt={6}
-                                width="30%"
-                                radius="md"
-                            />
+                            {[1, 2, 3].map((item) => (
+                                <Skeleton
+                                    key={item}
+                                    height={80}
+                                    mt={6}
+                                    width="30%"
+                                    radius="md"
+                                />
+                            ))}
                         </Group>
                     ) : (
                         <EstadiasReservadasCards />
@@ -190,6 +176,7 @@ const DisponibilidadDepartamentoPage = () => {
                     <ConsumoEliminarModal />
                 </>
             )}
+            <LimpiezaModal />
         </Container>
     );
 };

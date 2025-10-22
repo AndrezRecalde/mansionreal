@@ -18,10 +18,11 @@ export const useCategoriaStore = () => {
 
     const { ExceptionMessageError } = useErrorException(rtkCargarErrores);
 
-    const fnCargarCategorias = async ({ activo = null }) => {
+    const fnCargarCategorias = async ({ busqueda = null, activo = null }) => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.post("/gerencia/categorias", {
+                busqueda,
                 activo,
             });
             const { categorias } = data;

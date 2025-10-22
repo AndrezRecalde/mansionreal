@@ -6,6 +6,7 @@ import {
     useUiConsumo,
     useUiReservaDepartamento,
 } from "../../../hooks";
+import { Estados } from "../../../helpers/getPrefix";
 
 export const ReservaAccionesTable = ({
     datos,
@@ -31,15 +32,15 @@ export const ReservaAccionesTable = ({
         <Group justify="space-between" align="center">
             <Group gap={25}>
                 <TextSection
-                    color="indigo.7"
+                    color={datos.estado?.color || "indigo.7"}
                     fs="italic"
                     tt=""
-                    fz={18}
+                    fz={16}
                     fw={800}
                 >
                     {datos.numero_departamento
-                        ? `Departamento No. ${datos.numero_departamento}`
-                        : "Resumen de Estadia"}
+                        ? `Departamento No. ${datos.numero_departamento} — ${datos.estado?.nombre_estado}`
+                        : `Resumen de Estadia  — ${datos.estado?.nombre_estado}`}
                 </TextSection>
             </Group>
             <Group gap={25}>
@@ -50,6 +51,10 @@ export const ReservaAccionesTable = ({
                         radius="xs"
                         aria-label="Finalizar Reserva"
                         onClick={handleFinalizarReservaClick}
+                        disabled={
+                            datos.estado?.nombre_estado === Estados.CANCELADO ||
+                            datos.estado?.nombre_estado === Estados.PAGADO
+                        }
                     >
                         <IconChecks
                             style={{ width: "80%", height: "80%" }}

@@ -3,12 +3,12 @@ import { TextSection } from "../../elements/titles/TextSection";
 import { BtnSubmit } from "../../elements/buttons/BtnServices";
 import { IconSearch } from "@tabler/icons-react";
 import { useForm } from "@mantine/form";
-import { useCategoriaStore, useInventarioStore, useStorageField } from "../../../hooks";
+import { useCategoriaStore, useInventarioStore } from "../../../hooks";
 
 export const InventarioBusquedaForm = () => {
     const { categorias } = useCategoriaStore();
-    const { fnCargarProductosInventario } = useInventarioStore();
-    const { fnSetStorageFields } = useStorageField();
+    const { fnCargarProductosInventario, paginacion } = useInventarioStore();
+    //const { fnSetStorageFields } = useStorageField();
 
     const form = useForm({
         initialValues: {
@@ -25,8 +25,9 @@ export const InventarioBusquedaForm = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        fnCargarProductosInventario(form.getTransformedValues());
-        fnSetStorageFields(form.getTransformedValues());
+        let objetoFinal = { ...form.getTransformedValues(), all: false };
+        fnCargarProductosInventario(objetoFinal);
+        //fnSetStorageFields({ paginacion, ...objetoFinal });
     };
 
     return (

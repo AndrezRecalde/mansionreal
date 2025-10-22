@@ -4,8 +4,9 @@ import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
 import { useMantineReactTable } from "mantine-react-table";
 import { IconCashRegister } from "@tabler/icons-react";
 import { usePagoStore, useUiPago } from "../../../hooks";
+import { Estados } from "../../../helpers/getPrefix";
 
-export const PagosTable = () => {
+export const PagosTable = ({ estado }) => {
     const { cargando, pagos, fnAsignarPago } = usePagoStore();
     const {
         fnAbrirModalRegistroPago,
@@ -106,6 +107,10 @@ export const PagosTable = () => {
                         radius="xs"
                         aria-label="Agregar Voucher"
                         onClick={handleAgregarVoucherClick}
+                        disabled={
+                            estado?.nombre_estado === Estados.CANCELADO ||
+                            estado?.nombre_estado === Estados.PAGADO
+                        }
                     >
                         <IconCashRegister
                             style={{ width: "80%", height: "80%" }}

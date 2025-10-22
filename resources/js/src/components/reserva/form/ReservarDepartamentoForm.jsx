@@ -14,8 +14,9 @@ import classes from "../modules/ReservarDepartamento.module.css";
 import Swal from "sweetalert2";
 
 export const ReservarDepartamentoForm = ({ reservaForm }) => {
-    const { fnBuscarHuespedPorDni, activarHuesped } = useHuespedStore();
-    const { fnAgregarReserva, fnAsignarTipoReserva, activarTipoReserva } =
+    const { fnBuscarHuespedPorDni, activarHuesped, fnAsignarHuesped } =
+        useHuespedStore();
+    const { fnAgregarReserva, activarTipoReserva } =
         useReservaDepartamentoStore();
     const { fnAbrirModalReservarDepartamento } = useUiReservaDepartamento();
     const { fnAgregarEstadia } = useEstadiaStore();
@@ -51,13 +52,10 @@ export const ReservarDepartamentoForm = ({ reservaForm }) => {
                     );
                 } else {
                     fnAgregarEstadia(reservaForm.getTransformedValues());
-                    console.log(
-                        "ESTADIA:",
-                        reservaForm.getTransformedValues()
-                    );
+                    console.log("ESTADIA:", reservaForm.getTransformedValues());
                 }
-                //fnAsignarTipoReserva(null);
                 reservaForm.reset();
+                fnAsignarHuesped(null);
                 setShowDetails(false);
                 fnAbrirModalReservarDepartamento(false);
             }

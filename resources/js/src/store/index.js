@@ -77,6 +77,10 @@ import { conceptoPagoSlice } from "./pago/conceptoPagoSlice";
 import { pagoSlice } from "./pago/pagoSlice";
 import { uiPagoSlice } from "./pago/uiPagoSlice";
 
+/* Limpiezas */
+import { limpiezaSlice } from "./limpieza/limpiezaSlice";
+import { uiLimpiezaSlice } from "./limpieza/uiLimpiezaSlice";
+
 /* Storage Fields */
 import { storageFieldsSlice } from "./storage/storageFieldsSlice";
 
@@ -160,6 +164,10 @@ export {
     /* Pago */
     pagoSlice,
     uiPagoSlice,
+
+    /* Limpieza */
+    limpiezaSlice,
+    uiLimpiezaSlice,
 
     /* Storage Fields */
     storageFieldsSlice,

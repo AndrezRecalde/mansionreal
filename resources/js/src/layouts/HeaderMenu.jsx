@@ -2,7 +2,11 @@ import { Box, Burger, Group, useMantineTheme } from "@mantine/core";
 import { Logo } from "../components";
 import { Roles } from "../helpers/getPrefix";
 import { HeaderBtnInicio } from "./HeaderBtnInicio";
-import { headerConfigRoutes, headerGerenciaRoutes } from "../routes/menuRoutes";
+import {
+    headerConfigRoutes,
+    headerGerenciaRoutes,
+    headerInventarioRoutes,
+} from "../routes/menuRoutes";
 import { useUiHeaderMenu } from "../hooks";
 import { GestionMenu } from "./menu/GestionMenu";
 import { UserBtnHeader } from "./menu/UserBtnHeader";
@@ -21,8 +25,8 @@ export const HeaderMenu = ({ usuario }) => {
                         <Group h="100%" gap={0} visibleFrom="lg">
                             <HeaderBtnInicio classes={classes} theme={theme} />
                             {/* MENU DE GESTION DE CONFIGURACION DE PARAMETROS */}
-                            { usuario.role === Roles.ADMINISTRADOR ||
-                              usuario.role === Roles.GERENCIA ? (
+                            {usuario.role === Roles.ADMINISTRADOR ||
+                            usuario.role === Roles.GERENCIA ? (
                                 <GestionMenu
                                     title="Configuraciónes"
                                     menuData={headerConfigRoutes}
@@ -32,11 +36,22 @@ export const HeaderMenu = ({ usuario }) => {
                                 />
                             ) : null}
                             {/* MENU DE GESTION GERENCIAL DEL HOTEL */}
-                            { usuario.role === Roles.ADMINISTRADOR ||
-                              usuario.role === Roles.GERENCIA ? (
+                            {usuario.role === Roles.ADMINISTRADOR ||
+                            usuario.role === Roles.GERENCIA ? (
                                 <GestionMenu
                                     title="Gerencia"
                                     menuData={headerGerenciaRoutes}
+                                    usuario={usuario}
+                                    classes={classes}
+                                    theme={theme}
+                                />
+                            ) : null}
+                            {/* MENU DE GESTION DE INVENTARIO */}
+                            {usuario.role === Roles.ADMINISTRADOR ||
+                            usuario.role === Roles.GERENCIA ? (
+                                <GestionMenu
+                                    title="Inventario"
+                                    menuData={headerInventarioRoutes}
                                     usuario={usuario}
                                     classes={classes}
                                     theme={theme}

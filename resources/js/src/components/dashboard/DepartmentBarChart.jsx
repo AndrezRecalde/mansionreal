@@ -34,7 +34,7 @@ export default function DepartmentBarChart() {
             style: { color: "#228be6", fontWeight: "bold" },
         },
         xAxis: {
-            categories: categorias.map((cat) => cat.visual),
+            categories: categorias.map((cat) => cat),
             title: { text: "Tipo de Departamento" },
             labels: {
                 style: { fontSize: "14px", fontWeight: 600, color: "#a1a6ab" },

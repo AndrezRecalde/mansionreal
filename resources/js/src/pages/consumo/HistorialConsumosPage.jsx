@@ -38,6 +38,7 @@ const HistorialConsumosPage = () => {
         fecha_checkin: activarReserva?.fecha_checkin,
         fecha_checkout: activarReserva?.fecha_checkout,
         total_noches: activarReserva?.total_noches,
+        estado: activarReserva?.estado,
     };
 
     useEffect(() => {

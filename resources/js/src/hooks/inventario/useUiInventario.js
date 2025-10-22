@@ -1,12 +1,16 @@
 import { useDispatch, useSelector } from "react-redux";
 import {
     rtkAbrirModalActivarProductoInventario,
+    rtkAbrirModalAgregarStock,
     rtkAbrirModalInventario,
 } from "../../store/inventario/uiInventarioSlice";
 
 export const useUiInventario = () => {
-    const { abrirModalInventario, abrirModalActivarProductoInventario } =
-        useSelector((state) => state.uiInventario);
+    const {
+        abrirModalInventario,
+        abrirModalActivarProductoInventario,
+        abrirModalAgregarStock,
+    } = useSelector((state) => state.uiInventario);
 
     const dispatch = useDispatch();
 
@@ -18,11 +22,17 @@ export const useUiInventario = () => {
         dispatch(rtkAbrirModalActivarProductoInventario(abrir));
     };
 
+    const fnAbrirModalAgregarStock = (abrir) => {
+        dispatch(rtkAbrirModalAgregarStock(abrir));
+    };
+
     return {
         abrirModalInventario,
         abrirModalActivarProductoInventario,
+        abrirModalAgregarStock,
 
         fnModalInventario,
-        fnModalAbrirActivarInventario
+        fnModalAbrirActivarInventario,
+        fnAbrirModalAgregarStock,
     };
 };

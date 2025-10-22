@@ -6,24 +6,35 @@ import {
     rtkCargarErrores,
     rtkCargarHuespedes,
     rtkCargarMensaje,
+    rtkCargarPaginacion,
     rtkLimpiarHuespedes,
 } from "../../store/huesped/huespedSlice";
 import apiAxios from "../../api/apiAxios";
 
 export const useHuespedStore = () => {
-    const { cargando, huespedes, activarHuesped, mensaje, errores } =
-        useSelector((state) => state.huesped);
+    const {
+        cargando,
+        huespedes,
+        paginacion,
+        activarHuesped,
+        mensaje,
+        errores,
+    } = useSelector((state) => state.huesped);
 
     const dispatch = useDispatch();
 
     const { ExceptionMessageError } = useErrorException(rtkCargarErrores);
 
-    const fnCargarHuespedes = async () => {
+    const fnCargarHuespedes = async ({ page = 1, per_page = 20 } = {}) => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.get("/huespedes");
-            const { huespedes } = data;
+
+            const { data } = await apiAxios.get("/huespedes", {
+                params: { page, per_page },
+            });
+            const { huespedes, paginacion } = data;
             dispatch(rtkCargarHuespedes(huespedes));
+            dispatch(rtkCargarPaginacion(paginacion));
         } catch (error) {
             console.log(error);
             dispatch(rtkCargando(false));
@@ -39,7 +50,10 @@ export const useHuespedStore = () => {
                     `/gerencia/huesped/${huesped.id}`,
                     huesped
                 );
-                fnCargarHuespedes();
+                fnCargarHuespedes({
+                    page: paginacion.pagina_actual,
+                    per_page: paginacion.por_pagina,
+                });
                 dispatch(rtkCargarMensaje(data));
                 setTimeout(() => {
                     dispatch(rtkCargarMensaje(undefined));
@@ -48,7 +62,10 @@ export const useHuespedStore = () => {
             }
             //creando
             const { data } = await apiAxios.post("/gerencia/huesped", huesped);
-            fnCargarHuespedes();
+            fnCargarHuespedes({
+                page: paginacion.pagina_actual,
+                per_page: paginacion.por_pagina,
+            });
             dispatch(rtkCargarMensaje(data));
             setTimeout(() => {
                 dispatch(rtkCargarMensaje(undefined));
@@ -62,7 +79,9 @@ export const useHuespedStore = () => {
     const fnBuscarHuespedPorDni = async (dni) => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.post("/gerencia/huesped/buscar", { dni });
+            const { data } = await apiAxios.post("/gerencia/huesped/buscar", {
+                dni,
+            });
             const { huesped } = data;
             dispatch(rtkActivarHuesped(huesped));
         } catch (error) {
@@ -70,7 +89,7 @@ export const useHuespedStore = () => {
             dispatch(rtkCargando(false));
             ExceptionMessageError(error);
         }
-    }
+    };
 
     const fnAsignarHuesped = (huesped) => {
         dispatch(rtkActivarHuesped(huesped));
@@ -78,11 +97,12 @@ export const useHuespedStore = () => {
 
     const fnLimpiarHuespedes = () => {
         dispatch(rtkLimpiarHuespedes());
-    }
+    };
 
     return {
         cargando,
         huespedes,
+        paginacion,
         activarHuesped,
         mensaje,
         errores,
@@ -91,6 +111,6 @@ export const useHuespedStore = () => {
         fnAgregarHuesped,
         fnBuscarHuespedPorDni,
         fnAsignarHuesped,
-        fnLimpiarHuespedes
+        fnLimpiarHuespedes,
     };
 };

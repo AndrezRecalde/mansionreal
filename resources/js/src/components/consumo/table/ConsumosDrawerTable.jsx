@@ -4,8 +4,9 @@ import { useMantineReactTable } from "mantine-react-table";
 import { ContenidoTable, MenuTable_EE, TextSection } from "../../../components";
 import { IconShoppingCartPlus } from "@tabler/icons-react";
 import { useConsumoStore, useUiConsumo } from "../../../hooks";
+import { Estados } from "../../../helpers/getPrefix";
 
-export const ConsumosDrawerTable = () => {
+export const ConsumosDrawerTable = ({ estado }) => {
     const { cargando, consumos, fnAsignarConsumo } = useConsumoStore();
     const {
         fnAbrirModalConsumo,
@@ -98,6 +99,10 @@ export const ConsumosDrawerTable = () => {
                         radius="xs"
                         aria-label="Consumo"
                         onClick={handleAbrirConsumo}
+                        disabled={
+                            estado?.nombre_estado === Estados.CANCELADO ||
+                            estado?.nombre_estado === Estados.PAGADO
+                        }
                     >
                         <IconShoppingCartPlus
                             style={{ width: "80%", height: "80%" }}

@@ -14,7 +14,6 @@ import { useDashHuespedStore } from "./dashboard/useDashHuespedStore";
 import { useDashIngresosPorDepartamentoStore } from "./dashboard/useDashIngresosPorDepartamentoStore";
 import { useDashRankingProductosStore } from "./dashboard/useDashRankingProductosStore";
 
-
 /* Usuario */
 import { useUsuarioStore } from "./usuario/useUsuarioStore";
 import { useUiUsuario } from "./usuario/useUiUsuario";
@@ -76,6 +75,10 @@ import { useUiPago } from "./pago/useUiPago";
 
 /* Tipos de dano */
 import { useTiposDanoStore } from "./tiposDano/useTiposDanoStore";
+
+/* Limpiezas */
+import { useLimpiezaStore } from "./limpieza/useLimpiezaStore";
+import { useUiLimpieza } from "./limpieza/useUiLimpieza";
 
 /* Storage Fields */
 import { useStorageField } from "./storage/useStorageField";
@@ -158,6 +161,10 @@ export {
     /* Tipos de dano */
     useTiposDanoStore,
 
+    /* Limpiezas */
+    useLimpiezaStore,
+    useUiLimpieza,
+
     /* Storage Fields */
     useStorageField,
-}
+};

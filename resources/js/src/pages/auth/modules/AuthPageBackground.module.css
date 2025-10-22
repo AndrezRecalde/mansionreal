@@ -1,34 +1,37 @@
 .wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  background-color: #f8f9fa; /* gris suave */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #f8f9fa; /* gris suave */
 }
 
 .card {
-  display: flex;
-  width: 800px;
-  min-height: 450px;
-  overflow: hidden;
-  border: 1px solid #dee2e6;
+    display: flex;
+    width: 800px;
+    min-height: 450px;
+    overflow: hidden;
+    border: 1px solid #dee2e6;
 }
 
 .left {
-  width: 50%;
-  background-color: #ffffff;
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+    width: 50%;
+    background-color: #ffffff;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .right {
-  width: 50%;
-  background-color: #1a1a1a;
-  color: white;
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+    background-image: url("https://prefecturadeesmeraldas.gob.ec/wp-content/uploads/2025/10/HOTEL-2.png");
+    background-size: cover;
+    background-position: center;
+    width: 50%;
+    background-color: #1a1a1a;
+    color: white;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }

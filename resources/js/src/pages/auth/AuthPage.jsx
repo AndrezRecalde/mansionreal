@@ -1,6 +1,6 @@
-import { Divider, Paper, Text, Title } from "@mantine/core";
+import { Divider, Paper, Text } from "@mantine/core";
 import { useTitleHook } from "../../hooks";
-import { AuthForm } from "../../components";
+import { AuthForm, TitlePage } from "../../components";
 import classes from "./modules/AuthPageBackground.module.css";
 
 const AuthPage = () => {
@@ -10,21 +10,20 @@ const AuthPage = () => {
             <Paper radius="md" shadow="md" className={classes.card}>
                 {/* Columna izquierda: formulario */}
                 <div className={classes.left}>
-                    <Title order={2} mb="md">
+                    <TitlePage order={2} mb="md">
                         Mansión Real
-                    </Title>
+                    </TitlePage>
                     <Divider mb="xl" />
                     <AuthForm />
                 </div>
 
                 {/* Columna derecha: mensaje */}
                 <div className={classes.right}>
-                    <Title order={2} mb="sm">
+                    <TitlePage order={2} mb="sm" c="dark.5">
                         Bienvenido!
-                    </Title>
-                    <Text size="sm" c="gray.4">
-                        Un atardecer inolvidable
-                        v7. <br />
+                    </TitlePage>
+                    <Text size="sm" c="dark.4">
+                        Cada amanecer, un recuerdo<br />
                     </Text>
                 </div>
             </Paper>

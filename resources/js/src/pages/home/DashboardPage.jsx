@@ -108,13 +108,13 @@ export default function DashboardPage() {
 
             {/* Listados */}
             <Grid>
-                <Grid.Col span={6}>
+                {/* <Grid.Col span={6}>
                     <Card shadow="sm" withBorder>
                         <Title order={4}>Reservas Activas</Title>
                         <ReservationsTable />
                     </Card>
-                </Grid.Col>
-                <Grid.Col span={6}>
+                </Grid.Col> */}
+                <Grid.Col span={12}>
                     <Card shadow="sm" withBorder>
                         <Title order={4}>Ranking Huéspedes Recurrentes</Title>
                         <GuestsRankingTable />

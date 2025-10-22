@@ -20,7 +20,7 @@ export const ConsumoEliminarForm = ({ form }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log(form.getValues());
-        //fnEliminarConsumo(form.getValues());
+        fnEliminarConsumo(form.getValues());
         fnAsignarConsumo(null);
         fnAbrirModalEliminarConsumo(false);
     };

@@ -15,6 +15,7 @@ use App\Models\Inventario;
 use App\Models\Reserva;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 use Svg\Tag\Rect;
 
 class ConsumosController extends Controller
@@ -90,15 +91,50 @@ class ConsumosController extends Controller
                 $precioUnitario = $inventario->precio_unitario;
 
                 if ($consumo) {
-                    // Actualizar consumo existente
-                    $cantidadFinal = $consumo->cantidad + $cantidadNueva;
+                    // ========== ACTUALIZAR CONSUMO EXISTENTE ==========
+                    $cantidadAnterior = $consumo->cantidad;
+                    $cantidadFinal = $cantidadAnterior + $cantidadNueva;
 
                     if ($cantidadFinal <= 0) {
-                        // Opcional: eliminar el consumo si la cantidad llega a 0 o menos
+                        // Si la cantidad final es 0 o menos, devolver al inventario
+                        if (!$inventario->sin_stock) {
+                            $inventario->registrarEntrada(
+                                cantidad: abs($cantidadAnterior),
+                                motivo: 'Devolución de consumo eliminado',
+                                observaciones: "Consumo ID: {$consumo->id} - Reserva: {$reserva->codigo_reserva}",
+                                usuarioId: Auth::id()
+                            );
+                        }
+
                         $consumo->delete();
                         continue;
                     }
 
+                    // Calcular diferencia para ajustar inventario
+                    $diferenciaCantidad = $cantidadNueva; // Puede ser positiva o negativa
+
+                    // Registrar movimiento de inventario según la diferencia
+                    if ($diferenciaCantidad > 0 && !$inventario->sin_stock) {
+                        // Aumentó el consumo = salida de inventario
+                        $inventario->registrarSalida(
+                            cantidad: $diferenciaCantidad,
+                            motivo: 'Consumo adicional en reserva',
+                            observaciones: "Consumo ID: {$consumo->id} - Reserva: {$reserva->codigo_reserva} - Huésped: {$huesped->nombres} {$huesped->apellidos}",
+                            reservaId: $reserva_id,
+                            consumoId: $consumo->id,
+                            usuarioId: Auth::id()
+                        );
+                    } elseif ($diferenciaCantidad < 0 && !$inventario->sin_stock) {
+                        // Disminuyó el consumo = devolución al inventario
+                        $inventario->registrarEntrada(
+                            cantidad: abs($diferenciaCantidad),
+                            motivo: 'Corrección de consumo (devolución)',
+                            observaciones: "Consumo ID: {$consumo->id} - Reserva: {$reserva->codigo_reserva}",
+                            usuarioId: Auth::id()
+                        );
+                    }
+
+                    // Actualizar el consumo
                     $consumo->cantidad = $cantidadFinal;
                     $consumo->subtotal = $cantidadFinal * $precioUnitario;
                     $consumo->tasa_iva = $tasa_iva;
@@ -109,7 +145,13 @@ class ConsumosController extends Controller
 
                     $consumosProcesados[] = $consumo;
                 } else {
-                    // Crear nuevo consumo
+                    // ========== CREAR NUEVO CONSUMO ==========
+
+                    // Verificar stock disponible (solo si maneja stock)
+                    if (!$inventario->sin_stock && $inventario->stock < $cantidadNueva) {
+                        throw new \Exception("Stock insuficiente para {$inventario->nombre_producto}. Disponible: {$inventario->stock}, Solicitado: {$cantidadNueva}");
+                    }
+
                     $subtotal = $cantidadNueva * $precioUnitario;
                     $iva = $subtotal * ($tasa_iva / 100);
                     $total = $iva + $subtotal;
@@ -127,6 +169,18 @@ class ConsumosController extends Controller
                         'aplica_iva'      => $aplica_iva,
                     ]);
 
+                    // Registrar salida de inventario (solo si maneja stock)
+                    if (!$inventario->sin_stock) {
+                        $inventario->registrarSalida(
+                            cantidad: $cantidadNueva,
+                            motivo: 'Consumo en reserva',
+                            observaciones: "Consumo ID: {$nuevoConsumo->id} - Reserva: {$reserva->codigo_reserva} - Huésped: {$huesped->nombres} {$huesped->apellidos}",
+                            reservaId: $reserva_id,
+                            consumoId: $nuevoConsumo->id,
+                            usuarioId: Auth::id()
+                        );
+                    }
+
                     $consumosProcesados[] = $nuevoConsumo;
                 }
             }
@@ -135,7 +189,8 @@ class ConsumosController extends Controller
 
             return response()->json([
                 'status' => 'success',
-                'data'   => $consumosProcesados
+                'data'   => $consumosProcesados,
+                'mensaje' => 'Consumos registrados correctamente'
             ]);
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -148,47 +203,120 @@ class ConsumosController extends Controller
 
     function update(Request $request, int $id): JsonResponse
     {
+        DB::beginTransaction();
         try {
             $consumo = Consumo::find($id);
 
             if (!$consumo) {
                 return response()->json([
-                    'status' => HTTPStatus::Error,
-                    'msg'    => HTTPStatus::NotFound
+                    'status' => 'error',
+                    'msg'    => 'Consumo no encontrado'
                 ], 404);
             }
 
-            //$consumo->fill($request->validated());
+            $cantidadAnterior = $consumo->cantidad;
+            $cantidadNueva = $request->cantidad;
+            $diferencia = $cantidadNueva - $cantidadAnterior;
+
+            // Obtener inventario
+            $inventario = Inventario::findOrFail($request->inventario_id);
+
+            // Verificar si cambió el inventario_id
+            $cambioInventario = $consumo->inventario_id !== $request->inventario_id;
+
+            if ($cambioInventario) {
+                // ========== CAMBIÓ EL PRODUCTO ==========
+
+                // Devolver al inventario anterior (solo si maneja stock)
+                $inventarioAnterior = Inventario::findOrFail($consumo->inventario_id);
+                if (!$inventarioAnterior->sin_stock) {
+                    $inventarioAnterior->registrarEntrada(
+                        cantidad: $cantidadAnterior,
+                        motivo: 'Corrección de consumo (cambio de producto)',
+                        observaciones: "Consumo ID: {$consumo->id} - Se cambió a otro producto",
+                        usuarioId: Auth::id()
+                    );
+                }
+
+                // Descontar del nuevo inventario (solo si maneja stock)
+                if (!$inventario->sin_stock) {
+                    if ($inventario->stock < $cantidadNueva) {
+                        throw new \Exception("Stock insuficiente para {$inventario->nombre_producto}. Disponible: {$inventario->stock}, Solicitado: {$cantidadNueva}");
+                    }
+
+                    $inventario->registrarSalida(
+                        cantidad: $cantidadNueva,
+                        motivo: 'Corrección de consumo (nuevo producto)',
+                        observaciones: "Consumo ID: {$consumo->id} - Cambio de producto",
+                        reservaId: $consumo->reserva_id,
+                        consumoId: $consumo->id,
+                        usuarioId: Auth::id()
+                    );
+                }
+            } else {
+                // ========== MISMO PRODUCTO, CAMBIÓ LA CANTIDAD ==========
+
+                if ($diferencia > 0 && !$inventario->sin_stock) {
+                    // Aumentó la cantidad = salida adicional
+                    if ($inventario->stock < $diferencia) {
+                        throw new \Exception("Stock insuficiente para {$inventario->nombre_producto}. Disponible: {$inventario->stock}, Solicitado: {$diferencia}");
+                    }
+
+                    $inventario->registrarSalida(
+                        cantidad: $diferencia,
+                        motivo: 'Ajuste de consumo (aumento)',
+                        observaciones: "Consumo ID: {$consumo->id} - Cantidad anterior: {$cantidadAnterior}, Nueva: {$cantidadNueva}",
+                        reservaId: $consumo->reserva_id,
+                        consumoId: $consumo->id,
+                        usuarioId: Auth::id()
+                    );
+                } elseif ($diferencia < 0 && !$inventario->sin_stock) {
+                    // Disminuyó la cantidad = devolución
+                    $inventario->registrarEntrada(
+                        cantidad: abs($diferencia),
+                        motivo: 'Ajuste de consumo (devolución)',
+                        observaciones: "Consumo ID: {$consumo->id} - Cantidad anterior: {$cantidadAnterior}, Nueva: {$cantidadNueva}",
+                        usuarioId: Auth::id()
+                    );
+                }
+            }
+
             // Obtener la tasa de IVA activa
             $ivaConfig = ConfiguracionIva::where('activo', true)->first();
             $tasa_iva = $ivaConfig ? $ivaConfig->tasa_iva : 0;
 
-            /* Obtener Precio Unitario del producto */
-            $inventario = Inventario::findOrFail($request->inventario_id);
+            // Obtener Precio Unitario del producto
             $precioUnitario = $inventario->precio_unitario;
 
-            $consumo->cantidad = $request->cantidad;
-            $consumo->subtotal = $request->cantidad * $precioUnitario;
+            // Actualizar el consumo
+            $consumo->inventario_id = $request->inventario_id;
+            $consumo->cantidad = $cantidadNueva;
+            $consumo->subtotal = $cantidadNueva * $precioUnitario;
             $consumo->tasa_iva = $tasa_iva;
-            $consumo->iva      = $consumo->subtotal * ($tasa_iva / 100);
+            $consumo->iva = $consumo->subtotal * ($tasa_iva / 100);
             $consumo->total = $consumo->iva + $consumo->subtotal;
             $consumo->aplica_iva = $tasa_iva > 0 ? true : false;
             $consumo->save();
 
+            DB::commit();
+
             return response()->json([
-                'status' => HTTPStatus::Success,
-                'msg'   => HTTPStatus::Actualizado
+                'status' => 'success',
+                'msg' => 'Consumo actualizado correctamente',
+                'data' => $consumo
             ]);
         } catch (\Throwable $th) {
+            DB::rollBack();
             return response()->json([
-                'status' => HTTPStatus::Error,
-                'msg'    => $th->getMessage()
+                'status' => 'error',
+                'msg' => $th->getMessage()
             ], 500);
         }
     }
 
     function delete(Request $request, int $id): JsonResponse
     {
+        DB::beginTransaction();
         try {
             $consumo = Consumo::find($id);
 
@@ -210,14 +338,30 @@ class ConsumosController extends Controller
                 ], 403);
             }
 
+            // Obtener inventario relacionado
+            $inventario = Inventario::find($consumo->inventario_id);
+
+            // Devolver stock al inventario si corresponde
+            if ($inventario && !$inventario->sin_stock && $consumo->cantidad > 0) {
+                $inventario->registrarEntrada(
+                    cantidad: $consumo->cantidad,
+                    motivo: 'Devolución por eliminación de consumo',
+                    observaciones: "Consumo ID: {$consumo->id} eliminado por el usuario {$user->name} (GERENTE)",
+                    usuarioId: $user->id
+                );
+            }
+
             // Eliminar el consumo
             $consumo->delete();
+
+            DB::commit();
 
             return response()->json([
                 'status' => HTTPStatus::Success,
                 'msg'    => HTTPStatus::Eliminado,
             ]);
         } catch (\Throwable $th) {
+            DB::rollBack();
             return response()->json([
                 'status' => HTTPStatus::Error,
                 'msg'    => $th->getMessage()

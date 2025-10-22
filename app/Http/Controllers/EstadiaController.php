@@ -83,8 +83,9 @@ class EstadiaController extends Controller
     public function storeEstadia(EstadiaRequest $request): JsonResponse
     {
         try {
-            // 1. Validar datos del huésped
+            // 1. Obtener o crear huésped
             if ($request->huesped['huesped_id'] == null) {
+                // Crear nuevo huésped
                 $huesped = Huesped::create([
                     'nombres'       => $request->huesped['nombres'],
                     'apellidos'     => $request->huesped['apellidos'],
@@ -94,12 +95,15 @@ class EstadiaController extends Controller
                     'direccion'     => $request->huesped['direccion'],
                     'nacionalidad'  => $request->huesped['nacionalidad'],
                 ]);
+            } else {
+                // Obtener huésped existente
+                $huesped = Huesped::findOrFail($request->huesped['huesped_id']);
             }
 
             // 2. Crear la reserva tipo ESTADIA
             $reserva = new Reserva();
             $reserva->fill($request->validated());
-            $reserva->huesped_id = $request->huesped['huesped_id'] ?? $huesped->id;
+            $reserva->huesped_id = $huesped->id; // ← Simplificado
             $reserva->estado_id = Estado::where('activo', 1)
                 ->where('tipo_estado', 'RESERVA')
                 ->where('nombre_estado', 'RESERVADO')
@@ -122,8 +126,9 @@ class EstadiaController extends Controller
 
             // 4. Obtener tasa de IVA activa
             $ivaConfig = ConfiguracionIva::where('activo', true)->first();
-            // --- Modificación: tasa de IVA según nacionalidad ---
-            $nacionalidad = $huesped->nacionalidad; // ECUATORIANO o EXTRANJERO
+
+            // --- Determinar tasa de IVA según nacionalidad ---
+            $nacionalidad = $huesped->nacionalidad; // ← Ahora $huesped siempre existe
             if ($nacionalidad === 'ECUATORIANO') {
                 $tasa_iva = $ivaConfig ? $ivaConfig->tasa_iva : 0;
             } else {

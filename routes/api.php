@@ -11,6 +11,7 @@ use App\Http\Controllers\EstadiaController;
 use App\Http\Controllers\GastosController;
 use App\Http\Controllers\HuespedController;
 use App\Http\Controllers\InventarioController;
+use App\Http\Controllers\LimpiezaController;
 use App\Http\Controllers\PagoController;
 use App\Http\Controllers\ProvinciaController;
 use App\Http\Controllers\ReservasController;
@@ -137,6 +138,7 @@ Route::group(['prefix' => 'gerencia', 'middleware' => ['auth:sanctum', CheckRole
     Route::put('/reserva/{id}/estado', [ReservasController::class, 'cambiarEstadoReserva']);
     Route::delete('/reserva/{id}', [ReservasController::class, 'eliminarReserva']);
     Route::post('/reservas/buscar', [ReservasController::class, 'buscarReservas']);
+    Route::post('/reservas/{reserva}/cancelar', [ReservasController::class, 'cancelar']);
 
     /* Exportar PDF Reservas */
     Route::post('/exportar-nota-venta', [ReservasController::class, 'exportarNotaVentaPDF']);
@@ -175,10 +177,18 @@ Route::group(['prefix' => 'gerencia', 'middleware' => ['auth:sanctum', CheckRole
     Route::post('/tipos-dano', [TiposDanoController::class, 'getTiposDano']);
 
     /* Inventario */
-    Route::post('/productos/inventario', [InventarioController::class, 'getProductosInventario']);
+    Route::get('/productos/inventario', [InventarioController::class, 'getProductosInventario']);
     Route::post('/producto/inventario', [InventarioController::class, 'store']);
     Route::put('/producto/inventario/{id}', [InventarioController::class, 'update']);
     Route::put('/producto/inventario/{id}/status', [InventarioController::class, 'updateStatus']);
+    Route::post('/producto/inventario/{id}/agregar-stock', [InventarioController::class, 'agregarStock']);
+    Route::get('/producto/inventario/{id}/historial-movimientos', [InventarioController::class, 'historialMovimientos']);
+    Route::post('/producto/inventario/reporte-movimientos', [InventarioController::class, 'reporteMovimientos']);
+
+    /* Limpieza */
+    Route::post('/limpieza', [LimpiezaController::class, 'store']);
+    Route::put('/limpieza/{id}', [LimpiezaController::class, 'update']);
+    Route::get('/limpieza/buscar', [LimpiezaController::class, 'buscarPorFecha']);
 
     /* Tipos Reservas */
     //Route::post('/tipos-reservas', [TipoReservaController::class, 'getTiposReservas']);

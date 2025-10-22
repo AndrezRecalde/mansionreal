@@ -138,19 +138,80 @@ export const useReservaDepartamentoStore = () => {
                 }
             );
 
+            // Extraer el nombre del archivo desde los headers de la respuesta
+            const contentDisposition = response.headers["content-disposition"];
+            let fileName = `nota_venta_${reserva_id}.pdf`; // Nombre por defecto
+
+            if (contentDisposition) {
+                const fileNameMatch = contentDisposition.match(
+                    /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/
+                );
+                if (fileNameMatch && fileNameMatch[1]) {
+                    fileName = fileNameMatch[1].replace(/['"]/g, "");
+                }
+            }
+
             // Crear un enlace para descargar el archivo PDF
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement("a");
             link.href = url;
-            link.setAttribute("download", `nota_venta_${reserva_id}.pdf`); // Nombre del archivo
+            link.setAttribute("download", fileName); // Usar el nombre extraído del header
             document.body.appendChild(link);
             link.click();
             link.parentNode.removeChild(link);
+
+            // Liberar memoria
+            window.URL.revokeObjectURL(url);
         } catch (error) {
             console.log(error);
             ExceptionMessageError(error);
         } finally {
             dispatch(rtkCargandoPDFNotaVenta(false));
+        }
+    };
+
+    const fnCancelarReserva = async ({
+        id,
+        motivo_cancelacion,
+        observacion = null,
+        storageFields = null,
+        carga_pagina = "DEPARTAMENTOS",
+    }) => {
+        try {
+            // Validaciones
+            if (!id || isNaN(Number(id))) {
+                throw new Error("ID de reserva inválido");
+            }
+
+            if (!motivo_cancelacion) {
+                throw new Error("Motivo de cancelación es requerido");
+            }
+            // Realizar petición a la API
+            const { data } = await apiAxios.post(
+                `/gerencia/reservas/${id}/cancelar`,
+                {
+                    motivo_cancelacion,
+                    observacion: observacion || null,
+                }
+            );
+
+            // Mostrar mensaje de éxito
+            dispatch(rtkCargarMensaje(data));
+            setTimeout(() => {
+                dispatch(rtkCargarMensaje(undefined));
+            }, 2000);
+
+            // Recargar datos según la página
+            if (carga_pagina === "DEPARTAMENTOS") {
+                await Promise.all([
+                    fnConsultarDisponibilidadDepartamentos(),
+                    fnCargarEstadias(),
+                ]);
+            } else {
+                await fnBuscarReservas(storageFields);
+            }
+        } catch (error) {
+            ExceptionMessageError(error);
         }
     };
 
@@ -180,6 +241,7 @@ export const useReservaDepartamentoStore = () => {
         fnCambiarEstadoReserva,
         fnEliminarReserva,
         fnBuscarReservas,
+        fnCancelarReserva,
         fnExportarNotaVentaPDF,
         fnAsignarReserva,
         fnAsignarTipoReserva,

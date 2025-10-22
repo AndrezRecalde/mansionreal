@@ -31,7 +31,6 @@ export const InventarioForm = ({ form }) => {
                 ...activarInventario,
                 nombre_producto: activarInventario.nombre_producto,
                 precio_unitario: activarInventario.precio_unitario,
-                stock: activarInventario.stock,
                 categoria_id: activarInventario.categoria_id.toString(),
             });
         }
@@ -74,20 +73,12 @@ export const InventarioForm = ({ form }) => {
                 />
                 <NumberInput
                     withAsterisk
-                    label="Precio unitario (s/.)"
+                    label="Precio unitario (usd/.)"
                     placeholder="Ingrese el precio unitario"
                     min={1}
                     step={0.01}
                     precision={2}
                     {...form.getInputProps("precio_unitario")}
-                />
-                <NumberInput
-                    withAsterisk
-                    label="Stock"
-                    placeholder="Ingrese el stock"
-                    min={0}
-                    step={1}
-                    {...form.getInputProps("stock")}
                 />
                 <Select
                     withAsterisk

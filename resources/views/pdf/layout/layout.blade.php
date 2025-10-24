@@ -6,8 +6,7 @@
     <title>@yield('title') - Mansion Real</title>
     <style>
         @page {
-            size: 21cm 29.7cm;
-            margin: 30px;
+            size: A4;
         }
 
         body {
@@ -72,15 +71,16 @@
 
         th,
         td {
+            font-size: 10px;
             border: 1px solid #777;
             padding: 6px 8px;
             text-align: center;
         }
 
         th {
+            font-size: 11px;
             background: #eaeaea;
             font-weight: bold;
-            font-size: 13px;
         }
 
         tfoot td {
@@ -106,7 +106,7 @@
     {{-- Cabecera --}}
     <div class="header">
         <img src="{{ public_path('assets/images/logo_hotel.jpeg') }}" alt="Logo Mansion Real">
-        <div class="hotel-name">Mansion Real</div>
+        <div class="hotel-name">Mansión Real</div>
         <div class="report-title">@yield('report-title')</div>
         <div class="sub-title">
             @yield('date-filter')

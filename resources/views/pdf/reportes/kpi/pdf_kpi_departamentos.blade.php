@@ -68,6 +68,18 @@
             word-break: break-word;
             max-width: 70px;
         }
+
+        .footer {
+            position: fixed;
+            bottom: 15px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 11px;
+            color: #666;
+            border-top: 1px solid #ccc;
+            padding-top: 5px;
+        }
     </style>
 </head>
 
@@ -85,7 +97,6 @@
         </p>
         <hr>
     </div>
-
     <div>
         <span class="section-title">Resumen KPIs</span>
         <p class="section-paragraph">
@@ -116,8 +127,9 @@
                 </tr>
             @endif
         </table>
+        <hr>
     </div>
-
+    {{-- DETALLE POR DEPARTAMENTOS --}}
     <div>
         <span class="section-title">Detalle por Departamento</span>
         <p class="section-paragraph">
@@ -156,16 +168,20 @@
                 @endforeach
             </tbody>
         </table>
-        <hr>
     </div>
+    @if ($chartDepartamentos)
+        <div style="text-align: center; margin: 20px 0; page-break-inside: avoid;">
+            <img src="{{ $chartDepartamentos }}" style="max-width: 100%; height: auto;" alt="Gráfico Departamentos">
+        </div>
+    @endif
+    <hr>
 
-
+    {{-- DETALLE DE ESTADÍAS --}}
     <div>
         <span class="section-title">Detalle de las Estadías</span>
         <p class="section-paragraph">
             A continuación se presenta el desglose de un resumen general de las estadías.
         </p>
-
         <table>
             <thead>
                 <tr>
@@ -188,6 +204,26 @@
                 @endforeach
             </tbody>
         </table>
+    </div>
+    <!-- Después de la tabla de Estadías -->
+    @if ($chartEstadias)
+        <div style="text-align: center; margin: 20px 0; page-break-inside: avoid;">
+            <img src="{{ $chartEstadias }}" style="max-width: 100%; height: auto;" alt="Gráfico Estadías">
+        </div>
+    @endif
+    <hr>
+
+    {{-- DETALLE DE PRODUCTOS MÁS CONSUMIDOS --}}
+    @if ($chartProductos)
+        <div style="text-align: center; margin: 20px 0; page-break-inside: avoid;">
+            <img src="{{ $chartProductos }}" style="max-width: 100%; height: auto;" alt="Gráfico Productos">
+        </div>
+    @endif
+
+    {{-- Pie de página --}}
+    <div class="footer">
+        <strong>Mansión Real</strong> – Atacames, Vía a Sua alado del Hotel Marimba <br>
+        Reporte generado el {{ now()->format('d/m/Y H:i') }}
     </div>
 </body>
 

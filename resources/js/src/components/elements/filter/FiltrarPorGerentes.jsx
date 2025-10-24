@@ -1,19 +1,23 @@
+import { useEffect, useState } from "react";
 import { Box, Fieldset, Group, Select, SimpleGrid, Stack } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { DateInput, YearPickerInput } from "@mantine/dates";
 import { BtnSubmit, TextSection } from "../../../components";
 import { useStorageField, useUsuarioStore } from "../../../hooks";
+import { Roles } from "../../../helpers/getPrefix";
 import { IconSearch } from "@tabler/icons-react";
 import classes from "../modules/LabelsInput.module.css";
 import dayjs from "dayjs";
 
 export const FiltrarPorGerentes = ({
     titulo = "",
+    usuario,
     cargando,
     fnHandleAction,
 }) => {
     const { usuarios } = useUsuarioStore();
     const { fnSetStorageFields } = useStorageField();
+    const [disabled, setDisabled] = useState(false);
 
     const form = useForm({
         initialValues: {
@@ -38,6 +42,16 @@ export const FiltrarPorGerentes = ({
     });
 
     const { p_fecha_inicio } = form.values;
+
+    useEffect(() => {
+        if (usuario?.role === Roles.GERENCIA) {
+            form.setValues({
+                p_usuario_id: String(usuario.id),
+            });
+            setDisabled(true);
+            return;
+        }
+    }, []);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -96,6 +110,7 @@ export const FiltrarPorGerentes = ({
                     <Select
                         searchable
                         clearable
+                        disabled={disabled}
                         label="Seleccione el gerente"
                         placeholder="Seleccione el gerente"
                         data={

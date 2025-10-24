@@ -56,7 +56,7 @@ export const ReservaFinalizarModal = ({ datos_reserva }) => {
 
     return (
         <Modal
-            size="lg"
+            size="xl"
             opened={abrirModalReservaFinalizar}
             onClose={handleCerrarModal}
             title={

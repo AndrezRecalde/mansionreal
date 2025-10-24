@@ -11,10 +11,10 @@ export const useDashHuepedGananciaStore = () => {
 
     const { ExceptionMessageError } = useErrorException(rtkCargarErrores);
 
-    const fnCargarHuespedesGananciasMes = async (anio) => {
+    const fnCargarHuespedesGananciasMes = async (p_anio) => {
         try {
             const { data } = await apiAxios.post(
-                "/gerencia/dashboard/huespedes-ganancias-por-mes", { anio }
+                "/gerencia/dashboard/huespedes-ganancias-por-mes", { p_anio }
             );
             const { result } = data;
             dispatch(rtkHuespedesGananciasMesCargados(result));

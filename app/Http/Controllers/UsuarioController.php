@@ -11,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 
 class UsuarioController extends Controller
 {
@@ -52,7 +53,7 @@ class UsuarioController extends Controller
             DB::beginTransaction();
             $usuario = new User;
             $usuario->fill($request->validated());
-            $usuario->user_id = auth()->id();
+            $usuario->user_id = Auth::id();
             $usuario->save();
             $usuario->assignRole($request->role);
             DB::commit();
@@ -199,7 +200,7 @@ class UsuarioController extends Controller
         $data = $this->getPagosPorGerente($request);
 
         $pdf = Pdf::loadView('pdf.reportes.gerente.pagos_por_gerente', ['data' => $data]);
-        return $pdf->download('pagos_por_gerente.pdf');
+        return $pdf->setPaper('A4', 'portrait')->download('pagos_por_gerente.pdf');
     }
 
     // Método privado reutilizable para obtener y procesar los datos
@@ -236,11 +237,15 @@ class UsuarioController extends Controller
         $usuarios = $usuariosQuery->get();
 
         // Procesa los datos para el frontend o PDF
-        return $usuarios->map(function ($usuario) {
+        return $usuarios->map(function ($usuario) use ($fechaInicio, $fechaFin, $anio) {
             return [
+                'fecha_inicio'  => $fechaInicio,
+                'fecha_fin'     => $fechaFin,
+                'anio'          => $anio,
                 'id' => $usuario->id,
                 'nombres' => $usuario->nombres . ' ' . $usuario->apellidos,
                 'dni' => $usuario->dni,
+                'email' => $usuario->email,
                 'activo' => (bool) $usuario->activo,
                 'pagos' => $usuario->pagosRegistrados->map(function ($pago) {
                     return [

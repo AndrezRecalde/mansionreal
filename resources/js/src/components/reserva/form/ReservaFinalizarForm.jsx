@@ -35,15 +35,21 @@ export const ReservaFinalizarForm = ({ form, datos_reserva }) => {
 
     const round = (val) => Number(Number(val).toFixed(2));
 
-    //TODO: Validar si se puede finalizar la reserva
+    const datosPago =
+        totalesPagos && totalesPagos.length > 0 ? totalesPagos[0] : null;
+
+    const saldoCero =
+        datosPago && round(parseFloat(datosPago.saldo_pendiente)) === 0;
+    const totalesIguales =
+        datosPago &&
+        round(parseFloat(datosPago.total_consumos)) ===
+            round(parseFloat(datosPago.total_pagos));
+    const esPagado = nombre_estado === Estados.PAGADO;
+    const esCancelado = nombre_estado === Estados.CANCELADO;
+
     const isDisabled =
-        !totalesPagos ||
-        !(
-            round(totalesPagos.saldo_pendiente) === 0 ||
-            round(totalesPagos.total_consumos) ===
-                round(totalesPagos.total_pagos) ||
-            nombre_estado === Estados.CANCELADO
-        );
+        !datosPago ||
+        !(esCancelado || (esPagado && saldoCero && totalesIguales));
 
     const handleSubmit = async (e) => {
         e.preventDefault();

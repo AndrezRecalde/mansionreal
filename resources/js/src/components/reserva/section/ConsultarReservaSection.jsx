@@ -6,20 +6,18 @@ import {
     Card,
     Center,
     Badge,
+    useMantineColorScheme,
 } from "@mantine/core";
 import { BtnSection, ConsumosTotalTable } from "../../../components";
-import {
-    useDepartamentoStore,
-    useStorageField,
-} from "../../../hooks";
+import { useDepartamentoStore, useStorageField } from "../../../hooks";
 import { IconBuilding, IconPackageExport } from "@tabler/icons-react";
 import classes from "../modules/ConsultaReservaSection.module.css";
 
 export const ConsultarReservaSection = () => {
-    const {
-        departamentos,
-        fnExportarConsumosPorDepartamentoPDF,
-    } = useDepartamentoStore();
+    const { colorScheme } = useMantineColorScheme();
+    const isDark = colorScheme === "dark";
+    const { departamentos, fnExportarConsumosPorDepartamentoPDF } =
+        useDepartamentoStore();
     const { storageFields } = useStorageField();
 
     const handleExportarPorDepartamentoPDF = (departamento) => {
@@ -44,8 +42,17 @@ export const ConsultarReservaSection = () => {
                         <Card
                             key={departamento.id}
                             withBorder
-                            radius="md"
-                            className={classes.card}
+                            style={{
+                                padding: "20px",
+                                borderRadius: "12px",
+                                background: isDark
+                                    ? "linear-gradient(135deg, #1A1B1E 0%, #25262B 100%)"
+                                    : "linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%)",
+                                boxShadow: isDark
+                                    ? "0 4px 20px rgba(0, 0, 0, 0.4)"
+                                    : "0 4px 20px rgba(0, 0, 0, 0.08)",
+                                border: isDark ? "1px solid #373A40" : "none",
+                            }}
                         >
                             <Card.Section className={classes.imageSection}>
                                 <Image

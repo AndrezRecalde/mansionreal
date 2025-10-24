@@ -8,34 +8,67 @@ import {
 } from "../../components";
 import {
     useDashboardKPIStore,
+    useDashIngresosPorDepartamentoStore,
+    useDashRankingProductosStore,
     useDepartamentoStore,
     useEstadiaStore,
     useStorageField,
+    useTitleHook,
 } from "../../hooks";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import KPICard from "../../components/dashboard/KPICard";
 import Swal from "sweetalert2";
+import DepartmentBarChart from "../../components/dashboard/DepartmentBarChart";
+import EstadiasBarChart from "../../components/dashboard/EstadiasBarChart";
+import ProductPieChart from "../../components/dashboard/ProductPieChart";
+import DepartmentBarChartExport from "../../components/dashboard/export/DepartmentBarChartExport";
+import EstadiasBarChartExport from "../../components/dashboard/export/EstadiasBarChartExport";
+import ProductPieChartExport from "../../components/dashboard/export/ProductPieChartExport";
 
 const ReporteDepartamentosPage = () => {
+    useTitleHook("Reporte Reservas - Mansión Real");
+
+    // Estados para exportación
+    const [isExporting, setIsExporting] = useState(false);
+    const [exportData, setExportData] = useState(null);
+    const [chartImages, setChartImages] = useState({
+        departamentos: null,
+        estadias: null,
+        productos: null,
+    });
+
     const {
         cargando,
         departamentos,
         cargandoExportacion,
         fnCargarReporteDepartamentosPorFechas,
-        fnExportarKpiYDepartamentosPdf,
+        fnExportarKpiYDepartamentosPdfConGrafico,
         fnLimpiarDepartamentos,
     } = useDepartamentoStore();
-    const { fnCargarReporteEstadiasPorFechas, fnLimpiarEstadias } =
+
+    const { estadias, fnCargarReporteEstadiasPorFechas, fnLimpiarEstadias } =
         useEstadiaStore();
     const { kpis, fnCargarResumenKPI, fnLimpiarResumenKPI } =
         useDashboardKPIStore();
     const { storageFields, fnSetStorageFields } = useStorageField();
+    const {
+        rankingProductos,
+        fnCargarRankingProductos,
+        fnLimpiarRankingProductos,
+    } = useDashRankingProductosStore();
+    const {
+        ingresosPorDepartamento,
+        fnCargarIngresosPorDepartamento,
+        fnLimpiarIngresosPorDepartamento,
+    } = useDashIngresosPorDepartamentoStore();
 
     useEffect(() => {
         return () => {
             fnLimpiarDepartamentos();
             fnLimpiarResumenKPI();
             fnLimpiarEstadias();
+            fnLimpiarRankingProductos();
+            fnLimpiarIngresosPorDepartamento();
             fnSetStorageFields(null);
         };
     }, []);
@@ -51,22 +84,74 @@ const ReporteDepartamentosPage = () => {
                 },
             });
         } else {
-            Swal.close(); // Cierra el modal cuando isExport es false
+            Swal.close();
         }
     }, [cargandoExportacion]);
 
+    // Efecto para verificar si todas las imágenes están listas
+    useEffect(() => {
+        if (
+            chartImages.departamentos &&
+            chartImages.estadias &&
+            chartImages.productos &&
+            exportData
+        ) {
+            // Todas las imágenes están listas, proceder con la exportación
+            fnExportarKpiYDepartamentosPdfConGrafico(exportData, chartImages);
+
+            // Limpiar estado
+            setIsExporting(false);
+            setExportData(null);
+            setChartImages({
+                departamentos: null,
+                estadias: null,
+                productos: null,
+            });
+        }
+    }, [chartImages, exportData]);
+
     const handleExportarKpiYDepartamentosPDF = () => {
-        fnExportarKpiYDepartamentosPdf({
+        const datos = {
             p_fecha_inicio: storageFields?.p_fecha_inicio,
             p_fecha_fin: storageFields?.p_fecha_fin,
             p_anio: storageFields?.p_anio,
             departamento_id: null,
+        };
+
+        setExportData(datos);
+        setIsExporting(true);
+        setChartImages({
+            departamentos: null,
+            estadias: null,
+            productos: null,
         });
+    };
+
+    // Callbacks individuales para cada gráfico
+    const handleDepartamentosImageGenerated = (imageDataURL) => {
+        setChartImages((prev) => ({
+            ...prev,
+            departamentos: imageDataURL,
+        }));
+    };
+
+    const handleEstadiasImageGenerated = (imageDataURL) => {
+        setChartImages((prev) => ({
+            ...prev,
+            estadias: imageDataURL,
+        }));
+    };
+
+    const handleProductosImageGenerated = (imageDataURL) => {
+        setChartImages((prev) => ({
+            ...prev,
+            productos: imageDataURL,
+        }));
     };
 
     return (
         <Container size="xl" my={20}>
-            <TitlePage order={2}>Reporte Departamentos</TitlePage>
+            <TitlePage order={2}>Reporte Reservas — Estadías</TitlePage>
             <Divider my={10} />
             <FiltrarPorFechasForm
                 titulo="Filtrar por fechas"
@@ -76,10 +161,10 @@ const ReporteDepartamentosPage = () => {
                     fnCargarReporteEstadiasPorFechas(values);
                     fnCargarResumenKPI(values);
                     fnSetStorageFields(values);
+                    fnCargarIngresosPorDepartamento(values);
+                    fnCargarRankingProductos(values);
                 }}
             />
-            {/* <ConsultarReservaSection /> */}
-
             {departamentos.length > 0 && (
                 <div>
                     <BtnExportacionPDF
@@ -100,6 +185,37 @@ const ReporteDepartamentosPage = () => {
             )}
             <ConsultarReservaSection />
             <ConsultarEstadiasSection />
+            {departamentos.length > 0 && (
+                <Grid mt="md" mb="md">
+                    <Grid.Col span={{ base: 12, md: 6, lg: 6 }}>
+                        <DepartmentBarChart />
+                    </Grid.Col>
+                    <Grid.Col span={{ base: 12, md: 6, lg: 6 }}>
+                        <EstadiasBarChart />
+                    </Grid.Col>
+                    <Grid.Col span={{ base: 12, md: 12, lg: 12 }}>
+                        <ProductPieChart />
+                    </Grid.Col>
+                </Grid>
+            )}
+
+            {/* Componentes ocultos para generar las imágenes */}
+            {isExporting && (
+                <>
+                    <DepartmentBarChartExport
+                        ingresosPorDepartamento={ingresosPorDepartamento}
+                        onImageGenerated={handleDepartamentosImageGenerated}
+                    />
+                    <EstadiasBarChartExport
+                        estadias={estadias}
+                        onImageGenerated={handleEstadiasImageGenerated}
+                    />
+                    <ProductPieChartExport
+                        rankingProductos={rankingProductos}
+                        onImageGenerated={handleProductosImageGenerated}
+                    />
+                </>
+            )}
         </Container>
     );
 };

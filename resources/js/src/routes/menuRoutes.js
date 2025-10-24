@@ -111,9 +111,9 @@ export const headerGerenciaRoutes = {
     REPORTES: [
         {
             icon: IconBuildings,
-            title: "Reporte Departamentos",
-            path: "reporte-departamentos",
-            link: "/gerencia/reporte-departamentos",
+            title: "Reporte Reservas",
+            path: "reporte-reservas",
+            link: "/gerencia/reporte-reservas",
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
         },
         {

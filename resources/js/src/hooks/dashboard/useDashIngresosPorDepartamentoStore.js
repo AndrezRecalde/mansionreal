@@ -17,18 +17,18 @@ export const useDashIngresosPorDepartamentoStore = () => {
     const { ExceptionMessageError } = useErrorException(rtkCargarErrores);
 
     const fnCargarIngresosPorDepartamento = async ({
-        fecha_inicio,
-        fecha_fin,
-        anio,
+        p_fecha_inicio = null,
+        p_fecha_fin = null,
+        p_anio = null,
     }) => {
         try {
             dispatch(rtkCargandoIngresosPorDepartamento(true));
             const { data } = await apiAxios.post(
                 "/gerencia/dashboard/ingresos-departamento",
                 {
-                    fecha_inicio,
-                    fecha_fin,
-                    anio,
+                    p_fecha_inicio,
+                    p_fecha_fin,
+                    p_anio,
                 }
             );
             const { result } = data;
@@ -41,7 +41,7 @@ export const useDashIngresosPorDepartamentoStore = () => {
 
     const fnLimpiarIngresosPorDepartamento = () => {
         dispatch(rtkLimpiarIngeresosPorDepartamento());
-    }
+    };
 
     return {
         cargandoIngresosPorDepartamento,

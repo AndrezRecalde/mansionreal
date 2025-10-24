@@ -18,18 +18,18 @@ export const useDashRankingProductosStore = () => {
     const { ExceptionMessageError } = useErrorException(rtkCargarErrores);
 
     const fnCargarRankingProductos = async ({
-        fecha_inicio = null,
-        fecha_fin = null,
-        anio = null,
+        p_fecha_inicio = null,
+        p_fecha_fin = null,
+        p_anio = null,
     }) => {
         try {
             dispatch(rtkCargandoRankingProductos(true));
             const { data } = await apiAxios.post(
                 "/gerencia/dashboard/ranking-productos",
                 {
-                    fecha_inicio,
-                    fecha_fin,
-                    anio,
+                    p_fecha_inicio,
+                    p_fecha_fin,
+                    p_anio,
                 }
             );
             const { result } = data;

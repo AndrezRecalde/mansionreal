@@ -9,7 +9,7 @@ const ErrorNotFound = () => {
     const navigate = useNavigate();
 
     const handleAction = () => {
-        navigate("/staff/d/profile");
+        navigate("/staff/perfil");
     };
 
     return (

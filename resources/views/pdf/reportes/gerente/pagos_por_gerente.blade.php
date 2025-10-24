@@ -1,10 +1,23 @@
 @extends('pdf.layout.layout')
+@section('title', 'Reporte de Gerente')
+@section('report-title', 'Reporte de Gerente')
+
+@section('date-filter')
+    @if ($data[0]['fecha_inicio'] && $data[0]['fecha_fin'])
+        Rango de fechas: {{ $data[0]['fecha_inicio'] }} al {{ $data[0]['fecha_fin'] }}
+    @elseif($data[0]['anio'])
+        Año: {{ $data[0]['anio'] }}
+    @else
+        Fecha: Todos los registros
+    @endif
+@endsection
 
 @section('summary')
     @foreach ($data as $gerente)
         <div class="gerente">
             <strong>Gerente:</strong> {{ $gerente['nombres'] }}<br>
             <strong>DNI:</strong> {{ $gerente['dni'] }}<br>
+            <strong>Correo:</strong> {{ $gerente['email'] }}<br>
             <strong>Activo:</strong> {{ $gerente['activo'] ? 'Sí' : 'No' }}
         </div>
     @endsection

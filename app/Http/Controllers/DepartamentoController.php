@@ -384,17 +384,26 @@ class DepartamentoController extends Controller
         $kpi = DB::select('CALL sp_kpi_resumen(?, ?, ?)', [$fecha_inicio, $fecha_fin, $anio]);
         $departamentos = DB::select('CALL reporte_departamentos_por_fechas(?, ?, ?)', [$fecha_inicio, $fecha_fin, $anio]);
         $estadias = DB::select('CALL reporte_estadias_por_fechas(?, ?, ?)', [$fecha_inicio, $fecha_fin, $anio]);
+        $productos = DB::select('CALL kpi_productos_mas_consumidos(?, ?, ?, ?)', [$fecha_inicio, $fecha_fin, $anio, 10]);
+
+        $chartDepartamentos = $request->input('charts.departamentos');
+        $chartEstadias = $request->input('charts.estadias');
+        $chartProductos = $request->input('charts.productos');
 
         // Preparar datos para la vista
         $data = [
             'logo' => public_path('/assets/images/logo_hotel.jpeg'),
-            'hotel_nombre' => 'Hotel Mansion Real',
+            'hotel_nombre' => 'Hotel Mansión Real',
             'fecha_inicio' => $fecha_inicio,
             'fecha_fin' => $fecha_fin,
             'anio' => $anio,
             'kpi' => $kpi[0] ?? null,
             'departamentos' => $departamentos,
-            'estadias'      => $estadias
+            'estadias'      => $estadias,
+            'productos'     => $productos,
+            'chartDepartamentos' => $chartDepartamentos,
+            'chartEstadias' => $chartEstadias,
+            'chartProductos' => $chartProductos,
         ];
 
         $pdf = Pdf::loadView('pdf.reportes.kpi.pdf_kpi_departamentos', $data)

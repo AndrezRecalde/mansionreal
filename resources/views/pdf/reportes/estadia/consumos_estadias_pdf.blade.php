@@ -1,5 +1,7 @@
 @extends('pdf.layout.layout')
 
+@section('title', 'Consumos por Estadías')
+
 @section('report-title', 'Reporte de Consumos por Estadías')
 
 @section('date-filter')

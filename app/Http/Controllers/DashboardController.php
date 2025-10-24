@@ -17,7 +17,7 @@ class DashboardController extends Controller
     public function huespedesYGananciasPorMes(Request $request)
     {
         try {
-            $anio = $request->anio;
+            $anio = $request->p_anio;
             $result = DB::select('CALL kpi_huespedes_y_ganancias_por_mes(?)', [$anio]);
             return response()->json([
                 'status' => HTTPStatus::Success,
@@ -63,9 +63,9 @@ class DashboardController extends Controller
     public function huespedesRecurrentes(Request $request)
     {
         try {
-            $fecha_inicio = $request->fecha_inicio;
-            $fecha_fin = $request->fecha_fin;
-            $anio = $request->anio;
+            $fecha_inicio = $request->p_fecha_inicio;
+            $fecha_fin = $request->p_fecha_fin;
+            $anio = $request->p_anio;
             $limite = $request->limite ?? 5;
             $result = DB::select('CALL kpi_huespedes_mas_recurrentes(?, ?, ?, ?)', [
                 $fecha_inicio,
@@ -89,10 +89,10 @@ class DashboardController extends Controller
     public function productosMasConsumidos(Request $request)
     {
         try {
-            $fecha_inicio = $request->fecha_inicio;
-            $fecha_fin = $request->fecha_fin;
-            $anio = $request->anio;
-            $limite = $request->limite ?? 10;
+            $fecha_inicio = $request->p_fecha_inicio;
+            $fecha_fin = $request->p_fecha_fin;
+            $anio = $request->p_anio;
+            $limite = $request->limite ?? 7;
             $result = DB::select('CALL kpi_productos_mas_consumidos(?, ?, ?, ?)', [
                 $fecha_inicio,
                 $fecha_fin,
@@ -118,9 +118,9 @@ class DashboardController extends Controller
     public function ingresosPorTipoDepartamento(Request $request)
     {
         try {
-            $fecha_inicio = $request->fecha_inicio;
-            $fecha_fin = $request->fecha_fin;
-            $anio = $request->anio;
+            $fecha_inicio = $request->p_fecha_inicio;
+            $fecha_fin = $request->p_fecha_fin;
+            $anio = $request->p_anio;
             $result = DB::select('CALL kpi_ingresos_por_tipo_departamento(?, ?, ?)', [
                 $fecha_inicio,
                 $fecha_fin,

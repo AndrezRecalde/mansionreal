@@ -130,7 +130,7 @@ export const MENU_PATH = {
     SERVICIOS: "servicios",
     LIMPIEZA: "limpiezas",
     HUESPEDES: "huespedes",
-    REPORTE_DEPARTAMENTOS: "reporte-departamentos",
+    REPORTE_RESERVAS: "reporte-reservas",
     HISTORIAL_RESERVAS: "historial-reservas",
     DISPONIBILIDAD_ACTUAL: "disponibilidad-actual",
     DEPARTAMENTOS: "departamentos",
@@ -171,7 +171,7 @@ const gerenciaRoutes = generateRoutes(
         },
         { path: MENU_PATH.DEPARTAMENTOS, Component: DepartamentosPage },
         {
-            path: MENU_PATH.REPORTE_DEPARTAMENTOS,
+            path: MENU_PATH.REPORTE_RESERVAS,
             Component: ReporteDepartamentosPage,
         },
         {

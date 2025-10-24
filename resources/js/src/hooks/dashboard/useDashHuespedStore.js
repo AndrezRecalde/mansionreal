@@ -9,29 +9,26 @@ import {
 import apiAxios from "../../api/apiAxios";
 
 export const useDashHuespedStore = () => {
-    const {
-        cargandoHuespedesRecurrentes,
-        huespedesRecurrentes,
-        errores,
-    } = useSelector((state) => state.dashHuespedes);
+    const { cargandoHuespedesRecurrentes, huespedesRecurrentes, errores } =
+        useSelector((state) => state.dashHuespedes);
     const dispatch = useDispatch();
 
     const { ExceptionMessageError } = useErrorException(rtkCargarErrores);
 
     /* Zona de Huespedes Recurrentes */
     const fnCargarHuespedesRecurrentes = async ({
-        fecha_inicio,
-        fecha_fin,
-        anio,
+        p_fecha_inicio = null,
+        p_fecha_fin = null,
+        p_anio = null,
     }) => {
         try {
             dispatch(rtkCargandoHuespedesRecurrentes(true));
             const { data } = await apiAxios.post(
                 "/gerencia/dashboard/huespedes-recurrentes",
                 {
-                    fecha_inicio,
-                    fecha_fin,
-                    anio,
+                    p_fecha_inicio,
+                    p_fecha_fin,
+                    p_anio,
                 }
             );
             const { result } = data;

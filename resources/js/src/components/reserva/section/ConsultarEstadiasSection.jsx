@@ -1,9 +1,18 @@
-import { Card, CardSection, Text, Table, Group } from "@mantine/core";
+import {
+    Card,
+    CardSection,
+    Text,
+    Table,
+    Group,
+    useMantineColorScheme,
+} from "@mantine/core";
 import { BtnSection } from "../../../components";
 import { useEstadiaStore, useStorageField } from "../../../hooks";
 import { IconPackageExport } from "@tabler/icons-react";
 
 export const ConsultarEstadiasSection = () => {
+    const { colorScheme } = useMantineColorScheme();
+    const isDark = colorScheme === "dark";
     const { estadias, fnExportarConsumosEstadiasPDF } = useEstadiaStore();
     const resumen = estadias?.[0]; // tomo el primer elemento
     const { storageFields } = useStorageField();
@@ -34,7 +43,20 @@ export const ConsultarEstadiasSection = () => {
     }
 
     return (
-        <Card shadow="sm" radius="md" p="lg" mt={20} withBorder>
+        <Card
+            mt={20}
+            style={{
+                padding: "20px",
+                borderRadius: "12px",
+                background: isDark
+                    ? "linear-gradient(135deg, #1A1B1E 0%, #25262B 100%)"
+                    : "linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%)",
+                boxShadow: isDark
+                    ? "0 4px 20px rgba(0, 0, 0, 0.4)"
+                    : "0 4px 20px rgba(0, 0, 0, 0.08)",
+                border: isDark ? "1px solid #373A40" : "none",
+            }}
+        >
             {/* Header */}
             <CardSection inheritPadding py="xs">
                 <Group justify="space-between">

@@ -178,21 +178,56 @@ export const useDepartamentoStore = () => {
                 "/gerencia/reservas-reporte/pdf",
                 datos,
                 {
-                    responseType: "blob", // Importante para manejar archivos binarios
+                    responseType: "blob",
                 }
             );
 
-            // Crear un enlace para descargar el PDF
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement("a");
             link.href = url;
-            link.setAttribute("download", "reporte_departamentos.pdf"); // Nombre del archivo a descargar
+            link.setAttribute("download", "reporte_departamentos.pdf");
             document.body.appendChild(link);
             link.click();
             link.parentNode.removeChild(link);
         } catch (error) {
             console.log(error);
             ExceptionMessageError(error);
+        } finally {
+            dispatch(rtkCargandoExportacion(false));
+        }
+    };
+
+    // NUEVA FUNCION PARA EXPORTAR PDF CON IMAGEN DEL GRAFICO
+    const fnExportarKpiYDepartamentosPdfConGrafico = async (
+        datos,
+        chartImages
+    ) => {
+        try {
+            dispatch(rtkCargandoExportacion(true));
+            const response = await apiAxios.post(
+                "/gerencia/reservas-reporte/pdf",
+                {
+                    ...datos,
+                    charts: {
+                        departamentos: chartImages.departamentos,
+                        estadias: chartImages.estadias,
+                        productos: chartImages.productos,
+                    },
+                },
+                {
+                    responseType: "blob",
+                }
+            );
+
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", "reporte_mansionreal.pdf");
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+        } catch (error) {
+            console.log(error);
         } finally {
             dispatch(rtkCargandoExportacion(false));
         }
@@ -263,6 +298,7 @@ export const useDepartamentoStore = () => {
         fnConsultarDisponibilidadDepartamentos,
         fnCargarReporteDepartamentosPorFechas,
         fnExportarKpiYDepartamentosPdf,
+        fnExportarKpiYDepartamentosPdfConGrafico,
         fnExportarConsumosPorDepartamentoPDF,
         fnAsignarDepartamento,
         fnLimpiarDepartamentos,

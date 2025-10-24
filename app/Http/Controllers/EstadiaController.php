@@ -282,6 +282,7 @@ class EstadiaController extends Controller
         }
     }
 
+    // TODO: AGREGAR TOTAL DE VISITANTES EN EL PDF
     public function exportConsumosEstadiasPDF(Request $request)
     {
         $fecha_inicio = $request->p_fecha_inicio;

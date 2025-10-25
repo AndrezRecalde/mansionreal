@@ -309,7 +309,7 @@ export const DepartamentosDisponiblesCards = () => {
                                     style={{ flex: 1 }}
                                 >
                                     {["LIMPIEZA", "MANTENIMIENTO"].includes(
-                                        departamento.estado?.nombre
+                                        departamento.estado?.nombre_estado
                                     ) ? (
                                         <Tooltip label="Departamento Disponible">
                                             <ActionIcon
@@ -337,7 +337,7 @@ export const DepartamentosDisponiblesCards = () => {
                                                             "MANTENIMIENTO",
                                                         ].includes(
                                                             departamento.estado
-                                                                ?.nombre
+                                                                ?.nombre_estado
                                                         )
                                                             ? true
                                                             : false
@@ -358,13 +358,13 @@ export const DepartamentosDisponiblesCards = () => {
                                                 <ActionIcon
                                                     disabled={
                                                         [
-                                                            "OCUPADO",
-                                                            "RESERVADO",
+                                                            //"OCUPADO",
+                                                            //"RESERVADO",
                                                             "LIMPIEZA",
                                                             "MANTENIMIENTO",
                                                         ].includes(
                                                             departamento.estado
-                                                                ?.nombre
+                                                                ?.nombre_estado
                                                         )
                                                             ? true
                                                             : false
@@ -392,7 +392,7 @@ export const DepartamentosDisponiblesCards = () => {
                                                     "LIMPIEZA",
                                                     "MANTENIMIENTO",
                                                 ].includes(
-                                                    departamento.estado?.nombre
+                                                    departamento.estado?.nombre_estado
                                                 )
                                                     ? true
                                                     : false

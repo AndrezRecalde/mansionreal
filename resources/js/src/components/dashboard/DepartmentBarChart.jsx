@@ -129,7 +129,7 @@ export default function DepartmentBarChart() {
                 colorByPoint: true,
                 colors: colores,
                 borderRadius: 3,
-                borderWidth: 2,
+                borderWidth: 1.5,
                 borderColor: isDark
                     ? "rgba(0, 0, 0, 0.6)"
                     : "rgba(0, 0, 0, 0.4)",

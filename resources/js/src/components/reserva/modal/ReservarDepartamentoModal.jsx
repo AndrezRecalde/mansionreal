@@ -34,7 +34,7 @@ export const ReservarDepartamentoModal = () => {
             },
             tipo_reserva: "",
             departamento_id: "",
-            fecha_checkin: "",
+            fecha_checkin: dayjs().toDate(),
             fecha_checkout: "",
             total_noches: 0,
             total_pago: 0,

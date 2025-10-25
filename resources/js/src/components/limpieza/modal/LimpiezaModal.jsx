@@ -5,7 +5,7 @@ import { LimpiezaForm, TextSection } from "../../../components";
 
 export const LimpiezaModal = () => {
     const { abrirModalLimpieza, fnAbrirModalLimpieza } = useUiLimpieza();
-    const { activarDepartamento } = useDepartamentoStore();
+    const { activarDepartamento, fnAsignarDepartamento } = useDepartamentoStore();
     const form = useForm({
         initialValues: {
             departamento_id: activarDepartamento?.id || "",
@@ -27,6 +27,7 @@ export const LimpiezaModal = () => {
     const handleCerrarModal = () => {
         form.reset();
         fnAbrirModalLimpieza(false);
+        fnAsignarDepartamento(null);
     };
 
     return (

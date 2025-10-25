@@ -61,8 +61,11 @@ class EstadiaController extends Controller
                         'total_adultos'  => $reserva->total_adultos,
                         'total_ninos'    => $reserva->total_ninos,
                         'total_mascotas' => $reserva->total_mascotas,
-                        'estado'         => $reserva->estado->nombre_estado ?? 'SIN ESTADO',
-                        'estado_color'   => $reserva->estado->color
+                        'estado'              => [
+                            'id'    => $reserva ? $reserva->estado->id : null,
+                            'nombre_estado' => $reserva ? $reserva->estado->nombre_estado : 'SIN ESTADO',
+                            'color' => $reserva ? $reserva->estado->color : 'transparent',
+                        ],
                     ];
                 });
 

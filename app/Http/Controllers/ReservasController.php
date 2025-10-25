@@ -177,7 +177,7 @@ class ReservasController extends Controller
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'data'   => $reserva
+                'msg'   => 'Estado de la reserva actualizado a ' . $estado->nombre_estado
             ]);
         } catch (\Throwable $th) {
             return response()->json([

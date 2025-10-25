@@ -77,7 +77,7 @@ export const ReservarDatosReservaSection = ({
         if (activarTipoReserva === "HOSPEDAJE") {
             const subtotal =
                 reservaForm.values.total_noches *
-                activarDepartamento.precio_noche;
+                activarDepartamento?.precio_noche;
             const iva = subtotal * (Number(activarIva) / 100);
             const totalPago = subtotal + iva;
             reservaForm.setFieldValue("total_pago", totalPago);
@@ -88,7 +88,7 @@ export const ReservarDatosReservaSection = ({
     }, [
         reservaForm.values.total_noches,
         activarTipoReserva,
-        activarDepartamento.precio_noche,
+        activarDepartamento?.precio_noche,
         activarIva,
     ]);
 

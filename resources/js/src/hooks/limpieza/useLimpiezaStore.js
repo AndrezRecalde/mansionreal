@@ -35,7 +35,6 @@ export const useLimpiezaStore = () => {
     } = {}) => {
         try {
             dispatch(rtkCargando(true));
-
             const params = {
                 page,
                 per_page,
@@ -63,12 +62,13 @@ export const useLimpiezaStore = () => {
     const fnAgregarLimpieza = async (limpieza) => {
         try {
             if (limpieza.id) {
+                dispatch(rtkCargando(true));
                 //actualizando
                 const { data } = await apiAxios.put(
                     `/gerencia/limpieza/${limpieza.id}`,
                     limpieza
                 );
-                await fnCargarLimpiezas(ultimosFiltros);
+                //await fnCargarLimpiezas(ultimosFiltros);
 
                 dispatch(rtkCargarMensaje(data));
                 setTimeout(() => {
@@ -78,11 +78,12 @@ export const useLimpiezaStore = () => {
             }
 
             //creando
+            dispatch(rtkCargando(true));
             const { data } = await apiAxios.post(
                 "/gerencia/limpieza",
                 limpieza
             );
-            await fnCargarLimpiezas(ultimosFiltros);
+            //await fnCargarLimpiezas(ultimosFiltros);
 
             dispatch(rtkCargarMensaje(data));
             setTimeout(() => {
@@ -91,6 +92,8 @@ export const useLimpiezaStore = () => {
         } catch (error) {
             console.log(error);
             ExceptionMessageError(error);
+        } finally {
+            dispatch(rtkCargando(false));
         }
     };
 

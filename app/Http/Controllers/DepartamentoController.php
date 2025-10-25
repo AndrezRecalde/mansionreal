@@ -284,7 +284,6 @@ class DepartamentoController extends Controller
                     'id'                  => $dpto->id,
                     'numero_departamento' => $dpto->numero_departamento,
                     'imagenes'            => $dpto->imagenes->pluck('imagen_url'),
-
                     'tipo_departamento'   => $dpto->tipoDepartamento?->nombre_tipo,
                     'capacidad'           => $dpto->capacidad,
                     'precio_noche'        => $dpto->tipoDepartamento?->inventario?->precio_unitario,

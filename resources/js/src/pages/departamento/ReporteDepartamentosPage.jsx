@@ -94,7 +94,7 @@ const ReporteDepartamentosPage = () => {
         } else {
             Swal.close();
         }
-    }, [cargandoExportacion, cargandoPDFReporte]);
+    }, [cargandoExportacion, cargandoPDFReporte, isExporting]);
 
     // Efecto para verificar si todas las imágenes están listas
     useEffect(() => {

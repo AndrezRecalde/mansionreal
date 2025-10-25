@@ -8,12 +8,16 @@ import {
     useUiLimpieza,
 } from "../../../hooks";
 import Swal from "sweetalert2";
+import { Estados } from "../../../helpers/getPrefix";
 
 export const LimpiezaForm = ({ form }) => {
-    const { fnAgregarLimpieza, activarLimpieza } = useLimpiezaStore();
+    const { cargando, fnAgregarLimpieza, activarLimpieza } = useLimpiezaStore();
     const { fnAbrirModalLimpieza } = useUiLimpieza();
-    const { activarDepartamento, fnCambiarEstadoDepartamento } =
-        useDepartamentoStore();
+    const {
+        activarDepartamento,
+        fnCambiarEstadoDepartamento,
+        fnAsignarDepartamento,
+    } = useDepartamentoStore();
     const { storageFields } = useStorageField();
 
     useEffect(() => {
@@ -29,24 +33,37 @@ export const LimpiezaForm = ({ form }) => {
         };
     }, [activarLimpieza]);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const estado = activarDepartamento?.estado?.nombre_estado;
+        const estadoUpper = estado ? estado.toString().toUpperCase() : null;
+        const noPermitir = [Estados.OCUPADO, Estados.RESERVADO].map((s) =>
+            s.toString().toUpperCase()
+        );
+
         if (activarLimpieza === null) {
             console.log(form.getTransformedValues());
-            fnAgregarLimpieza(form.getTransformedValues());
-            fnCambiarEstadoDepartamento({
-                id: activarDepartamento.id,
-                nombre_estado: "LIMPIEZA",
-            });
+            await fnAgregarLimpieza(form.getTransformedValues());
+
+            if (estadoUpper && !noPermitir.includes(estadoUpper)) {
+                console.log("entro");
+                await fnCambiarEstadoDepartamento({
+                    id: activarDepartamento.id,
+                    nombre_estado: "LIMPIEZA",
+                });
+            }
             Swal.fire(
                 "¡Hecho!",
                 `El departamento ${activarDepartamento.numero_departamento} está en limpieza.`,
                 "success"
             );
+        } else {
+            await fnAgregarLimpieza(form.getValues(), storageFields);
         }
-        fnAgregarLimpieza(form.getValues(), storageFields);
         form.reset();
         fnAbrirModalLimpieza(false);
+        fnAsignarDepartamento(null);
     };
 
     return (
@@ -66,7 +83,7 @@ export const LimpiezaForm = ({ form }) => {
                     placeholder="Nombres del personal de limpieza"
                     {...form.getInputProps("personal_limpieza")}
                 />
-                <BtnSubmit>Guardar</BtnSubmit>
+                <BtnSubmit loading={cargando}>Guardar</BtnSubmit>
             </Stack>
         </Box>
     );

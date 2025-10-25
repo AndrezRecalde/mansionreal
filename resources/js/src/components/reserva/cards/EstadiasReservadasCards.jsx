@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
     Badge,
     Card,
@@ -11,8 +12,7 @@ import { useEstadiaStore, useUiConsumo } from "../../../hooks";
 import { IconBeach, IconCalendar } from "@tabler/icons-react";
 import classes from "../modules/EstadiasReservadasCards.module.css";
 import dayjs from "dayjs";
-import "dayjs/locale/es"; // importar español
-import { useEffect } from "react";
+import "dayjs/locale/es";
 import Swal from "sweetalert2";
 dayjs.locale("es");
 
@@ -114,11 +114,11 @@ export const EstadiasReservadasCards = () => {
                             <Card.Section
                                 withBorder
                                 className={classes.section}
-                                bg={getEstadoColor(theme, estadia.estado_color)}
+                                bg={getEstadoColor(theme, estadia?.estado?.color)}
                             >
                                 <Badge
                                     variant="filled"
-                                    color={estadia.estado_color}
+                                    color={estadia?.estado?.color}
                                     size="lg"
                                     radius="lg"
                                     fullWidth
@@ -126,7 +126,7 @@ export const EstadiasReservadasCards = () => {
                                         backgroundColor: "transparent",
                                     }}
                                 >
-                                    {estadia.estado}
+                                    {estadia?.estado?.nombre_estado || "SIN ESTADO"}
                                 </Badge>
                             </Card.Section>
                         </Card>

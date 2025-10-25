@@ -46,8 +46,12 @@ const ReporteDepartamentosPage = () => {
         fnLimpiarDepartamentos,
     } = useDepartamentoStore();
 
-    const { estadias, fnCargarReporteEstadiasPorFechas, fnLimpiarEstadias } =
-        useEstadiaStore();
+    const {
+        cargandoPDFReporte,
+        estadias,
+        fnCargarReporteEstadiasPorFechas,
+        fnLimpiarEstadias,
+    } = useEstadiaStore();
     const { kpis, fnCargarResumenKPI, fnLimpiarResumenKPI } =
         useDashboardKPIStore();
     const { storageFields, fnSetStorageFields } = useStorageField();
@@ -74,7 +78,11 @@ const ReporteDepartamentosPage = () => {
     }, []);
 
     useEffect(() => {
-        if (cargandoExportacion === true) {
+        if (
+            cargandoExportacion === true ||
+            cargandoPDFReporte === true ||
+            isExporting === true
+        ) {
             Swal.fire({
                 icon: "warning",
                 text: "Un momento porfavor, se está exportando",
@@ -86,7 +94,7 @@ const ReporteDepartamentosPage = () => {
         } else {
             Swal.close();
         }
-    }, [cargandoExportacion]);
+    }, [cargandoExportacion, cargandoPDFReporte]);
 
     // Efecto para verificar si todas las imágenes están listas
     useEffect(() => {
@@ -100,8 +108,8 @@ const ReporteDepartamentosPage = () => {
             fnExportarKpiYDepartamentosPdfConGrafico(exportData, chartImages);
 
             // Limpiar estado
-            setIsExporting(false);
             setExportData(null);
+            setIsExporting(false);
             setChartImages({
                 departamentos: null,
                 estadias: null,
@@ -117,9 +125,8 @@ const ReporteDepartamentosPage = () => {
             p_anio: storageFields?.p_anio,
             departamento_id: null,
         };
-
-        setExportData(datos);
         setIsExporting(true);
+        setExportData(datos);
         setChartImages({
             departamentos: null,
             estadias: null,

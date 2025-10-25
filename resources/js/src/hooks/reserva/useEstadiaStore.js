@@ -123,7 +123,7 @@ export const useEstadiaStore = () => {
             console.log(error);
             ExceptionMessageError(error);
         } finally {
-            dispatch(rtkCargandoPDFReporte(true));
+            dispatch(rtkCargandoPDFReporte(false));
         }
     };
 

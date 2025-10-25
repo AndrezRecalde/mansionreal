@@ -282,7 +282,6 @@ class EstadiaController extends Controller
         }
     }
 
-    // TODO: AGREGAR TOTAL DE VISITANTES EN EL PDF
     public function exportConsumosEstadiasPDF(Request $request)
     {
         $fecha_inicio = $request->p_fecha_inicio;
@@ -315,11 +314,37 @@ class EstadiaController extends Controller
 
         $consumos = $query->get();
 
+        // Calcular el total de reservas tipo ESTADIA en el periodo
+        $queryReservas = DB::table('reservas as r')
+            ->join('estados as e', 'r.estado_id', '=', 'e.id')
+            ->where('e.nombre_estado', 'PAGADO')
+            ->where('r.tipo_reserva', 'ESTADIA')
+            ->select(
+                DB::raw('COUNT(r.id) as total_reservas'),
+                DB::raw('
+                        COALESCE(SUM(
+                            COALESCE(r.total_adultos,0) +
+                            COALESCE(r.total_ninos,0) +
+                            COALESCE(r.total_mascotas,0)
+                        ), 0) as total_visitantes
+                    ')
+            );
+
+        // Aplicar los mismos filtros de fecha
+        if ($fecha_inicio && $fecha_fin) {
+            $queryReservas->whereBetween('r.fecha_creacion', [$fecha_inicio, $fecha_fin]);
+        } elseif ($anio) {
+            $queryReservas->whereYear('r.fecha_creacion', $anio);
+        }
+
+        $total_reservas = $queryReservas->get();
+
         $pdf = Pdf::loadView('pdf.reportes.estadia.consumos_estadias_pdf', [
-            'consumos'      => $consumos,
-            'fecha_inicio'  => $fecha_inicio,
-            'fecha_fin'     => $fecha_fin,
-            'anio'          => $anio,
+            'consumos'        => $consumos,
+            'fecha_inicio'    => $fecha_inicio,
+            'fecha_fin'       => $fecha_fin,
+            'anio'            => $anio,
+            'total_reservas'  => $total_reservas,
         ]);
 
         return $pdf->download('consumos_estadias.pdf');

@@ -32,6 +32,8 @@
         Este reporte presenta un resumen de los consumos realizados por huéspedes durante sus estadías en el hotel.
     </p>
     <p>
+        <strong>Total de Estadías:</strong> {{ $total_reservas[0]->total_reservas }} <br>
+        <strong>Total de Visitantes:</strong> {{ $total_reservas[0]->total_visitantes }} <br>
         <strong>Total de productos consumidos:</strong> {{ $sumCantidad }} <br>
         <strong>Subtotal acumulado:</strong> ${{ number_format($sumSubtotal, 2) }} <br>
         <strong>IVA total:</strong> ${{ number_format($sumIva, 2) }} <br>

@@ -49,7 +49,6 @@ export const ReservaAccionesTable = ({
                         variant="default"
                         size="xl"
                         radius="xs"
-                        aria-label="Finalizar Reserva"
                         onClick={handleFinalizarReservaClick}
                         disabled={
                             datos.estado?.nombre_estado === Estados.CANCELADO ||
@@ -67,7 +66,6 @@ export const ReservaAccionesTable = ({
                         variant="default"
                         size="xl"
                         radius="xs"
-                        aria-label="Exportar Nota de Venta"
                         onClick={() =>
                             handleExportarNotaVentaPDF(datos.reserva_id)
                         }

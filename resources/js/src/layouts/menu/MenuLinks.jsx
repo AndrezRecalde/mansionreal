@@ -1,4 +1,5 @@
 import {
+    Group,
     Menu,
     Stack,
     Text,
@@ -81,5 +82,26 @@ export const MenuItems = ({ menuHome, classes, theme, toggleDrawer = null }) => 
                 </Stack>
             </div>
         </UnstyledButton>
+    ));
+};
+
+/* Links de Mega Menu */
+export const MenuQuick = ({ menuData, classes, theme }) => {
+    return menuData.map((item) => (
+        <Link
+            to={item.link}
+            key={item.title}
+            className={classes.subLink}
+            style={{ textDecoration: "none", color: "inherit" }}
+        >
+            <Group wrap="nowrap" align="flex-start">
+                <ThemeIcon size={35} variant="default" radius="md">
+                    <item.icon size={22} color={theme.colors.dark[8]} />
+                </ThemeIcon>
+                <Text size="sm" fw={500}>
+                    {item.title}
+                </Text>
+            </Group>
+        </Link>
     ));
 };

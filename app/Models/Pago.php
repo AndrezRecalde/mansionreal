@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class Pago extends Model
@@ -38,5 +39,22 @@ class Pago extends Model
     public function usuarioModificador()
     {
         return $this->belongsTo(User::class, 'usuario_modificador_id');
+    }
+
+    public function scopeBuscarPorCodigoVoucher(Builder $query, $codigoVoucher)
+    {
+        if (!empty($codigoVoucher)) {
+            return $query->where('codigo_voucher', 'like', '%' . $codigoVoucher . '%');
+        }
+        return $query;
+    }
+
+    //scope de filtro por fechas
+    public function scopeBuscarPorFechas(Builder $query, $fechaInicio, $fechaFin)
+    {
+        if (!empty($fechaInicio) && !empty($fechaFin)) {
+            return $query->whereBetween('fecha_pago', [$fechaInicio, $fechaFin]);
+        }
+        return $query;
     }
 }

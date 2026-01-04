@@ -1,13 +1,14 @@
 import {
     IconBuildings,
     IconBuildingStore,
+    IconCalendar,
     IconCategory,
     IconEyeSearch,
     IconFileIsr,
     IconHistory,
     IconListCheck,
     IconLogout,
-    IconPercentage,
+    IconReceiptTax,
     IconSettings,
     IconSpray,
     IconUserCheck,
@@ -66,7 +67,7 @@ export const headerConfigRoutes = {
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
         },
         {
-            icon: IconPercentage,
+            icon: IconReceiptTax,
             title: "Configuración Iva",
             path: "config-iva",
             link: "/gerencia/config-iva",
@@ -85,18 +86,18 @@ export const headerConfigRoutes = {
 export const headerGerenciaRoutes = {
     GERENCIA: [
         {
+            icon: IconCalendar,
+            title: "Calendario Reservas",
+            path: "calendario-reservas",
+            link: "/gerencia/calendario-reservas",
+            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA, Roles.ASISTENTE],
+        },
+        {
             icon: IconEyeSearch,
             title: "Disponibilidad Actual",
             path: "disponibilidad-departamento",
             link: "/gerencia/disponibilidad-departamento",
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA, Roles.ASISTENTE],
-        },
-        {
-            icon: IconListCheck,
-            title: "Historial Reservas",
-            path: "historial-reservas",
-            link: "/gerencia/historial-reservas",
-            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
         },
 
         {
@@ -116,11 +117,34 @@ export const headerGerenciaRoutes = {
             link: "/gerencia/reporte-reservas",
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
         },
-        {
+        /* {
             icon: IconFileIsr,
             title: "Reportes de Gerente",
             path: "reportes-gerentes",
             link: "/gerencia/reportes-gerentes",
+            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+        }, */
+        {
+            icon: IconFileIsr,
+            title: "Reporte de Consumos",
+            path: "reporte-consumos",
+            link: "/gerencia/reporte-consumos",
+            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+        },
+    ],
+    HISTORIALES: [
+        {
+            icon: IconListCheck,
+            title: "Historial Reservas",
+            path: "historial-reservas",
+            link: "/gerencia/historial-reservas",
+            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+        },
+        {
+            icon: IconListCheck,
+            title: "Historial Pagos",
+            path: "historial-pagos",
+            link: "/gerencia/historial-pagos",
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
         },
     ],
@@ -151,3 +175,44 @@ export const headerInventarioRoutes = {
         },
     ],
 };
+
+export const menuConfiguracionRapida = [
+    {
+        icon: IconUserCheck,
+        title: "Listar Usuarios",
+        path: "usuarios",
+        link: "/gerencia/usuarios",
+        roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+    },
+
+    {
+        icon: IconBuildings,
+        title: "Listar Departamentos",
+        path: "departamentos",
+        link: "/gerencia/departamentos",
+        roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+    },
+    {
+        icon: IconListCheck,
+        title: "Listar Servicios",
+        path: "servicios",
+        link: "/gerencia/servicios",
+        roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+    },
+    {
+        icon: IconReceiptTax,
+        title: "Configurar Iva",
+        path: "config-iva",
+        link: "/gerencia/config-iva",
+        roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+    },
+    {
+        icon: IconSpray,
+        title: "Listar Limpiezas",
+        path: "limpiezas",
+        link: "/gerencia/limpiezas",
+        roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+    },
+];
+
+export const RUTA_DEFAULT = "/staff/perfil";

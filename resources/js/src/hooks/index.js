@@ -61,6 +61,8 @@ import { useEstadiaStore } from "./reserva/useEstadiaStore";
 /* Consumo */
 import { useConsumoStore } from "./consumo/useConsumoStore";
 import { useUiConsumo } from "./consumo/useUiConsumo";
+import { useConsumoForm } from "./consumo/useConsumoForm";
+import { MAX_CONSUMOS, INITIAL_CONSUMO, MODAL_CONFIG } from "./consumo/consumo";
 
 /* Gastos */
 import { useGastoStore } from "./gasto/useGastoStore";
@@ -79,6 +81,9 @@ import { useTiposDanoStore } from "./tiposDano/useTiposDanoStore";
 /* Limpiezas */
 import { useLimpiezaStore } from "./limpieza/useLimpiezaStore";
 import { useUiLimpieza } from "./limpieza/useUiLimpieza";
+
+/* Calendario - Reservas */
+import { useCalendarioStore } from "./calendario/useCalendarioStore";
 
 /* Storage Fields */
 import { useStorageField } from "./storage/useStorageField";
@@ -146,6 +151,10 @@ export {
     /* Consumo */
     useConsumoStore,
     useUiConsumo,
+    useConsumoForm,
+    MAX_CONSUMOS,
+    INITIAL_CONSUMO,
+    MODAL_CONFIG,
 
     /* Gastos */
     useGastoStore,
@@ -164,6 +173,9 @@ export {
     /* Limpiezas */
     useLimpiezaStore,
     useUiLimpieza,
+
+    /* Calendario - Reservas */
+    useCalendarioStore,
 
     /* Storage Fields */
     useStorageField,

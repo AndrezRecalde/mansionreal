@@ -69,7 +69,7 @@ const HistorialConsumosPage = () => {
                     <ConsumoModal reserva_id={datos_reserva.reserva_id} />
                     <ReservaFinalizarModal datos_reserva={datos_reserva} />
 
-                    <GastoModal />
+                    <GastoModal activarElemento={datos_reserva} />
                     <ConsumoEditarModal />
                     <ConsumoEliminarModal />
                 </>

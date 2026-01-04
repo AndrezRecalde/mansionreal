@@ -23,8 +23,24 @@ export const usePagoStore = () => {
     const fnCargarPagos = async ({ reserva_id }) => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.post("/gerencia/pagos", {
+            const { data } = await apiAxios.post("/general/pagos", {
                 reserva_id,
+            });
+            const { pagos } = data;
+            dispatch(rtkCargarPagos(pagos));
+        } catch (error) {
+            console.log(error);
+            ExceptionMessageError(error);
+        } finally {
+            dispatch(rtkCargando(false));
+        }
+    };
+
+    const fnCargarHistorialPagos = async (filtros) => {
+        try {
+            dispatch(rtkCargando(true));
+            const { data } = await apiAxios.get("/general/pagos/historial", {
+                params: filtros,
             });
             const { pagos } = data;
             dispatch(rtkCargarPagos(pagos));
@@ -41,7 +57,7 @@ export const usePagoStore = () => {
             if (pago.id) {
                 //actualizando
                 const { data } = await apiAxios.put(
-                    `/gerencia/pago/${pago.id}`,
+                    `/general/pago/${pago.id}`,
                     pago
                 );
                 fnCargarPagos({ reserva_id: pago.reserva_id });
@@ -53,7 +69,7 @@ export const usePagoStore = () => {
             }
             //creando
             const { data } = await apiAxios.post(
-                `/gerencia/reserva/${pago.reserva_id}/pago`,
+                `/general/reserva/${pago.reserva_id}/pago`,
                 pago
             );
             fnCargarPagos({ reserva_id: pago.reserva_id });
@@ -70,7 +86,7 @@ export const usePagoStore = () => {
     const fnEliminarPago = async (pago) => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.delete(`/gerencia/pago/${pago.id}`);
+            const { data } = await apiAxios.delete(`/general/pago/${pago.id}`);
             dispatch(rtkCargarMensaje(data));
             setTimeout(() => {
                 dispatch(rtkCargarMensaje(undefined));
@@ -86,7 +102,7 @@ export const usePagoStore = () => {
     const fnCargarTotalesPorReserva = async ({ reserva_id }) => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.post("/gerencia/totales-pagos", {
+            const { data } = await apiAxios.post("/general/totales-pagos", {
                 reserva_id,
             });
             const { result } = data;
@@ -116,6 +132,7 @@ export const usePagoStore = () => {
         errores,
 
         fnCargarPagos,
+        fnCargarHistorialPagos,
         fnAgregarPago,
         fnEliminarPago,
         fnCargarTotalesPorReserva,

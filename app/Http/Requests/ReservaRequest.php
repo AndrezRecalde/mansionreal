@@ -24,10 +24,10 @@ class ReservaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'departamento_id'   => 'required|integer|exists:departamentos,id',
-            'fecha_checkin'     => 'required|date|after_or_equal:today',
-            'fecha_checkout'    => 'required|date|after:fecha_checkin',
-            'total_noches'     => 'required|integer|min:1',
+            'departamento_id'    => 'required|integer|exists:departamentos,id',
+            'fecha_checkin'      => 'required|date|after_or_equal:today',
+            'fecha_checkout'     => 'required|date|after:fecha_checkin',
+            'total_noches'       =>  'required|integer|min:1',
             'total_adultos'      => '',
             'total_ninos'        => '',
             'total_mascotas'     => '',

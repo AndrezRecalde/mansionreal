@@ -10,9 +10,10 @@ import {
 } from "../../../hooks";
 import { hasLength, useForm } from "@mantine/form";
 import dayjs from "dayjs";
+import { capitalizarCadaPalabra } from "../../../helpers/fnHelper";
 
 export const ReservarDepartamentoModal = () => {
-    const { activarDepartamento } = useDepartamentoStore();
+    const { fnCargarDepartamentosDisponibles, fnAsignarDepartamento } = useDepartamentoStore();
     const { activarTipoReserva } = useReservaDepartamentoStore();
     const { abrirModalReservarDepartamento, fnAbrirModalReservarDepartamento } =
         useUiReservaDepartamento();
@@ -34,7 +35,7 @@ export const ReservarDepartamentoModal = () => {
             },
             tipo_reserva: "",
             departamento_id: "",
-            fecha_checkin: dayjs().toDate(),
+            fecha_checkin: dayjs().set('hour', 10).set('minute', 0).set('second', 0).toDate(),
             fecha_checkout: "",
             total_noches: 0,
             total_pago: 0,
@@ -77,10 +78,10 @@ export const ReservarDepartamentoModal = () => {
                 ? parseInt(values.departamento_id)
                 : null,
             fecha_checkin: dayjs(values.fecha_checkin).isValid()
-                ? dayjs(values.fecha_checkin).format("YYYY-MM-DD")
+                ? dayjs(values.fecha_checkin).format("YYYY-MM-DD HH:mm:ss")
                 : null,
             fecha_checkout: dayjs(values.fecha_checkout).isValid()
-                ? dayjs(values.fecha_checkout).format("YYYY-MM-DD")
+                ? dayjs(values.fecha_checkout).format("YYYY-MM-DD HH:mm:ss")
                 : null,
             total_noches: values.total_noches
                 ? parseInt(values.total_noches)
@@ -96,22 +97,26 @@ export const ReservarDepartamentoModal = () => {
         }),
     });
 
+    const { fecha_checkin, fecha_checkout } = reservaForm.values;
+
+
+    /* Efecto de carga del departamento seleccionado  */
     useEffect(() => {
         if (
             abrirModalReservarDepartamento &&
-            activarTipoReserva === "HOSPEDAJE"
+            activarTipoReserva === "HOSPEDAJE" &&
+            fecha_checkin &&
+            fecha_checkout
         ) {
-            reservaForm.setFieldValue(
-                "departamento_id",
-                activarDepartamento.id
-            );
+           fnCargarDepartamentosDisponibles({ fecha_inicio: fecha_checkin, fecha_fin: fecha_checkout });
         }
         fnCargarProvincias();
-    }, [abrirModalReservarDepartamento]);
+    }, [abrirModalReservarDepartamento, fecha_checkin, fecha_checkout]);
 
     const handleCerrarModal = () => {
         // Lógica para cerrar el modal
         fnAsignarHuesped(null);
+        fnAsignarDepartamento(null);
         reservaForm.reset();
         fnAbrirModalReservarDepartamento(false);
     };
@@ -124,7 +129,7 @@ export const ReservarDepartamentoModal = () => {
             onClose={handleCerrarModal}
             title={
                 <TextSection tt="" fz={18} fw={300}>
-                    Reservar Departamento
+                    Reservar {capitalizarCadaPalabra(activarTipoReserva ?? "")}
                 </TextSection>
             }
             size={950}

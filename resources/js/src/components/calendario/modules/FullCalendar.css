@@ -1,0 +1,136 @@
+/* Estilos globales para FullCalendar */
+
+/* Fuente base */
+. fc {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Bordes */
+.fc-theme-standard td,
+.fc-theme-standard th {
+    border-color: #dee2e6;
+}
+
+. fc-theme-standard .fc-scrollgrid {
+    border-color: #dee2e6;
+}
+
+/* Botones */
+.fc . fc-button-primary {
+    background-color: #228be6;
+    border-color: #228be6;
+    color: white;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: background-color 0 2s;
+}
+
+.fc .fc-button-primary:hover {
+    background-color: #1c7ed6;
+    border-color: #1c7ed6;
+}
+
+. fc .fc-button-primary:disabled {
+    background-color: #a5d8ff;
+    border-color: #a5d8ff;
+    opacity: 0.6;
+}
+
+. fc .fc-button-primary:not(:disabled):active,
+.fc .fc-button-primary:not(:disabled). fc-button-active {
+    background-color: #1864ab;
+    border-color: #1864ab;
+}
+
+/* Eventos */
+.fc-event {
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0 2s;
+}
+
+.fc-event:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.fc-daygrid-event {
+    white-space: normal;
+}
+
+/* Toolbar */
+.fc-toolbar-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #228be6;
+}
+
+.fc-col-header-cell {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    padding: 0.75rem 0.5rem;
+}
+
+/* Timeline */
+.fc-timegrid-slot {
+    height: 3em;
+}
+
+.fc-resource-timeline . fc-timeline-lane {
+    background-color: #fff;
+}
+
+.fc-resource-timeline . fc-timeline-lane:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.fc-timeline-event {
+    margin-bottom: 2px;
+}
+
+/* Día actual */
+.fc . fc-daygrid-day. fc-day-today {
+    background-color: #e7f5ff;
+}
+
+. fc . fc-timegrid-col. fc-day-today {
+    background-color: #e7f5ff;
+}
+
+/* Indicador de ahora */
+.fc .fc-timegrid-now-indicator-line {
+    border-color: #fa5252;
+    border-width: 2px;
+}
+
+. fc .fc-timegrid-now-indicator-arrow {
+    border-color: #fa5252;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .fc-toolbar {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    . fc-toolbar-chunk {
+        display: flex;
+        justify-content: center;
+    }
+
+    .fc-toolbar-title {
+        font-size: 1 2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .fc-toolbar-title {
+        font-size: 1rem;
+    }
+}

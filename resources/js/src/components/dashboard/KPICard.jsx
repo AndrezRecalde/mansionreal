@@ -1,4 +1,5 @@
-import { Card, Text, Group, useMantineColorScheme } from "@mantine/core";
+import { Card, Group, useMantineColorScheme } from "@mantine/core";
+import { TextSection } from "../../components";
 
 export default function KPICard({ label, value, color }) {
     const { colorScheme } = useMantineColorScheme();
@@ -21,12 +22,12 @@ export default function KPICard({ label, value, color }) {
             }}
         >
             <Group wrap="nowrap" spacing="xs">
-                <Text size="sm" c="dimmed">
+                <TextSection fz={12} tt="" color="dimmed">
                     {label}
-                </Text>
-                <Text size="xl" fw={700} c={color}>
+                </TextSection>
+                <TextSection fz={20} fw={700} color={color}>
                     {value}
-                </Text>
+                </TextSection>
             </Group>
         </Card>
     );

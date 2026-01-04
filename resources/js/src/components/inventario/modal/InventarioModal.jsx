@@ -13,6 +13,7 @@ export const InventarioModal = () => {
             descripcion: "",
             precio_unitario: "",
             categoria_id: "",
+            sin_stock: 1,
         },
         validate: {
             nombre_producto: isNotEmpty(
@@ -20,11 +21,13 @@ export const InventarioModal = () => {
             ),
             precio_unitario: isNotEmpty("El precio unitario es obligatorio"),
             categoria_id: isNotEmpty("La categoría es obligatoria"),
+            //sin_stock: isNotEmpty("Elija si el producto cuenta con stock"),
         },
         transformValues: (values) => ({
             ...values,
             precio_unitario: Number(values.precio_unitario),
             categoria_id: Number(values.categoria_id),
+            sin_stock: Boolean(!values.sin_stock),
         }),
     });
 

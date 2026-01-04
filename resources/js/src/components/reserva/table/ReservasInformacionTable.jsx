@@ -4,6 +4,7 @@ import { ContenidoTable } from "../../../components";
 import { useCallback, useMemo } from "react";
 import { useReservaDepartamentoStore, useUiConsumo } from "../../../hooks";
 import { MRT_Localization_ES } from "mantine-react-table/locales/es/index.cjs";
+import { formatFechaHoraModal } from "../../../helpers/fnHelper";
 
 export const ReservasInformacionTable = ({ cargando }) => {
     const { reservas, fnAsignarReserva } = useReservaDepartamentoStore();
@@ -19,7 +20,7 @@ export const ReservasInformacionTable = ({ cargando }) => {
                         <Badge
                             radius="sm"
                             color={cell.row.original.estado.color}
-                            variant="light"
+                            variant="transparent"
                         >
                             {cell.row.original.estado.nombre_estado}
                         </Badge>
@@ -56,14 +57,14 @@ export const ReservasInformacionTable = ({ cargando }) => {
             {
                 header: "Fecha Check-In",
                 accessorFn: (row) =>
-                    row?.fecha_checkin || "NO CONTIENE INFORMACION",
+                    formatFechaHoraModal(row?.fecha_checkin) || "NO CONTIENE INFORMACION",
                 enableColumnActions: true,
                 size: 80,
             },
             {
                 header: "Fecha Check-Out",
                 accessorFn: (row) =>
-                    row?.fecha_checkout || "NO CONTIENE INFORMACION",
+                    formatFechaHoraModal(row?.fecha_checkout) || "NO CONTIENE INFORMACION",
                 enableColumnActions: true,
                 size: 80,
             },
@@ -136,7 +137,7 @@ export const ReservasInformacionTable = ({ cargando }) => {
                                     "SIN INFORMACION"}
                             </Table.Td>
                             <Table.Td>
-                                {row.original.fecha_creacion ||
+                                { formatFechaHoraModal(row.original.fecha_creacion) ||
                                     "SIN INFORMACION"}
                             </Table.Td>
                             <Table.Td>
@@ -148,7 +149,7 @@ export const ReservasInformacionTable = ({ cargando }) => {
                                     "SIN INFORMACION"}
                             </Table.Td>
                             <Table.Td>
-                                {row.original.fecha_cancelacion ||
+                                {formatFechaHoraModal(row.original.fecha_cancelacion) ||
                                     "SIN INFORMACION"}
                             </Table.Td>
                             <Table.Td>

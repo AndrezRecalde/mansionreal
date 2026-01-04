@@ -20,7 +20,7 @@ export const useTiposDanoStore = () => {
     const fnCargarTiposDano = async ({ activo = null }) => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.post("/gerencia/tipos-dano", {
+            const { data } = await apiAxios.post("/general/tipos-dano", {
                 activo,
             });
             const { tiposDano } = data;

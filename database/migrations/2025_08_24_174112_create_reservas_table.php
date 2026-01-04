@@ -19,11 +19,11 @@ return new class extends Migration
 
             $table->unsignedBigInteger('huesped_id');
             $table->unsignedBigInteger('departamento_id')->nullable();
-            $table->date('fecha_checkin');
-            $table->date('fecha_checkout');
+            $table->datetime('fecha_checkin');
+            $table->datetime('fecha_checkout');
             $table->integer('total_noches')->default(1);
             $table->unsignedBigInteger('estado_id');
-            $table->timestamp('fecha_creacion');
+            $table->datetime('fecha_creacion');
             $table->integer('total_adultos')->default(1);
             $table->integer('total_ninos')->default(0);
             $table->integer('total_mascotas')->default(0);

@@ -132,7 +132,7 @@ export default function OccupancyLineChart() {
             backgroundColor: isDark
                 ? "rgba(26, 27, 30, 0.95)"
                 : "rgba(0, 0, 0, 0.85)",
-            borderRadius: 10,
+            borderRadius: 5,
             borderWidth: 0,
             shadow: {
                 color: "rgba(0, 0, 0, 0.3)",
@@ -153,7 +153,7 @@ export default function OccupancyLineChart() {
                     this.points?.find((p) => p.series.name === "Ganancias")
                         ?.y ?? 0;
                 return `
-                    <b>${this.x}</b><br/>
+                    <b>${meses[this.x]}</b><br/><br/>
                     <span style="color:#3498DB">●</span> Huéspedes: <b>${huespedes}</b><br/>
                     <span style="color:#2ECC71">●</span> Ganancias: <b>$${Highcharts.numberFormat(
                         ganancias,
@@ -179,8 +179,8 @@ export default function OccupancyLineChart() {
         },
         plotOptions: {
             column: {
-                borderRadius: 3,
-                borderWidth: 2,
+                borderRadius: 1,
+                borderWidth: 1,
                 borderColor: isDark
                     ? "rgba(0, 0, 0, 0.6)"
                     : "rgba(0, 0, 0, 0.4)",
@@ -237,14 +237,14 @@ export default function OccupancyLineChart() {
                 name: "Huéspedes",
                 type: "column",
                 data: huespedesPorMes,
-                color: "#3498DB", // Azul brillante
+                color: "#102A56", // Azul brillante
                 yAxis: 0,
             },
             {
                 name: "Ganancias",
                 type: "spline",
                 data: gananciasPorMes,
-                color: "#2ECC71", // Verde esmeralda
+                color: "#25B475", // Verde esmeralda
                 yAxis: 1,
                 tooltip: {
                     valuePrefix: "$",
@@ -257,7 +257,7 @@ export default function OccupancyLineChart() {
         <div
             style={{
                 padding: "20px",
-                borderRadius: "12px",
+                borderRadius: "10px",
                 background: isDark
                     ? "linear-gradient(135deg, #1A1B1E 0%, #25262B 100%)"
                     : "linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%)",

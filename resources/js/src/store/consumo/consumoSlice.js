@@ -2,7 +2,9 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     cargando: false,
+    cargandoPDFReporte: false,
     consumos: [],
+    reporteConsumosCategoria: null,
     activarConsumo: false,
     mensaje: undefined,
     errores: undefined,
@@ -15,8 +17,15 @@ export const consumoSlice = createSlice({
         rtkCargando: (state, { payload }) => {
             state.cargando = payload;
         },
+        rtkCargandoPDFReporte: (state, { payload }) => {
+            state.cargandoPDFReporte = payload;
+        },
         rtkCargarConsumos: (state, { payload }) => {
             state.consumos = payload;
+            state.cargando = false;
+        },
+        rtkCargarReporteConsumosCategoria: (state, { payload }) => {
+            state.reporteConsumosCategoria = payload;
             state.cargando = false;
         },
         rtkAgregarConsumo: (state, { payload }) => {
@@ -37,7 +46,9 @@ export const consumoSlice = createSlice({
         },
         rtkLimpiarConsumos: (state) => {
             state.consumos = [];
+            state.reporteConsumosCategoria = null;
             state.cargando = false;
+            state.cargandoPDFReporte = false;
             state.activarConsumo = false;
             state.errores = undefined;
             state.mensaje = undefined;
@@ -53,7 +64,9 @@ export const consumoSlice = createSlice({
 
 export const {
     rtkCargando,
+    rtkCargandoPDFReporte,
     rtkCargarConsumos,
+    rtkCargarReporteConsumosCategoria,
     rtkAgregarConsumo,
     rtkActualizarConsumo,
     rtkActivarConsumo,

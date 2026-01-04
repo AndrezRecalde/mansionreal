@@ -27,7 +27,7 @@ export const useEstadiaStore = () => {
     const fnCargarEstadias = async (fecha = null) => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.post("/gerencia/estadias", {
+            const { data } = await apiAxios.post("/general/estadias", {
                 fecha,
             });
             const { estadias } = data;
@@ -45,7 +45,7 @@ export const useEstadiaStore = () => {
             if (estadia.id) {
                 //actualizando
                 const { data } = await apiAxios.put(
-                    `/gerencia/estadia/${estadia.id}`,
+                    `/general/estadia/${estadia.id}`,
                     estadia
                 );
                 dispatch(rtkCargarMensaje(data));
@@ -57,7 +57,7 @@ export const useEstadiaStore = () => {
             }
             //creando
             const { data } = await apiAxios.post(
-                "/gerencia/estadia/nueva",
+                "/general/estadia/nueva",
                 estadia
             );
             dispatch(rtkCargarMensaje(data));
@@ -78,7 +78,7 @@ export const useEstadiaStore = () => {
     }) => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.post("/gerencia/reporte-estadias", {
+            const { data } = await apiAxios.post("/general/reporte-estadias", {
                 p_fecha_inicio,
                 p_fecha_fin,
                 p_anio,
@@ -101,7 +101,7 @@ export const useEstadiaStore = () => {
         try {
             dispatch(rtkCargandoPDFReporte(true));
             const response = await apiAxios.post(
-                "/gerencia/reporte-estadias-pdf",
+                "/general/reporte-estadias-pdf",
                 {
                     p_fecha_inicio,
                     p_fecha_fin,

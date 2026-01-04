@@ -14,6 +14,7 @@ class Inventario extends Model
         'nombre_producto',
         'descripcion',
         'precio_unitario',
+        'sin_stock',
         'stock',
         'categoria_id',
         'activo',
@@ -23,6 +24,11 @@ class Inventario extends Model
     protected $guarded = [
         '_stock_anterior',
         '_diferencia_stock'
+    ];
+
+    protected $casts = [
+        'sin_stock' => 'boolean',
+        'activo' => 'boolean',
     ];
 
     // Relación con movimientos

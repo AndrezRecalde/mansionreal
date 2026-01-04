@@ -8,7 +8,7 @@ import {
     TextInput,
     Transition,
 } from "@mantine/core";
-import { useHuespedStore, useProvinciaStore } from "../../../hooks";
+import { useHuespedStore } from "../../../hooks";
 
 export const ReservarDatosClienteForm = ({
     reservaForm,
@@ -16,7 +16,7 @@ export const ReservarDatosClienteForm = ({
     disabledInput,
 }) => {
     const { cargando } = useHuespedStore();
-    const { provincias } = useProvinciaStore();
+    //const { provincias } = useProvinciaStore();
     return (
         <Transition
             mounted={showDetails || cargando}

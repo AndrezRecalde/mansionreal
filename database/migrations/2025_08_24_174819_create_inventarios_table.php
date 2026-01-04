@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('nombre_producto');
             $table->string('descripcion')->nullable();
             $table->integer('precio_unitario')->default(0);
+            $table->boolean('sin_stock')->default(false);
             $table->integer('stock')->default(0);
             $table->unsignedBigInteger('categoria_id');
             $table->boolean('activo')->default(true);

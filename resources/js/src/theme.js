@@ -14,7 +14,7 @@ import classes from "./assets/styles/Container.module.css";
 export const themeOrverride = createTheme({
     fontFamily: "Poppins, Greycliff CF, sans-serif",
     headings: { fontFamily: "Poppins, Greycliff CF, sans-serif" },
-    primaryColor: "indigo",
+    primaryColor: "teal",
     components: {
         Container: Container.extend({
             classNames: (_, { size }) => ({

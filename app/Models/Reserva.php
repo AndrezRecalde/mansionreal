@@ -27,6 +27,12 @@ class Reserva extends Model
         'usuario_cancelador_id',
     ];
 
+     protected $casts = [
+        'fecha_checkin' => 'datetime',      // Convierte a Carbon
+        'fecha_checkout' => 'datetime',     // Convierte a Carbon
+        'fecha_creacion' => 'datetime', // Convierte a Carbon con hora
+    ];
+
     public function huesped()
     {
         return $this->belongsTo(Huesped::class);

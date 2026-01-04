@@ -3,7 +3,7 @@ import { CssLoader } from "./elements/loader/CssLoader";
 /* Elements: Logo */
 import { Logo } from "./elements/logo/Logo";
 /* Elemnsts: Botones */
-import { BtnSection, BtnSubmit } from "./elements/buttons/BtnServices";
+import { BtnSection, BtnSubmit, BtnAddActions } from "./elements/buttons/BtnServices";
 /* Elements: Titulos */
 import { TextSection } from "./elements/titles/TextSection";
 import { TitlePage } from "./elements/titles/TitlePage";
@@ -104,6 +104,8 @@ import { ConsumoEditarModal } from "./consumo/modal/ConsumoEditarModal";
 import { ConsumoEliminarModal } from "./consumo/modal/ConsumoEliminarModal";
 import { ConsumoEditarForm } from "./consumo/form/ConsumoEditarForm";
 import { ConsumoEliminarForm } from "./consumo/form/ConsumoEliminarForm";
+import { ConsumoForm } from "./consumo/form/ConsumoForm";
+import { ConsumoCard } from "./consumo/section/ConsumoCard";
 
 /* Gastos de Danos */
 import { GastoDrawerTable } from "./gasto/table/GastoDrawerTable";
@@ -120,7 +122,6 @@ import { DepartamentosDisponiblesCards } from "./departamento/cards/Departamento
 
 /* Departamentos para Disponibilidad */
 import { accionesDepartamento } from "./departamento/features/accionesDepartamento";
-import { getEstadoColor } from "./departamento/helpers/getEstadoColor";
 import { DepartamentoMenu } from "./departamento/menu/DepartamentoMenu";
 import { ReservaMenu } from "./departamento/menu/ReservaMenu";
 import { useDisponibilidadColumns } from "./departamento/table/useDisponibilidadColumns";
@@ -132,18 +133,33 @@ import { PagoForm } from "./pago/form/PagoForm";
 import { PagoEditarForm } from "./pago/form/PagoEditarForm";
 import { PagosTable } from "./pago/table/PagosTable";
 import { PagosTotalesReserva } from "./pago/table/PagosTotalesReserva";
+import { PagosHistorialTable } from "./pago/table/PagosHistorialTable";
 
 /* Limpieza */
 import { LimpiezaModal } from "./limpieza/modal/LimpiezaModal";
 import { LimpiezaForm } from "./limpieza/form/LimpiezaForm";
 import { LimpiezaTable } from "./limpieza/table/LimpiezaTable";
 
+/* Calendario - Reservas */
+import { CalendarioReservas } from "./calendario/section/CalendarioReservas";
+import { InformacionReservaModal } from "./calendario/modal/InformacionReservaModal";
+import { CalendarioHeader } from "./calendario/section/CalendarioHeader";
+import { CalendarioGrid } from "./calendario/section/CalendarioGrid";
+import { CalendarioKPIs } from "./calendario/section/CalendarioKPIs";
+
+/* Reportes Consumos */
+import { ReporteProductosTable } from "./consumo/section/ReporteProductosTable";
+import { ReporteConsolidadoTable } from "./consumo/section/ReporteConsolidadoTable";
+import { MetadatosSection } from "./consumo/section/MetadatosSection";
+import { TotalesGeneralesSection } from "./consumo/section/TotalesGeneralesSection";
+import { ReporteConsumosVisualizacion } from "./consumo/section/ReporteConsumosVisualizacion";
 
 export {
     /* Elements */
     CssLoader,
     BtnSection,
     BtnSubmit,
+    BtnAddActions,
     Logo,
     TextSection,
     TitlePage,
@@ -237,6 +253,8 @@ export {
     ConsumoEliminarModal,
     ConsumoEditarForm,
     ConsumoEliminarForm,
+    ConsumoForm,
+    ConsumoCard,
 
     /* Gastos */
     GastoDrawerTable,
@@ -256,7 +274,6 @@ export {
     ReservaMenu,
     useDisponibilidadColumns,
     accionesDepartamento,
-    getEstadoColor,
 
     /* Pagos */
     PagoModal,
@@ -265,9 +282,24 @@ export {
     PagoEditarForm,
     PagosTable,
     PagosTotalesReserva,
+    PagosHistorialTable,
 
     /* Limpieza */
     LimpiezaModal,
     LimpiezaForm,
     LimpiezaTable,
+
+    /* Calendario - Reservas */
+    CalendarioReservas,
+    InformacionReservaModal,
+    CalendarioHeader,
+    CalendarioGrid,
+    CalendarioKPIs,
+
+    /* Consumos Reportes */
+    ReporteProductosTable,
+    ReporteConsolidadoTable,
+    MetadatosSection,
+    TotalesGeneralesSection,
+    ReporteConsumosVisualizacion,
 };

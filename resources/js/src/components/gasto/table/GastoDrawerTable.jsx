@@ -88,6 +88,9 @@ export const GastoDrawerTable = ({ estado }) => {
         enableGlobalFilter: false,
         enableRowActions: true,
         enableColumnActions: false,
+        enableFilters: false,
+        enableHiding: false,
+        enableSorting: false,
         renderTopToolbarCustomActions: ({ table }) => (
             <Group gap={20} mr={8}>
                 <Tooltip label="Agregar Gasto">
@@ -95,7 +98,6 @@ export const GastoDrawerTable = ({ estado }) => {
                         variant="default"
                         size="xl"
                         radius="xs"
-                        aria-label="Gasto"
                         onClick={handleAbrirGasto}
                         disabled={
                             estado?.nombre_estado === Estados.CANCELADO ||
@@ -109,7 +111,7 @@ export const GastoDrawerTable = ({ estado }) => {
                     </ActionIcon>
                 </Tooltip>
                 <TextSection tt="" fw={500} fz={16}>
-                    Registro de Gastos
+                    Registro de Daños
                 </TextSection>
             </Group>
         ),

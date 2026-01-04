@@ -1,33 +1,128 @@
 .user {
-    color: light-dark(var(--mantine-color-black), var(--mantine-color-dark-0));
-    padding: var(--mantine-spacing-xs) var(--mantine-spacing-sm);
-    border-radius: var(--mantine-radius-sm);
-    border-left: rem(1px) solid
-        light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-5));
-    transition: background-color 100ms ease;
+    display: flex;
+    align-items: center;
+    gap: var(--mantine-spacing-sm);
+    color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-gray-2));
+    padding: var(--mantine-spacing-sm) var(--mantine-spacing-md);
+    border-radius: var(--mantine-radius-md);
+    border: rem(1px) solid
+        light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+    background: light-dark(
+        var(--mantine-color-white),
+        var(--mantine-color-dark-6)
+    );
+    transition: all 200ms ease;
+    cursor: pointer;
+    min-width: 120px;
+    box-shadow: light-dark(
+        0 1px 2px rgba(0, 0, 0, 0.05),
+        0 1px 2px rgba(0, 0, 0, 0.2)
+    );
 
     &:hover {
-        background-color: light-dark(
-            var(--mantine-color-white),
-            var(--mantine-color-dark-8)
+        background: light-dark(
+            var(--mantine-color-gray-0),
+            var(--mantine-color-dark-5)
+        );
+        border-color: light-dark(
+            var(--mantine-color-gray-4),
+            var(--mantine-color-dark-3)
+        );
+        transform: translateY(-2px);
+        box-shadow: light-dark(
+            0 4px 8px rgba(0, 0, 0, 0.1),
+            0 4px 8px rgba(0, 0, 0, 0.4)
         );
     }
 
-    @media (max-width: $mantine-breakpoint-xs) {
+    @media (max-width: 768px) {
+        min-width: auto;
+        padding: var(--mantine-spacing-xs) var(--mantine-spacing-sm);
+    }
+
+    @media (max-width: 576px) {
         display: none;
     }
 }
 
 .userActive {
-    background-color: light-dark(
-        var(--mantine-color-white),
-        var(--mantine-color-dark-8)
+    background: light-dark(
+        var(--mantine-color-blue-0),
+        var(--mantine-color-dark-5)
     );
+    border-color: var(--mantine-primary-color-filled);
+    color: var(--mantine-primary-color-filled);
+    box-shadow: light-dark(
+        0 0 0 2px rgba(var(--mantine-primary-color-rgb), 0.1),
+        0 0 0 2px rgba(var(--mantine-primary-color-rgb), 0.2)
+    );
+}
+
+.userName {
+    font-weight: 600;
+    font-size: var(--mantine-font-size-sm);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+
+    @media (max-width: 768px) {
+        display: none;
+    }
+}
+
+.userAvatar {
+    border: rem(2px) solid
+        light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-4));
+    transition: border-color 200ms ease;
+}
+
+.user:hover .userAvatar {
+    border-color: var(--mantine-primary-color-filled);
+}
+
+.userIcon {
+    transition: transform 200ms ease;
+}
+
+.userActive .userIcon {
+    transform: rotate(180deg);
 }
 
 .footer {
     margin-left: calc(var(--mantine-spacing-md) * -1) !important;
     margin-right: calc(var(--mantine-spacing-md) * -1) !important;
+    margin-top: var(--mantine-spacing-md) !important;
+    padding: var(--mantine-spacing-md) !important;
     border-top: rem(1px) solid
         light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+    background: light-dark(
+        var(--mantine-color-gray-0),
+        var(--mantine-color-dark-8)
+    );
+}
+
+.menuItem {
+    border-radius: var(--mantine-radius-sm);
+    transition: all 150ms ease;
+
+    &:hover {
+        background: light-dark(
+            var(--mantine-color-blue-0),
+            var(--mantine-color-dark-6)
+        );
+        transform: translateX(4px);
+    }
+}
+
+.menuDivider {
+    margin: var(--mantine-spacing-xs) 0 !important;
+}
+
+.menuLabel {
+    font-size: var(--mantine-font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-2));
 }

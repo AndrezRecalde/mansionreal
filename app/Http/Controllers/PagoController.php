@@ -35,6 +35,26 @@ class PagoController extends Controller
         }
     }
 
+    function getHistorialPagos(Request $request): JsonResponse
+    {
+        try {
+            $pagos = Pago::with(['conceptoPago', 'reserva'])
+                ->buscarPorCodigoVoucher($request->codigo_voucher)
+                ->buscarPorFechas($request->fecha_inicio, $request->fecha_fin)
+                ->get();
+
+            return response()->json([
+                'status' => HTTPStatus::Success,
+                'pagos'   => $pagos
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => HTTPStatus::Error,
+                'msg'    => $th->getMessage()
+            ], 500);
+        }
+    }
+
     public function store(PagoRequest $request): JsonResponse
     {
         $reserva = Reserva::findOrFail($request->reserva_id);

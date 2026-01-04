@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class Departamento extends Model
@@ -45,14 +46,17 @@ class Departamento extends Model
 
     public function scopeDisponibleEnFechas($query, $fechaCheckin, $fechaCheckout)
     {
-        return $query->whereDoesntHave('reservas', function ($q) use ($fechaCheckin, $fechaCheckout) {
-            $q->where(function ($subQuery) use ($fechaCheckin, $fechaCheckout) {
-                $subQuery->whereBetween('fecha_checkin', [$fechaCheckin, $fechaCheckout])
-                         ->orWhereBetween('fecha_checkout', [$fechaCheckin, $fechaCheckout])
-                         ->orWhere(function ($nestedQuery) use ($fechaCheckin, $fechaCheckout) {
-                             $nestedQuery->where('fecha_checkin', '<=', $fechaCheckin)
-                                         ->where('fecha_checkout', '>=', $fechaCheckout);
-                         });
+        $fechaInicio = Carbon::parse($fechaCheckin)->startOfDay();
+        $fechaFin = Carbon::parse($fechaCheckout)->endOfDay();
+
+        return $query->whereDoesntHave('reservas', function ($q) use ($fechaInicio, $fechaFin) {
+            $q->where(function ($subQuery) use ($fechaInicio, $fechaFin) {
+                $subQuery->whereBetween('fecha_checkin', [$fechaInicio, $fechaFin])
+                    ->orWhereBetween('fecha_checkout', [$fechaInicio, $fechaFin])
+                    ->orWhere(function ($nestedQuery) use ($fechaInicio, $fechaFin) {
+                        $nestedQuery->where('fecha_checkin', '<=', $fechaInicio)
+                            ->where('fecha_checkout', '>=', $fechaFin);
+                    });
             })->whereIn('estado_id', [1, 2]); // Considerar solo reservas con estado 'Confirmada' o 'En Proceso'
         });
     }

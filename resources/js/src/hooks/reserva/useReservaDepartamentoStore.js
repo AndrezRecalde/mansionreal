@@ -10,7 +10,12 @@ import {
     rtkCargarReservas,
     rtkLimpiarReservas,
 } from "../../store/reserva/reservaSlice";
-import { useDepartamentoStore, useEstadiaStore } from "../../hooks";
+import {
+    useCalendarioStore,
+    useDepartamentoStore,
+    useEstadiaStore,
+} from "../../hooks";
+import { formatDateStr } from "../../helpers/fnHelper";
 import apiAxios from "../../api/apiAxios";
 
 export const useReservaDepartamentoStore = () => {
@@ -25,6 +30,7 @@ export const useReservaDepartamentoStore = () => {
         errores,
     } = useSelector((state) => state.reserva);
     const { fnConsultarDisponibilidadDepartamentos } = useDepartamentoStore();
+    const { fnCargarDatosCalendario, actualizarEstadisticas } = useCalendarioStore();
     const { fnCargarEstadias } = useEstadiaStore();
     const dispatch = useDispatch();
     const { ExceptionMessageError } = useErrorException(rtkCargarErrores);
@@ -34,26 +40,38 @@ export const useReservaDepartamentoStore = () => {
             if (reserva.id) {
                 //actualizando
                 const { data } = await apiAxios.put(
-                    `/gerencia/reserva/${reserva.id}`,
+                    `/general/reserva/${reserva.id}`,
                     reserva
                 );
                 dispatch(rtkCargarMensaje(data));
                 setTimeout(() => {
                     dispatch(rtkCargarMensaje(undefined));
                 }, 2000);
-                fnConsultarDisponibilidadDepartamentos();
+                //fnConsultarDisponibilidadDepartamentos();
+                await fnCargarDatosCalendario({
+                    start: formatDateStr(reserva.fecha_inicio),
+                    end: formatDateStr(reserva.fecha_fin),
+                });
+
+                await actualizarEstadisticas(new Date());
                 return;
             }
             //creando
             const { data } = await apiAxios.post(
-                "/gerencia/reserva/nueva",
+                "/general/reserva/nueva",
                 reserva
             );
             dispatch(rtkCargarMensaje(data));
             setTimeout(() => {
                 dispatch(rtkCargarMensaje(undefined));
             }, 2000);
-            fnConsultarDisponibilidadDepartamentos();
+            //fnConsultarDisponibilidadDepartamentos();
+            await fnCargarDatosCalendario({
+                start: formatDateStr(reserva.fecha_inicio),
+                end: formatDateStr(reserva.fecha_fin),
+            });
+
+            await actualizarEstadisticas(new Date());
         } catch (error) {
             console.log(error);
             ExceptionMessageError(error);
@@ -68,7 +86,7 @@ export const useReservaDepartamentoStore = () => {
     }) => {
         try {
             const { data } = await apiAxios.put(
-                `/gerencia/reserva/${id}/estado`,
+                `/general/reserva/${id}/estado`,
                 { nombre_estado }
             );
             // Recargar datos y mostrar mensaje
@@ -92,7 +110,7 @@ export const useReservaDepartamentoStore = () => {
     const fnEliminarReserva = async (reserva) => {
         try {
             const { data } = await apiAxios.delete(
-                `/gerencia/reserva/${reserva.id}`
+                `/general/reserva/${reserva.id}`
             );
             // Recargar datos y mostrar mensaje
             dispatch(rtkCargarMensaje(data));
@@ -112,7 +130,7 @@ export const useReservaDepartamentoStore = () => {
     }) => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.post("/gerencia/reservas/buscar", {
+            const { data } = await apiAxios.post("/general/reservas/buscar", {
                 fecha_inicio,
                 fecha_fin,
                 codigo_reserva,
@@ -131,7 +149,7 @@ export const useReservaDepartamentoStore = () => {
         try {
             dispatch(rtkCargandoPDFNotaVenta(true));
             const response = await apiAxios.post(
-                "/gerencia/exportar-nota-venta",
+                "/general/exportar-nota-venta",
                 { reserva_id },
                 {
                     responseType: "blob", // Importante para manejar archivos binarios
@@ -188,7 +206,7 @@ export const useReservaDepartamentoStore = () => {
             }
             // Realizar petición a la API
             const { data } = await apiAxios.post(
-                `/gerencia/reservas/${id}/cancelar`,
+                `/general/reservas/${id}/cancelar`,
                 {
                     motivo_cancelacion,
                     observacion: observacion || null,

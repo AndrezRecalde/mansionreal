@@ -1,34 +1,64 @@
-import { useEffect } from "react";
+import { useEffect, useMemo, useCallback } from "react";
 import { Container, Divider, Group, Skeleton, Tabs } from "@mantine/core";
 import {
-    BtnSection,
     ConsumoEditarModal,
     ConsumoEliminarModal,
     ConsumoModal,
     ConsumosDrawer,
     DepartamentosDisponiblesCards,
     EstadiasReservadasCards,
-    FiltroDisponibilidad,
     GastoModal,
     LimpiezaModal,
     PagoEditarModal,
     PagoModal,
     ReservaFinalizarModal,
-    ReservarDepartamentoModal,
     TitlePage,
 } from "../../components";
 import {
     useDepartamentoStore,
     useEstadiaStore,
-    useReservaDepartamentoStore,
     useTitleHook,
-    useUiReservaDepartamento,
 } from "../../hooks";
-import { IconBeach } from "@tabler/icons-react";
 import classes from "./modules/Tabs.module.css";
 
+// Constantes extraídas
+const TABS = {
+    HOSPEDAJE: "HOSPEDAJE",
+    ESTADIA: "ESTADIA",
+};
+
+const SKELETON_COUNT = 3;
+
+// Componente separado para los skeletons
+const LoadingSkeleton = () => (
+    <Group gap={20}>
+        {Array.from({ length: SKELETON_COUNT }, (_, i) => (
+            <Skeleton key={i} height={80} mt={6} width="30%" radius="md" />
+        ))}
+    </Group>
+);
+
+// Componente separado para los modales de reserva
+const ReservaModals = ({ datos_reserva, fnAsignarDepartamento }) => (
+    <>
+        <ConsumosDrawer
+            datos_reserva={datos_reserva}
+            fnAsignarElemento={fnAsignarDepartamento}
+        />
+        <PagoModal reservaId={datos_reserva.reserva_id} />
+        <PagoEditarModal reservaId={datos_reserva.reserva_id} />
+        <ConsumoModal reserva_id={datos_reserva.reserva_id} />
+        <ReservaFinalizarModal datos_reserva={datos_reserva} />
+        <GastoModal activarElemento={datos_reserva} />
+        <ConsumoEditarModal />
+        <ConsumoEliminarModal />
+    </>
+);
+
 const DisponibilidadDepartamentoPage = () => {
-    useTitleHook("Disponibilidad - Mansion Real");
+    useTitleHook("Disponibilidad Actual - Mansion Real");
+    const usuario = JSON.parse(localStorage.getItem("service_user") || "{}");
+
     const {
         cargando: cargandoDepartamentos,
         fnAsignarDepartamento,
@@ -44,137 +74,99 @@ const DisponibilidadDepartamentoPage = () => {
         fnLimpiarEstadias,
     } = useEstadiaStore();
 
-    const { fnAsignarTipoReserva } = useReservaDepartamentoStore();
-    const { fnAbrirModalReservarDepartamento } = useUiReservaDepartamento();
+    // Memoización de datos_reserva para evitar recreación en cada render
+    const datos_reserva = useMemo(() => {
+        if (activarDepartamento?.reserva) {
+            return {
+                departamento_id: activarDepartamento.id,
+                numero_departamento: activarDepartamento.numero_departamento,
+                codigo_reserva: activarDepartamento.reserva.codigo_reserva,
+                reserva_id: activarDepartamento.reserva.id,
+                huesped: activarDepartamento.reserva.huesped,
+                fecha_checkin: activarDepartamento.reserva.fecha_checkin,
+                fecha_checkout: activarDepartamento.reserva.fecha_checkout,
+                total_noches: activarDepartamento.reserva.total_noches,
+                estado: activarDepartamento.reserva.estado,
+            };
+        }
 
-    const datos_reserva = activarDepartamento?.reserva
-        ? {
-              departamento_id: activarDepartamento.id,
-              numero_departamento: activarDepartamento.numero_departamento,
-              codigo_reserva: activarDepartamento.reserva.codigo_reserva,
-              reserva_id: activarDepartamento.reserva.id,
-              huesped: activarDepartamento.reserva.huesped,
-              fecha_checkin: activarDepartamento.reserva.fecha_checkin,
-              fecha_checkout: activarDepartamento.reserva.fecha_checkout,
-              total_noches: activarDepartamento.reserva.total_noches,
-              estado: activarDepartamento.reserva.estado,
-          }
-        : activarEstadia
-        ? {
-              codigo_reserva: activarEstadia.codigo_reserva,
-              reserva_id: activarEstadia.id,
-              huesped: activarEstadia.huesped,
-              fecha_checkin: activarEstadia.fecha_checkin,
-              fecha_checkout: activarEstadia.fecha_checkout,
-              total_noches: activarEstadia.total_noches,
-              estado: activarEstadia.estado,
-          }
-        : null;
+        if (activarEstadia) {
+            return {
+                codigo_reserva: activarEstadia.codigo_reserva,
+                reserva_id: activarEstadia.id,
+                huesped: activarEstadia.huesped,
+                fecha_checkin: activarEstadia.fecha_checkin,
+                fecha_checkout: activarEstadia.fecha_checkout,
+                total_noches: activarEstadia.total_noches,
+                estado: activarEstadia.estado,
+            };
+        }
 
+        return null;
+    }, [activarDepartamento, activarEstadia]);
+
+    const handleTabChange = useCallback(
+        (value) => {
+            if (value === TABS.HOSPEDAJE) {
+                fnConsultarDisponibilidadDepartamentos();
+            } else if (value === TABS.ESTADIA) {
+                fnCargarEstadias();
+            }
+        },
+        [fnConsultarDisponibilidadDepartamentos, fnCargarEstadias]
+    );
+
+    // Efecto de inicialización y limpieza
     useEffect(() => {
-        // Al inicio carga solo hospedajes
         fnConsultarDisponibilidadDepartamentos();
+
         return () => {
             fnLimpiarDepartamentos();
             fnLimpiarEstadias();
         };
     }, []);
 
-    const handleReservarEstadia = () => {
-        fnAsignarTipoReserva("ESTADIA");
-        fnAbrirModalReservarDepartamento(true);
-    };
-
     return (
         <Container size="xl" my={20}>
-            <Group justify="space-between">
-                <TitlePage order={2}>
-                    Disponibilidad Actual - Mansion Real
-                </TitlePage>
-                <BtnSection
-                    IconSection={IconBeach}
-                    handleAction={handleReservarEstadia}
-                >
-                    Agregar Estadia
-                </BtnSection>
-            </Group>
-
+            <TitlePage order={2}>
+                Disponibilidad Actual - Mansion Real
+            </TitlePage>
             <Divider my={10} />
 
             <Tabs
                 variant="unstyled"
-                defaultValue="HOSPEDAJE"
+                defaultValue={TABS.HOSPEDAJE}
                 mt="md"
-                onChange={(value) => {
-                    if (value === "HOSPEDAJE")
-                        fnConsultarDisponibilidadDepartamentos();
-                    if (value === "ESTADIA") fnCargarEstadias();
-                }}
+                onChange={handleTabChange}
                 classNames={classes}
             >
                 <Tabs.List grow>
-                    <Tabs.Tab value="HOSPEDAJE">Hospedajes</Tabs.Tab>
-                    <Tabs.Tab value="ESTADIA">Estadías</Tabs.Tab>
+                    <Tabs.Tab value={TABS.HOSPEDAJE}>Hospedajes</Tabs.Tab>
+                    <Tabs.Tab value={TABS.ESTADIA}>Estadías</Tabs.Tab>
                 </Tabs.List>
 
-                <Tabs.Panel value="HOSPEDAJE" pt="xs">
-                    <FiltroDisponibilidad
-                        titulo="Buscar disponibilidad"
-                        fnHandleAction={fnConsultarDisponibilidadDepartamentos}
-                    />
+                <Tabs.Panel value={TABS.HOSPEDAJE} pt="xs">
                     {cargandoDepartamentos ? (
-                        <Group gap={20}>
-                            {[1, 2, 3].map((item) => (
-                                <Skeleton
-                                    key={item}
-                                    height={80}
-                                    mt={6}
-                                    width="30%"
-                                    radius="md"
-                                />
-                            ))}
-                        </Group>
+                        <LoadingSkeleton />
                     ) : (
-                        <DepartamentosDisponiblesCards />
+                        <DepartamentosDisponiblesCards usuario={usuario} />
                     )}
                 </Tabs.Panel>
 
-                <Tabs.Panel value="ESTADIA" pt="xs">
+                <Tabs.Panel value={TABS.ESTADIA} pt="xs">
                     {cargandoEstadias ? (
-                        <Group gap={20}>
-                            {[1, 2, 3].map((item) => (
-                                <Skeleton
-                                    key={item}
-                                    height={80}
-                                    mt={6}
-                                    width="30%"
-                                    radius="md"
-                                />
-                            ))}
-                        </Group>
+                        <LoadingSkeleton />
                     ) : (
                         <EstadiasReservadasCards />
                     )}
                 </Tabs.Panel>
             </Tabs>
 
-            <ReservarDepartamentoModal />
-
             {datos_reserva && (
-                <>
-                    <ConsumosDrawer
-                        datos_reserva={datos_reserva}
-                        fnAsignarElemento={fnAsignarDepartamento}
-                    />
-                    <PagoModal reservaId={datos_reserva.reserva_id} />
-                    <PagoEditarModal reservaId={datos_reserva.reserva_id} />
-                    <ConsumoModal reserva_id={datos_reserva.reserva_id} />
-                    <ReservaFinalizarModal datos_reserva={datos_reserva} />
-
-                    <GastoModal />
-                    <ConsumoEditarModal />
-                    <ConsumoEliminarModal />
-                </>
+                <ReservaModals
+                    datos_reserva={datos_reserva}
+                    fnAsignarDepartamento={fnAsignarDepartamento}
+                />
             )}
             <LimpiezaModal />
         </Container>

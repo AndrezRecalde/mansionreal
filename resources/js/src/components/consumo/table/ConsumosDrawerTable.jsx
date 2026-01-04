@@ -85,11 +85,14 @@ export const ConsumosDrawerTable = ({ estado }) => {
         enableDensityToggle: false,
         enableColumnFilterModes: false,
         enableFullScreenToggle: false,
-        enableColumnFilters: true,
+        enableColumnFilters: false,
         enableGlobalFilter: false,
         enableRowActions: true,
         enableColumnActions: false,
         enableColumnFooters: true, // Habilita los footers de columna
+        enableFilters: false,
+        enableHiding: false,
+        enableSorting: false,
         renderTopToolbarCustomActions: () => (
             <Group gap={20} mr={8}>
                 <Tooltip label="Agregar Consumo">
@@ -97,7 +100,6 @@ export const ConsumosDrawerTable = ({ estado }) => {
                         variant="default"
                         size="xl"
                         radius="xs"
-                        aria-label="Consumo"
                         onClick={handleAbrirConsumo}
                         disabled={
                             estado?.nombre_estado === Estados.CANCELADO ||

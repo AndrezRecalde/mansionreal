@@ -28,6 +28,7 @@ class InventarioRequest extends FormRequest
             'descripcion'     => 'nullable|string',
             'precio_unitario' => 'required',
             'categoria_id'    => 'required|exists:categorias,id',
+            'sin_stock'      => 'required|boolean',
             //'activo'         => 'boolean',
         ];
     }
@@ -42,6 +43,8 @@ class InventarioRequest extends FormRequest
             'precio_unitario.required' => 'El precio unitario es obligatorio.',
             'categoria_id.required'    => 'La categoría es obligatoria.',
             'categoria_id.exists'      => 'La categoría seleccionada no es válida.',
+            'sin_stock.required'      => 'Elija si el producto cuenta con stock.',
+            'sin_stock.boolean'       => 'El campo sin_stock debe ser verdadero o falso.',
             //'activo.boolean'           => 'El campo activo debe ser verdadero o falso.',
         ];
     }

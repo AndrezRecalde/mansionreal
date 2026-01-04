@@ -3,54 +3,96 @@ import { getEnv } from "../helpers/getEnv";
 
 const { VITE_APP_URL } = getEnv();
 
-// Crear una instancia de Axios
 const apiAxios = axios.create({
     baseURL: VITE_APP_URL,
-    withCredentials: true, // Envía cookies en cada solicitud
+    withCredentials: true,
     headers: {
-        Accept: "application/json", // Encabezado común para todas las solicitudes
+        Accept: "application/json",
         "Content-Type": "application/json",
     },
 });
 
-// Función para obtener el token CSRF si no está presente
+let csrfTokenInitialized = false;
+let isRefreshingToken = false;
+
 const ensureCsrfToken = async () => {
-    if (!document.cookie.includes("XSRF-TOKEN")) {
-        await axios.get(`${VITE_APP_URL}/sanctum/csrf-cookie`, {
-            withCredentials: true,
-        });
+    if (!csrfTokenInitialized && !isRefreshingToken) {
+        isRefreshingToken = true;
+        try {
+            await axios.get(`${VITE_APP_URL}/sanctum/csrf-cookie`, {
+                withCredentials: true,
+            });
+            csrfTokenInitialized = true;
+        } catch (error) {
+            console.error("Error al obtener CSRF token:", error);
+        } finally {
+            isRefreshingToken = false;
+        }
     }
 };
 
-// Interceptor para agregar el token de autorización y asegurar el token CSRF
-apiAxios.interceptors.request.use(async (config) => {
-    await ensureCsrfToken(); // Asegura que el token CSRF esté presente
+ensureCsrfToken();
 
-    // Agregar el token de autorización si existe
-    const token = localStorage.getItem("auth_token");
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
+apiAxios.interceptors.request.use(
+    async (config) => {
+        // Asegurar que el CSRF token esté inicializado antes de cada petición
+        await ensureCsrfToken();
 
-    return config;
-}, (error) => {
-    return Promise.reject(error);
-});
-
-// Interceptor para manejar errores de respuesta
-apiAxios.interceptors.response.use(
-    (response) => response, // Devuelve la respuesta directamente si es exitosa
-    async (error) => {
-        const { response } = error;
-
-        // Manejar errores 401 (No autorizado)
-        if (response && response.status === 401) {
-            //console.log("Error 401: No autorizado, redirigiendo al login...");
-            localStorage.removeItem("auth_token"); // Limpiar el token almacenado
-            window.location.href = "/auth/login"; // Redirigir a la página de inicio de sesión
+        const token = localStorage.getItem("auth_token");
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
         }
 
-        // Manejar otros errores
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
+apiAxios.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        const { response, config } = error;
+
+        if (response && response.status === 401) {
+            // Verificar si el token realmente no existe o expiró
+            const token = localStorage.getItem("auth_token");
+
+            if (!token) {
+                // No hay token, redirigir al login
+                localStorage.clear();
+                csrfTokenInitialized = false;
+                window.location.href = "/auth/login";
+            } else {
+                // Hay token pero falló - puede ser que expiró
+                // Solo redirigir si no es una petición que ya se está reintentando
+                if (!config._retry) {
+                    config._retry = true;
+
+                    // Intentar refrescar el CSRF token
+                    csrfTokenInitialized = false;
+                    await ensureCsrfToken();
+
+                    // Reintentar la petición una vez
+                    try {
+                        return await apiAxios(config);
+                    } catch (retryError) {
+                        // Si falla de nuevo, ahora sí redirigir
+                        localStorage.clear();
+                        csrfTokenInitialized = false;
+                        window.location.href = "/auth/login";
+                    }
+                }
+            }
+        }
+
+        if (response && response.status === 403) {
+            console.error(
+                "Error 403: No tienes permisos para acceder a este recurso"
+            );
+        }
+
         if (!response) {
             console.error("Error de red o servidor no disponible");
         }

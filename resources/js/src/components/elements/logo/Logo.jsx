@@ -1,4 +1,6 @@
 import { Image } from '@mantine/core';
+import bg from "../../../assets/images/banner.png";
+
 
 export const Logo = ({ height = 200, width = "auto" }) => {
     return (
@@ -9,7 +11,7 @@ export const Logo = ({ height = 200, width = "auto" }) => {
             w={width}
             fit="contain"
             alt="logo"
-            src={'https://placehold.co/600x400?text=Placeholder'}
+            src={bg}
             fallbackSrc="https://placehold.co/600x400?text=Placeholder"
         />
     );

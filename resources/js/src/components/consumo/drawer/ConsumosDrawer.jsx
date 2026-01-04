@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useCallback } from "react";
 import { Card, Drawer, Stack } from "@mantine/core";
 import { ConsumosDrawerTable } from "../table/ConsumosDrawerTable";
 import {
@@ -16,10 +16,9 @@ import {
 import { Roles } from "../../../helpers/getPrefix";
 
 export const ConsumosDrawer = ({ datos_reserva, fnAsignarElemento }) => {
-    const usuario = useMemo(
-        () => JSON.parse(localStorage.getItem("service_user")),
-        []
-    );
+    // Memoizar el usuario para evitar re-parseos innecesarios
+    const usuario = JSON.parse(localStorage.getItem("service_user") || "{}");
+
     const {
         fnAbrirDrawerConsumosDepartamento,
         abrirDrawerConsumosDepartamento,
@@ -29,34 +28,47 @@ export const ConsumosDrawer = ({ datos_reserva, fnAsignarElemento }) => {
     const { fnCargarGastos, fnLimpiarGastos } = useGastoStore();
     const { fnCargarPagos, fnLimpiarPago } = usePagoStore();
 
-    useEffect(() => {
-        if (abrirDrawerConsumosDepartamento) {
-            fnCargarConsumos({ reserva_id: datos_reserva.reserva_id });
-            if (
-                usuario.role === Roles.GERENCIA ||
-                usuario.role === Roles.ADMINISTRADOR
-            ) {
-                fnCargarGastos({ reserva_id: datos_reserva.reserva_id });
-                fnCargarPagos({ reserva_id: datos_reserva.reserva_id });
-            }
-        }
+    // Memoizar la verificación de rol
+    const esRolAdministrativo = useMemo(
+        () =>
+            usuario?.role === Roles.GERENCIA ||
+            usuario?.role === Roles.ADMINISTRADOR,
+        [usuario?.role]
+    );
 
+    // Extraer el ID de reserva para evitar repetición
+    const reservaId = datos_reserva?.reserva_id;
+
+    // Cargar datos cuando se abre el drawer
+    useEffect(() => {
+        if (!abrirDrawerConsumosDepartamento || !reservaId) return;
+
+        fnCargarConsumos({ reserva_id: reservaId });
+
+        if (esRolAdministrativo) {
+            fnCargarGastos({ reserva_id: reservaId });
+            fnCargarPagos({ reserva_id: reservaId });
+        }
+        console.log("aki");
+
+        // Cleanup al cerrar o desmontar
         return () => {
             fnLimpiarConsumos();
-            if (
-                usuario.role === Roles.GERENCIA ||
-                usuario.role === Roles.ADMINISTRADOR
-            ) {
+            if (esRolAdministrativo) {
                 fnLimpiarGastos();
                 fnLimpiarPago();
             }
         };
     }, [abrirDrawerConsumosDepartamento]);
 
-    const handleCerrarDrawer = () => {
-        fnAsignarElemento(null); // Limpiar el departamento activo al cerrar el drawer
+    // Memoizar el handler de cierre
+    const handleCerrarDrawer = useCallback(() => {
+        fnAsignarElemento(null);
         fnAbrirDrawerConsumosDepartamento(false);
-    };
+    }, [fnAsignarElemento, fnAbrirDrawerConsumosDepartamento]);
+
+    // Guard clause para evitar renderizar si no hay datos
+    if (!datos_reserva) return null;
 
     return (
         <Drawer
@@ -67,15 +79,32 @@ export const ConsumosDrawer = ({ datos_reserva, fnAsignarElemento }) => {
             opened={abrirDrawerConsumosDepartamento}
             onClose={handleCerrarDrawer}
             title="Historial de Consumos"
+            // Mejoras adicionales opcionales:
+            overlayProps={{ opacity: 0.5, blur: 4 }}
+            transitionProps={{ transition: "slide-left", duration: 200 }}
+            closeOnClickOutside={false}
         >
-            <Stack>
-                <Card withBorder shadow="sm" radius="sm" p="sm" bg="gray.3">
+            <Stack gap="md">
+                <Card
+                    withBorder
+                    shadow="md"
+                    radius="md"
+                    padding="md"
+                    //bg="gray. 3"
+                >
                     <ReservaAccionesTable datos={datos_reserva} />
                 </Card>
+
                 <ReservaInfoHuespedTable datos={datos_reserva} />
+
                 <ConsumosDrawerTable estado={datos_reserva.estado} />
-                <PagosTable estado={datos_reserva.estado} />
-                <GastoDrawerTable estado={datos_reserva.estado} />
+
+                {esRolAdministrativo && (
+                    <>
+                        <PagosTable estado={datos_reserva.estado} />
+                        <GastoDrawerTable estado={datos_reserva.estado} />
+                    </>
+                )}
             </Stack>
         </Drawer>
     );

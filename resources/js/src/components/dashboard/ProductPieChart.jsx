@@ -10,16 +10,16 @@ export default function ProductPieChart() {
 
     // Paleta de colores VIBRANTES pero menos eléctricos
     const colores = [
-        "#E74C3C", // Rojo intenso
-        "#3498DB", // Azul brillante
-        "#F39C12", // Naranja dorado
-        "#2ECC71", // Verde esmeralda
-        "#9B59B6", // Púrpura real
-        "#1ABC9C", // Turquesa
-        "#E67E22", // Naranja calabaza
-        "#34495E", // Azul grisáceo
-        "#EC407A", // Rosa intenso
-        "#26A69A", // Verde azulado
+        "#0B1E40", // Navy corporativo
+        "#102A56", // Azul institucional
+        "#345995", // Azul confianza
+        "#8DA9C4", // Azul suave neutro
+        "#F4D35E", // Dorado premium
+        "#EE964B", // Naranja financiero
+        "#C81D25", // Rojo énfasis (riesgo/alerta)
+        "#6C757D", // Gris corporativo
+        "#2A628F", // Azul moderno
+        "#184E77", // Acabado ejecutivo
     ];
 
     // Ordenar productos por cantidad vendida (mayor a menor)

@@ -11,12 +11,12 @@ export const ReservarBusquedaClienteForm = ({
     handleClear,
 }) => {
     return (
-        <Group align="end" gap="xs">
+        <Group align="end" gap="xs" mb={15}>
             <TextInput
                 withAsterisk
                 label="Cédula"
                 placeholder="Número de cédula"
-                key={reservaForm.key('huesped.dni')}
+                key={reservaForm.key("huesped.dni")}
                 {...reservaForm.getInputProps("huesped.dni")}
                 style={{ flex: 1 }}
                 autoComplete="off"
@@ -26,23 +26,24 @@ export const ReservarBusquedaClienteForm = ({
                 variant="default"
                 fontSize={12}
                 heigh={34}
-                fullwidth={false}
                 IconSection={IconSearch}
                 disabled={cargando}
-                handleAction={handleSubmitHuesped}
+                handleAction={(e) => handleSubmitHuesped(e)}
             >
                 {cargando ? "Buscando..." : "Buscar"}
             </BtnSection>
             {showDetails && (
-                <Button
+                <BtnSection
                     variant="light"
+                    fontSize={12}
+                    heigh={34}
                     color="red"
-                    leftSection={<IconX size={16} />}
-                    onClick={handleClear}
+                    IconSection={IconX}
+                    handleAction={handleClear}
                     disabled={cargando}
                 >
                     Limpiar
-                </Button>
+                </BtnSection>
             )}
         </Group>
     );

@@ -81,6 +81,9 @@ import { uiPagoSlice } from "./pago/uiPagoSlice";
 import { limpiezaSlice } from "./limpieza/limpiezaSlice";
 import { uiLimpiezaSlice } from "./limpieza/uiLimpiezaSlice";
 
+/* Calendario */
+import { calendarioSlice } from "./calendario/calendarioSlice";
+
 /* Storage Fields */
 import { storageFieldsSlice } from "./storage/storageFieldsSlice";
 
@@ -168,6 +171,9 @@ export {
     /* Limpieza */
     limpiezaSlice,
     uiLimpiezaSlice,
+
+    /* Calendario */
+    calendarioSlice,
 
     /* Storage Fields */
     storageFieldsSlice,

@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import {
     authSlice,
+    calendarioSlice,
     categoriaSlice,
     conceptoPagoSlice,
     configuracionIvaSlice,
@@ -129,6 +130,9 @@ export const store = configureStore({
         /* Limpieza */
         limpieza: limpiezaSlice.reducer,
         uiLimpieza: uiLimpiezaSlice.reducer,
+
+        /* Calendario - Reservas */
+        calendario: calendarioSlice.reducer,
 
         /* Storage */
         storageFields: storageFieldsSlice.reducer,

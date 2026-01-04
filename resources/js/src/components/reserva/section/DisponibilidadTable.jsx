@@ -4,7 +4,6 @@ import { useMantineTheme } from "@mantine/core";
 import {
     useDisponibilidadColumns,
     DepartamentoMenu,
-    getEstadoColor,
     DetalleReservaTable,
     ContenidoTable,
 } from "../../../components";
@@ -13,6 +12,7 @@ import {
     useReservaDepartamentoStore,
     useUiReservaDepartamento,
 } from "../../../hooks";
+import { getEstadoColor } from "../../../helpers/fnHelper";
 
 export const DisponibilidadTable = ({ setOpened }) => {
     const {
@@ -23,8 +23,7 @@ export const DisponibilidadTable = ({ setOpened }) => {
     } = useDepartamentoStore();
     const { fnAbrirModalReservarDepartamento, fnAbrirModalReservaFinalizar } =
         useUiReservaDepartamento();
-    const { fnAsignarReserva } =
-        useReservaDepartamentoStore();
+    const { fnAsignarReserva } = useReservaDepartamentoStore();
     const theme = useMantineTheme();
 
     const handleReservarClick = (selected) => {

@@ -1,61 +1,25 @@
-import { useEffect } from "react";
 import {
     Badge,
     Card,
     Center,
     SimpleGrid,
-    Text,
     ThemeIcon,
     useMantineTheme,
 } from "@mantine/core";
+import { TextSection } from "../../../components";
 import { useEstadiaStore, useUiConsumo } from "../../../hooks";
+import { formatFechaModal, getEstadoColor } from "../../../helpers/fnHelper";
 import { IconBeach, IconCalendar } from "@tabler/icons-react";
 import classes from "../modules/EstadiasReservadasCards.module.css";
 import dayjs from "dayjs";
 import "dayjs/locale/es";
-import Swal from "sweetalert2";
 dayjs.locale("es");
 
 export const EstadiasReservadasCards = () => {
     const theme = useMantineTheme();
 
-    const { estadias, fnAsignarEstadia, mensaje, errores } = useEstadiaStore();
+    const { estadias, fnAsignarEstadia } = useEstadiaStore();
     const { fnAbrirDrawerConsumosDepartamento } = useUiConsumo();
-
-    const getEstadoColor = (theme, estadoColor) => {
-        if (theme.colors[estadoColor]) {
-            return theme.colors[estadoColor][7];
-        }
-        return estadoColor;
-    };
-
-    useEffect(() => {
-        if (mensaje !== undefined) {
-            Swal.fire({
-                icon: mensaje.status,
-                text: mensaje.msg,
-                showConfirmButton: true,
-            });
-            return;
-        }
-    }, [mensaje]);
-
-    useEffect(() => {
-        if (errores !== undefined) {
-            Swal.fire({
-                icon: "error",
-                text: errores,
-                showConfirmButton: true,
-            });
-            return;
-        }
-    }, [errores]);
-
-    const formatFecha = (fecha) =>
-        dayjs(fecha)
-            .locale("es")
-            .format("DD-MMMM")
-            .replace(/-./, (s) => s.toUpperCase());
 
     const handleAbrirConsumos = (estadia) => {
         fnAsignarEstadia(estadia);
@@ -85,15 +49,21 @@ export const EstadiasReservadasCards = () => {
                             </ThemeIcon>
 
                             <Center>
-                                <Text fz={14} fw={500}>
+                                <TextSection fw={500} tt="">
                                     {estadia.huesped || "Sin Huesped"}
-                                </Text>
+                                </TextSection>
                             </Center>
                             <Center>
-                                <Text fz={12} fw={500} c="dimmed">
+                                <TextSection
+                                    fz={12}
+                                    fw={500}
+                                    color="dimmed"
+                                    tt=""
+                                >
                                     Huesped Anfitrion
-                                </Text>
+                                </TextSection>
                             </Center>
+
                             <Card.Section
                                 mt="sm"
                                 withBorder
@@ -102,19 +72,22 @@ export const EstadiasReservadasCards = () => {
                             >
                                 <Center>
                                     <IconCalendar size={16} stroke={1.5} />
-                                    <Text size="xs">
-                                        {`${formatFecha(
+                                    <TextSection fz={12} tt="">
+                                        {`${formatFechaModal(
                                             estadia.fecha_checkin
-                                        )} - ${formatFecha(
+                                        )} - ${formatFechaModal(
                                             estadia.fecha_checkout
                                         )}`}
-                                    </Text>
+                                    </TextSection>
                                 </Center>
                             </Card.Section>
                             <Card.Section
                                 withBorder
                                 className={classes.section}
-                                bg={getEstadoColor(theme, estadia?.estado?.color)}
+                                bg={getEstadoColor(
+                                    theme,
+                                    estadia?.estado?.color
+                                )}
                             >
                                 <Badge
                                     variant="filled"
@@ -126,7 +99,9 @@ export const EstadiasReservadasCards = () => {
                                         backgroundColor: "transparent",
                                     }}
                                 >
-                                    {estadia?.estado?.nombre_estado || "SIN ESTADO"}
+                                    {estadia?.estado?.nombre_estado ||
+                                        "SIN ESTADO"}{" "}
+                                    - {estadia.codigo_reserva}
                                 </Badge>
                             </Card.Section>
                         </Card>
@@ -135,14 +110,14 @@ export const EstadiasReservadasCards = () => {
             ) : (
                 <Card shadow="sm" radius="md" p="lg" withBorder>
                     <Card.Section inheritPadding py="xs">
-                        <Text fw={600} size="lg">
+                        <TextSection fw={600} fz={18}>
                             Estadías
-                        </Text>
+                        </TextSection>
                     </Card.Section>
                     <Card.Section inheritPadding py="md">
-                        <Text size="sm" c="dimmed">
+                        <TextSection fz={12} color="dimmed">
                             No hay estadias que mostrar el día de hoy.
-                        </Text>
+                        </TextSection>
                     </Card.Section>
                 </Card>
             )}

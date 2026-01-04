@@ -1,20 +1,18 @@
 import { useEffect } from "react";
 import { Group, Modal, Title } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { TextSection, GastoForm } from "../../../components";
+import { GastoForm } from "../../../components";
 import {
-    useDepartamentoStore,
     useGastoStore,
     useTiposDanoStore,
     useUiGasto,
 } from "../../../hooks";
 import { IconOutbound } from "@tabler/icons-react";
 
-export const GastoModal = () => {
+export const GastoModal = ( { activarElemento } ) => {
     const { abrirModalGasto, fnAbrirModalGasto } = useUiGasto();
     const { fnAsignarGasto } = useGastoStore();
     const { fnCargarTiposDano, fnLimpiarTiposDano } = useTiposDanoStore();
-    const { activarDepartamento } = useDepartamentoStore();
 
     const form = useForm({
         initialValues: {
@@ -37,8 +35,8 @@ export const GastoModal = () => {
         },
         transformValues: (values) => ({
             ...values,
-            reserva_id: activarDepartamento.reserva.id
-                ? parseInt(activarDepartamento.reserva.id)
+            reserva_id: activarElemento.reserva_id
+                ? parseInt(activarElemento.reserva_id)
                 : null, // PONERLE OJO A ESTO
             tipo_dano_id: values.tipo_dano_id
                 ? parseInt(values.tipo_dano_id)

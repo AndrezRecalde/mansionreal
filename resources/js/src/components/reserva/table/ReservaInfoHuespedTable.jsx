@@ -1,4 +1,5 @@
 import { Table } from "@mantine/core";
+import { formatFechaHoraModal } from "../../../helpers/fnHelper";
 
 export const ReservaInfoHuespedTable = ({ datos }) => {
     return (
@@ -16,8 +17,12 @@ export const ReservaInfoHuespedTable = ({ datos }) => {
                 <Table.Tr>
                     <Table.Td>{datos.codigo_reserva}</Table.Td>
                     <Table.Td>{datos.huesped}</Table.Td>
-                    <Table.Td>{datos.fecha_checkin}</Table.Td>
-                    <Table.Td>{datos.fecha_checkout}</Table.Td>
+                    <Table.Td>
+                        {formatFechaHoraModal(datos.fecha_checkin)}
+                    </Table.Td>
+                    <Table.Td>
+                        {formatFechaHoraModal(datos.fecha_checkout)}
+                    </Table.Td>
                     <Table.Td>{datos.total_noches}</Table.Td>
                 </Table.Tr>
             </Table.Tbody>

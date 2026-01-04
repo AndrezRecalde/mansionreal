@@ -86,7 +86,6 @@ export const ReportesPagosTable = ({ reportes }) => {
                     variant="default"
                     size="lg"
                     radius="xs"
-                    aria-label="Gasto"
                     onClick={() => {
                         fnExportarPDFReportesPorGerente(storageFields);
                     }}

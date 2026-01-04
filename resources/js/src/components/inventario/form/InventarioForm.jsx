@@ -4,6 +4,7 @@ import {
     NumberInput,
     Select,
     Stack,
+    Switch,
     Textarea,
     TextInput,
 } from "@mantine/core";
@@ -14,6 +15,7 @@ import {
     useStorageField,
     useUiInventario,
 } from "../../../hooks";
+import { IconCheck, IconX } from "@tabler/icons-react";
 
 export const InventarioForm = ({ form }) => {
     const {
@@ -32,6 +34,7 @@ export const InventarioForm = ({ form }) => {
                 nombre_producto: activarInventario.nombre_producto,
                 precio_unitario: activarInventario.precio_unitario,
                 categoria_id: activarInventario.categoria_id.toString(),
+                sin_stock: activarInventario.sin_stock ? 0 : 1,
             });
         }
     }, [activarInventario]);
@@ -40,6 +43,7 @@ export const InventarioForm = ({ form }) => {
         e.preventDefault();
         let objetoFinal = { ...form.getTransformedValues(), storageFields };
         fnAgregarProductoInventario(objetoFinal);
+        console.log(objetoFinal);
         fnAsignarProductoInventario(null);
         fnModalInventario(false);
         form.reset();
@@ -89,6 +93,27 @@ export const InventarioForm = ({ form }) => {
                         label: categoria.nombre_categoria,
                     }))}
                     {...form.getInputProps("categoria_id")}
+                />
+                <Switch
+                    {...form.getInputProps("sin_stock", { type: "checkbox" })}
+                    label="¿El producto cuenta con stock?" //sin_stock = true -> No tiene stock | sin_stock = false -> Tiene stock
+                    color="teal"
+                    size="md"
+                    thumbIcon={
+                        form.values.sin_stock ? (
+                            <IconCheck
+                                size={12}
+                                color="var(--mantine-color-teal-6)"
+                                stroke={3}
+                            />
+                        ) : (
+                            <IconX
+                                size={12}
+                                color="var(--mantine-color-red-6)"
+                                stroke={3}
+                            />
+                        )
+                    }
                 />
                 <BtnSubmit>Guardar Producto</BtnSubmit>
             </Stack>

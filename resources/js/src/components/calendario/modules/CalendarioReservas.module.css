@@ -1,0 +1,16 @@
+.eventContent {
+    padding: 2px 4px;
+}
+
+.eventTitle {
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.eventSubtitle {
+    font-size: 10px;
+    opacity: 0.8;
+}

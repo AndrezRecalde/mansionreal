@@ -98,6 +98,9 @@ export const PagosTable = ({ estado }) => {
         enableRowActions: true,
         enableColumnActions: false,
         enableColumnFooters: true, // Habilita los footers de columna
+        enableFilters: false,
+        enableHiding: false,
+        enableSorting: false,
         renderTopToolbarCustomActions: () => (
             <Group gap={20} mr={8}>
                 <Tooltip label="Agregar Voucher">
@@ -105,7 +108,6 @@ export const PagosTable = ({ estado }) => {
                         variant="default"
                         size="xl"
                         radius="xs"
-                        aria-label="Agregar Voucher"
                         onClick={handleAgregarVoucherClick}
                         disabled={
                             estado?.nombre_estado === Estados.CANCELADO ||

@@ -2,6 +2,8 @@ import { Modal } from "@mantine/core";
 import { InventarioStockForm, TextSection } from "../../../components";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { useInventarioStore, useUiInventario } from "../../../hooks";
+import { useEffect } from "react";
+import Swal from "sweetalert2";
 
 export const InventarioAgregarStockModal = () => {
     const { abrirModalAgregarStock, fnAbrirModalAgregarStock } =
@@ -25,6 +27,19 @@ export const InventarioAgregarStockModal = () => {
         }),
     });
 
+    useEffect(() => {
+        activarInventario?.sin_stock && abrirModalAgregarStock
+            ? Swal.fire({
+                  icon: "info",
+                  text: "El producto seleccionado esta marcado para no tener stock.",
+                  showConfirmButton: true,
+              }).then(() => {
+                  fnAbrirModalAgregarStock(false);
+                  fnAsignarProductoInventario(null);
+              })
+            : null;
+    }, [abrirModalAgregarStock, activarInventario]);
+
     const handleCerrarModal = () => {
         fnAbrirModalAgregarStock(false);
         fnAsignarProductoInventario(null);
@@ -33,7 +48,7 @@ export const InventarioAgregarStockModal = () => {
 
     return (
         <Modal
-            opened={abrirModalAgregarStock}
+            opened={abrirModalAgregarStock && !activarInventario?.sin_stock}
             onClose={handleCerrarModal}
             title={
                 <TextSection tt="" fz={16} fw={700}>

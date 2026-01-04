@@ -10,6 +10,7 @@ import {
 import { TextSection, TitlePage } from "../../components";
 import { useInventarioStore, useTitleHook } from "../../hooks";
 import { MantineReactTable } from "mantine-react-table";
+import { formatFechaHoraModal } from "../../helpers/fnHelper";
 
 const HistorialMovimientosInvPage = () => {
     useTitleHook("Historial de Movimientos - Inventario");
@@ -59,8 +60,7 @@ const HistorialMovimientosInvPage = () => {
             {
                 accessorKey: "fecha_movimiento",
                 header: "Fecha",
-                Cell: ({ cell }) =>
-                    new Date(cell.getValue()).toLocaleString("es-EC"),
+                Cell: ({ cell }) => formatFechaHoraModal(cell.getValue()),
             },
             {
                 accessorKey: "tipo_movimiento",
@@ -110,11 +110,7 @@ const HistorialMovimientosInvPage = () => {
 
     return (
         <Container size="xl" my={20}>
-            <Group justify="space-between" mb={10}>
-                <TitlePage order={2}>
-                    Historial Movimientos — Productos
-                </TitlePage>
-            </Group>
+            <TitlePage order={2}>Historial Movimientos — Productos</TitlePage>
             <Divider my={10} />
             <Fieldset legend="Filtrar Búsqueda">
                 <Select

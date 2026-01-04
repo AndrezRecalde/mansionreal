@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 
 class DepartamentoController extends Controller
 {
@@ -41,6 +42,60 @@ class DepartamentoController extends Controller
             'status' => HTTPStatus::Success,
             'departamentos' => $departamentos
         ]);
+    }
+
+    /* Obtener Departamentos disponibles sin reserva en un rango de fechas para utilizarlo en Calendario */
+    public function getDisponibles(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'fecha_inicio' => 'required|date',
+            'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
+        ]);
+
+        try {
+            $inicio = Carbon::parse($validated['fecha_inicio'])->startOfDay();
+            $fin = Carbon::parse($validated['fecha_fin'])->endOfDay();
+
+            // Consulta:
+            // - Departamentos activos
+            // - Excluir los que tengan reservas HOSPEDAJE con solape en el rango
+            //   usando NOT EXISTS para mejor rendimiento.
+            $departamentos = DB::table('departamentos as d')
+                ->join('tipos_departamentos as td', 'd.tipo_departamento_id', '=', 'td.id')
+                ->join('inventarios as i', 'td.inventario_id', '=', 'i.id')
+                ->join('estados as e', 'd.estado_id', '=', 'e.id')
+                ->where('d.activo', 1)
+                ->whereIn('e.nombre_estado', ['DISPONIBLE', 'LIMPIEZA'])
+                ->whereNotExists(function ($q) use ($inicio, $fin) {
+                    $q->from('reservas as r')
+                        ->whereColumn('r.departamento_id', 'd.id')
+                        ->where('r.tipo_reserva', '=', 'HOSPEDAJE')
+                        ->whereNotNull('r.departamento_id')
+                        // Solape de rango: checkin <= fin AND checkout >= inicio
+                        ->where('r.fecha_checkin', '<=', $fin->toDateTimeString())
+                        ->where('r.fecha_checkout', '>=', $inicio->toDateTimeString());
+                })
+                ->orderBy('d.numero_departamento')
+                ->select([
+                    'd.id',
+                    'd.numero_departamento',
+                    'td.nombre_tipo',
+                    'd.capacidad',
+                    'i.precio_unitario as precio_noche'
+                ])
+                ->get();
+
+            return response()->json([
+                'status' => HTTPStatus::Success,
+                'departamentos' => $departamentos,
+            ], 200);
+        } catch (\Throwable $e) {
+            //\Log::error('Error al obtener departamentos disponibles: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return response()->json([
+                'status' => HTTPStatus::Error,
+                'msg' => 'Error al obtener los departamentos disponibles',
+            ], 500);
+        }
     }
 
     public function store(DepartamentoRequest $request): JsonResponse
@@ -239,36 +294,38 @@ class DepartamentoController extends Controller
         $fecha = $request->fecha ?? date('Y-m-d');
 
         // 1. Estados activos RESERVA y DEPARTAMENTO
-        $estadosReserva = \App\Models\Estado::where('activo', 1)
+        $estadosReserva = Estado::where('activo', 1)
             ->where('tipo_estado', 'RESERVA')
             ->whereIn('nombre_estado', ['RESERVADO', 'CONFIRMADO'])
             ->pluck('id')
             ->toArray();
 
-        $estadoDisponible = \App\Models\Estado::where('activo', 1)
+        $estadoDisponible = Estado::where('activo', 1)
             ->where('tipo_estado', 'DEPARTAMENTO')
             ->where('nombre_estado', 'DISPONIBLE')
             ->first();
 
-        $estadoOcupado = \App\Models\Estado::where('activo', 1)
+        $estadoOcupado = Estado::where('activo', 1)
             ->where('tipo_estado', 'DEPARTAMENTO')
             ->where('nombre_estado', 'OCUPADO')
             ->first();
 
         // 2. Estados no disponibles por prioridad: LIMPIEZA y MANTENIMIENTO
-        $estadosNoDisponibles = \App\Models\Estado::where('activo', 1)
+        $estadosNoDisponibles = Estado::where('activo', 1)
             ->where('tipo_estado', 'DEPARTAMENTO')
             ->whereIn('nombre_estado', ['LIMPIEZA', 'MANTENIMIENTO'])
             ->get()
             ->keyBy('id');
 
         // 3. Traer departamentos con reservas que cruzan la fecha consultada
-        $departamentos = \App\Models\Departamento::with([
+        $fechaInicio = Carbon::parse($fecha)->startOfDay(); // 2025-12-09 00:00:00
+        $fechaFin = Carbon::parse($fecha)->endOfDay();
+        $departamentos = Departamento::with([
             'imagenes',
             'tipoDepartamento',
-            'reservas' => function ($q) use ($fecha, $estadosReserva) {
-                $q->where('fecha_checkin', '<=', $fecha)
-                    ->where('fecha_checkout', '>=', $fecha)
+            'reservas' => function ($q) use ($fechaInicio, $fechaFin, $estadosReserva) {
+                $q->where('fecha_checkin', '<=', $fechaFin)
+                    ->where('fecha_checkout', '>=', $fechaInicio)
                     ->whereIn('estado_id', $estadosReserva);
             },
             'estado',

@@ -25,7 +25,7 @@ export const ConsumoEditarModal = () => {
             onClose={handleCerrarModal}
             title={
                 <TextSection tt="" fz={18} fw={300}>
-                    Editar Gasto
+                    Editar Consumo
                 </TextSection>
             }
             overlayProps={{

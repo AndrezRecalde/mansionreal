@@ -20,7 +20,7 @@ export const useConceptoPagoStore = () => {
     const fnCargarConceptosPagos = async ({ activo = true }) => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.post("/gerencia/conceptos-pagos", {
+            const { data } = await apiAxios.post("/general/conceptos-pagos", {
                 activo,
             });
             const { conceptos_pagos } = data;

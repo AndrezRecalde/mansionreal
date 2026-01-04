@@ -5,6 +5,7 @@ import {
     rtkCargando,
     rtkCargandoExportacion,
     rtkCargarDepartamentos,
+    rtkCargarDepartamentosDisponibles,
     rtkCargarErrores,
     rtkCargarMensaje,
     rtkLimpiarDepartamentos,
@@ -16,6 +17,7 @@ export const useDepartamentoStore = () => {
         cargando,
         cargandoExportacion,
         departamentos,
+        departamentos_disponibles,
         activarDepartamento,
         mensaje,
         errores,
@@ -34,6 +36,22 @@ export const useDepartamentoStore = () => {
         } catch (error) {
             console.log(error);
             dispatch(rtkCargando(false));
+            ExceptionMessageError(error);
+        }
+    };
+
+    const fnCargarDepartamentosDisponibles = async ({ fecha_inicio, fecha_fin }) => {
+        try {
+            const { data } = await apiAxios.get("/general/buscar-departamentos-disponibles", {
+                params: {
+                    fecha_inicio,
+                    fecha_fin,
+                },
+            });
+            const { departamentos } = data;
+            dispatch(rtkCargarDepartamentosDisponibles(departamentos));
+        } catch (error) {
+            console.log(error);
             ExceptionMessageError(error);
         }
     };
@@ -114,7 +132,7 @@ export const useDepartamentoStore = () => {
     const fnCambiarEstadoDepartamento = async ({ id, nombre_estado }) => {
         try {
             const { data } = await apiAxios.put(
-                `/gerencia/departamento/${id}/status`,
+                `/general/departamento/${id}/status`,
                 { nombre_estado }
             );
             // Recargar datos y mostrar mensaje
@@ -133,7 +151,7 @@ export const useDepartamentoStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.post(
-                "/departamentos-dispinibilidad",
+                "/general/departamentos-disponibilidad",
                 { fecha }
             );
             const { departamentos } = data;
@@ -153,7 +171,7 @@ export const useDepartamentoStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.post(
-                "/gerencia/reporte-departamentos",
+                "/general/reporte-departamentos",
                 {
                     p_fecha_inicio,
                     p_fecha_fin,
@@ -175,7 +193,7 @@ export const useDepartamentoStore = () => {
         try {
             dispatch(rtkCargandoExportacion(true));
             const response = await apiAxios.post(
-                "/gerencia/reservas-reporte/pdf",
+                "/general/reservas-reporte/pdf",
                 datos,
                 {
                     responseType: "blob",
@@ -205,7 +223,7 @@ export const useDepartamentoStore = () => {
         try {
             dispatch(rtkCargandoExportacion(true));
             const response = await apiAxios.post(
-                "/gerencia/reservas-reporte/pdf",
+                "/general/reservas-reporte/pdf",
                 {
                     ...datos,
                     charts: {
@@ -243,7 +261,7 @@ export const useDepartamentoStore = () => {
         try {
             dispatch(rtkCargandoExportacion(true));
             const response = await apiAxios.post(
-                "/gerencia/consumos-por-departamento/pdf",
+                "/general/consumos-por-departamento/pdf",
                 {
                     p_fecha_inicio,
                     p_fecha_fin,
@@ -284,12 +302,14 @@ export const useDepartamentoStore = () => {
         cargando,
         cargandoExportacion,
         departamentos,
+        departamentos_disponibles,
         activarDepartamento,
         mensaje,
         errores,
 
         //Metodos
         fnCargarDepartamentos,
+        fnCargarDepartamentosDisponibles,
         fnAgregarDepartamento,
         fnMostrarDepartamento,
         fnDisponibilidadDepartamento,

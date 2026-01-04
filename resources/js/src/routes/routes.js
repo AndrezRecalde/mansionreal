@@ -103,6 +103,24 @@ const LimpiezaPage = lazy(() =>
     )
 );
 
+const CalendarioReservasPage = lazy(() =>
+    import(
+        /* webpackChunkName: "CalendarioReservasPage" */ "../pages/calendario/CalendarioReservasPage"
+    )
+);
+
+const ReporteConsumosPage = lazy(() =>
+    import(
+        /* webpackChunkName: "ReporteConsumosPage" */ "../pages/consumo/ReporteConsumosPage"
+    )
+);
+
+const HistorialPagosPage = lazy(() =>
+    import(
+        /* webpackChunkName: "HistorialPagosPage" */ "../pages/pago/HistorialPagosPage"
+    )
+);
+
 const ErrorNotFound = lazy(() =>
     import(
         /* webpackChunkName: "ErrorNotFound" */ "../pages/error/ErrorNotFound"
@@ -138,6 +156,9 @@ export const MENU_PATH = {
     INVENTARIO: "inventario",
     HISTORIAL_MOVIMIENTOS: "historial-movimientos",
     IVA: "config-iva",
+    CALENDARIO_RESERVAS: "calendario-reservas",
+    REPORTE_CONSUMOS: "reporte-consumos",
+    HISTORIAL_PAGOS: "historial-pagos",
 
     PERFIL: "perfil",
     CAMBIAR_CONTRASENA: "cambiar-contrasena",
@@ -189,6 +210,18 @@ const gerenciaRoutes = generateRoutes(
             path: MENU_PATH.REPORTES_GERENTES,
             Component: ReportesGerentesPage,
         },
+        {
+            path: MENU_PATH.REPORTE_CONSUMOS,
+            Component: ReporteConsumosPage,
+        },
+        {
+            path: MENU_PATH.CALENDARIO_RESERVAS,
+            Component: CalendarioReservasPage,
+        },
+        {
+            path: MENU_PATH.HISTORIAL_PAGOS,
+            Component: HistorialPagosPage,
+        }
     ],
     [Roles.ADMINISTRADOR, Roles.GERENCIA]
 );

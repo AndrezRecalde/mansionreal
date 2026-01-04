@@ -47,7 +47,7 @@ export const useHuespedStore = () => {
             if (huesped.id) {
                 //actualizando
                 const { data } = await apiAxios.put(
-                    `/gerencia/huesped/${huesped.id}`,
+                    `/general/huesped/${huesped.id}`,
                     huesped
                 );
                 fnCargarHuespedes({
@@ -61,7 +61,7 @@ export const useHuespedStore = () => {
                 return;
             }
             //creando
-            const { data } = await apiAxios.post("/gerencia/huesped", huesped);
+            const { data } = await apiAxios.post("/general/huesped", huesped);
             fnCargarHuespedes({
                 page: paginacion.pagina_actual,
                 per_page: paginacion.por_pagina,
@@ -79,7 +79,7 @@ export const useHuespedStore = () => {
     const fnBuscarHuespedPorDni = async (dni) => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.post("/gerencia/huesped/buscar", {
+            const { data } = await apiAxios.post("/general/huesped/buscar", {
                 dni,
             });
             const { huesped } = data;

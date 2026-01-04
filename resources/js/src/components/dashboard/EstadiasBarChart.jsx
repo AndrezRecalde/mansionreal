@@ -3,6 +3,16 @@ import Highcharts from "highcharts";
 import { useEstadiaStore } from "../../hooks";
 import { useMantineColorScheme } from "@mantine/core";
 
+// Paleta de colores corporativos
+const CORPORATE_COLORS = {
+    primary: "#001746", // Azul Navy Premium (más institucional y sólido)
+    secondary: "#3D5AFE", // Azul acento limpio, moderno y tecnológico
+    success: "#25B475", // Verde éxito más sobrio y financiero
+    warning: "#D98500", // Oro oscuro empresarial (no tan "amarillo" comercial)
+    accent: "#6C3FA0", // Morado ejecutivo (menos saturado y más profesional)
+    info: "#1F6ED4", // Azul información con perfil institucional
+};
+
 const EstadiasBarChart = () => {
     const { estadias } = useEstadiaStore();
     const chartRef = useRef(null);
@@ -177,30 +187,30 @@ const EstadiasBarChart = () => {
                         data: [
                             {
                                 y: parseFloat(data.total_estadias),
-                                color: "#E74C3C", // Rojo intenso
+                                color: CORPORATE_COLORS.primary, // Azul corporativo oscuro
                             },
                             {
                                 y: parseFloat(data.subtotal_consumos),
-                                color: "#2ECC71", // Verde esmeralda
+                                color: CORPORATE_COLORS.success, // Verde corporativo
                             },
                             {
                                 y: parseFloat(data.iva_recaudado),
-                                color: "#F39C12", // Naranja dorado
+                                color: CORPORATE_COLORS.warning, // Naranja corporativo
                             },
                             {
                                 y: parseFloat(data.total_consumos),
-                                color: "#9B59B6", // Púrpura real
+                                color: CORPORATE_COLORS.accent, // Púrpura corporativo
                             },
                             {
                                 y: parseFloat(data.total_huespedes),
-                                color: "#3498DB", // Azul brillante
+                                color: CORPORATE_COLORS.secondary, // Azul corporativo claro
                             },
                         ],
                     },
                 ],
             });
         }
-    }, [estadias, isDark]); // Agregado isDark para actualizar cuando cambie el tema
+    }, [estadias, isDark]);
 
     return (
         <div>
@@ -208,7 +218,7 @@ const EstadiasBarChart = () => {
                 ref={chartRef}
                 style={{
                     padding: "20px",
-                    borderRadius: "12px",
+                    borderRadius: "10px",
                     background: isDark
                         ? "linear-gradient(135deg, #1A1B1E 0%, #25262B 100%)"
                         : "linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%)",

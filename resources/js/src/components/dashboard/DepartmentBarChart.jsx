@@ -20,16 +20,15 @@ export default function DepartmentBarChart() {
 
     // Paleta de colores vibrantes (igual al pie chart)
     const colores = [
-        "#E74C3C", // Rojo intenso
-        "#3498DB", // Azul brillante
-        "#F39C12", // Naranja dorado
-        "#2ECC71", // Verde esmeralda
-        "#9B59B6", // Púrpura real
-        "#1ABC9C", // Turquesa
-        "#E67E22", // Naranja calabaza
-        "#34495E", // Azul grisáceo
-        "#EC407A", // Rosa intenso
-        "#26A69A", // Verde azulado
+        "#1B2635", // Primario oscuro
+        "#2E4053", // Secundario
+        "#4A90E2", // Acento
+        "#5CB85C", // Éxito
+        "#F0AD4E", // Advertencia
+        "#D9534F", // Error
+        "#E5E8EC", // Neutro claro
+        "#A6B0BF", // Neutro medio
+        "#34495E", // Neutro oscuro
     ];
 
     const options = {
@@ -108,7 +107,7 @@ export default function DepartmentBarChart() {
             backgroundColor: isDark
                 ? "rgba(26, 27, 30, 0.95)"
                 : "rgba(0, 0, 0, 0.85)",
-            borderRadius: 5,
+            borderRadius: 3,
             borderWidth: 0,
             shadow: {
                 color: "rgba(0, 0, 0, 0.3)",
@@ -186,7 +185,7 @@ export default function DepartmentBarChart() {
         <div
             style={{
                 padding: "20px",
-                borderRadius: "12px",
+                borderRadius: "10px",
                 background: isDark
                     ? "linear-gradient(135deg, #1A1B1E 0%, #25262B 100%)"
                     : "linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%)",

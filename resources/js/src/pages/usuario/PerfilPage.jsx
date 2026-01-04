@@ -1,147 +1,176 @@
 import { useMemo } from "react";
 import {
     Badge,
+    Button,
     Card,
     Container,
     Divider,
     Group,
     Image,
     Stack,
-    Text,
-    Title,
     useMantineColorScheme,
 } from "@mantine/core";
-import { BtnSection, TextSection, TitlePage } from "../../components";
+import { TextSection, TitlePage } from "../../components";
 import { useTitleHook } from "../../hooks";
 import classes from "./modules/Perfil.module.css";
-import bg from "../../assets/images/logo.png";
+import bg from "../../assets/images/hotel_mansion_real.jpg";
 import { IconBookmarksFilled, IconKeyFilled } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 
 const PerfilPage = () => {
+    useTitleHook("Perfil - Mansion Real");
     const navigate = useNavigate();
     const { colorScheme } = useMantineColorScheme();
     const isDark = colorScheme === "dark";
-    useTitleHook("Perfil - Mansion Real");
-    const usuario = useMemo(
-        () => JSON.parse(localStorage.getItem("service_user")),
-        []
-    );
+    const usuario = JSON.parse(localStorage.getItem("service_user") || "{}");
 
     const handleNavigateChangePassword = () => {
-        // Lógica para navegar a la página de cambio de contraseña
         navigate("/staff/cambiar-contrasena");
     };
 
     const handleNavigateGestionarReservas = () => {
-        // Lógica para navegar a la página de gestión de reservas
         navigate("/gerencia/disponibilidad-departamento");
-    }
+    };
 
     return (
-        <Container size="sm" my={20}>
+        <Container size="md" my={20}>
             <TitlePage order={2}>Mi Perfil</TitlePage>
             <Divider my={10} />
             <Card
                 radius="md"
                 shadow="sm"
                 withBorder
+                className={classes.card}
                 style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    padding: "20px",
+                    padding: "0px",
                     borderRadius: "12px",
-                    background: isDark
-                        ? "linear-gradient(135deg, #1A1B1E 0%, #25262B 100%)"
-                        : "linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%)",
                     boxShadow: isDark
                         ? "0 4px 20px rgba(0, 0, 0, 0.4)"
                         : "0 4px 20px rgba(0, 0, 0, 0.08)",
                     border: isDark ? "1px solid #373A40" : "none",
+                    overflow: "hidden",
                 }}
             >
                 {/* Lado izquierdo */}
                 <div className={classes.left}>
-                    <Image radius="md" fit="cover" src={bg} />
+                    <Image
+                        src={bg}
+                        alt="Imagen de perfil"
+                        className={classes.image}
+                    />
                 </div>
 
                 {/* Lado derecho */}
                 <div className={classes.right}>
-                    <Text
+                    <TextSection
                         ta="center"
-                        fz={25}
+                        fz={24}
                         fw={900}
-                        variant="gradient"
-                        gradient={{ from: "blue", to: "cyan", deg: 90 }}
+                        color={isDark ? "blue.5" : "blue.7"}
                     >
-                        Hotel Mansion Real
-                    </Text>
+                        Mansión Real
+                    </TextSection>
                     <Badge
                         fullWidth
                         variant="filled"
                         size="xl"
-                        color="orange"
-                        radius="xs"
+                        color="teal.7"
+                        radius="lg"
                     >
                         <TextSection tt="" fw={600} fz={14}>
                             {usuario.role}
                         </TextSection>
                     </Badge>
                     <Divider />
-                    <div>
-                        <Title order={3}>Bienvenido</Title>
-                    </div>
-                    <Stack>
+                    <TitlePage order={3}>Bienvenido</TitlePage>
+                    <Stack gap="md">
                         <div>
-                            <Text className={classes.label}>
+                            <TextSection tt="" fz={16} fw={500}>
                                 {usuario.apellidos + " " + usuario.nombres}
-                            </Text>
-                            <Text fw={700} fz="xs" c="dimmed">
+                            </TextSection>
+                            <TextSection tt="" fw={700} color="dimmed">
                                 Nombres Completos
-                            </Text>
+                            </TextSection>
                         </div>
                         <div>
-                            <Text className={classes.label}>{usuario.dni}</Text>
-                            <Text fw={700} fz="xs" c="dimmed">
+                            <TextSection tt="" fz={16} fw={500}>
+                                {usuario.dni}
+                            </TextSection>
+                            <TextSection tt="" fw={700} color="dimmed">
                                 Numero cedula
-                            </Text>
+                            </TextSection>
                         </div>
                         <div>
-                            <Text className={classes.label}>
+                            <TextSection tt="" fz={16} fw={500}>
                                 {usuario.email}
-                            </Text>
-                            <Text fw={700} fz="xs" c="dimmed">
+                            </TextSection>
+                            <TextSection tt="" fw={700} color="dimmed">
                                 Correo
-                            </Text>
+                            </TextSection>
                         </div>
                         <div>
-                            <Badge variant="filled" color="teal" radius="xs">
+                            <Badge variant="dot" color="teal" radius="xs">
                                 {usuario.activo
                                     ? "Usuario Activo"
                                     : "No activo"}
                             </Badge>
-                            <Text fw={700} fz="xs" c="dimmed">
+                            <TextSection tt="" fw={700} color="dimmed">
                                 Estado
-                            </Text>
+                            </TextSection>
                         </div>
                     </Stack>
-                    <Group>
-                        <BtnSection
-                            mt={5}
+
+                    <Group grow mt="xl" gap="md">
+                        <Button
+                            size="sm"
                             variant="light"
-                            fullWidth={true}
-                            IconSection={IconBookmarksFilled}
-                            handleAction={handleNavigateGestionarReservas}
+                            color="teal"
+                            leftSection={<IconBookmarksFilled size={25} />}
+                            onClick={handleNavigateGestionarReservas}
+                            styles={{
+                                root: {
+                                    height: "80px",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    padding: "12px",
+                                },
+                                label: {
+                                    whiteSpace: "normal",
+                                    lineHeight: 1.3,
+                                },
+                                section: {
+                                    marginRight: 0,
+                                    marginBottom: 8,
+                                },
+                            }}
                         >
                             Gestionar Reservas
-                        </BtnSection>
-                        <BtnSection
-                            fullWidth={true}
-                            IconSection={IconKeyFilled}
-                            handleAction={handleNavigateChangePassword}
+                        </Button>
+                        <Button
+                            size="sm"
+                            variant="default"
+                            //color="orange"
+                            leftSection={<IconKeyFilled size={25} />}
+                            onClick={handleNavigateChangePassword}
+                            styles={{
+                                root: {
+                                    height: "80px",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    padding: "12px",
+                                },
+                                label: {
+                                    whiteSpace: "normal",
+                                    lineHeight: 1.3,
+                                },
+                                section: {
+                                    marginRight: 0,
+                                    marginBottom: 8,
+                                },
+                            }}
                         >
-                            Cambiar Contrasena
-                        </BtnSection>
+                            Cambiar Contraseña
+                        </Button>
                     </Group>
                 </div>
             </Card>

@@ -3,14 +3,15 @@ import { Logo } from "../components";
 import { Roles } from "../helpers/getPrefix";
 import { HeaderBtnInicio } from "./HeaderBtnInicio";
 import {
-    headerConfigRoutes,
     headerGerenciaRoutes,
     headerInventarioRoutes,
+    menuConfiguracionRapida,
 } from "../routes/menuRoutes";
 import { useUiHeaderMenu } from "../hooks";
 import { GestionMenu } from "./menu/GestionMenu";
 import { UserBtnHeader } from "./menu/UserBtnHeader";
 import { DrawerMenuMobile } from "./menu/DrawerMenuMobile";
+import { ConfiguracionMenu } from "./menu/ConfiguracionMenu";
 import classes from "./modules/HeaderMenu.module.css";
 
 export const HeaderMenu = ({ usuario }) => {
@@ -25,16 +26,16 @@ export const HeaderMenu = ({ usuario }) => {
                         <Group h="100%" gap={0} visibleFrom="lg">
                             <HeaderBtnInicio classes={classes} theme={theme} />
                             {/* MENU DE GESTION DE CONFIGURACION DE PARAMETROS */}
-                            {usuario.role === Roles.ADMINISTRADOR ||
+                            {/* {usuario.role === Roles.ADMINISTRADOR ||
                             usuario.role === Roles.GERENCIA ? (
                                 <GestionMenu
-                                    title="Configuraciónes"
+                                    title="Configuraciones"
                                     menuData={headerConfigRoutes}
                                     usuario={usuario}
                                     classes={classes}
                                     theme={theme}
                                 />
-                            ) : null}
+                            ) : null} */}
                             {/* MENU DE GESTION GERENCIAL DEL HOTEL */}
                             {usuario.role === Roles.ADMINISTRADOR ||
                             usuario.role === Roles.GERENCIA ? (
@@ -60,6 +61,11 @@ export const HeaderMenu = ({ usuario }) => {
                         </Group>
                     </Group>
                     <Group visibleFrom="lg">
+                        <ConfiguracionMenu
+                            menuData={menuConfiguracionRapida}
+                            classes={classes}
+                            theme={theme}
+                        />
                         <UserBtnHeader usuario={usuario} />
                     </Group>
                     <Burger

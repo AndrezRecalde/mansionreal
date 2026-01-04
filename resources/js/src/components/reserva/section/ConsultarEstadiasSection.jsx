@@ -5,10 +5,11 @@ import {
     Table,
     Group,
     useMantineColorScheme,
+    Alert,
 } from "@mantine/core";
 import { BtnSection } from "../../../components";
 import { useEstadiaStore, useStorageField } from "../../../hooks";
-import { IconPackageExport } from "@tabler/icons-react";
+import { IconAlertCircle, IconPackageExport } from "@tabler/icons-react";
 
 export const ConsultarEstadiasSection = () => {
     const { colorScheme } = useMantineColorScheme();
@@ -27,18 +28,15 @@ export const ConsultarEstadiasSection = () => {
 
     if (!resumen) {
         return (
-            <Card shadow="sm" radius="md" p="lg" withBorder>
-                <CardSection inheritPadding py="xs">
-                    <Text fw={600} size="lg">
-                        Estadías
-                    </Text>
-                </CardSection>
-                <CardSection inheritPadding py="md">
-                    <Text size="sm" c="dimmed">
-                        No hay datos de estadías que mostrar
-                    </Text>
-                </CardSection>
-            </Card>
+            <Alert
+                icon={<IconAlertCircle size={16} />}
+                title="Sin datos - Estadías"
+                color="gray"
+                mt="xl"
+            >
+                No hay datos para mostrar. Por favor, seleccione un rango de
+                fechas y presione "Buscar".
+            </Alert>
         );
     }
 

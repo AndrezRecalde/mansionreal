@@ -13,7 +13,7 @@ export const BtnActivarElemento = ({ cell, handleActivar }) => {
             variant="light"
             radius="xl"
             onClick={(e) => handleActivate(e)}
-            color={cell.row.original.activo == 1 ? "indigo.5" : "orange.5"} //Cambiar a un igual mas
+            color={cell.row.original.activo == 1 ? "teal.8" : "orange.5"} //Cambiar a un igual mas
         >
             {cell.row.original.activo == 1 ? (
                 <IconDiscountCheckFilled />

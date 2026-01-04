@@ -29,7 +29,7 @@ class HuespedController extends Controller
                     'desde' => $huespedes->firstItem(),
                     'hasta' => $huespedes->lastItem()
                 ]
-            ]);
+            ], 200);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => HTTPStatus::Error,

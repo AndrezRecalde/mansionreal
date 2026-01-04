@@ -5,7 +5,6 @@ import {
     Divider,
     Group,
     Menu,
-    Text,
     UnstyledButton,
     rem,
 } from "@mantine/core";
@@ -64,7 +63,7 @@ export const UserBtnHeader = ({ usuario }) => {
                     className={cx(classes.user, {
                         [classes.userActive]: usuarioAbrirMenu,
                     })}
-                    aria-hidden={false}
+                    //aria-hidden={false}
                 >
                     <Group gap={20}>
                         <Avatar

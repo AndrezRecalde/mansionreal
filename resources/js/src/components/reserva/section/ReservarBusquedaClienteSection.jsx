@@ -93,11 +93,11 @@ export const ReservarBusquedaClienteSection = ({
                 </TextSection>
             }
         >
-            <Card withBorder radius="sm" shadow="sm" p={15} mb={15}>
+            <>
                 {nacionalidad ? (
                     <AlertSection
                         variant="light"
-                        color="yellow"
+                        color="teal.7"
                         icon={IconAlertCircle}
                         title="Atención"
                     >
@@ -117,8 +117,7 @@ export const ReservarBusquedaClienteSection = ({
                     handleSubmitHuesped={handleSubmitHuesped}
                     handleClear={handleClear}
                 />
-            </Card>
-            <Divider my="xs" />
+            </>
             <ReservarDatosClienteForm
                 reservaForm={reservaForm}
                 showDetails={showDetails}

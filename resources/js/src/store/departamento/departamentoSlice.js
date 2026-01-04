@@ -4,6 +4,7 @@ const initialState = {
     cargando: false,
     cargandoExportacion: false,
     departamentos: [],
+    departamentos_disponibles: [],
     activarDepartamento: null,
     mensaje: undefined,
     errores: undefined,
@@ -23,6 +24,10 @@ export const departamentoSlice = createSlice({
             state.departamentos = payload;
             state.cargando = false;
         },
+        rtkCargarDepartamentosDisponibles: (state, { payload }) => {
+            state.departamentos_disponibles = payload;
+            //state.cargando = false;
+        },
         rtkAgregarDepartamento: (state, { payload }) => {
             state.departamentos.push(payload);
             state.cargando = false;
@@ -40,6 +45,7 @@ export const departamentoSlice = createSlice({
         },
         rtkLimpiarDepartamentos: (state) => {
             state.departamentos = [];
+            state.departamentos_disponibles = [];
             state.activarDepartamento = null;
             state.errores = undefined;
             state.mensaje = undefined;
@@ -57,6 +63,7 @@ export const {
     rtkCargando,
     rtkCargandoExportacion,
     rtkCargarDepartamentos,
+    rtkCargarDepartamentosDisponibles,
     rtkAgregarDepartamento,
     rtkActualizarDepartamento,
     rtkActivarDepartamento,

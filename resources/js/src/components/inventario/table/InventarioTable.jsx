@@ -55,6 +55,13 @@ export const InventarioTable = () => {
                 size: 80,
             },
             {
+                header: "¿Cuenta con Stock?",
+                accessorKey: "sin_stock",
+                size: 120,
+                Cell: ({ cell }) =>
+                    cell.getValue() ? "Sin Stock" : "Con Stock",
+            },
+            {
                 header: "Stock",
                 accessorKey: "stock",
                 size: 80,

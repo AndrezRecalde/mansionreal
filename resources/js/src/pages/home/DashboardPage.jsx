@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Grid, Card, Title, Container } from "@mantine/core";
+import { Grid, Title, Container } from "@mantine/core";
 import {
     useDashboardKPIStore,
     useDashHuepedGananciaStore,
@@ -9,7 +9,7 @@ import {
     useEstadiaStore,
     useTitleHook,
 } from "../../hooks";
-import { FiltrarPorFechasForm } from "../../components";
+//import { FiltrarPorFechasForm } from "../../components";
 import KPICard from "../../components/dashboard/KPICard";
 import OccupancyLineChart from "../../components/dashboard/OccupancyLineChart";
 import DepartmentBarChart from "../../components/dashboard/DepartmentBarChart";

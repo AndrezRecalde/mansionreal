@@ -1,42 +1,29 @@
+/* HTML: <div class="loader"></div> */
 .loader {
-  width: 48px;
-  height: 48px;
-  display: block;
-  margin:15px auto;
-  position: relative;
-  color: #8b95ad;
-  box-sizing: border-box;
-  animation: rotation 1s linear infinite;
+  width: 50px;
+  aspect-ratio: 1;
+  display: grid;
 }
-.loader::after,
-.loader::before {
-  content: '';
-  box-sizing: border-box;
-  position: absolute;
-  width: 24px;
-  height: 24px;
-  top: 50%;
-  left: 50%;
-  transform: scale(0.5) translate(0, 0);
-  background-color: #8b95ad;
-  border-radius: 50%;
-  animation: animloader 1s infinite ease-in-out;
+.loader::before,
+.loader::after {
+  content:"";
+  grid-area: 1/1;
+  --c:no-repeat radial-gradient(farthest-side,#25b09b 92%,#0000);
+  background:
+    var(--c) 50%  0,
+    var(--c) 50%  100%,
+    var(--c) 100% 50%,
+    var(--c) 0    50%;
+  background-size: 12px 12px;
+  animation: l12 1s infinite;
 }
 .loader::before {
-  background-color: #2821bf;
-  transform: scale(0.5) translate(-48px, -48px);
+  margin: 4px;
+  filter: hue-rotate(45deg);
+  background-size: 8px 8px;
+  animation-timing-function: linear
 }
 
-@keyframes rotation {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-@keyframes animloader {
-    50% {
-      transform: scale(1) translate(-50%, -50%);
-}
+@keyframes l12 {
+  100%{transform: rotate(.5turn)}
 }

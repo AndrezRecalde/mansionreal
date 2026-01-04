@@ -15,6 +15,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -32,11 +33,14 @@ class ReservasController extends Controller
                 ->toArray();
 
             // 2. Validar traslape de reservas
+            $fechaInicio = Carbon::parse($request->fecha_checkin)->startOfDay(); // 2025-12-09 00:00:00
+            $fechaFin = Carbon::parse($request->fecha_checkout)->endOfDay();
+
             $traslape = Reserva::where('departamento_id', $request->departamento_id)
                 ->whereIn('estado_id', $estadoReservaIds)
-                ->where(function ($query) use ($request) {
-                    $query->where('fecha_checkin', '<=', $request->fecha_checkout)
-                        ->where('fecha_checkout', '>=', $request->fecha_checkin);
+                ->where(function ($query) use ($fechaInicio, $fechaFin) {
+                    $query->where('fecha_checkin', '<=', $fechaFin)
+                        ->where('fecha_checkout', '>=', $fechaInicio);
                 })
                 ->exists();
 

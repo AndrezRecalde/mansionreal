@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CalendarioReservasController;
 use App\Http\Controllers\CategoriasController;
 use App\Http\Controllers\ConceptoPagoController;
 use App\Http\Controllers\ConfiguracionIvaController;
@@ -50,16 +51,11 @@ Route::post('/auth/logout', [AuthController::class, 'logout'])->middleware('auth
 /* Huespedes */
 Route::get('/huespedes', [HuespedController::class, 'getHuespedes'])->middleware('auth:sanctum');
 
-/* Reservas */
-Route::post('/departamentos-dispinibilidad', [DepartamentoController::class, 'consultarDisponibilidadDepartamentosPorFecha']);
-
-
 /* Provincias */
 Route::get('/provincias', [ProvinciaController::class, 'getProvincias'])->middleware('auth:sanctum');
 
 
 Route::group(['prefix' => 'gerencia', 'middleware' => ['auth:sanctum', CheckRole::class . ':ADMINISTRADOR|GERENTE']], function () {
-
 
     /* Dashboard KPIS */
     Route::post('/dashboard/resumen-kpi', [DashboardController::class, 'kpiResumen']);
@@ -86,7 +82,6 @@ Route::group(['prefix' => 'gerencia', 'middleware' => ['auth:sanctum', CheckRole
     // Reporte de un gerente específico
     //Route::post('/reportes/pagos/gerentes/{usuarioId}', [UsuarioController::class, 'pagosPorGerente']);
 
-
     /* Roles */
     Route::get('/roles', [RoleController::class, 'getRoles']);
 
@@ -110,11 +105,6 @@ Route::group(['prefix' => 'gerencia', 'middleware' => ['auth:sanctum', CheckRole
     Route::get('/departamento/{id}', [DepartamentoController::class, 'show']);
     Route::post('/disponibilidad-departamentos', [DepartamentoController::class, 'obtenerDepartamentosDisponibles']);
     Route::post('/departamento-servicios', [DepartamentoController::class, 'agregarServiciosDepartamento']);
-    Route::put('/departamento/{id}/status', [DepartamentoController::class, 'cambiarEstadoDepartamento']);
-    Route::post('/reporte-departamentos', [DepartamentoController::class, 'reporteDepartamentosPorFechas']);
-    Route::post('/reservas-reporte/pdf', [DepartamentoController::class, 'exportarKpiYDepartamentosPdf']);
-    Route::post('/consumos-por-departamento/pdf', [DepartamentoController::class, 'exportConsumosPorDepartamentoPDF']);
-
 
     /* Tipos de Departamentos */
     Route::get('/tipos-departamentos', [TiposDepartamentosController::class, 'getTiposDepartamentos']);
@@ -127,10 +117,54 @@ Route::group(['prefix' => 'gerencia', 'middleware' => ['auth:sanctum', CheckRole
     Route::post('/servicio', [ServiciosController::class, 'store']);
     Route::put('/servicio/{id}', [ServiciosController::class, 'update']);
 
+
+    /* Inventario */
+    Route::get('/productos/inventario', [InventarioController::class, 'getProductosInventario']);
+    Route::post('/producto/inventario', [InventarioController::class, 'store']);
+    Route::put('/producto/inventario/{id}', [InventarioController::class, 'update']);
+    Route::put('/producto/inventario/{id}/status', [InventarioController::class, 'updateStatus']);
+    Route::post('/producto/inventario/{id}/agregar-stock', [InventarioController::class, 'agregarStock']);
+    Route::get('/producto/inventario/{id}/historial-movimientos', [InventarioController::class, 'historialMovimientos']);
+    Route::post('/producto/inventario/reporte-movimientos', [InventarioController::class, 'reporteMovimientos']);
+
+    /* Limpieza */
+    Route::post('/limpieza', [LimpiezaController::class, 'store']);
+    Route::put('/limpieza/{id}', [LimpiezaController::class, 'update']);
+    Route::get('/limpieza/buscar', [LimpiezaController::class, 'buscarPorFecha']);
+
+    /* Tipos Reservas */
+    //Route::post('/tipos-reservas', [TipoReservaController::class, 'getTiposReservas']);
+
+
+});
+
+
+Route::group(['prefix' => 'general', 'middleware' => ['auth:sanctum', CheckRole::class . ':ADMINISTRADOR|GERENTE|RECEPCION']], function () {
+    /* Calendario de reservas */
+    Route::get('/calendario/reservas', [CalendarioReservasController::class, 'getReservasCalendario']);
+    Route::get('/calendario/recursos-departamentos', [CalendarioReservasController::class, 'getDepartamentosRecursos']);
+    Route::get('/calendario/estadisticas-ocupacion', [CalendarioReservasController::class, 'getEstadisticasOcupacion']);
+
+
+    /* Departamentos */
+    Route::get('/buscar-departamentos-disponibles', [DepartamentoController::class, 'getDisponibles']);
+
     /* Huespedes */
     Route::post('/huesped', [HuespedController::class, 'store']);
     Route::put('/huesped/{id}', [HuespedController::class, 'update']);
     Route::post('/huesped/buscar', [HuespedController::class, 'buscarHuespedPorDni']);
+
+    /* Reservas */
+    Route::post('/departamentos-disponibilidad', [DepartamentoController::class, 'consultarDisponibilidadDepartamentosPorFecha']); //INFO: Verificar si se usa
+
+    /* Consumos */
+    Route::post('/consumo-reserva', [ConsumosController::class, 'buscarConsumosPorReserva']);
+    Route::post('/consumo', [ConsumosController::class, 'registrarConsumos']);
+    Route::put('/consumo/{id}', [ConsumosController::class, 'update']);
+    Route::delete('/consumo/{id}', [ConsumosController::class, 'delete']);
+    Route::post('/reporte-consumos', [ConsumosController::class, 'reporteConsumosPorCategoria']);
+    Route::post('/consumos/categoria/pdf', [ConsumosController::class, 'exportarReporteConsumosPDF']);
+
 
     /* Reservas */
     Route::post('/reserva/nueva', [ReservasController::class, 'store']);
@@ -150,13 +184,6 @@ Route::group(['prefix' => 'gerencia', 'middleware' => ['auth:sanctum', CheckRole
     Route::post('/reporte-estadias', [EstadiaController::class, 'reporteEstadiasPorFechas']);
     Route::post('/reporte-estadias-pdf', [EstadiaController::class, 'exportConsumosEstadiasPDF']);
 
-
-    /* Consumos */
-    Route::post('/consumo-reserva', [ConsumosController::class, 'buscarConsumosPorReserva']);
-    Route::post('/consumo', [ConsumosController::class, 'registrarConsumos']);
-    Route::put('/consumo/{id}', [ConsumosController::class, 'update']);
-    Route::delete('/consumo/{id}', [ConsumosController::class, 'delete']);
-
     /* Gastos */
     Route::post('/gastos', [GastosController::class, 'getGastos']);
     Route::post('/gasto', [GastosController::class, 'store']);
@@ -168,6 +195,7 @@ Route::group(['prefix' => 'gerencia', 'middleware' => ['auth:sanctum', CheckRole
 
     /* Pagos */
     Route::post('/pagos', [PagoController::class, 'getPagos']);
+    Route::get('/pagos/historial', [PagoController::class, 'getHistorialPagos']);
     Route::post('/reserva/{reservaId}/pago', [PagoController::class, 'store']);
     Route::put('/pago/{id}', [PagoController::class, 'update']);
     Route::delete('/pago/{id}', [PagoController::class, 'delete']);
@@ -176,21 +204,9 @@ Route::group(['prefix' => 'gerencia', 'middleware' => ['auth:sanctum', CheckRole
     /* Tipos de danos */
     Route::post('/tipos-dano', [TiposDanoController::class, 'getTiposDano']);
 
-    /* Inventario */
-    Route::get('/productos/inventario', [InventarioController::class, 'getProductosInventario']);
-    Route::post('/producto/inventario', [InventarioController::class, 'store']);
-    Route::put('/producto/inventario/{id}', [InventarioController::class, 'update']);
-    Route::put('/producto/inventario/{id}/status', [InventarioController::class, 'updateStatus']);
-    Route::post('/producto/inventario/{id}/agregar-stock', [InventarioController::class, 'agregarStock']);
-    Route::get('/producto/inventario/{id}/historial-movimientos', [InventarioController::class, 'historialMovimientos']);
-    Route::post('/producto/inventario/reporte-movimientos', [InventarioController::class, 'reporteMovimientos']);
-
-    /* Limpieza */
-    Route::post('/limpieza', [LimpiezaController::class, 'store']);
-    Route::put('/limpieza/{id}', [LimpiezaController::class, 'update']);
-    Route::get('/limpieza/buscar', [LimpiezaController::class, 'buscarPorFecha']);
-
-    /* Tipos Reservas */
-    //Route::post('/tipos-reservas', [TipoReservaController::class, 'getTiposReservas']);
-
+    /* Departamentos */
+    Route::put('/departamento/{id}/status', [DepartamentoController::class, 'cambiarEstadoDepartamento']);
+    Route::post('/reporte-departamentos', [DepartamentoController::class, 'reporteDepartamentosPorFechas']);
+    Route::post('/reservas-reporte/pdf', [DepartamentoController::class, 'exportarKpiYDepartamentosPdf']);
+    Route::post('/consumos-por-departamento/pdf', [DepartamentoController::class, 'exportConsumosPorDepartamentoPDF']);
 });

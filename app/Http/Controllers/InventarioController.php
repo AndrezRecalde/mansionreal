@@ -90,6 +90,10 @@ class InventarioController extends Controller
                 ], 404);
             }
 
+            if($request->sin_stock) {
+                $producto->stock = 0;
+            }
+
             $producto->update($request->validated());
 
             return response()->json([

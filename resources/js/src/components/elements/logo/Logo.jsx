@@ -1,8 +1,11 @@
-import { Image } from '@mantine/core';
-import bg from "../../../assets/images/banner.png";
+import { Image, useMantineColorScheme } from '@mantine/core';
+import bg_light from "../../../assets/images/banner_light.png";
+import bg_dark from "../../../assets/images/banner_dark.png";
+
 
 
 export const Logo = ({ height = 200, width = "auto" }) => {
+    const { colorScheme } = useMantineColorScheme();
     return (
         <Image
             radius="md"
@@ -11,7 +14,7 @@ export const Logo = ({ height = 200, width = "auto" }) => {
             w={width}
             fit="contain"
             alt="logo"
-            src={bg}
+            src={colorScheme === "dark" ? bg_dark : bg_light}
             fallbackSrc="https://placehold.co/600x400?text=Placeholder"
         />
     );

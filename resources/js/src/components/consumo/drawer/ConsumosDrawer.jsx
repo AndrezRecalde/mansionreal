@@ -12,6 +12,7 @@ import {
     PagosTable,
     ReservaAccionesTable,
     ReservaInfoHuespedTable,
+    TextSection,
 } from "../../../components";
 import { Roles } from "../../../helpers/getPrefix";
 
@@ -78,7 +79,11 @@ export const ConsumosDrawer = ({ datos_reserva, fnAsignarElemento }) => {
             radius="md"
             opened={abrirDrawerConsumosDepartamento}
             onClose={handleCerrarDrawer}
-            title="Historial de Consumos"
+            title={
+                <TextSection tt="" fz={18} fw={700}>
+                    Historial Consumos
+                </TextSection>
+            }
             // Mejoras adicionales opcionales:
             overlayProps={{ opacity: 0.5, blur: 4 }}
             transitionProps={{ transition: "slide-left", duration: 200 }}

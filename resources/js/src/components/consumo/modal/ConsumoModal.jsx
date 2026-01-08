@@ -10,7 +10,7 @@ import {
     rem,
 } from "@mantine/core";
 import { BtnSection, BtnSubmit, ConsumoCard } from "../../../components";
-import { IconPlus, IconShoppingCart } from "@tabler/icons-react";
+import { IconPlus } from "@tabler/icons-react";
 import {
     useUiConsumo,
     useCategoriaStore,
@@ -98,7 +98,6 @@ export function ConsumoModal({ reserva_id }) {
             overlayProps={MODAL_CONFIG.overlayProps}
             title={
                 <Group>
-                    <IconShoppingCart size={25} />
                     <Title order={4} fw={700}>
                         Registrar Consumo
                     </Title>
@@ -132,7 +131,6 @@ export function ConsumoModal({ reserva_id }) {
                     <Group>
                         <BtnSection
                             variant="light"
-                            iconColor="#4c6ef5"
                             IconSection={IconPlus}
                             handleAction={handleAddConsumo}
                             disabled={isMaxConsumos}

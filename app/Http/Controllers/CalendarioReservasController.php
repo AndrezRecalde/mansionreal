@@ -217,25 +217,36 @@ class CalendarioReservasController extends Controller
     }
 
     private function getColorEvento(?object $estado): string
-    {
-        if (! $estado || !isset($estado->color)) {
-            return '#6b7280';
-        }
-
-        return match ($estado->color) {
-            'indigo' => '#6366f1',
-            'blue' => '#3b82f6',
-            'red' => '#ef4444',
-            'teal' => '#14b8a6',
-            'gray' => '#6b7280',
-            'orange' => '#f97316',
-            'green' => '#22c55e',
-            'yellow' => '#eab308',
-            'purple' => '#a855f7',
-            'pink' => '#ec4899',
-            default => '#6b7280',
-        };
+{
+    if (!$estado || !isset($estado->color)) {
+        return '#64748B';
     }
+
+    return match ($estado->color) {
+        // Colores base premium
+        'indigo' => '#4338CA',
+        'blue' => '#1E40AF',
+        'red' => '#B91C1C',
+        'teal' => '#0F766E',
+        'gray' => '#475569',
+        'orange' => '#C2410C',
+        'green' => '#15803D',
+        'yellow' => '#CA8A04',
+        'purple' => '#7C3AED',
+        'pink' => '#BE185D',
+
+        // Estados específicos de hotel (opcionales)
+        'confirmed' => '#0F766E',    // Confirmado
+        'pending' => '#CA8A04',      // Pendiente
+        'checked-in' => '#15803D',   // En hotel
+        'checked-out' => '#64748B',  // Check-out
+        'cancelled' => '#B91C1C',    // Cancelado
+        'vip' => '#7C3AED',          // VIP
+        'blocked' => '#1E293B',      // Bloqueado
+
+        default => '#64748B',
+    };
+}
 
     private function formatearFecha($fecha): string
     {

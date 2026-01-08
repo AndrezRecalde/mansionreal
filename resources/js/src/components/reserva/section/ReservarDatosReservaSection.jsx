@@ -25,6 +25,7 @@ export const ReservarDatosReservaSection = ({
     classes,
     reservaForm,
     handleSubmitReserva,
+    labelStyles,
 }) => {
     const {
         departamentos_disponibles,
@@ -127,6 +128,7 @@ export const ReservarDatosReservaSection = ({
                             placeholder="Seleccione fecha de entrada"
                             key={reservaForm.key("fecha_checkin")}
                             {...reservaForm.getInputProps("fecha_checkin")}
+                            classNames={labelStyles}
                         />
                         <DateTimePicker
                             withAsterisk
@@ -143,6 +145,7 @@ export const ReservarDatosReservaSection = ({
                             }
                             key={reservaForm.key("fecha_checkout")}
                             {...reservaForm.getInputProps("fecha_checkout")}
+                            classNames={labelStyles}
                         />
                     </SimpleGrid>
 
@@ -182,6 +185,7 @@ export const ReservarDatosReservaSection = ({
                                     }
                                 }}
                                 value={reservaForm.values.departamento_id || ""}
+                                classNames={labelStyles}
                             />
                             <SimpleGrid
                                 cols={{ base: 1, xs: 1, sm: 1, md: 2, lg: 2 }}
@@ -194,6 +198,7 @@ export const ReservarDatosReservaSection = ({
                                     {...reservaForm.getInputProps(
                                         "total_noches"
                                     )}
+                                    classNames={labelStyles}
                                 />
                                 <NumberInput
                                     disabled
@@ -201,13 +206,14 @@ export const ReservarDatosReservaSection = ({
                                     placeholder="Se calcula el total a pagar"
                                     key={reservaForm.key("total_pago")}
                                     {...reservaForm.getInputProps("total_pago")}
+                                    classNames={labelStyles}
                                 />
                             </SimpleGrid>
                         </>
                     ) : null}
 
                     <SimpleGrid
-                        cols={3}
+                        cols={{ base: 1, sm: 2, lg: 3 }}
                         spacing="md"
                         breakpoints={[{ maxWidth: "sm", cols: 1 }]}
                         mt={20}

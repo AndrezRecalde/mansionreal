@@ -1,29 +1,75 @@
 /* HTML: <div class="loader"></div> */
 .loader {
-  width: 50px;
-  aspect-ratio: 1;
-  display: grid;
+    width: 50px;
+    aspect-ratio: 1;
+    display: grid;
 }
+
 .loader::before,
 .loader::after {
-  content:"";
-  grid-area: 1/1;
-  --c:no-repeat radial-gradient(farthest-side,#25b09b 92%,#0000);
-  background:
-    var(--c) 50%  0,
-    var(--c) 50%  100%,
-    var(--c) 100% 50%,
-    var(--c) 0    50%;
-  background-size: 12px 12px;
-  animation: l12 1s infinite;
+    content: "";
+    grid-area: 1/1;
+    /* Azul corporativo premium para light mode, azul más claro para dark mode */
+    --loader-color: light-dark(#0047ab, #1a75ff);
+    --c: no-repeat
+        radial-gradient(farthest-side, var(--loader-color) 92%, #0000);
+    background: var(--c) 50% 0, var(--c) 50% 100%, var(--c) 100% 50%,
+        var(--c) 0 50%;
+    background-size: 12px 12px;
+    animation: l12 1s infinite;
 }
+
 .loader::before {
-  margin: 4px;
-  filter: hue-rotate(45deg);
-  background-size: 8px 8px;
-  animation-timing-function: linear
+    margin: 4px;
+    /* Usa un tono más brillante para el efecto interno */
+    --loader-color-inner: light-dark(#0056e0, #4d94ff);
+    --c: no-repeat
+        radial-gradient(farthest-side, var(--loader-color-inner) 92%, #0000);
+    background: var(--c) 50% 0, var(--c) 50% 100%, var(--c) 100% 50%,
+        var(--c) 0 50%;
+    background-size: 8px 8px;
+    animation-timing-function: linear;
 }
 
 @keyframes l12 {
-  100%{transform: rotate(.5turn)}
+    100% {
+        transform: rotate(0.5turn);
+    }
 }
+
+/* Opción alternativa: usando CSS variables de Mantine directamente */
+/*
+.loader:: before,
+.loader::after {
+    content: "";
+    grid-area: 1/1;
+    --c: no-repeat radial-gradient(
+        farthest-side,
+        var(--mantine-primary-color-6) 92%,
+        #0000
+    );
+    background:
+        var(--c) 50% 0,
+        var(--c) 50% 100%,
+        var(--c) 100% 50%,
+        var(--c) 0 50%;
+    background-size: 12px 12px;
+    animation: l12 1s infinite;
+}
+
+.loader::before {
+    margin: 4px;
+    --c: no-repeat radial-gradient(
+        farthest-side,
+        var(--mantine-primary-color-4) 92%,
+        #0000
+    );
+    background:
+        var(--c) 50% 0,
+        var(--c) 50% 100%,
+        var(--c) 100% 50%,
+        var(--c) 0 50%;
+    background-size: 8px 8px;
+    animation-timing-function: linear;
+}
+*/

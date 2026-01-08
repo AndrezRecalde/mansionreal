@@ -97,13 +97,12 @@ export const InventarioForm = ({ form }) => {
                 <Switch
                     {...form.getInputProps("sin_stock", { type: "checkbox" })}
                     label="¿El producto cuenta con stock?" //sin_stock = true -> No tiene stock | sin_stock = false -> Tiene stock
-                    color="teal"
                     size="md"
                     thumbIcon={
                         form.values.sin_stock ? (
                             <IconCheck
                                 size={12}
-                                color="var(--mantine-color-teal-6)"
+                                color="var(--mantine-color-indigo-6)"
                                 stroke={3}
                             />
                         ) : (

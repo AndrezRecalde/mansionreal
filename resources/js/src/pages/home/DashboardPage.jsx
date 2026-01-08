@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Grid, Title, Container } from "@mantine/core";
+import { Grid, Title, Container, Group } from "@mantine/core";
 import {
     useDashboardKPIStore,
     useDashHuepedGananciaStore,
@@ -16,6 +16,8 @@ import DepartmentBarChart from "../../components/dashboard/DepartmentBarChart";
 import ProductPieChart from "../../components/dashboard/ProductPieChart";
 import GuestsRankingTable from "../../components/dashboard/GuestsRankingTable";
 import EstadiasBarChart from "../../components/dashboard/EstadiasBarChart";
+import { FiltrarPorFechasForm } from "../../components";
+import { YearPickerInput } from "@mantine/dates";
 
 export default function DashboardPage() {
     useTitleHook("Dashboard - Mansión Real");
@@ -54,20 +56,29 @@ export default function DashboardPage() {
 
     return (
         <Container size="xl">
-            <Title order={2} mb="md">
-                Panel Administrativo
-            </Title>
+            <Group justify="space-between" mb={20}>
+                <Title order={2} mb="md">
+                    Panel Administrativo
+                </Title>
+                {/* <YearPickerInput
+                    required
+                    placeholder="Seleccione el año"
+                    //{...form.getInputProps("p_anio")}
+                    size="md"
+                /> */}
+            </Group>
             {/* Filtros */}
-            {/* <FiltrarPorFechasForm
+            //TODO: CORREGIR FILTRO PARA QUE FUNCIONE CON FECHAS INICIO Y FIN
+            <FiltrarPorFechasForm
                 titulo="Filtrar por Año"
                 fnHandleAction={(values) => {
                     fnCargarResumenKPI(values);
-                    fnCargarHuespedesGananciasMes(values.anio);
-                    fnCargarRankingProductos(values.anio);
-                    fnCargarIngresosPorDepartamento(values.anio);
-                    fnCargarHuespedesRecurrentes(values.anio);
+                    fnCargarHuespedesGananciasMes(values.p_anio);
+                    fnCargarRankingProductos({ p_anio: values.p_anio, p_fecha_inicio: values.p_fecha_inicio, p_fecha_fin: values.p_fecha_fin });
+                    fnCargarIngresosPorDepartamento({ p_anio: values.p_anio, p_fecha_inicio: values.p_fecha_inicio, p_fecha_fin: values.p_fecha_fin });
+                    fnCargarHuespedesRecurrentes({ p_anio: values.p_anio, p_fecha_inicio: values.p_fecha_inicio, p_fecha_fin: values.p_fecha_fin });
                 }}
-            /> */}
+            />
 
             {/* KPIs */}
             <Grid mb="md" grow>

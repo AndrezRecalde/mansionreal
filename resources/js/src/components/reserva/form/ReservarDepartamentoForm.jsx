@@ -11,6 +11,7 @@ import {
     useUiReservaDepartamento,
 } from "../../../hooks";
 import classes from "../modules/ReservarDepartamento.module.css";
+import classess from "../../../components/elements/modules/LabelsInput.module.css"
 import Swal from "sweetalert2";
 
 export const ReservarDepartamentoForm = ({ reservaForm }) => {
@@ -27,7 +28,7 @@ export const ReservarDepartamentoForm = ({ reservaForm }) => {
     const handleSubmitHuesped = (e) => {
         e.preventDefault();
         const dni = reservaForm.getValues().huesped.dni;
-        console.log(dni);
+        //console.log(dni);
         fnBuscarHuespedPorDni(dni);
         setShowDetails(true);
     };
@@ -70,12 +71,14 @@ export const ReservarDepartamentoForm = ({ reservaForm }) => {
                 setShowDetails={setShowDetails}
                 disabledInput={disabledInput}
                 handleSubmitHuesped={handleSubmitHuesped}
+                labelStyles={classess}
             />
             {showDetails && (
                 <ReservarDatosReservaSection
                     classes={classes}
                     reservaForm={reservaForm}
                     handleSubmitReserva={handleSubmitReserva}
+                    labelStyles={classess}
                 />
             )}
         </Stack>

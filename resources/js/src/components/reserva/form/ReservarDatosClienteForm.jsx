@@ -14,6 +14,7 @@ export const ReservarDatosClienteForm = ({
     reservaForm,
     showDetails,
     disabledInput,
+    labelStyles,
 }) => {
     const { cargando } = useHuespedStore();
     //const { provincias } = useProvinciaStore();
@@ -56,6 +57,7 @@ export const ReservarDatosClienteForm = ({
                                         {...reservaForm.getInputProps(
                                             "huesped.nombres"
                                         )}
+                                        classNames={labelStyles}
                                     />
                                     <TextInput
                                         withAsterisk
@@ -68,6 +70,7 @@ export const ReservarDatosClienteForm = ({
                                         {...reservaForm.getInputProps(
                                             "huesped.apellidos"
                                         )}
+                                        classNames={labelStyles}
                                     />
                                     <TextInput
                                         withAsterisk
@@ -78,6 +81,7 @@ export const ReservarDatosClienteForm = ({
                                         {...reservaForm.getInputProps(
                                             "huesped.email"
                                         )}
+                                        classNames={labelStyles}
                                     />
                                     <TextInput
                                         disabled={disabledInput}
@@ -89,6 +93,7 @@ export const ReservarDatosClienteForm = ({
                                         {...reservaForm.getInputProps(
                                             "huesped.telefono"
                                         )}
+                                        classNames={labelStyles}
                                     />
                                     <Select
                                         searchable
@@ -112,6 +117,7 @@ export const ReservarDatosClienteForm = ({
                                         {...reservaForm.getInputProps(
                                             "huesped.nacionalidad"
                                         )}
+                                        classNames={labelStyles}
                                     />
                                     <TextInput
                                         disabled={disabledInput}
@@ -123,6 +129,7 @@ export const ReservarDatosClienteForm = ({
                                         {...reservaForm.getInputProps(
                                             "huesped.direccion"
                                         )}
+                                        classNames={labelStyles}
                                     />
                                 </SimpleGrid>
                             )}

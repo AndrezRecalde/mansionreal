@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Modal } from "@mantine/core";
+import { Drawer, Modal } from "@mantine/core";
 import { ReservarDepartamentoForm, TextSection } from "../../../components";
 import {
     useDepartamentoStore,
@@ -13,7 +13,8 @@ import dayjs from "dayjs";
 import { capitalizarCadaPalabra } from "../../../helpers/fnHelper";
 
 export const ReservarDepartamentoModal = () => {
-    const { fnCargarDepartamentosDisponibles, fnAsignarDepartamento } = useDepartamentoStore();
+    const { fnCargarDepartamentosDisponibles, fnAsignarDepartamento } =
+        useDepartamentoStore();
     const { activarTipoReserva } = useReservaDepartamentoStore();
     const { abrirModalReservarDepartamento, fnAbrirModalReservarDepartamento } =
         useUiReservaDepartamento();
@@ -35,7 +36,11 @@ export const ReservarDepartamentoModal = () => {
             },
             tipo_reserva: "",
             departamento_id: "",
-            fecha_checkin: dayjs().set('hour', 10).set('minute', 0).set('second', 0).toDate(),
+            fecha_checkin: dayjs()
+                .set("hour", 10)
+                .set("minute", 0)
+                .set("second", 0)
+                .toDate(),
             fecha_checkout: "",
             total_noches: 0,
             total_pago: 0,
@@ -99,7 +104,6 @@ export const ReservarDepartamentoModal = () => {
 
     const { fecha_checkin, fecha_checkout } = reservaForm.values;
 
-
     /* Efecto de carga del departamento seleccionado  */
     useEffect(() => {
         if (
@@ -108,7 +112,10 @@ export const ReservarDepartamentoModal = () => {
             fecha_checkin &&
             fecha_checkout
         ) {
-           fnCargarDepartamentosDisponibles({ fecha_inicio: fecha_checkin, fecha_fin: fecha_checkout });
+            fnCargarDepartamentosDisponibles({
+                fecha_inicio: fecha_checkin,
+                fecha_fin: fecha_checkout,
+            });
         }
         fnCargarProvincias();
     }, [abrirModalReservarDepartamento, fecha_checkin, fecha_checkout]);
@@ -122,13 +129,14 @@ export const ReservarDepartamentoModal = () => {
     };
 
     return (
-        <Modal
+        <Drawer
+            position="right"
             closeOnClickOutside={false}
             closeOnEscape={false}
             opened={abrirModalReservarDepartamento}
             onClose={handleCerrarModal}
             title={
-                <TextSection tt="" fz={18} fw={300}>
+                <TextSection tt="" fz={18} fw={700}>
                     Reservar {capitalizarCadaPalabra(activarTipoReserva ?? "")}
                 </TextSection>
             }
@@ -139,6 +147,6 @@ export const ReservarDepartamentoModal = () => {
             }}
         >
             <ReservarDepartamentoForm reservaForm={reservaForm} />
-        </Modal>
+        </Drawer>
     );
 };

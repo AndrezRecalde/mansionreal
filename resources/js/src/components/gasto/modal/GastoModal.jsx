@@ -67,9 +67,8 @@ export const GastoModal = ( { activarElemento } ) => {
             onClose={handleCerrarModal}
             title={
                 <Group>
-                    <IconOutbound size={25} />
                     <Title order={4} fw={700}>
-                        Registrar Gastos
+                        Registrar Pago de Daño
                     </Title>
                 </Group>
             }

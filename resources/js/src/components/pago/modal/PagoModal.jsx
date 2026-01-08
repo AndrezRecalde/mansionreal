@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { Modal, Group, Title } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { IconCash } from "@tabler/icons-react";
 import { useConceptoPagoStore, useUiPago } from "../../../hooks";
 import { PagoForm } from "../form/PagoForm";
 
@@ -53,7 +52,6 @@ export const PagoModal = ({ reservaId }) => {
             onClose={handleCerrarModal}
             title={
                 <Group>
-                    <IconCash size={25} />
                     <Title order={4} fw={700}>
                         Registrar Pagos
                     </Title>

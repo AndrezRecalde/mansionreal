@@ -51,37 +51,9 @@ export const PagoForm = ({ form, handleCerrarModal }) => {
                         style={{
                             border: "1px solid #e9ecef",
                             borderRadius: "8px",
-                            backgroundColor: "#f8f9fa",
                         }}
                     >
                         <SimpleGrid cols={{ base: 1, sm: 2, md: 2, lg: 2 }}>
-                            <TextInput
-                                label="Código Voucher"
-                                placeholder="Ej: VCH-001"
-                                withAsterisk
-                                {...form.getInputProps(
-                                    `pagos.${index}.codigo_voucher`
-                                )}
-                            />
-                            <NumberInput
-                                label="Monto"
-                                withAsterisk
-                                min={0}
-                                {...form.getInputProps(`pagos.${index}.monto`)}
-                            />
-
-                            <Select
-                                label="Concepto de pago"
-                                placeholder="Seleccionar concepto"
-                                data={conceptosPagos.map((c) => ({
-                                    value: c.id.toString(),
-                                    label: c.nombre_concepto,
-                                }))}
-                                withAsterisk
-                                {...form.getInputProps(
-                                    `pagos.${index}.concepto_pago_id`
-                                )}
-                            />
                             <Select
                                 label="Método de pago"
                                 placeholder="Seleccionar método"
@@ -101,6 +73,32 @@ export const PagoForm = ({ form, handleCerrarModal }) => {
                                 {...form.getInputProps(
                                     `pagos.${index}.metodo_pago`
                                 )}
+                            />
+                            <TextInput
+                                label="Código Voucher"
+                                placeholder="Ej: VCH-001"
+                                withAsterisk
+                                {...form.getInputProps(
+                                    `pagos.${index}.codigo_voucher`
+                                )}
+                            />
+                            <Select
+                                label="Concepto de pago"
+                                placeholder="Seleccionar concepto"
+                                data={conceptosPagos.map((c) => ({
+                                    value: c.id.toString(),
+                                    label: c.nombre_concepto,
+                                }))}
+                                withAsterisk
+                                {...form.getInputProps(
+                                    `pagos.${index}.concepto_pago_id`
+                                )}
+                            />
+                            <NumberInput
+                                label="Monto"
+                                withAsterisk
+                                min={0}
+                                {...form.getInputProps(`pagos.${index}.monto`)}
                             />
                         </SimpleGrid>
                         <Textarea
@@ -133,7 +131,6 @@ export const PagoForm = ({ form, handleCerrarModal }) => {
                 <Group justify="space-between" mt="md">
                     <Button
                         variant="light"
-                        color="blue"
                         leftSection={<IconPlus size={16} />}
                         onClick={handleAgregarPago}
                     >

@@ -16,7 +16,7 @@ export const BtnSection = forwardRef(
             handleAction,
             children,
             color,
-            iconColor = "#000000",
+            iconColor,
             iconSize = 20,
             iconStroke = 1.5,
             ...props

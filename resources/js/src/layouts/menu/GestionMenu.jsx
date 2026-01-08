@@ -8,7 +8,7 @@ export const GestionMenu = ({ title, menuData, usuario, classes, theme }) => (
             <a href="#" className={classes.link}>
                 <Center inline>
                     <Box component="span" mr={5}>{title}</Box>
-                    <IconChevronDown size={18} color={theme.colors.teal[6]} />
+                    <IconChevronDown size={18} />
                 </Center>
             </a>
         </Menu.Target>

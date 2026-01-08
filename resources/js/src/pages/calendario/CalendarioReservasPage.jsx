@@ -1,6 +1,5 @@
 import { Container, Divider, Group, Skeleton, Tabs } from "@mantine/core";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import Swal from "sweetalert2";
 import {
     CalendarioHeader,
     CalendarioReservas,
@@ -24,6 +23,7 @@ import {
     useUiReservaDepartamento,
 } from "../../hooks";
 import classes from "./modules/Tabs.module.css";
+import Swal from "sweetalert2";
 
 const TABS = {
     HOSPEDAJE: "HOSPEDAJE",

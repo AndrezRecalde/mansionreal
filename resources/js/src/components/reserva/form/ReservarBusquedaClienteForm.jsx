@@ -1,4 +1,4 @@
-import { TextInput, Group, Button } from "@mantine/core";
+import { TextInput, Group } from "@mantine/core";
 import { BtnSection } from "../../../components";
 import { IconSearch, IconX } from "@tabler/icons-react";
 
@@ -9,6 +9,7 @@ export const ReservarBusquedaClienteForm = ({
     cargando,
     handleSubmitHuesped,
     handleClear,
+    labelStyles
 }) => {
     return (
         <Group align="end" gap="xs" mb={15}>
@@ -21,11 +22,12 @@ export const ReservarBusquedaClienteForm = ({
                 style={{ flex: 1 }}
                 autoComplete="off"
                 disabled={disabledInput}
+                classNames={labelStyles}
             />
             <BtnSection
                 variant="default"
                 fontSize={12}
-                heigh={34}
+                heigh={55}
                 IconSection={IconSearch}
                 disabled={cargando}
                 handleAction={(e) => handleSubmitHuesped(e)}
@@ -36,7 +38,7 @@ export const ReservarBusquedaClienteForm = ({
                 <BtnSection
                     variant="light"
                     fontSize={12}
-                    heigh={34}
+                    heigh={55}
                     color="red"
                     IconSection={IconX}
                     handleAction={handleClear}

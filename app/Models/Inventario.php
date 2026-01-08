@@ -28,7 +28,7 @@ class Inventario extends Model
 
     protected $casts = [
         'sin_stock' => 'boolean',
-        'activo' => 'boolean',
+        //'activo' => 'boolean',
     ];
 
     // Relación con movimientos

@@ -1,17 +1,23 @@
 import { useEffect } from "react";
-import { Card, Divider, Fieldset } from "@mantine/core";
+import {
+    Fieldset,
+    Group,
+    Paper,
+    Text,
+    ThemeIcon,
+    Tooltip,
+} from "@mantine/core";
 import {
     useConfiguracionIvaStore,
     useHuespedStore,
     useReservaDepartamentoStore,
 } from "../../../hooks";
 import {
-    AlertSection,
     ReservarBusquedaClienteForm,
     ReservarDatosClienteForm,
     TextSection,
 } from "../../../components";
-import { IconAlertCircle } from "@tabler/icons-react";
+import { IconCheck, IconX } from "@tabler/icons-react";
 
 export const ReservarBusquedaClienteSection = ({
     reservaForm,
@@ -19,6 +25,7 @@ export const ReservarBusquedaClienteSection = ({
     setShowDetails,
     disabledInput,
     handleSubmitHuesped,
+    labelStyles
 }) => {
     const { nacionalidad } = reservaForm.values.huesped;
     const { activarHuesped, fnAsignarHuesped, cargando } = useHuespedStore();
@@ -95,19 +102,79 @@ export const ReservarBusquedaClienteSection = ({
         >
             <>
                 {nacionalidad ? (
-                    <AlertSection
-                        variant="light"
-                        color="teal.7"
-                        icon={IconAlertCircle}
-                        title="Atención"
+                    <Tooltip
+                        label={
+                            nacionalidad === "ECUATORIANO"
+                                ? "Cliente con nacionalidad ecuatoriana.  Obligado a pagar la tasa de IVA correspondiente al Ecuador"
+                                : `Cliente con nacionalidad ${nacionalidad}. No está obligado a pagar la tasa de IVA`
+                        }
+                        multiline
+                        w={320}
+                        withArrow
+                        transitionProps={{ transition: "fade", duration: 200 }}
                     >
-                        <TextSection tt="" fz={12} fw={300}>
-                            El cliente tiene una nacionalidad {nacionalidad}{" "}
-                            {nacionalidad === "ECUATORIANO"
-                                ? "Esta obligado a pagar la tasa de IVA fijada correspondiente al Ecuador"
-                                : "No está obligado a pagar la tasa de IVA"}
-                        </TextSection>
-                    </AlertSection>
+                        <Paper
+                            shadow="xs"
+                            p="sm"
+                            mb="md"
+                            radius="md"
+                            withBorder
+                            style={{
+                                cursor: "help",
+                                borderColor:
+                                    nacionalidad === "ECUATORIANO"
+                                        ? "var(--mantine-color-corporate-blue-3)"
+                                        : "var(--mantine-color-gray-3)",
+                                backgroundColor:
+                                    nacionalidad === "ECUATORIANO"
+                                        ? "var(--mantine-color-corporate-blue-0)"
+                                        : "var(--mantine-color-gray-0)",
+                            }}
+                        >
+                            <Group gap="sm" wrap="nowrap">
+                                <ThemeIcon
+                                    size="lg"
+                                    radius="md"
+                                    variant="light"
+                                    color={
+                                        nacionalidad === "ECUATORIANO"
+                                            ? "corporate-blue"
+                                            : "red"
+                                    }
+                                >
+                                    {nacionalidad === "ECUATORIANO" ? (
+                                        <IconCheck size={20} stroke={2.5} />
+                                    ) : (
+                                        <IconX size={20} stroke={2.5} />
+                                    )}
+                                </ThemeIcon>
+                                <div>
+                                    <Text
+                                        size="xs"
+                                        c="dimmed"
+                                        fw={500}
+                                        tt="uppercase"
+                                        lts={0.5}
+                                    >
+                                        Cliente
+                                    </Text>
+                                    <Text
+                                        size="sm"
+                                        fw={600}
+                                        c={
+                                            nacionalidad === "ECUATORIANO"
+                                                ? "corporate-blue"
+                                                : "gray.7"
+                                        }
+                                    >
+                                        {nacionalidad === "ECUATORIANO"
+                                            ? "IVA Activado"
+                                            : "IVA Desactivado"}
+                                    </Text>
+                                </div>
+                            </Group>
+                        </Paper>
+                    </Tooltip>
                 ) : null}
                 <ReservarBusquedaClienteForm
                     reservaForm={reservaForm}
@@ -116,12 +183,14 @@ export const ReservarBusquedaClienteSection = ({
                     cargando={cargando}
                     handleSubmitHuesped={handleSubmitHuesped}
                     handleClear={handleClear}
+                    labelStyles={labelStyles}
                 />
             </>
             <ReservarDatosClienteForm
                 reservaForm={reservaForm}
                 showDetails={showDetails}
                 disabledInput={disabledInput}
+                labelStyles={labelStyles}
             />
         </Fieldset>
     );

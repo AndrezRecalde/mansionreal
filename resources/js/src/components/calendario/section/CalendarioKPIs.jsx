@@ -8,21 +8,31 @@ import {
 } from "@tabler/icons-react";
 import { BtnSection, TextSection, TitlePage } from "../../../components";
 
-const KPICard = ({ icon: Icon, label, value, color = "blue" }) => (
-    <Paper p="md" withBorder radius="md">
-        <Group>
-            <ThemeIcon size="lg" variant="light" color={color}>
-                <Icon style={{ width: rem(20), height: rem(20) }} />
+const KPICard = ({ icon: Icon, label, value, color = "blue. 7" }) => (
+    <Paper
+        p="md"
+        withBorder
+        radius="md"
+        shadow="xs" // A��ade sutileza
+
+        styles={{
+            root: {
+                "&:hover": {
+                    boxShadow: "var(--mantine-shadow-md)",
+                    transform: "translateY(-2px)",
+                },
+            },
+        }}
+    >
+        <Group gap="md">
+            <ThemeIcon size="xl" variant="light" color={color} radius="xl">
+                <Icon style={{ width: rem(24), height: rem(24) }} />
             </ThemeIcon>
             <div>
-                <TextSection tt="" fz={12} color="dimmed">
+                <TextSection fz={12} color="dimmed" fw={500} mb={4}>
                     {label}
                 </TextSection>
-                <TextSection
-                    fw={700}
-                    fz={18}
-                    color={color !== "blue" ? color : undefined}
-                >
+                <TextSection fw={700} fz={16} color={color}>
                     {value}
                 </TextSection>
             </div>
@@ -50,7 +60,7 @@ export const CalendarioKPIs = ({ estadisticas, onRefresh, cargando }) => {
                     handleAction={onRefresh}
                     variant="light"
                     disabled={cargando}
-                    iconColor={"teal"}
+                    //iconColor={"indigo"}
                 >
                     Actualizar
                 </BtnSection>
@@ -60,25 +70,25 @@ export const CalendarioKPIs = ({ estadisticas, onRefresh, cargando }) => {
                     icon={IconBed}
                     label="Departamentos"
                     value={estadisticas.total_departamentos}
-                    color="indigo"
+                    color="blue.8"
                 />
                 <KPICard
                     icon={IconCalendar}
                     label="Días Periodo"
                     value={estadisticas.dias_periodo}
-                    color="cyan"
+                    color="indigo.7"
                 />
                 <KPICard
                     icon={IconClock}
                     label="Noches Posibles"
                     value={estadisticas.noches_posibles}
-                    color="grape"
+                    color="gray.7"
                 />
                 <KPICard
                     icon={IconBed}
                     label="Noches Ocupadas"
                     value={estadisticas.noches_ocupadas}
-                    color="orange"
+                    color="blue.6"
                 />
                 <KPICard
                     icon={IconUsers}

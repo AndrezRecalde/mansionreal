@@ -26,7 +26,7 @@ export function ConsumoCard({
             withBorder
             mb="xs"
             style={{
-                borderLeft: `4px solid #16ab6d`,
+                borderLeft: `4px solid #0047AB`,
                 position: "relative",
             }}
         >

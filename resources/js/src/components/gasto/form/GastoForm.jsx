@@ -64,7 +64,7 @@ export const GastoForm = ({ form }) => {
                     nothingFoundMessage="No se encontraron tipos de daño"
                     {...form.getInputProps("tipo_dano_id")}
                 />
-                <BtnSubmit>Guardar Categoria</BtnSubmit>
+                <BtnSubmit>Registrar Pago</BtnSubmit>
             </Stack>
         </Box>
     );

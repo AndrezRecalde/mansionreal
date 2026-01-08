@@ -25,7 +25,7 @@ export const MenuList = ({ usuario, menuData, theme }) => {
                     <Menu.Item
                         key={item.title}
                         leftSection={
-                            <item.icon size={18} color={theme.colors.dark[8]} />
+                            <item.icon size={18} />
                         }
                         component={Link}
                         to={item.link}

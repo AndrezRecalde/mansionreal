@@ -170,7 +170,7 @@ export const CalendarioReservas = () => {
     }, []);
 
     const handleVerReserva = useCallback((reserva) => {
-        console.log("aki");
+        //console.log("aki");
         // Implementar navegación a la página de detalles de la reserva si es necesario
         const datosReserva = {
             departamento_id: reserva.departamento.id,

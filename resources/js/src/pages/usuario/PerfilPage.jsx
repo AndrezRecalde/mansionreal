@@ -72,10 +72,11 @@ const PerfilPage = () => {
                     </TextSection>
                     <Badge
                         fullWidth
-                        variant="filled"
+                        variant="light"
                         size="xl"
-                        color="teal.7"
+                        //color="teal.7"
                         radius="lg"
+                        autoContrast
                     >
                         <TextSection tt="" fw={600} fz={14}>
                             {usuario.role}
@@ -124,7 +125,6 @@ const PerfilPage = () => {
                         <Button
                             size="sm"
                             variant="light"
-                            color="teal"
                             leftSection={<IconBookmarksFilled size={25} />}
                             onClick={handleNavigateGestionarReservas}
                             styles={{

@@ -7,6 +7,7 @@ import {
     mergeMantineTheme,
     rgba,
     darken,
+    parseThemeColor,
 } from "@mantine/core";
 import { CssLoader } from "./components";
 import classes from "./assets/styles/Container.module.css";
@@ -14,7 +15,24 @@ import classes from "./assets/styles/Container.module.css";
 export const themeOrverride = createTheme({
     fontFamily: "Poppins, Greycliff CF, sans-serif",
     headings: { fontFamily: "Poppins, Greycliff CF, sans-serif" },
-    primaryColor: "teal",
+
+    colors: {
+        "corporate-blue": [
+            "#e6f0ff", // 0: muy claro - cielo suave
+            "#b3d1ff", // 1: claro
+            "#80b3ff", // 2: claro medio
+            "#4d94ff", // 3: medio
+            "#1a75ff", // 4: medio vibrante - ideal para dark mode
+            "#0056e0", // 5: azul brillante
+            "#0047AB", // 6: azul corporativo premium base (Cobalt)
+            "#003d94", // 7: oscuro
+            "#00337d", // 8: muy oscuro
+            "#002966", // 9: ultra oscuro
+        ],
+    },
+
+    primaryColor: "corporate-blue",
+
     components: {
         Container: Container.extend({
             classNames: (_, { size }) => ({
@@ -29,27 +47,7 @@ export const themeOrverride = createTheme({
                 type: "custom",
             },
         }),
-        Badge: {
-            variants: {
-                light: (theme, props) => {
-                    // Determina el color base desde el theme o el prop
-                    const colorName = props.color || theme.primaryColor;
-                    const parsedColorValue =
-                        theme.colors[colorName]?.[6] || colorName;
 
-                    return {
-                        root: {
-                            background: rgba(parsedColorValue, 0.1),
-                            border: `1px solid ${parsedColorValue}`,
-                            color: darken(parsedColorValue, 0.1),
-                            "&:hover": {
-                                background: rgba(parsedColorValue, 0.15),
-                            },
-                        },
-                    };
-                },
-            },
-        },
     },
 });
 

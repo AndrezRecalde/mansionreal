@@ -6,12 +6,12 @@ export const HeaderBtnInicio = ({ classes, theme }) => {
     return (
         <Link
             className={classes.link}
-            to="/dashboard"
+            to="/gerencia/dashboard"
         >
             <Box component="span" mr={5}>
                 Panel
             </Box>
-            <IconChartAreaLineFilled size={18} color={theme.colors.teal[6]} />
+            <IconChartAreaLineFilled size={18} />
         </Link>
     );
 };

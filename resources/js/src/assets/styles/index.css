@@ -421,19 +421,6 @@
     font-weight: 500;
     font-style: normal;
 }
-
-@font-face {
-    font-family: 'Greycliff CF Thin Oblique';
-    src: url('../fonts/GreycliffCF/GreycliffCF-ThinOblique.eot');
-    src: local('Greycliff CF Thin Oblique'), local('GreycliffCF-ThinOblique'),
-        url('../fonts/GreycliffCF/GreycliffCF-ThinOblique.eot?#iefix') format('embedded-opentype'),
-        url('../fonts/GreycliffCF/GreycliffCF-ThinOblique.woff2') format('woff2'),
-        url('../fonts/GreycliffCF/GreycliffCF-ThinOblique.woff') format('woff'),
-        url('../fonts/GreycliffCF/GreycliffCF-ThinOblique.ttf') format('truetype');
-    font-weight: 100;
-    font-style: italic;
-}
-
 @font-face {
     font-family: 'Greycliff CF';
     src: url('../fonts/GreycliffCF/GreycliffCF-Regular.eot');

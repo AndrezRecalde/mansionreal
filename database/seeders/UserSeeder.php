@@ -28,8 +28,9 @@ class UserSeeder extends Seeder
         $admin->nombres = 'Cristhian Andres';
         $admin->dni = '0802704171';
         $admin->email = 'azw1021@gmail.com';
-        $admin->password = Hash::make('a123456');
+        $admin->password = Hash::make('azw123456');
         $admin->activo = 1;
+        $admin->user_id = 1;
         $admin->save();
         $admin->assignRole($administradorRole);
     }

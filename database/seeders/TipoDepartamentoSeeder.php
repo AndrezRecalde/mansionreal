@@ -18,32 +18,20 @@ class TipoDepartamentoSeeder extends Seeder
 
         $tipos_departamentos = [
             [
-                'nombre_tipo' => 'ESTUDIO',
+                'nombre_tipo' => 'CABAÑA',
                 'descripcion' => 'Departamento tipo estudio, ideal para una o dos personas.',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'nombre_tipo' => '1 DORMITORIO',
+                'nombre_tipo' => 'DEPARTAMENTO',
                 'descripcion' => 'Departamento con un dormitorio separado, adecuado para parejas o pequeñas familias.',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'nombre_tipo' => '2 DORMITORIOS',
+                'nombre_tipo' => 'LA MANSION REAL',
                 'descripcion' => 'Departamento con dos dormitorios, perfecto para familias o grupos pequeños.',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'nombre_tipo' => '3 DORMITORIOS',
-                'descripcion' => 'Departamento espacioso con tres dormitorios, ideal para familias grandes o grupos.',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'nombre_tipo' => 'PENTHOUSE',
-                'descripcion' => 'Departamento de lujo en el último piso, con vistas panorámicas y comodidades exclusivas.',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

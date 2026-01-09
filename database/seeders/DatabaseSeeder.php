@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
         $this->call(NacionalidadSeeder::class);
         $this->call(ProvinciaSeeder::class);
         $this->call(EstadoSeeder::class);
-        $this->call(TipoDepartamentoSeeder::class);
+        //$this->call(TipoDepartamentoSeeder::class);
         $this->call(ServicioSeeder::class);
         $this->call(CategoriaSeeder::class);
         $this->call(ConfiguracionIvaSeeder::class);

@@ -7,7 +7,7 @@ import { useCategoriaStore, useInventarioStore } from "../../../hooks";
 
 export const InventarioBusquedaForm = () => {
     const { categorias } = useCategoriaStore();
-    const { fnCargarProductosInventario, paginacion } = useInventarioStore();
+    const { fnCargarProductosInventario } = useInventarioStore();
     //const { fnSetStorageFields } = useStorageField();
 
     const form = useForm({

@@ -18,6 +18,7 @@ import {
     TextSection,
 } from "../../../components";
 import { IconCheck, IconX } from "@tabler/icons-react";
+import dayjs from "dayjs";
 
 export const ReservarBusquedaClienteSection = ({
     reservaForm,
@@ -25,7 +26,7 @@ export const ReservarBusquedaClienteSection = ({
     setShowDetails,
     disabledInput,
     handleSubmitHuesped,
-    labelStyles
+    labelStyles,
 }) => {
     const { nacionalidad } = reservaForm.values.huesped;
     const { activarHuesped, fnAsignarHuesped, cargando } = useHuespedStore();
@@ -70,7 +71,11 @@ export const ReservarBusquedaClienteSection = ({
             },
             tipo_reserva: activarTipoReserva,
             departamento_id: "",
-            fecha_checkin: "",
+            fecha_checkin: dayjs()
+                .set("hour", 10)
+                .set("minute", 0)
+                .set("second", 0)
+                .toDate(),
             fecha_checkout: "",
             total_noches: 0,
             total_pago: 0,

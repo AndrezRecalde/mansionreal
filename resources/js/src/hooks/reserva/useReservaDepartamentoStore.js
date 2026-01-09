@@ -16,6 +16,7 @@ import {
     useEstadiaStore,
 } from "../../hooks";
 import { formatDateStr } from "../../helpers/fnHelper";
+import { addMonths, subMonths } from "date-fns";
 import apiAxios from "../../api/apiAxios";
 
 export const useReservaDepartamentoStore = () => {
@@ -30,7 +31,8 @@ export const useReservaDepartamentoStore = () => {
         errores,
     } = useSelector((state) => state.reserva);
     const { fnConsultarDisponibilidadDepartamentos } = useDepartamentoStore();
-    const { fnCargarDatosCalendario, actualizarEstadisticas } = useCalendarioStore();
+    const { fnCargarDatosCalendario, actualizarEstadisticas } =
+        useCalendarioStore();
     const { fnCargarEstadias } = useEstadiaStore();
     const dispatch = useDispatch();
     const { ExceptionMessageError } = useErrorException(rtkCargarErrores);
@@ -98,8 +100,19 @@ export const useReservaDepartamentoStore = () => {
             if (carga_pagina === "DEPARTAMENTOS") {
                 fnConsultarDisponibilidadDepartamentos();
                 fnCargarEstadias();
-            } else {
+            } else if (carga_pagina === "RESERVAS") {
                 fnBuscarReservas(storageFields);
+            } else if (carga_pagina === "CALENDARIO") {
+                const inicio = subMonths(new Date(), 3);
+                const fin = addMonths(new Date(), 3);
+
+                await fnCargarDatosCalendario({
+                    start: formatDateStr(inicio),
+                    end: formatDateStr(fin),
+                });
+
+                await actualizarEstadisticas(new Date());
+                await fnCargarEstadias();
             }
         } catch (error) {
             console.log(error);
@@ -196,6 +209,7 @@ export const useReservaDepartamentoStore = () => {
         carga_pagina = "DEPARTAMENTOS",
     }) => {
         try {
+            dispatch(rtkCargando(true));
             // Validaciones
             if (!id || isNaN(Number(id))) {
                 throw new Error("ID de reserva inválido");
@@ -225,11 +239,24 @@ export const useReservaDepartamentoStore = () => {
                     fnConsultarDisponibilidadDepartamentos(),
                     fnCargarEstadias(),
                 ]);
-            } else {
+            } else if (carga_pagina === "RESERVAS") {
                 await fnBuscarReservas(storageFields);
+            } else if (carga_pagina === "CALENDARIO") {
+                const inicio = subMonths(new Date(), 3);
+                const fin = addMonths(new Date(), 3);
+
+                await fnCargarDatosCalendario({
+                    start: formatDateStr(inicio),
+                    end: formatDateStr(fin),
+                });
+
+                await actualizarEstadisticas(new Date());
+                await fnCargarEstadias();
             }
         } catch (error) {
             ExceptionMessageError(error);
+        } finally {
+            dispatch(rtkCargando(false));
         }
     };
 

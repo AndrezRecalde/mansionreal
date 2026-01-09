@@ -66,7 +66,7 @@ export const useInventarioStore = () => {
             }
 
             const { data } = await apiAxios.get(
-                "/gerencia/productos/inventario",
+                "/productos/inventario",
                 { params }
             );
 

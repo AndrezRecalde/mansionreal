@@ -1,5 +1,6 @@
 /* Elements: Loader */
 import { CssLoader } from "./elements/loader/CssLoader";
+import { LoadingSkeleton } from "./elements/loader/LoadingSkeleton";
 /* Elements: Logo */
 import { Logo } from "./elements/logo/Logo";
 /* Elemnsts: Botones */
@@ -26,7 +27,9 @@ import { FiltrarPorFechasCodigo } from "./elements/filter/FiltrarPorFechasCodigo
 import { FiltroDisponibilidad } from "./elements/filter/FiltroDisponibilidad";
 /* Elements: Filtrar por Gerentes */
 import { FiltrarPorGerentes } from "./elements/filter/FiltrarPorGerentes";
-
+/* Elements: Contenido de TABS */
+import { TabContent } from "./elements/tabs/TabContent";
+import { TabContentDisponibilidad } from "./elements/tabs/TabContentDisponibilidad";
 
 /* Autenticacion */
 import { AuthForm } from "./auth/AuthForm";
@@ -78,6 +81,7 @@ import { DisponibilidadTable } from "./reserva/section/DisponibilidadTable";
 import { DetalleReservaTable } from "./reserva/table/DetalleReservaTable";
 import { ReservaAccionesTable } from "./reserva/table/ReservaAccionesTable";
 import { ReservaInfoHuespedTable } from "./reserva/table/ReservaInfoHuespedTable";
+import { ReservaModals } from "./reserva/modal/ReservaModals";
 
 /* Reservas: Consultar Reservas */
 import { ConsultarReservaSection } from "./reserva/section/ConsultarReservaSection";
@@ -157,6 +161,7 @@ import { ReporteConsumosVisualizacion } from "./consumo/section/ReporteConsumosV
 export {
     /* Elements */
     CssLoader,
+    LoadingSkeleton,
     BtnSection,
     BtnSubmit,
     BtnAddActions,
@@ -176,6 +181,8 @@ export {
     FiltrarPorFechasCodigo,
     FiltroDisponibilidad,
     FiltrarPorGerentes,
+    TabContent,
+    TabContentDisponibilidad,
 
     /* Autenticacion */
     AuthForm,
@@ -227,6 +234,7 @@ export {
     DetalleReservaTable,
     ReservaAccionesTable,
     ReservaInfoHuespedTable,
+    ReservaModals,
 
     /* Reservas: Consultar Reservas */
     ConsultarReservaSection,

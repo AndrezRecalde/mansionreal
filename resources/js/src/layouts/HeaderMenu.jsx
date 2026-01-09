@@ -24,7 +24,13 @@ export const HeaderMenu = ({ usuario }) => {
                     <Group h="100%">
                         <Logo height={50} width={200} />
                         <Group h="100%" gap={0} visibleFrom="lg">
-                            <HeaderBtnInicio classes={classes} theme={theme} />
+                            {usuario.role === Roles.ADMINISTRADOR ||
+                            usuario.role === Roles.GERENCIA ? (
+                                <HeaderBtnInicio
+                                    usuario={usuario}
+                                    classes={classes}
+                                />
+                            ) : null}
                             {/* MENU DE GESTION DE CONFIGURACION DE PARAMETROS */}
                             {/* {usuario.role === Roles.ADMINISTRADOR ||
                             usuario.role === Roles.GERENCIA ? (
@@ -38,7 +44,8 @@ export const HeaderMenu = ({ usuario }) => {
                             ) : null} */}
                             {/* MENU DE GESTION GERENCIAL DEL HOTEL */}
                             {usuario.role === Roles.ADMINISTRADOR ||
-                            usuario.role === Roles.GERENCIA ? (
+                            usuario.role === Roles.GERENCIA ||
+                            usuario.role === Roles.ASISTENTE ? (
                                 <GestionMenu
                                     title="Gerencia"
                                     menuData={headerGerenciaRoutes}

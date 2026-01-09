@@ -45,10 +45,10 @@ export const ConsumosDrawer = ({ datos_reserva, fnAsignarElemento }) => {
         if (!abrirDrawerConsumosDepartamento || !reservaId) return;
 
         fnCargarConsumos({ reserva_id: reservaId });
+        fnCargarPagos({ reserva_id: reservaId });
 
         if (esRolAdministrativo) {
             fnCargarGastos({ reserva_id: reservaId });
-            fnCargarPagos({ reserva_id: reservaId });
         }
         console.log("aki");
 
@@ -103,10 +103,10 @@ export const ConsumosDrawer = ({ datos_reserva, fnAsignarElemento }) => {
                 <ReservaInfoHuespedTable datos={datos_reserva} />
 
                 <ConsumosDrawerTable estado={datos_reserva.estado} />
+                <PagosTable estado={datos_reserva.estado} />
 
                 {esRolAdministrativo && (
                     <>
-                        <PagosTable estado={datos_reserva.estado} />
                         <GastoDrawerTable estado={datos_reserva.estado} />
                     </>
                 )}

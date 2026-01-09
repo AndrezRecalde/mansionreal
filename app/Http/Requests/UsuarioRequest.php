@@ -29,7 +29,7 @@ class UsuarioRequest extends FormRequest
             'apellidos' => 'required',
             'nombres'   => 'required',
             'dni'       => ['required', Rule::unique('users')->ignore($this->request->get('id'))],
-            'email'     => ['required', 'string', 'email', 'max:100', 'unique:users,email,' . $this->route('id')],
+            'email'     => ['required', 'string', 'email', 'max:200', 'unique:users,email,' . $this->route('id')],
             'role'      => 'required'
         ];
     }

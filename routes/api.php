@@ -54,6 +54,12 @@ Route::get('/huespedes', [HuespedController::class, 'getHuespedes'])->middleware
 /* Provincias */
 Route::get('/provincias', [ProvinciaController::class, 'getProvincias'])->middleware('auth:sanctum');
 
+/* Categorias */
+Route::post('/categorias', [CategoriasController::class, 'getCategorias'])->middleware('auth:sanctum');
+
+/* Productos del Inventario */
+Route::get('/productos/inventario', [InventarioController::class, 'getProductosInventario'])->middleware('auth:sanctum');
+
 
 Route::group(['prefix' => 'gerencia', 'middleware' => ['auth:sanctum', CheckRole::class . ':ADMINISTRADOR|GERENTE']], function () {
 
@@ -86,7 +92,6 @@ Route::group(['prefix' => 'gerencia', 'middleware' => ['auth:sanctum', CheckRole
     Route::get('/roles', [RoleController::class, 'getRoles']);
 
     /* Categorias */
-    Route::post('/categorias', [CategoriasController::class, 'getCategorias']);
     Route::post('/categoria', [CategoriasController::class, 'store']);
     Route::put('/categoria/{id}', [CategoriasController::class, 'update']);
     Route::put('/categoria/{id}/status', [CategoriasController::class, 'updateStatus']);
@@ -119,7 +124,6 @@ Route::group(['prefix' => 'gerencia', 'middleware' => ['auth:sanctum', CheckRole
 
 
     /* Inventario */
-    Route::get('/productos/inventario', [InventarioController::class, 'getProductosInventario']);
     Route::post('/producto/inventario', [InventarioController::class, 'store']);
     Route::put('/producto/inventario/{id}', [InventarioController::class, 'update']);
     Route::put('/producto/inventario/{id}/status', [InventarioController::class, 'updateStatus']);
@@ -139,7 +143,7 @@ Route::group(['prefix' => 'gerencia', 'middleware' => ['auth:sanctum', CheckRole
 });
 
 
-Route::group(['prefix' => 'general', 'middleware' => ['auth:sanctum', CheckRole::class . ':ADMINISTRADOR|GERENTE|RECEPCION']], function () {
+Route::group(['prefix' => 'general', 'middleware' => ['auth:sanctum', CheckRole::class . ':ADMINISTRADOR|GERENTE|RECEPCION|ASISTENTE']], function () {
     /* Calendario de reservas */
     Route::get('/calendario/reservas', [CalendarioReservasController::class, 'getReservasCalendario']);
     Route::get('/calendario/recursos-departamentos', [CalendarioReservasController::class, 'getDepartamentosRecursos']);

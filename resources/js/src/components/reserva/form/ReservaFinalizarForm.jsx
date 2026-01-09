@@ -16,6 +16,7 @@ import { Estados } from "../../../helpers/getPrefix";
 export const ReservaFinalizarForm = ({ form, datos_reserva }) => {
     const { nombre_estado } = form.values;
     const {
+        cargando,
         fnCambiarEstadoReserva,
         fnCancelarReserva,
         fnExportarNotaVentaPDF,
@@ -59,40 +60,35 @@ export const ReservaFinalizarForm = ({ form, datos_reserva }) => {
         const { id, nombre_estado, motivo_cancelacion, observacion } =
             form.getTransformedValues();
 
-        try {
-            if (nombre_estado === Estados.CANCELADO) {
-                await fnCancelarReserva({
-                    id,
-                    motivo_cancelacion,
-                    observacion,
-                    ...(storageFields && {
-                        storageFields,
-                        carga_pagina:
-                            storageFields.carga_pagina || "DEPARTAMENTOS",
-                    }),
-                });
-            } else {
-                await fnCambiarEstadoReserva(
-                    storageFields
-                        ? {
-                              id,
-                              nombre_estado,
-                              storageFields,
-                              carga_pagina:
-                                  storageFields.carga_pagina || "DEPARTAMENTOS",
-                          }
-                        : { id, nombre_estado }
-                );
-            }
-
+        if (nombre_estado === Estados.CANCELADO) {
+            await fnCancelarReserva({
+                id,
+                motivo_cancelacion,
+                observacion,
+                ...(storageFields && {
+                    storageFields,
+                    carga_pagina: storageFields.carga_pagina || "DEPARTAMENTOS",
+                }),
+            });
+        } else {
+            await fnCambiarEstadoReserva(
+                storageFields
+                    ? {
+                          id,
+                          nombre_estado,
+                          storageFields,
+                          carga_pagina:
+                              storageFields.carga_pagina || "DEPARTAMENTOS",
+                      }
+                    : { id, nombre_estado }
+            );
             await fnExportarNotaVentaPDF({
                 reserva_id: datos_reserva.reserva_id,
             });
-            form.reset();
-            fnAbrirModalReservaFinalizar(false);
-        } catch (error) {
-            console.error("❌ Error en handleSubmit:", error);
         }
+
+        form.reset();
+        fnAbrirModalReservaFinalizar(false);
     };
 
     return (
@@ -161,7 +157,9 @@ export const ReservaFinalizarForm = ({ form, datos_reserva }) => {
                 <ReservaInfoHuespedTable datos={datos_reserva} />
                 <PagosTotalesReserva totalesPagos={totalesPagos} />
                 <Divider />
-                <BtnSubmit disabled={isDisabled}>Finalizar Reserva</BtnSubmit>
+                <BtnSubmit loading={cargando} disabled={isDisabled}>
+                    Finalizar Reserva
+                </BtnSubmit>
             </Stack>
         </Box>
     );

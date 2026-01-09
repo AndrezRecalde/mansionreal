@@ -29,7 +29,7 @@ export const ConsumoEliminarModal = () => {
             onClose={handleCerrarModal}
             title={
                 <TextSection tt="" fz={18} fw={300}>
-                    Eliminar Gasto
+                    Eliminar Consumo
                 </TextSection>
             }
             overlayProps={{

@@ -4,7 +4,7 @@ const initialState = {
     cargando: false,
     kpis: [
         {
-            label: "Porcentaje de Ocupación",
+            label: "Ocupación",
             value: 0,
             color: "blue",
         },
@@ -42,7 +42,7 @@ export const dashResumenKPISlice = createSlice({
         rtkCargarResumenKPI: (state, { payload }) => {
             state.kpis = [
                 {
-                    label: "Porcentaje de Ocupación",
+                    label: "Ocupación",
                     value: payload[0].porcentaje_ocupacion,
                     color: "blue",
                 },

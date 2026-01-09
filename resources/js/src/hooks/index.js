@@ -54,6 +54,9 @@ import { useUiInventario } from "./inventario/useUiInventario";
 /* Reserva */
 import { useReservaDepartamentoStore } from "./reserva/useReservaDepartamentoStore";
 import { useUiReservaDepartamento } from "./reserva/useUiReservaDepartamento";
+import { useDatosReserva } from "./reserva/useDatosReserva";
+import { useDatosReservaDisponibilidad } from "./reserva/useDatosReservaDisponibilidad";
+import { useReservaActions } from "./reserva/useReservaActions";
 
 /* Estadia */
 import { useEstadiaStore } from "./reserva/useEstadiaStore";
@@ -84,6 +87,11 @@ import { useUiLimpieza } from "./limpieza/useUiLimpieza";
 
 /* Calendario - Reservas */
 import { useCalendarioStore } from "./calendario/useCalendarioStore";
+
+/* Elementos de Hooks */
+import { useNotificaciones } from "./elementos/useNotificaciones";
+import { useTabManagement } from "./elementos/useTabManagement";
+import { useDisponibilidadTabManagement } from "./elementos/useDisponibilidadTabManagement";
 
 /* Storage Fields */
 import { useStorageField } from "./storage/useStorageField";
@@ -144,6 +152,9 @@ export {
     /* Reserva */
     useReservaDepartamentoStore,
     useUiReservaDepartamento,
+    useDatosReserva,
+    useDatosReservaDisponibilidad,
+    useReservaActions,
 
     /* Estadia */
     useEstadiaStore,
@@ -176,6 +187,11 @@ export {
 
     /* Calendario - Reservas */
     useCalendarioStore,
+
+    /* Elementos de Hooks */
+    useNotificaciones,
+    useTabManagement,
+    useDisponibilidadTabManagement,
 
     /* Storage Fields */
     useStorageField,

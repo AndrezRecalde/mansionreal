@@ -17,7 +17,6 @@ import ProductPieChart from "../../components/dashboard/ProductPieChart";
 import GuestsRankingTable from "../../components/dashboard/GuestsRankingTable";
 import EstadiasBarChart from "../../components/dashboard/EstadiasBarChart";
 import { FiltrarPorFechasForm } from "../../components";
-import { YearPickerInput } from "@mantine/dates";
 
 export default function DashboardPage() {
     useTitleHook("Dashboard - Mansión Real");
@@ -56,19 +55,12 @@ export default function DashboardPage() {
 
     return (
         <Container size="xl">
-            <Group justify="space-between" mb={20}>
+            <Group justify="space-between">
                 <Title order={2} mb="md">
                     Panel Administrativo
                 </Title>
-                {/* <YearPickerInput
-                    required
-                    placeholder="Seleccione el año"
-                    //{...form.getInputProps("p_anio")}
-                    size="md"
-                /> */}
             </Group>
             {/* Filtros */}
-            //TODO: CORREGIR FILTRO PARA QUE FUNCIONE CON FECHAS INICIO Y FIN
             <FiltrarPorFechasForm
                 titulo="Filtrar por Año"
                 fnHandleAction={(values) => {
@@ -76,6 +68,7 @@ export default function DashboardPage() {
                     fnCargarHuespedesGananciasMes(values.p_anio);
                     fnCargarRankingProductos({ p_anio: values.p_anio, p_fecha_inicio: values.p_fecha_inicio, p_fecha_fin: values.p_fecha_fin });
                     fnCargarIngresosPorDepartamento({ p_anio: values.p_anio, p_fecha_inicio: values.p_fecha_inicio, p_fecha_fin: values.p_fecha_fin });
+                    fnCargarReporteEstadiasPorFechas({ p_anio: values.p_anio, p_fecha_inicio: values.p_fecha_inicio, p_fecha_fin: values.p_fecha_fin });
                     fnCargarHuespedesRecurrentes({ p_anio: values.p_anio, p_fecha_inicio: values.p_fecha_inicio, p_fecha_fin: values.p_fecha_fin });
                 }}
             />

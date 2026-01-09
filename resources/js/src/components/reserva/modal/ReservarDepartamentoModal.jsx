@@ -118,7 +118,44 @@ export const ReservarDepartamentoModal = () => {
             });
         }
         fnCargarProvincias();
-    }, [abrirModalReservarDepartamento, fecha_checkin, fecha_checkout]);
+    }, [
+        abrirModalReservarDepartamento,
+        fecha_checkin,
+        fecha_checkout,
+        activarTipoReserva,
+    ]);
+
+    // Setear fecha_checkout automáticamente para ESTADIA
+    useEffect(() => {
+        console.log(activarTipoReserva);
+        if (activarTipoReserva === "ESTADIA" && fecha_checkin) {
+            const nuevaFechaCheckout = dayjs(fecha_checkin)
+                .set("hour", 18)
+                .set("minute", 0)
+                .set("second", 0)
+                .toDate();
+
+            // Solo actualizar si la fecha es diferente (comparar timestamps)
+            const checkoutActual = fecha_checkout
+                ? dayjs(fecha_checkout).valueOf()
+                : null;
+            const nuevaCheckoutValue = dayjs(nuevaFechaCheckout).valueOf();
+
+            if (checkoutActual !== nuevaCheckoutValue) {
+                reservaForm.setFieldValue("fecha_checkout", nuevaFechaCheckout);
+            }
+        }
+    }, [fecha_checkin, activarTipoReserva]);
+
+    // Limpiar fecha_checkout cuando es HOSPEDAJE
+    useEffect(() => {
+        if (
+            abrirModalReservarDepartamento &&
+            activarTipoReserva === "HOSPEDAJE"
+        ) {
+            reservaForm.setFieldValue("fecha_checkout", "");
+        }
+    }, [abrirModalReservarDepartamento, activarTipoReserva]);
 
     const handleCerrarModal = () => {
         // Lógica para cerrar el modal

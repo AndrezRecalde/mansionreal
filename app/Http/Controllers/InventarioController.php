@@ -16,16 +16,19 @@ class InventarioController extends Controller
     function getProductosInventario(Request $request): JsonResponse
     {
         try {
-
             $productos = Inventario::from('inventarios as i')
                 ->select('i.*', 'c.id as categoria_id', 'c.nombre_categoria')
                 ->join('categorias as c', 'i.categoria_id', '=', 'c.id')
                 ->porCategoria($request->input('categoria_id'))
-                ->porNombreProducto($request->input('nombre_producto'))
-                ->buscarActivos($request->input('activo'));
+                ->porNombreProducto($request->input('nombre_producto'));
 
             // Conversión a booleano con Laravel
             $all = $request->boolean('all');
+
+            // Aplicar filtro de activos solo si "all" es false Y si viene el parámetro activo
+            if (!$all && $request->has('activo')) {
+                $productos->buscarActivos($request->input('activo'));
+            }
 
             if ($all) {
                 $resultados = $productos->get();
@@ -90,7 +93,7 @@ class InventarioController extends Controller
                 ], 404);
             }
 
-            if($request->sin_stock) {
+            if ($request->sin_stock) {
                 $producto->stock = 0;
             }
 

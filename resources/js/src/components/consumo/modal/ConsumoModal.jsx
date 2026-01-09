@@ -59,7 +59,7 @@ export function ConsumoModal({ reserva_id }) {
         form.setFieldValue(`consumos.${idx}.categoria_id`, value || "");
         form.setFieldValue(`consumos.${idx}.inventario_id`, "");
         if (value) {
-            fnCargarProductosInventario({ categoria_id: value });
+            fnCargarProductosInventario({ categoria_id: value, all: false, activo: 1 });
         } else {
             fnLimpiarInventarios();
         }

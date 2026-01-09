@@ -117,8 +117,8 @@ class EstadiaController extends Controller
             // ---------------- Hardcode tipo_reserva ----------------
             $reserva->tipo_reserva = TIPOSRESERVA::ESTADIA;
             $reserva->departamento_id = null;  // No se asigna habitación
-            $reserva->fecha_checkin = now();
-            $reserva->fecha_checkout = now();
+            //$reserva->fecha_checkin = now();
+            //$reserva->fecha_checkout = now();
             $reserva->total_noches = 0;        // No aplica para estadía
             // --------------------------------------------------------
             $reserva->save();

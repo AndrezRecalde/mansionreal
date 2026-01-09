@@ -108,7 +108,7 @@ class PagoController extends Controller
     function delete(Request $request, int $id): JsonResponse
     {
         try {
-            $pago = Pago::fing($id);
+            $pago = Pago::find($id);
 
             if (!$pago) {
                 return response()->json([

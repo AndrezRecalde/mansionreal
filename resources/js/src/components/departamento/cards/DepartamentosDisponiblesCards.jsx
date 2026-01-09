@@ -21,6 +21,7 @@ import {
 import {
     IconBuilding,
     IconCalendar,
+    IconCodeCircle,
     IconRotate2,
     IconSpray,
     IconTool,
@@ -94,6 +95,10 @@ const ReservaSection = ({ reserva }) => (
                       )} - ${formatFechaModal(reserva.fecha_checkout)}`
                     : "Sin Reserva"}
             </Text>
+        </Center>
+        <Center mt={10}>
+            <IconCodeCircle size={16} className={classes.icon} stroke={1.5} />
+            <Badge size="lg" radius="xl" variant="outline">{reserva?.codigo_reserva || "Sin Código"}</Badge>
         </Center>
     </Card.Section>
 );

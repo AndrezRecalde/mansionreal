@@ -207,13 +207,15 @@ class CalendarioReservasController extends Controller
 
     private function generarTituloEvento(Reserva $reserva): string
     {
-        $huesped = $reserva->huesped;
+        //$huesped = $reserva->huesped;
         $departamento = $reserva->departamento;
+        $codigo = $reserva->codigo_reserva;
 
-        $nombreHuesped = $huesped ? trim("{$huesped->apellidos} {$huesped->nombres}") : 'Sin huesped';
+        //$nombreHuesped = $huesped ? trim("{$huesped->apellidos} {$huesped->nombres}") : 'Sin huesped';
         $numeroDepartamento = $departamento?->numero_departamento ??  'S/N';
+        $codigoReserva = $codigo ? " {$codigo}" : '';
 
-        return "{$numeroDepartamento} - {$nombreHuesped}";
+        return "{$numeroDepartamento} - {$codigoReserva}";
     }
 
     private function getColorEvento(?object $estado): string

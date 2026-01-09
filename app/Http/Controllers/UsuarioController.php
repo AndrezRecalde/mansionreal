@@ -51,20 +51,18 @@ class UsuarioController extends Controller
     {
         try {
             DB::beginTransaction();
-            $usuario = new User;
-            $usuario->fill($request->validated());
-            $usuario->user_id = Auth::id();
-            $usuario->save();
+
+            $data = $request->validated();
+
+            $usuario = User::create($data);
             $usuario->assignRole($request->role);
+
             DB::commit();
 
-            return response()->json(
-                [
-                    'status' => HTTPStatus::Success,
-                    'msg'   => HTTPStatus::Creacion
-                ],
-                201
-            );
+            return response()->json([
+                'status' => HTTPStatus::Success,
+                'msg'   => HTTPStatus::Creacion
+            ], 201);
         } catch (\Throwable $th) {
             DB::rollBack();
             return response()->json([
@@ -73,7 +71,6 @@ class UsuarioController extends Controller
             ], 500);
         }
     }
-
     function update(UsuarioRequest $request, int $id): JsonResponse
     {
         try {

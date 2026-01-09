@@ -47,7 +47,7 @@ export function ConsumoForm({
                         )
                     }
                     error={form.errors.consumos?.[idx]?.inventario_id}
-                    disabled={!consumo. categoria_id}
+                    disabled={!consumo.categoria_id}
                     classNames={classes}
                 />
             </SimpleGrid>

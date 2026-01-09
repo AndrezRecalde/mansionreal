@@ -84,7 +84,7 @@ const ReporteDepartamentosPage = () => {
             isExporting === true
         ) {
             Swal.fire({
-                icon: "warning",
+                icon: "info",
                 text: "Un momento porfavor, se está exportando",
                 showConfirmButton: false,
                 didOpen: () => {

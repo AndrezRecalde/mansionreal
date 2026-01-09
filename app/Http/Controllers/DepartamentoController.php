@@ -56,9 +56,17 @@ class DepartamentoController extends Controller
             $inicio = Carbon::parse($validated['fecha_inicio'])->startOfDay();
             $fin = Carbon::parse($validated['fecha_fin'])->endOfDay();
 
+            // Obtener los IDs de los estados RESERVADO y CONFIRMADO
+            $estadosReserva = DB::table('estados')
+                ->where('tipo_estado', 'RESERVA')
+                ->whereIn('nombre_estado', ['RESERVADO', 'CONFIRMADO'])
+                ->pluck('id')
+                ->toArray();
+
             // Consulta:
             // - Departamentos activos
             // - Excluir los que tengan reservas HOSPEDAJE con solape en el rango
+            //   Y que estén en estado RESERVADO o CONFIRMADO
             //   usando NOT EXISTS para mejor rendimiento.
             $departamentos = DB::table('departamentos as d')
                 ->join('tipos_departamentos as td', 'd.tipo_departamento_id', '=', 'td.id')
@@ -66,12 +74,14 @@ class DepartamentoController extends Controller
                 ->join('estados as e', 'd.estado_id', '=', 'e.id')
                 ->where('d.activo', 1)
                 ->whereIn('e.nombre_estado', ['DISPONIBLE', 'LIMPIEZA'])
-                ->whereNotExists(function ($q) use ($inicio, $fin) {
+                ->whereNotExists(function ($q) use ($inicio, $fin, $estadosReserva) {
                     $q->from('reservas as r')
                         ->whereColumn('r.departamento_id', 'd.id')
                         ->where('r.tipo_reserva', '=', 'HOSPEDAJE')
                         ->whereNotNull('r.departamento_id')
-                        // Solape de rango: checkin <= fin AND checkout >= inicio
+                        // CAMBIO IMPORTANTE: Solo excluir si está en estado RESERVADO o CONFIRMADO
+                        ->whereIn('r.estado_id', $estadosReserva)
+                        // Solape de rango:  checkin <= fin AND checkout >= inicio
                         ->where('r.fecha_checkin', '<=', $fin->toDateTimeString())
                         ->where('r.fecha_checkout', '>=', $inicio->toDateTimeString());
                 })

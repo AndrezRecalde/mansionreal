@@ -89,14 +89,14 @@ export const headerGerenciaRoutes = {
             icon: IconCalendar,
             title: "Calendario Reservas",
             path: "calendario-reservas",
-            link: "/gerencia/calendario-reservas",
-            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA, Roles.ASISTENTE],
+            link: "/hotel/calendario-reservas",
+            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
         },
         {
             icon: IconEyeSearch,
             title: "Disponibilidad Actual",
             path: "disponibilidad-departamento",
-            link: "/gerencia/disponibilidad-departamento",
+            link: "/hotel/disponibilidad-departamento",
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA, Roles.ASISTENTE],
         },
 

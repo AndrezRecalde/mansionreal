@@ -21,7 +21,7 @@ export const useCategoriaStore = () => {
     const fnCargarCategorias = async ({ busqueda = null, activo = null }) => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.post("/gerencia/categorias", {
+            const { data } = await apiAxios.post("/categorias", {
                 busqueda,
                 activo,
             });

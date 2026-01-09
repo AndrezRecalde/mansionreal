@@ -71,7 +71,14 @@ export const AppRouter = () => {
                     </RoutesNotFound>
                 }
             />
-
+            <Route
+                path="/hotel/*"
+                element={
+                    <RoutesNotFound>
+                        {renderRoutes(routes.GENERAL)}
+                    </RoutesNotFound>
+                }
+            />
              <Route
                 path="/staff/*"
                 element={

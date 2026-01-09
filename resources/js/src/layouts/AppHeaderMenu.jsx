@@ -4,10 +4,7 @@ import { HeaderMenu } from "./HeaderMenu";
 import classes from "./modules/AppBody.module.css"
 
 export const AppHeaderMenu = ({ children }) => {
-    const usuario = useMemo(() => {
-        const storedUser = localStorage.getItem("service_user");
-        return storedUser ? JSON.parse(storedUser) : null;
-    }, []);
+    const usuario = JSON.parse(localStorage.getItem("service_user") || "{}");
 
     return (
         <AppShell

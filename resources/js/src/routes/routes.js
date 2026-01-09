@@ -171,14 +171,29 @@ export const authRoutes = {
     Component: AuthPage,
 };
 
-const gerenciaRoutes = generateRoutes(
-    "gerencia",
+const generalRoutes = generateRoutes(
+    "hotel",
     [
         {
             path: MENU_PATH.DISPONIBILIDAD_DEPARTAMENTO,
             Component: DisponibilidadDepartamentoPage,
         },
+        /* {
+            path: MENU_PATH.DISPONIBILIDAD_ACTUAL,
+            Component: DisponibilidadActualPage,
+        }, */
+        {
+            path: MENU_PATH.CALENDARIO_RESERVAS,
+            Component: CalendarioReservasPage,
+        },
+    ],
+    [Roles.ASISTENTE, Roles.GERENCIA, Roles.ADMINISTRADOR]
+);
 
+
+const gerenciaRoutes = generateRoutes(
+    "gerencia",
+    [
         { path: MENU_PATH.DASHBOARD, Component: DashboardPage },
         { path: MENU_PATH.CATEGORIAS, Component: CategoriasPage },
         { path: MENU_PATH.SERVICIOS, Component: ServiciosPage },
@@ -195,10 +210,7 @@ const gerenciaRoutes = generateRoutes(
             path: MENU_PATH.REPORTE_RESERVAS,
             Component: ReporteDepartamentosPage,
         },
-        {
-            path: MENU_PATH.DISPONIBILIDAD_ACTUAL,
-            Component: DisponibilidadActualPage,
-        },
+
         { path: MENU_PATH.INVENTARIO, Component: InventarioPage },
         {
             path: MENU_PATH.HISTORIAL_MOVIMIENTOS,
@@ -214,14 +226,12 @@ const gerenciaRoutes = generateRoutes(
             path: MENU_PATH.REPORTE_CONSUMOS,
             Component: ReporteConsumosPage,
         },
-        {
-            path: MENU_PATH.CALENDARIO_RESERVAS,
-            Component: CalendarioReservasPage,
-        },
+
         {
             path: MENU_PATH.HISTORIAL_PAGOS,
             Component: HistorialPagosPage,
-        }
+        },
+
     ],
     [Roles.ADMINISTRADOR, Roles.GERENCIA]
 );
@@ -237,6 +247,7 @@ const peerRoutes = generateRoutes(
 
 export const routes = {
     GERENCIA: gerenciaRoutes,
+    GENERAL: generalRoutes,
 };
 
 export const peerLinks = {

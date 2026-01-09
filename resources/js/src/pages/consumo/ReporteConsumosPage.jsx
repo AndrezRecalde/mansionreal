@@ -33,7 +33,7 @@ const ReporteConsumosPage = () => {
 
     const handleExportPDF = () => {
         if (reporteConsumosCategoria?.metadatos) {
-            console.log(reporteConsumosCategoria?.metadatos);
+            //console.log(reporteConsumosCategoria?.metadatos);
             fnExportarReporteConsumosPDF({
                 p_fecha_inicio: reporteConsumosCategoria.metadatos.p_fecha_inicio,
                 p_fecha_fin: reporteConsumosCategoria.metadatos.p_fecha_fin,

@@ -1,9 +1,9 @@
 import { Box, Fieldset, Select, SimpleGrid, TextInput } from "@mantine/core";
-import { TextSection } from "../../elements/titles/TextSection";
-import { BtnSubmit } from "../../elements/buttons/BtnServices";
-import { IconSearch } from "@tabler/icons-react";
 import { useForm } from "@mantine/form";
+import { TextSection, BtnSubmit } from "../../../components";
 import { useCategoriaStore, useInventarioStore } from "../../../hooks";
+import { IconSearch } from "@tabler/icons-react";
+import classes from "../../../components/elements/modules/LabelsInput.module.css"
 
 export const InventarioBusquedaForm = () => {
     const { categorias } = useCategoriaStore();
@@ -55,11 +55,13 @@ export const InventarioBusquedaForm = () => {
                             label: categoria.nombre_categoria,
                         }))}
                         {...form.getInputProps("categoria")}
+                        classNames={classes}
                     />
                     <TextInput
                         label="Nombre del producto"
                         placeholder="Escribe el nombre del producto"
                         {...form.getInputProps("nombre_producto")}
+                        classNames={classes}
                     />
                 </SimpleGrid>
                 <BtnSubmit IconSection={IconSearch}>Buscar</BtnSubmit>

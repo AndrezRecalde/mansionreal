@@ -25,7 +25,7 @@ export const useServicioStore = () => {
             const { servicios } = data;
             dispatch(rtkCargarServicios(servicios));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };
@@ -39,7 +39,7 @@ export const useServicioStore = () => {
             const { servicios } = data;
             dispatch(rtkCargarServicios(servicios));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };
@@ -70,7 +70,7 @@ export const useServicioStore = () => {
                 dispatch(rtkCargarMensaje(undefined));
             }, 2000);
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };

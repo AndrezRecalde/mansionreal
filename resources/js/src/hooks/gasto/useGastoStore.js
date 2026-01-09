@@ -36,7 +36,7 @@ export const useGastoStore = () => {
             const { gastos } = data;
             dispatch(rtkCargarGastos(gastos));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             dispatch(rtkCargando(false));
             ExceptionMessageError(error);
         }
@@ -59,29 +59,33 @@ export const useGastoStore = () => {
             }
             //creando
             const { data } = await apiAxios.post("/general/gasto", gasto);
-            fnCargarGastos({ reserva_id: gasto.reserva_id });
             dispatch(rtkCargarMensaje(data));
             setTimeout(() => {
                 dispatch(rtkCargarMensaje(undefined));
             }, 2000);
+            await fnCargarGastos({ reserva_id: gasto.reserva_id });
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };
 
     const fnEliminarGasto = async (gasto) => {
+        //console.log(gasto);
         try {
             const { data } = await apiAxios.delete(
-                `/general/gasto/${gasto.id}`
+                `/general/gasto/${gasto.id}`,
+                {
+                    data: { dni: gasto.dni },
+                }
             );
-            fnCargarGastos({});
             dispatch(rtkCargarMensaje(data));
             setTimeout(() => {
                 dispatch(rtkCargarMensaje(undefined));
             }, 2000);
+            await fnCargarGastos({ reserva_id: gasto.reserva_id });
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };

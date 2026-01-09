@@ -29,7 +29,7 @@ export const useConfiguracionIvaStore = () => {
             const { configuracionesIva } = data;
             dispatch(rtkCargarIvas(configuracionesIva));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             dispatch(rtkCargando(false));
             ExceptionMessageError(error);
         }
@@ -61,7 +61,7 @@ export const useConfiguracionIvaStore = () => {
                 dispatch(rtkCargarMensaje(undefined));
             }, 2000);
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };
@@ -78,7 +78,7 @@ export const useConfiguracionIvaStore = () => {
                 dispatch(rtkCargarMensaje(undefined));
             }, 2000);
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };
@@ -92,7 +92,7 @@ export const useConfiguracionIvaStore = () => {
             const { configuracionIva } = data;
             dispatch(rtkActivarIva(configuracionIva.tasa_iva));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         } finally {
             dispatch(rtkCargando(false));

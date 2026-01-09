@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('pagos', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('reserva_id');
-            $table->string('codigo_voucher', 100);
+            $table->string('codigo_voucher', 100)->nullable();
             $table->unsignedBigInteger('concepto_pago_id');
             $table->decimal('monto', 10, 2);
             $table->enum('metodo_pago', ['EFECTIVO', 'TRANSFERENCIA', 'TARJETA', 'OTRO'])->default('EFECTIVO');

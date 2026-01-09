@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Box, Flex, Select, Stack } from "@mantine/core";
 import { BtnSubmit, TextSection } from "../../../components";
+import classes from "../../../components/elements/modules/LabelsInput.module.css"
 
 export const ActivarElementoForm = ({
     form,
@@ -27,7 +28,7 @@ export const ActivarElementoForm = ({
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(form.getTransformedValues());
+        //console.log(form.getTransformedValues());
         fnHandleAction(form.getTransformedValues());
         fnAsignarElementoActivado(null);
         fnAbrirModal(false);
@@ -68,6 +69,7 @@ export const ActivarElementoForm = ({
                     label="Activar"
                     withAsterisk
                     {...form.getInputProps("activo")}
+                    classNames={classes}
                 />
                 <BtnSubmit>Guardar</BtnSubmit>
             </Stack>

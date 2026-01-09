@@ -34,7 +34,7 @@ export const useDashHuespedStore = () => {
             const { result } = data;
             dispatch(rtkHuespedesRecurrentesCargados(result));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             dispatch(rtkCargandoHuespedesRecurrentes(false));
             ExceptionMessageError(error);
         }

@@ -71,7 +71,7 @@ export const DepartamentoTable = () => {
 
     const handleEditar = useCallback(
         (selected) => {
-            console.log("clic editar");
+            //console.log("clic editar");
             fnAsignarDepartamento(selected);
             fnModalAbrirDepartamento(true);
         },
@@ -80,7 +80,7 @@ export const DepartamentoTable = () => {
 
     const handleActivar = useCallback(
         (selected) => {
-            console.log("clic activar");
+            //console.log("clic activar");
             fnAsignarDepartamento(selected);
             fnModalAbrirActivarDepartamento(true);
         },
@@ -89,7 +89,7 @@ export const DepartamentoTable = () => {
 
     const handleServicios = useCallback(
         (selected) => {
-            console.log("clic activar");
+            //console.log("clic activar");
             fnAsignarDepartamento(selected);
             fnDrawerAbrirServiciosDepartamento(true);
             //fnModalAbrirActivarDepartamento(true);

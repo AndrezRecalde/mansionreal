@@ -26,7 +26,7 @@ export const ServicioTable = () => {
 
     const handleEditar = useCallback(
         (selected) => {
-            console.log("clic editar");
+            //console.log("clic editar");
             fnAsignarServicio(selected);
             fnModalAbrirServicio(true);
         },

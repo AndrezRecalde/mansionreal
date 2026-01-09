@@ -36,7 +36,7 @@ export const ReservarBusquedaClienteSection = ({
 
     useEffect(() => {
         if (activarHuesped !== null) {
-            console.log(activarTipoReserva);
+            //console.log(activarTipoReserva);
             reservaForm.setValues({
                 huesped: {
                     huesped_id: activarHuesped.id,

@@ -50,7 +50,7 @@ export const ConsumosDrawer = ({ datos_reserva, fnAsignarElemento }) => {
         if (esRolAdministrativo) {
             fnCargarGastos({ reserva_id: reservaId });
         }
-        console.log("aki");
+        //console.log("aki");
 
         // Cleanup al cerrar o desmontar
         return () => {

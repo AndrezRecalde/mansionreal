@@ -8,6 +8,7 @@ import {
 } from "@mantine/core";
 import { BtnSubmit } from "../../../components";
 import { useHuespedStore, useUiHuesped } from "../../../hooks";
+import classes from "../../../components/elements/modules/LabelsInput.module.css"
 
 export const HuespedForm = ({ form }) => {
     const { activarHuesped, fnAgregarHuesped, fnAsignarHuesped } =
@@ -31,7 +32,7 @@ export const HuespedForm = ({ form }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(form.getTransformedValues());
+        //console.log(form.getTransformedValues());
         fnAgregarHuesped(form.getTransformedValues());
         fnAsignarHuesped(null);
         form.reset();
@@ -54,6 +55,7 @@ export const HuespedForm = ({ form }) => {
                     label="No. Cedula"
                     placeholder="Ingrese el numero de cedula"
                     {...form.getInputProps("dni")}
+                    classNames={classes}
                 />
                 <SimpleGrid
                     cols={2}
@@ -64,24 +66,28 @@ export const HuespedForm = ({ form }) => {
                         label="Apellidos"
                         placeholder="Ingrese los apellidos"
                         {...form.getInputProps("apellidos")}
+                        classNames={classes}
                     />
                     <TextInput
                         withAsterisk
                         label="Nombres"
                         placeholder="Ingrese los nombres"
                         {...form.getInputProps("nombres")}
+                        classNames={classes}
                     />
                 </SimpleGrid>
                 <TextInput
                     label="Telefono"
                     placeholder="Ingrese el numero de telefono"
                     {...form.getInputProps("telefono")}
+                    classNames={classes}
                 />
                 <TextInput
                     withAsterisk
                     label="Correo Electronico"
                     placeholder="Ingrese el correo electronico"
                     {...form.getInputProps("email")}
+                    classNames={classes}
                 />
                 <Select
                     searchable
@@ -93,11 +99,13 @@ export const HuespedForm = ({ form }) => {
                         { value: "ECUATORIANO", label: "ECUATORIANO" },
                         { value: "EXTRANJERO", label: "EXTRANJERO" },
                     ]}
+                    classNames={classes}
                 />
                 <TextInput
                     label="Direccion del huesped"
                     placeholder="Ingrese la direccion de domicilio del huesped"
                     {...form.getInputProps("direccion")}
+                    classNames={classes}
                 />
                 <BtnSubmit>Guardar Huesped</BtnSubmit>
             </Stack>

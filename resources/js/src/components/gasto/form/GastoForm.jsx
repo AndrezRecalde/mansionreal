@@ -9,18 +9,20 @@ export const GastoForm = ({ form }) => {
     const { tiposDano } = useTiposDanoStore();
 
     useEffect(() => {
-      if (activarGasto !== null) {
-        form.setValues({
-            ...activarGasto,
-            tipo_dano: activarGasto.tipoDano ? activarGasto.tipoDano.id.toString() : "",
-        });
-      }
-    }, [activarGasto])
-
+        if (activarGasto !== null) {
+            form.setValues({
+                descripcion: activarGasto.descripcion || "",
+                monto: activarGasto.monto || "",
+                tipo_dano_id: activarGasto.tipoDano
+                    ? activarGasto.tipoDano.id.toString()
+                    : "",
+            });
+        }
+    }, [activarGasto]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(form.getTransformedValues());
+        //console.log(form.getTransformedValues());
         fnAgregarGasto(form.getTransformedValues());
         form.reset();
         fnAbrirModalGasto(false);

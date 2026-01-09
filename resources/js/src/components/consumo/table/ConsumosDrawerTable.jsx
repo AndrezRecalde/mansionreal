@@ -66,13 +66,13 @@ export const ConsumosDrawerTable = ({ estado }) => {
     }, [fnAbrirModalConsumo]);
 
     const handleEditarConsumo = useCallback((selected) => {
-        console.log("Editar consumo:", selected);
+        //console.log("Editar consumo:", selected);
         fnAsignarConsumo(selected);
         fnAbrirModalEditarConsumo(true);
     }, []);
 
     const handleEliminarConsumo = useCallback((selected) => {
-        console.log("Eliminar consumo:", selected);
+        //console.log("Eliminar consumo:", selected);
         fnAsignarConsumo(selected);
         fnAbrirModalEliminarConsumo(true);
     }, []);

@@ -24,7 +24,7 @@ class UserPassword extends FormRequest
     public function rules(): array
     {
         return [
-            'password'  =>  'required|min:6|confirmed'
+            'password'  =>  'required|min:4|confirmed'
         ];
     }
 
@@ -33,7 +33,7 @@ class UserPassword extends FormRequest
         return [
             'password.required'  => 'La contraseña es requerida',
             'password.confirmed' => 'Las contraseñas no coinciden',
-            'password.min'       => 'La contraseña debe tener por lo menos 6 dígitos',
+            'password.min'       => 'La contraseña debe tener por lo menos 4 dígitos',
         ];
     }
 

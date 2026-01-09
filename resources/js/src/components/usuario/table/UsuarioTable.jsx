@@ -6,12 +6,13 @@ import {
     BtnActivarElemento,
     ContenidoTable,
     MenuTable_EA,
+    MenuUsersTable,
 } from "../../../components";
 import { Badge } from "@mantine/core";
 
 export const UsuarioTable = () => {
     const { cargando, usuarios, fnAsignarUsuario } = useUsuarioStore();
-    const { fnModalUsuario, fnModalAbrirActivarUsuario } = useUiUsuario();
+    const { fnModalUsuario, fnModalAbrirActivarUsuario, fnModalResetearPwd } = useUiUsuario();
 
     const columns = useMemo(
         () => [
@@ -56,16 +57,25 @@ export const UsuarioTable = () => {
 
     const handleEditar = useCallback(
         (selected) => {
-            console.log("clic editar");
+            //console.log("clic editar");
             fnAsignarUsuario(selected);
             fnModalUsuario(true);
         },
         [usuarios]
     );
 
+    const handleResetearClave = useCallback(
+        (selected) => {
+            //console.log("clic editar");
+            fnAsignarUsuario(selected);
+            fnModalResetearPwd(true);
+        },
+        [usuarios]
+    );
+
     const handleActivar = useCallback(
         (selected) => {
-            console.log("clic activar");
+            //console.log("clic activar");
             fnAsignarUsuario(selected);
             fnModalAbrirActivarUsuario(true);
         },
@@ -80,10 +90,10 @@ export const UsuarioTable = () => {
         enableRowActions: true,
         localization: MRT_Localization_ES,
         renderRowActionMenuItems: ({ row }) => (
-            <MenuTable_EA
+            <MenuUsersTable
                 row={row}
-                titulo="Editar"
-                handleAction={handleEditar}
+                handleEditar={handleEditar}
+                handleResetearClave={handleResetearClave}
             />
         ),
         mantineTableProps: {

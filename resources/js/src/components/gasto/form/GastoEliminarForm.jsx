@@ -1,29 +1,29 @@
 import { useEffect } from "react";
 import { Avatar, Box, Group, Stack, TextInput } from "@mantine/core";
-import { BtnSubmit, TextSection } from "../../../components";
-import { useConsumoStore, useUiConsumo } from "../../../hooks";
+import { BtnSubmit, TextSection } from "../..";
+import { useGastoStore, useUiGasto } from "../../../hooks";
 import { IconTrash } from "@tabler/icons-react";
 
-export const ConsumoEliminarForm = ({ form }) => {
-    const { activarConsumo, fnAsignarConsumo, fnEliminarConsumo } =
-        useConsumoStore();
-    const { fnAbrirModalEliminarConsumo } = useUiConsumo();
+export const GastoEliminarForm = ({ form }) => {
+    const { cargando, activarGasto, fnAsignarGasto, fnEliminarGasto } =
+        useGastoStore();
+    const { fnAbrirEliminarModalGasto } = useUiGasto();
 
     useEffect(() => {
-        if (activarConsumo !== null) {
+        if (activarGasto !== null) {
             form.setValues({
-                id: activarConsumo.id,
-                reserva_id: activarConsumo.reserva_id,
+                id: activarGasto.id,
+                reserva_id: activarGasto.reserva_id,
             });
         }
-    }, [activarConsumo]);
+    }, [activarGasto]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
         //console.log(form.getValues());
-        fnEliminarConsumo(form.getValues());
-        fnAsignarConsumo(null);
-        fnAbrirModalEliminarConsumo(false);
+        fnEliminarGasto(form.getValues());
+        fnAsignarGasto(null);
+        fnAbrirEliminarModalGasto(false);
     };
 
     return (
@@ -42,14 +42,17 @@ export const ConsumoEliminarForm = ({ form }) => {
                         <IconTrash size={45} />
                     </Avatar>
                 </Group>
-                <TextSection tt="" fw={500}>Usted va a eliminar el consumo: {activarConsumo?.nombre_producto}</TextSection>
+                <TextSection tt="" fw={500}>
+                    Usted va a eliminar el Registro:{" "}
+                    {activarGasto?.descripcion}
+                </TextSection>
                 <TextInput
                     label="Codigo Administrativo"
                     description="Para eliminar el consumo debe ingresar el codigo administrativo"
                     placeholder="Ingrese el codigo de la administracion"
                     {...form.getInputProps("dni")}
                 />
-                <BtnSubmit>Eliminar</BtnSubmit>
+                <BtnSubmit loading={cargando}>Eliminar</BtnSubmit>
             </Stack>
         </Box>
     );

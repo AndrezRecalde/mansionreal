@@ -34,7 +34,7 @@ export const useDepartamentoStore = () => {
             const { departamentos } = data;
             dispatch(rtkCargarDepartamentos(departamentos));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             dispatch(rtkCargando(false));
             ExceptionMessageError(error);
         }
@@ -51,7 +51,7 @@ export const useDepartamentoStore = () => {
             const { departamentos } = data;
             dispatch(rtkCargarDepartamentosDisponibles(departamentos));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };
@@ -77,7 +77,7 @@ export const useDepartamentoStore = () => {
                 dispatch(rtkCargarMensaje(undefined));
             }, 2000);
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };
@@ -89,7 +89,7 @@ export const useDepartamentoStore = () => {
             );
             dispatch(rtkActivarDepartamento(data));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };
@@ -106,7 +106,7 @@ export const useDepartamentoStore = () => {
             const { departamentos } = data;
             dispatch(rtkCargarDepartamentos(departamentos));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };
@@ -124,7 +124,7 @@ export const useDepartamentoStore = () => {
                 dispatch(rtkCargarMensaje(undefined));
             }, 2000);
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };
@@ -142,7 +142,7 @@ export const useDepartamentoStore = () => {
                 dispatch(rtkCargarMensaje(undefined));
             }, 2000);
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };
@@ -157,7 +157,7 @@ export const useDepartamentoStore = () => {
             const { departamentos } = data;
             dispatch(rtkCargarDepartamentos(departamentos));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             rtkCargando(false);
             ExceptionMessageError(error);
         }
@@ -181,7 +181,7 @@ export const useDepartamentoStore = () => {
             const { result } = data;
             dispatch(rtkCargarDepartamentos(result));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         } finally {
             dispatch(rtkCargando(false));
@@ -208,7 +208,7 @@ export const useDepartamentoStore = () => {
             link.click();
             link.parentNode.removeChild(link);
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         } finally {
             dispatch(rtkCargandoExportacion(false));
@@ -245,7 +245,8 @@ export const useDepartamentoStore = () => {
             link.click();
             link.parentNode.removeChild(link);
         } catch (error) {
-            console.log(error);
+            //console.log(error);
+            ExceptionMessageError(error);
         } finally {
             dispatch(rtkCargandoExportacion(false));
         }
@@ -283,7 +284,7 @@ export const useDepartamentoStore = () => {
             link.parentNode.removeChild(link);
             window.URL.revokeObjectURL(url); // Limpia el objeto URL
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         } finally {
             dispatch(rtkCargandoExportacion(false));

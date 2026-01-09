@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Box, Stack, TextInput } from "@mantine/core";
 import { BtnSubmit } from "../../../components";
 import { useServicioStore, useUiServicio } from "../../../hooks";
+import classes from "../../../components/elements/modules/LabelsInput.module.css"
 
 export const ServicioForm = ({ form }) => {
     const { activarServicio, fnAgregarServicio, fnAsignarServicio } =
@@ -42,12 +43,14 @@ export const ServicioForm = ({ form }) => {
                     label="Nombre de servicio"
                     placeholder="Ingrese el nombre del servicio"
                     {...form.getInputProps("nombre_servicio")}
+                    classNames={classes}
                 />
                 <TextInput
                     withAsterisk
                     label="Tipo de servicio"
                     placeholder="Ingrese el tipo de servicio"
                     {...form.getInputProps("tipo_servicio")}
+                    classNames={classes}
                 />
                 <BtnSubmit>Guardar Servicio</BtnSubmit>
             </Stack>

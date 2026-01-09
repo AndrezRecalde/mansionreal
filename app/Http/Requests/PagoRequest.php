@@ -25,7 +25,7 @@ class PagoRequest extends FormRequest
     {
         return [
             'pagos' => 'required|array|min:1',
-            'pagos.*.codigo_voucher'   => 'required|string|max:50',
+            'pagos.*.codigo_voucher'   => 'nullable|string|max:100',
             'pagos.*.concepto_pago_id' => 'required|exists:conceptos_pagos,id',
             'pagos.*.monto'            => 'required|numeric|min:0',
             'pagos.*.metodo_pago'      => 'required|in:EFECTIVO,TRANSFERENCIA,TARJETA,OTRO',
@@ -37,7 +37,6 @@ class PagoRequest extends FormRequest
     {
         return [
             'pagos.required' => 'Debe enviar al menos un pago.',
-            'pagos.*.codigo_voucher.required' => 'El código de voucher es obligatorio.',
             'pagos.*.concepto_pago_id.exists' => 'El concepto de pago no existe.',
             'pagos.*.monto.numeric' => 'El monto debe ser un valor numérico válido.',
             'pagos.*.metodo_pago.in' => 'El método de pago no es válido.',

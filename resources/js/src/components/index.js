@@ -11,7 +11,7 @@ import { TitlePage } from "./elements/titles/TitlePage";
 /* Elements: AlertSection */
 import { AlertSection } from "./elements/alert/AlertSection";
 /* Elements: Menu de tables */
-import { MenuTable_EA, MenuTable_DEPT, MenuTable_RESERVA, MenuTable_EE } from "./elements/table/MenuTable";
+import { MenuTable_EA, MenuUsersTable, MenuTable_DEPT, MenuTable_RESERVA, MenuTable_EE } from "./elements/table/MenuTable";
 /* Elements: Contenido de tabla */
 import { ContenidoTable } from "./elements/table/ContenidoTable";
 /* Elements: Boton de Activacion */
@@ -40,6 +40,8 @@ import { UsuarioModal } from "./usuario/modal/UsuarioModal";
 import { UsuarioForm } from "./usuario/form/UsuarioForm";
 import { UsuarioTable } from "./usuario/table/UsuarioTable";
 import { ReportesPagosTable } from "./usuario/table/ReportesPagosTable";
+import { ResetearPwdModal } from "./usuario/modal/ResetearPwdModal";
+import { ResetearPwdForm } from "./usuario/form/ResetearPwdForm";
 
 /* Categorias */
 import { CategoriaModal } from "./categoria/modal/CategoriaModal";
@@ -115,6 +117,8 @@ import { ConsumoCard } from "./consumo/section/ConsumoCard";
 import { GastoDrawerTable } from "./gasto/table/GastoDrawerTable";
 import { GastoModal } from "./gasto/modal/GastoModal";
 import { GastoForm } from "./gasto/form/GastoForm";
+import { GastoEliminarModal } from "./gasto/modal/GastoEliminarModal";
+import { GastoEliminarForm } from "./gasto/form/GastoEliminarForm";
 
 /* Departamentos */
 import { DepartamentoTable } from "./departamento/table/DepartamentoTable";
@@ -138,6 +142,8 @@ import { PagoEditarForm } from "./pago/form/PagoEditarForm";
 import { PagosTable } from "./pago/table/PagosTable";
 import { PagosTotalesReserva } from "./pago/table/PagosTotalesReserva";
 import { PagosHistorialTable } from "./pago/table/PagosHistorialTable";
+import { PagoEliminarModal } from "./pago/modal/PagoEliminarModal";
+import { PagoEliminarForm } from "./pago/form/PagoEliminarForm";
 
 /* Limpieza */
 import { LimpiezaModal } from "./limpieza/modal/LimpiezaModal";
@@ -170,6 +176,7 @@ export {
     TitlePage,
     AlertSection,
     MenuTable_EA,
+    MenuUsersTable,
     MenuTable_DEPT,
     MenuTable_RESERVA,
     MenuTable_EE,
@@ -193,6 +200,8 @@ export {
     UsuarioForm,
     UsuarioTable,
     ReportesPagosTable,
+    ResetearPwdModal,
+    ResetearPwdForm,
 
     /* Categorias */
     CategoriaModal,
@@ -268,6 +277,8 @@ export {
     GastoDrawerTable,
     GastoModal,
     GastoForm,
+    GastoEliminarModal,
+    GastoEliminarForm,
 
     /* Departamentos */
     DepartamentoTable,
@@ -291,6 +302,8 @@ export {
     PagosTable,
     PagosTotalesReserva,
     PagosHistorialTable,
+    PagoEliminarModal,
+    PagoEliminarForm,
 
     /* Limpieza */
     LimpiezaModal,

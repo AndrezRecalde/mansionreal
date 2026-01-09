@@ -43,11 +43,11 @@ export const LimpiezaForm = ({ form }) => {
         );
 
         if (activarLimpieza === null) {
-            console.log(form.getTransformedValues());
+            //console.log(form.getTransformedValues());
             await fnAgregarLimpieza(form.getTransformedValues());
 
             if (estadoUpper && !noPermitir.includes(estadoUpper)) {
-                console.log("entro");
+                //console.log("entro");
                 await fnCambiarEstadoDepartamento({
                     id: activarDepartamento.id,
                     nombre_estado: "LIMPIEZA",

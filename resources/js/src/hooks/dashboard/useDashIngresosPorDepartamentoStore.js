@@ -34,7 +34,7 @@ export const useDashIngresosPorDepartamentoStore = () => {
             const { result } = data;
             dispatch(rtkIngresosPorDepartamentoCargados(result));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };

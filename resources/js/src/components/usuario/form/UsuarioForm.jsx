@@ -1,7 +1,8 @@
+import { useEffect } from "react";
 import { Box, Select, SimpleGrid, Stack, TextInput } from "@mantine/core";
 import { BtnSubmit } from "../../../components";
 import { useRoleStore, useUiUsuario, useUsuarioStore } from "../../../hooks";
-import { useEffect } from "react";
+import classes from "../../../components/elements/modules/LabelsInput.module.css";
 
 export const UsuarioForm = ({ form }) => {
     const { roles } = useRoleStore();
@@ -42,6 +43,7 @@ export const UsuarioForm = ({ form }) => {
                     label="No. Cedula"
                     placeholder="Ingrese el numero de cedula"
                     {...form.getInputProps("dni")}
+                    classNames={classes}
                 />
                 <SimpleGrid
                     cols={2}
@@ -52,12 +54,14 @@ export const UsuarioForm = ({ form }) => {
                         label="Apellidos"
                         placeholder="Ingrese los apellidos"
                         {...form.getInputProps("apellidos")}
+                        classNames={classes}
                     />
                     <TextInput
                         withAsterisk
                         label="Nombres"
                         placeholder="Ingrese los nombres"
                         {...form.getInputProps("nombres")}
+                        classNames={classes}
                     />
                 </SimpleGrid>
                 <TextInput
@@ -65,6 +69,7 @@ export const UsuarioForm = ({ form }) => {
                     label="Correo Electronico"
                     placeholder="Ingrese el correo electronico"
                     {...form.getInputProps("email")}
+                    classNames={classes}
                 />
                 <Select
                     withAsterisk
@@ -78,6 +83,7 @@ export const UsuarioForm = ({ form }) => {
                         label: role.name,
                     }))}
                     {...form.getInputProps("role")}
+                    classNames={classes}
                 />
                 <BtnSubmit>Guardar Usuario</BtnSubmit>
             </Stack>

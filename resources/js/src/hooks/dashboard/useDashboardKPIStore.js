@@ -35,7 +35,7 @@ export const useDashboardKPIStore = () => {
             const { result } = data;
             dispatch(rtkCargarResumenKPI(result));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };

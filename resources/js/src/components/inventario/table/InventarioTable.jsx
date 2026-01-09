@@ -95,7 +95,7 @@ export const InventarioTable = () => {
 
     const handleEditar = useCallback(
         (selected) => {
-            console.log("clic editar");
+            //console.log("clic editar");
             fnAsignarProductoInventario(selected);
             fnModalInventario(true);
         },
@@ -104,7 +104,7 @@ export const InventarioTable = () => {
 
     const handleAgregarStock = useCallback(
         (selected) => {
-            console.log("clic agregar stock");
+            //console.log("clic agregar stock");
             fnAsignarProductoInventario(selected);
             fnAbrirModalAgregarStock(true);
         },
@@ -113,7 +113,7 @@ export const InventarioTable = () => {
 
     const handleActivar = useCallback(
         (selected) => {
-            console.log("clic activar");
+            //console.log("clic activar");
             fnAsignarProductoInventario(selected);
             fnModalAbrirActivarInventario(true);
         },

@@ -75,7 +75,6 @@ Route::group(['prefix' => 'gerencia', 'middleware' => ['auth:sanctum', CheckRole
     Route::get('/usuarios', [UsuarioController::class, 'getUsuarios']);
     Route::post('/usuario', [UsuarioController::class, 'store']);
     Route::put('/usuario/{id}', [UsuarioController::class, 'update']);
-    Route::put('/usuario/{id}/password', [UsuarioController::class, 'updatePassword']);
     Route::put('/usuario/{id}/status', [UsuarioController::class, 'updateStatus']);
 
     /* Obtener Usuarios con GERENTE */
@@ -144,6 +143,10 @@ Route::group(['prefix' => 'gerencia', 'middleware' => ['auth:sanctum', CheckRole
 
 
 Route::group(['prefix' => 'general', 'middleware' => ['auth:sanctum', CheckRole::class . ':ADMINISTRADOR|GERENTE|RECEPCION|ASISTENTE']], function () {
+
+    /* Contraseña */
+    Route::put('/usuario/{id}/password', [UsuarioController::class, 'updatePassword']);
+
     /* Calendario de reservas */
     Route::get('/calendario/reservas', [CalendarioReservasController::class, 'getReservasCalendario']);
     Route::get('/calendario/recursos-departamentos', [CalendarioReservasController::class, 'getDepartamentosRecursos']);

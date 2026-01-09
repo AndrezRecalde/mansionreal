@@ -21,7 +21,7 @@ export const useRoleStore = () => {
             const { roles } = data;
             dispatch(rtkCargandoRoles(roles));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             dispatch(rtkCargando(false));
             ExceptionMessageError(error);
         }

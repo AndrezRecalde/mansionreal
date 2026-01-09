@@ -63,7 +63,7 @@ class PagoController extends Controller
 
         foreach ($request->pagos as $pagoData) {
             $pagosCreados[] = $reserva->pagos()->create([
-                'codigo_voucher'   => $pagoData['codigo_voucher'],
+                'codigo_voucher'   => $pagoData['codigo_voucher'] ?? null,
                 'concepto_pago_id' => $pagoData['concepto_pago_id'],
                 'monto'            => $pagoData['monto'],
                 'metodo_pago'      => $pagoData['metodo_pago'],
@@ -85,11 +85,11 @@ class PagoController extends Controller
             $pago = Pago::findOrFail($id);
 
             $pago->update([
-                'codigo_voucher'   => $request->codigo_voucher,
+                'codigo_voucher'   => $request->codigo_voucher ?? null,
                 'concepto_pago_id' => $request->concepto_pago_id,
                 'monto'            => $request->monto,
                 'metodo_pago'      => $request->metodo_pago,
-                'observaciones'    => $request->observaciones,
+                'observaciones'    => $request->observaciones ?? null,
                 'usuario_modificador_id' => Auth::id(),
             ]);
 

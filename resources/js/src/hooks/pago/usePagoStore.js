@@ -29,7 +29,7 @@ export const usePagoStore = () => {
             const { pagos } = data;
             dispatch(rtkCargarPagos(pagos));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         } finally {
             dispatch(rtkCargando(false));
@@ -45,7 +45,7 @@ export const usePagoStore = () => {
             const { pagos } = data;
             dispatch(rtkCargarPagos(pagos));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         } finally {
             dispatch(rtkCargando(false));
@@ -78,7 +78,7 @@ export const usePagoStore = () => {
                 dispatch(rtkCargarMensaje(undefined));
             }, 2000);
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };
@@ -86,13 +86,18 @@ export const usePagoStore = () => {
     const fnEliminarPago = async (pago) => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.delete(`/general/pago/${pago.id}`);
+            const { data } = await apiAxios.delete(`/general/pago/${pago.id}`, {
+                data: {
+                    dni: pago.dni,
+                },
+            });
             dispatch(rtkCargarMensaje(data));
             setTimeout(() => {
                 dispatch(rtkCargarMensaje(undefined));
             }, 2000);
+            await fnCargarPagos({ reserva_id: pago.reserva_id });
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         } finally {
             dispatch(rtkCargando(false));
@@ -108,7 +113,7 @@ export const usePagoStore = () => {
             const { result } = data;
             dispatch(rtkCargarTotalesPagos(result));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         } finally {
             dispatch(rtkCargando(false));

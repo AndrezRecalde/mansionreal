@@ -35,7 +35,7 @@ export const useDashRankingProductosStore = () => {
             const { result } = data;
             dispatch(rtkRankingProductosCargados(result));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };

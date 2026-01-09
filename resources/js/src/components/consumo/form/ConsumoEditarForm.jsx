@@ -23,7 +23,7 @@ export const ConsumoEditarForm = ({ form }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(form.getValues());
+        //console.log(form.getValues());
         fnAgregarConsumo(form.getValues());
         form.reset();
         fnAbrirModalEditarConsumo(false);

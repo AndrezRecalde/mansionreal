@@ -17,7 +17,7 @@ export const useConceptoPagoStore = () => {
 
     const { ExceptionMessageError } = useErrorException(rtkCargarErrores);
 
-    const fnCargarConceptosPagos = async ({ activo = true }) => {
+    const fnCargarConceptosPagos = async ({ activo = 1 }) => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.post("/general/conceptos-pagos", {
@@ -26,7 +26,7 @@ export const useConceptoPagoStore = () => {
             const { conceptos_pagos } = data;
             dispatch(rtkCargarConceptosPagos(conceptos_pagos));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };

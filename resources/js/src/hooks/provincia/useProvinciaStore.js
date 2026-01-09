@@ -18,7 +18,7 @@ export const useProvinciaStore = () => {
             const { provincias } = data;
             dispatch(rtkCargandoProvincias(provincias));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };

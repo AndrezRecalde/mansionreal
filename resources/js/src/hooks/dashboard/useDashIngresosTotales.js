@@ -34,7 +34,7 @@ export const useDashIngresosTotales = () => {
             const { result } = data;
             dispatch(rtkIngresosTotalesCargados(result));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };

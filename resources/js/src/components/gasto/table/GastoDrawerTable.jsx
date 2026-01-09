@@ -7,7 +7,7 @@ import { IconListDetails } from "@tabler/icons-react";
 import { Estados } from "../../../helpers/getPrefix";
 
 export const GastoDrawerTable = ({ estado }) => {
-    const { cargando, gastos } = useGastoStore();
+    const { cargando, gastos, fnAsignarGasto } = useGastoStore();
     const { fnAbrirModalGasto, fnAbrirEliminarModalGasto } = useUiGasto();
 
     // Calcula la suma de todos los totales (no solo los de la página actual)
@@ -62,16 +62,18 @@ export const GastoDrawerTable = ({ estado }) => {
 
     const handleAbrirGasto = useCallback(
         (selected) => {
-            console.log("clic editar");
+            //console.log("clic editar");
             fnAbrirModalGasto(true);
+            fnAsignarGasto(selected);
         },
         [gastos]
     );
 
     const handleEliminarGasto = useCallback(
         (selected) => {
-            console.log("clic eliminar");
+            //console.log("clic eliminar");
             fnAbrirEliminarModalGasto(true);
+            fnAsignarGasto(selected);
         },
         [gastos]
     );

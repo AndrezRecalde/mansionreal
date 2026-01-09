@@ -10,7 +10,7 @@ export const InventarioStockForm = ({ form }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(form.getTransformedValues());
+        //console.log(form.getTransformedValues());
         fnAsignarProductoInventario(null);
         fnAgregarStock(form.getTransformedValues());
         form.reset();

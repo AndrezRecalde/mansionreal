@@ -21,6 +21,42 @@ export const PagoModal = ({ reservaId }) => {
                 },
             ],
         },
+        validate: {
+            pagos: {
+                concepto_pago_id: (value) =>
+                    !value || value === ""
+                        ? "El concepto de pago es obligatorio"
+                        : null,
+                monto: (value) => {
+                    if (!value || value === 0) {
+                        return "El monto es obligatorio";
+                    }
+                    if (value < 0) {
+                        return "El monto debe ser mayor a 0";
+                    }
+                    return null;
+                },
+                metodo_pago: (value) =>
+                    !value || value === ""
+                        ? "El método de pago es obligatorio"
+                        : null,
+                codigo_voucher: (value, values, path) => {
+                    // Extraer el índice del array desde el path
+                    const index = parseInt(path.split(".")[1]);
+                    const metodo_pago = values.pagos[index]?.metodo_pago;
+
+                    // El código voucher es obligatorio solo si el método NO es EFECTIVO
+                    if (
+                        metodo_pago !== "EFECTIVO" &&
+                        (!value || value === "")
+                    ) {
+                        return "El código de voucher es obligatorio para este método de pago";
+                    }
+
+                    return null;
+                },
+            },
+        },
         transformValues: (values) => ({
             pagos: values.pagos.map((p) => ({
                 ...p,
@@ -34,7 +70,7 @@ export const PagoModal = ({ reservaId }) => {
     // Cargar conceptos cuando se abre el modal
     useEffect(() => {
         if (abrirModalRegistroPago) {
-            fnCargarConceptosPagos({ activo: true });
+            fnCargarConceptosPagos({ activo: 1 });
         }
         return () => {
             fnLimpiarConceptosPagos();

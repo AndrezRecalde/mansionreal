@@ -53,7 +53,7 @@ const HistorialPagosPage = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log("submit");
+        //console.log("submit");
         fnCargarHistorialPagos(form.getTransformedValues());
     };
 

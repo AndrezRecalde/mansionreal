@@ -7,7 +7,6 @@ import {
     ReservaModals,
 } from "../../components";
 import {
-    useDepartamentoStore,
     useEstadiaStore,
     useReservaDepartamentoStore,
     useTitleHook,
@@ -16,6 +15,9 @@ import {
     useTabManagement,
     useReservaActions,
     useStorageField,
+    usePagoStore,
+    useConsumoStore,
+    useGastoStore,
 } from "../../hooks";
 import classes from "./modules/Tabs.module.css";
 import {
@@ -23,6 +25,7 @@ import {
     STORAGE_FIELDS,
     TABS,
 } from "../../helpers/calendario.constants";
+import Swal from "sweetalert2";
 
 /**
  * Página principal del calendario de reservas
@@ -58,6 +61,71 @@ const CalendarioReservasPage = () => {
         useTabManagement(fnCargarEstadias);
     const { handleReservar, handleEstadia } = useReservaActions();
     const datos_reserva = useDatosReserva(activarReserva, activarEstadia);
+
+    const { mensaje: mensajePagos, errores: erroresPagos } = usePagoStore();
+    const { mensaje: mensajeConsumos, errores: erroresConsumos } =
+        useConsumoStore();
+    const { mensaje: mensajeGastos, errores: erroresGastos } = useGastoStore();
+
+    useEffect(() => {
+        if (mensajeGastos !== undefined) {
+            Swal.fire({
+                icon: mensajeGastos.status,
+                text: mensajeGastos.msg,
+                showConfirmButton: true,
+            });
+        }
+    }, [mensajeGastos]);
+
+    useEffect(() => {
+        if (erroresGastos !== undefined) {
+            Swal.fire({
+                icon: erroresGastos.status,
+                text: erroresGastos,
+                showConfirmButton: true,
+            });
+        }
+    }, [erroresGastos]);
+
+    useEffect(() => {
+        if (mensajeConsumos !== undefined) {
+            Swal.fire({
+                icon: mensajeConsumos.status,
+                text: mensajeConsumos.msg,
+                showConfirmButton: true,
+            });
+        }
+    }, [mensajeConsumos]);
+
+    useEffect(() => {
+        if (erroresConsumos !== undefined) {
+            Swal.fire({
+                icon: erroresConsumos.status,
+                text: erroresConsumos,
+                showConfirmButton: true,
+            });
+        }
+    }, [erroresConsumos]);
+
+    useEffect(() => {
+        if (mensajePagos !== undefined) {
+            Swal.fire({
+                icon: mensajePagos.status,
+                text: mensajePagos.msg,
+                showConfirmButton: true,
+            });
+        }
+    }, [mensajePagos]);
+
+    useEffect(() => {
+        if (erroresPagos !== undefined) {
+            Swal.fire({
+                icon: erroresPagos.status,
+                text: erroresPagos,
+                showConfirmButton: true,
+            });
+        }
+    }, [erroresPagos]);
 
     return (
         <Container

@@ -12,10 +12,10 @@ import {
 } from "@mantine/core";
 import { TextSection, TitlePage } from "../../components";
 import { useTitleHook } from "../../hooks";
-import classes from "./modules/Perfil.module.css";
-import bg from "../../assets/images/hotel_mansion_real.jpg";
 import { IconBookmarksFilled, IconKeyFilled } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
+import classes from "./modules/Perfil.module.css";
+import bg from "../../assets/images/hotel_mansion_real.jpg";
 
 const PerfilPage = () => {
     useTitleHook("Perfil - Mansion Real");
@@ -29,7 +29,7 @@ const PerfilPage = () => {
     };
 
     const handleNavigateGestionarReservas = () => {
-        navigate("/gerencia/disponibilidad-departamento");
+        navigate("/hotel/disponibilidad-departamento");
     };
 
     return (

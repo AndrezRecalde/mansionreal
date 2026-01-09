@@ -41,7 +41,7 @@ export const EstadiasReservadasCards = () => {
                         >
                             <ThemeIcon
                                 className={classes.icon}
-                                size={60}
+                                size={70}
                                 radius={60}
                                 variant="default"
                             >

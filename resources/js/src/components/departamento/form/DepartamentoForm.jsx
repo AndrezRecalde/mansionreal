@@ -16,6 +16,7 @@ import {
 import { BtnSubmit } from "../../elements/buttons/BtnServices";
 import { IconPhoto, IconTrash } from "@tabler/icons-react";
 import { useDepartamentoStore, useTipoDepartamentoStore } from "../../../hooks";
+import classes from "../../elements/modules/LabelsInput.module.css"
 
 export const DepartamentoForm = ({ form }) => {
     const { tiposDepartamentos } = useTipoDepartamentoStore();
@@ -138,6 +139,7 @@ export const DepartamentoForm = ({ form }) => {
                     label="Número de Departamento"
                     placeholder="Ingrese número de departamento"
                     {...form.getInputProps("numero_departamento")}
+                    classNames={classes}
                 />
                 <Select
                     withAsterisk
@@ -150,6 +152,7 @@ export const DepartamentoForm = ({ form }) => {
                     searchable
                     nothingFoundMessage="No se encontraron tipos de departamentos"
                     {...form.getInputProps("tipo_departamento_id")}
+                    classNames={classes}
                 />
                 <NumberInput
                     withAsterisk
@@ -157,6 +160,7 @@ export const DepartamentoForm = ({ form }) => {
                     placeholder="Ingrese capacidad"
                     min={1}
                     {...form.getInputProps("capacidad")}
+                    classNames={classes}
                 />
                 <Textarea
                     label="Descripción del Departamento"

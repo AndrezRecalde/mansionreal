@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
     abrirModalUsuario: false,
     abrirModalActivarUsuario: false,
+    abrirModalResetearPwd: false,
 };
 
 export const uiUsuarioSlice = createSlice({
@@ -15,8 +16,11 @@ export const uiUsuarioSlice = createSlice({
         rtkAbrirModalActivarUsuario: (state, { payload }) => {
             state.abrirModalActivarUsuario = payload;
         },
+        rtkAbrirModalResetearPwd: (state, { payload }) => {
+            state.abrirModalResetearPwd = payload;
+        },
     },
 });
 
-export const { rtkAbrirModalUsuario, rtkAbrirModalActivarUsuario } =
+export const { rtkAbrirModalUsuario, rtkAbrirModalActivarUsuario, rtkAbrirModalResetearPwd  } =
     uiUsuarioSlice.actions;

@@ -33,7 +33,7 @@ export const useEstadiaStore = () => {
             const { estadias } = data;
             dispatch(rtkCargarEstadias(estadias));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         } finally {
             dispatch(rtkCargando(false));
@@ -66,7 +66,7 @@ export const useEstadiaStore = () => {
             }, 2000);
             fnCargarEstadias();
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };
@@ -86,7 +86,7 @@ export const useEstadiaStore = () => {
             const { result } = data;
             dispatch(rtkCargarEstadias(result));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         } finally {
             dispatch(rtkCargando(false));
@@ -120,7 +120,7 @@ export const useEstadiaStore = () => {
             link.click();
             link.parentNode.removeChild(link);
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         } finally {
             dispatch(rtkCargandoPDFReporte(false));

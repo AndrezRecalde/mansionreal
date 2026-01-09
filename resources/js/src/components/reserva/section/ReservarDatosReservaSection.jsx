@@ -169,7 +169,7 @@ export const ReservarDatosReservaSection = ({
                                             (dep) => dep.id.toString() === value
                                         );
 
-                                    console.log(departamentoSeleccionado);
+                                    //console.log(departamentoSeleccionado);
 
                                     // Primero actualiza el formulario
                                     reservaForm.setFieldValue(

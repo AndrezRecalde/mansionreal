@@ -33,8 +33,9 @@ export const PagoForm = ({ form, handleCerrarModal }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(form.getTransformedValues());
+        //console.log(form.getTransformedValues());
         fnAgregarPago(form.getTransformedValues()); // aquí llamas a tu API
+        form.reset();
         handleCerrarModal();
     };
 
@@ -58,10 +59,7 @@ export const PagoForm = ({ form, handleCerrarModal }) => {
                                 label="Método de pago"
                                 placeholder="Seleccionar método"
                                 data={[
-                                    {
-                                        value: "EFECTIVO",
-                                        label: "EFECTIVO",
-                                    },
+                                    { value: "EFECTIVO", label: "EFECTIVO" },
                                     {
                                         value: "TRANSFERENCIA",
                                         label: "TRANSFERENCIA",
@@ -73,14 +71,34 @@ export const PagoForm = ({ form, handleCerrarModal }) => {
                                 {...form.getInputProps(
                                     `pagos.${index}.metodo_pago`
                                 )}
+                                onChange={(value) => {
+                                    form.setFieldValue(
+                                        `pagos.${index}.metodo_pago`,
+                                        value
+                                    );
+                                    // Limpiar el código voucher si es EFECTIVO
+                                    if (value === "EFECTIVO") {
+                                        form.setFieldValue(
+                                            `pagos.${index}.codigo_voucher`,
+                                            ""
+                                        );
+                                    }
+                                }}
                             />
                             <TextInput
                                 label="Código Voucher"
                                 placeholder="Ej: VCH-001"
-                                withAsterisk
                                 {...form.getInputProps(
                                     `pagos.${index}.codigo_voucher`
                                 )}
+                                withAsterisk={
+                                    form.values.pagos[index].metodo_pago !==
+                                    "EFECTIVO"
+                                }
+                                disabled={
+                                    form.values.pagos[index].metodo_pago ===
+                                    "EFECTIVO"
+                                }
                             />
                             <Select
                                 label="Concepto de pago"

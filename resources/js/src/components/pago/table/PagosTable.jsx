@@ -24,7 +24,7 @@ export const PagosTable = ({ estado }) => {
         () => [
             {
                 header: "Codigo Voucher",
-                accessorKey: "codigo_voucher",
+                accessorFn: (row) => row.codigo_voucher || "SIN CODIGO",
                 size: 80,
             },
             {
@@ -63,13 +63,13 @@ export const PagosTable = ({ estado }) => {
 
     const handleAgregarVoucherClick = () => {
         // Lógica para agregar voucher
-        console.log("Agregar Voucher clicked");
+        //console.log("Agregar Voucher clicked");
         fnAbrirModalRegistroPago(true);
     };
 
     const handleEditarPago = useCallback(
         (selected) => {
-            console.log("Editar voucher:", selected);
+            //console.log("Editar voucher:", selected);
             fnAbrirModalEditarRegistroPago(true);
             fnAsignarPago(selected);
         },
@@ -78,7 +78,7 @@ export const PagosTable = ({ estado }) => {
 
     const handleEliminarPago = useCallback(
         (selected) => {
-            console.log("Eliminar voucher:", selected);
+            //console.log("Eliminar voucher:", selected);
             fnAbrirModalEliminarRegistroPago(true);
             fnAsignarPago(selected);
         },

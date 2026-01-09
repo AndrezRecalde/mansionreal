@@ -58,7 +58,7 @@ export const FiltrarPorFechasCodigo = ({
         };
         fnHandleAction(form.getTransformedValues());
         fnSetStorageFields(objetoFinal);
-        console.log(form.getTransformedValues());
+        //console.log(form.getTransformedValues());
     };
 
     return (

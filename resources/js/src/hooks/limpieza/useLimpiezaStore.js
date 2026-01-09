@@ -52,7 +52,7 @@ export const useLimpiezaStore = () => {
             dispatch(rtkCargarLimpiezas(limpiezas));
             dispatch(rtkCargarPaginacion(paginacion));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         } finally {
             dispatch(rtkCargando(false));
@@ -90,7 +90,7 @@ export const useLimpiezaStore = () => {
                 dispatch(rtkCargarMensaje(undefined));
             }, 2000);
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         } finally {
             dispatch(rtkCargando(false));

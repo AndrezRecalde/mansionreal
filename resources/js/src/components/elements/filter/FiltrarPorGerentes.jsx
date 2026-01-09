@@ -56,7 +56,7 @@ export const FiltrarPorGerentes = ({
     const handleSubmit = (e) => {
         e.preventDefault();
         fnHandleAction(form.getTransformedValues());
-        console.log(form.getTransformedValues());
+        //console.log(form.getTransformedValues());
         fnSetStorageFields(form.getTransformedValues());
         //form.reset();
     };

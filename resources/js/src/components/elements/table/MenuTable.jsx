@@ -3,6 +3,7 @@ import {
     IconCategoryPlus,
     IconEdit,
     IconEyeSearch,
+    IconRestore,
     IconTrash,
 } from "@tabler/icons-react";
 
@@ -16,6 +17,35 @@ export const MenuTable_EA = ({ row, titulo, handleAction }) => {
                 onClick={() => handleAction(row.original)}
             >
                 {titulo}
+            </Menu.Item>
+        </>
+    );
+};
+
+export const MenuUsersTable = ({
+    row,
+    handleEditar,
+    handleResetearClave,
+}) => {
+    return (
+        <>
+            <Menu.Item
+                leftSection={
+                    <IconEdit
+                        style={{ width: rem(15), height: rem(15) }}
+                    />
+                }
+                onClick={() => handleEdit(row.original)}
+            >
+                Editar
+            </Menu.Item>
+            <Menu.Item
+                leftSection={
+                    <IconRestore style={{ width: rem(15), height: rem(15) }} />
+                }
+                onClick={() => handleResetearClave(row.original)}
+            >
+                Resetear contraseña
             </Menu.Item>
         </>
     );

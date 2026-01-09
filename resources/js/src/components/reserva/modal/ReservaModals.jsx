@@ -7,6 +7,8 @@ import {
     GastoModal,
     ConsumoEditarModal,
     ConsumoEliminarModal,
+    PagoEliminarModal,
+    GastoEliminarModal,
 } from "../../../components";
 
 /**
@@ -30,6 +32,8 @@ export const ReservaModals = ({ datos_reserva, fnAsignarDepartamento }) => {
             <GastoModal activarElemento={datos_reserva} />
             <ConsumoEditarModal />
             <ConsumoEliminarModal />
+            <PagoEliminarModal />
+            <GastoEliminarModal />
         </>
     );
 };

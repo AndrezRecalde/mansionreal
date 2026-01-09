@@ -75,7 +75,7 @@ export const useReservaDepartamentoStore = () => {
 
             await actualizarEstadisticas(new Date());
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };
@@ -115,7 +115,7 @@ export const useReservaDepartamentoStore = () => {
                 await fnCargarEstadias();
             }
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };
@@ -131,7 +131,7 @@ export const useReservaDepartamentoStore = () => {
                 dispatch(rtkCargarMensaje(undefined));
             }, 2000);
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };
@@ -151,7 +151,7 @@ export const useReservaDepartamentoStore = () => {
             const { reservas } = data;
             dispatch(rtkCargarReservas(reservas));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         } finally {
             dispatch(rtkCargando(false));
@@ -194,7 +194,7 @@ export const useReservaDepartamentoStore = () => {
             // Liberar memoria
             window.URL.revokeObjectURL(url);
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         } finally {
             dispatch(rtkCargandoPDFNotaVenta(false));

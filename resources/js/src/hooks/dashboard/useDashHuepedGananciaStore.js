@@ -19,7 +19,7 @@ export const useDashHuepedGananciaStore = () => {
             const { result } = data;
             dispatch(rtkHuespedesGananciasMesCargados(result));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };

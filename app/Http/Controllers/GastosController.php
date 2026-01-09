@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\HTTPStatus;
 use App\Http\Requests\GastoRequest;
 use App\Models\Gasto;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -87,15 +88,26 @@ class GastosController extends Controller
         }
     }
 
-    function delete(int $id): JsonResponse
+    function delete(Request $request, int $id): JsonResponse
     {
         try {
             $gasto = Gasto::find($id);
+
             if (!$gasto) {
                 return response()->json([
                     'status' => HTTPStatus::Error,
                     'msg'    => HTTPStatus::NotFound
                 ], 404);
+            }
+
+            $user = User::where('dni', $request->dni)->where('activo', 1)->first();
+
+            // Validar existencia y rol GERENTE
+            if (!$user || !$user->hasRole('GERENTE')) {
+                return response()->json([
+                    'status' => HTTPStatus::Error,
+                    'msg'    => 'El DNI no corresponde a un usuario con rol GERENTE o no existe.'
+                ], 403);
             }
 
             $gasto->delete();

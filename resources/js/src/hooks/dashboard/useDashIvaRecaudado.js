@@ -27,7 +27,7 @@ export const useDashIvaRecaudado = () => {
             const { result } = data;
             dispatch(rtkIvaRecaudadoCargado(result));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };

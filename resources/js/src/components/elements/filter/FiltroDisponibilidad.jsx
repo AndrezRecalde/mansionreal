@@ -27,7 +27,7 @@ export const FiltroDisponibilidad = ({
         e.preventDefault();
         const { fecha } = form.getTransformedValues();
         fnHandleAction(fecha);
-        console.log(form.getTransformedValues());
+        //console.log(form.getTransformedValues());
     };
 
     return (

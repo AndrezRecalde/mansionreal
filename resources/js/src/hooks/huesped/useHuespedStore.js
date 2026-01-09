@@ -36,7 +36,7 @@ export const useHuespedStore = () => {
             dispatch(rtkCargarHuespedes(huespedes));
             dispatch(rtkCargarPaginacion(paginacion));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             dispatch(rtkCargando(false));
             ExceptionMessageError(error);
         }
@@ -71,7 +71,7 @@ export const useHuespedStore = () => {
                 dispatch(rtkCargarMensaje(undefined));
             }, 2000);
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };
@@ -85,7 +85,7 @@ export const useHuespedStore = () => {
             const { huesped } = data;
             dispatch(rtkActivarHuesped(huesped));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             dispatch(rtkCargando(false));
             ExceptionMessageError(error);
         }

@@ -191,7 +191,7 @@ class ConsumosController extends Controller
             return response()->json([
                 'status' => 'success',
                 'data'   => $consumosProcesados,
-                'mensaje' => 'Consumos registrados correctamente'
+                'msg' => 'Consumos registrados correctamente'
             ]);
         } catch (\Throwable $th) {
             DB::rollBack();

@@ -26,11 +26,11 @@ export const useTipoDepartamentoStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.get("/gerencia/tipos-departamentos");
-            console.log(data);
+            //console.log(data);
             const { tiposDepartamentos } = data;
             dispatch(rtkCargarTiposDepartamentos(tiposDepartamentos));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };
@@ -61,7 +61,7 @@ export const useTipoDepartamentoStore = () => {
                 dispatch(rtkCargarMensaje(undefined));
             }, 2000);
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };

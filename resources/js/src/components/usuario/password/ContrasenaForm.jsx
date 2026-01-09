@@ -11,22 +11,34 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconArrowLeft } from "@tabler/icons-react";
+import { useUsuarioStore } from "../../../hooks/usuario/useUsuarioStore";
+import { useNavigate } from "react-router-dom";
+import { BtnSubmit } from "../../elements/buttons/BtnServices";
 
 export const ContrasenaForm = () => {
+    const usuario = JSON.parse(localStorage.getItem("service_user"));
+    const navigate = useNavigate();
+    const { cargando, fnCambiarPassword } = useUsuarioStore();
     const form = useForm({
         initialValues: {
-            paswrd: "",
-            paswrd_confirmed: "",
+            password: "",
+            password_confirmation: "",
         },
         validate: {
-            paswrd_confirmed: (value, values) =>
-                value !== values.paswrd ? "Las contraseñas no coinciden" : null,
+            password_confirmation : (value, values) =>
+                value !== values.password ? "Las contraseñas no coinciden" : null,
         },
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log(form.getValues());
+        fnCambiarPassword({
+            id: usuario.id,
+            password: form.getValues().password,
+            password_confirmation: form.getValues().password_confirmation,
+        });
+        form.reset();
     };
 
     return (
@@ -38,11 +50,11 @@ export const ContrasenaForm = () => {
                 <Stack>
                     <PasswordInput
                         label="Digita tu nueva contraseña"
-                        {...form.getInputProps("paswrd")}
+                        {...form.getInputProps("password")}
                     />
                     <PasswordInput
                         label="Confirma tu nueva contraseña"
-                        {...form.getInputProps("paswrd_confirmed")}
+                        {...form.getInputProps("password_confirmation")}
                     />
                 </Stack>
                 <Group justify="space-between" mt="lg">
@@ -60,7 +72,7 @@ export const ContrasenaForm = () => {
                             <Box ml={5}>Regresar a mi perfil</Box>
                         </Center>
                     </Anchor>
-                    <Button type="submit">Cambiar contraseña</Button>
+                    <BtnSubmit loading={cargando}>Cambiar contraseña</BtnSubmit>
                 </Group>
             </Paper>
         </Box>

@@ -31,8 +31,7 @@ export const PagoEditarForm = ({ form, handleCerrarModal }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(form.getTransformedValues());
-        // Aquí llamarías a tu API para actualizar el pago
+        //console.log(form.getTransformedValues());
         fnAgregarPago(form.getTransformedValues());
         handleCerrarModal();
     };

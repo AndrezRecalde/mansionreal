@@ -35,7 +35,7 @@ export const useDashGastosDaniosStore = () => {
             const { result } = data;
             dispatch(rtkGastosDaniosCargados(result));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };

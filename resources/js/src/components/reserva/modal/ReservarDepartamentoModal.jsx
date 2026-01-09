@@ -127,7 +127,7 @@ export const ReservarDepartamentoModal = () => {
 
     // Setear fecha_checkout automáticamente para ESTADIA
     useEffect(() => {
-        console.log(activarTipoReserva);
+        //console.log(activarTipoReserva);
         if (activarTipoReserva === "ESTADIA" && fecha_checkin) {
             const nuevaFechaCheckout = dayjs(fecha_checkin)
                 .set("hour", 18)

@@ -36,7 +36,7 @@ export const useConsumoStore = () => {
             const { consumos } = data;
             dispatch(rtkCargarConsumos(consumos));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };
@@ -51,7 +51,7 @@ export const useConsumoStore = () => {
             const { reporteData } = data;
             dispatch(rtkCargarReporteConsumosCategoria(reporteData));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         } finally {
             dispatch(rtkCargando(false));
@@ -115,7 +115,7 @@ export const useConsumoStore = () => {
             }, 2000);
             dispatch(rtkCargandoPDFReporte(false));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         } finally {
             dispatch(rtkCargandoPDFReporte(false));
@@ -145,7 +145,7 @@ export const useConsumoStore = () => {
                 dispatch(rtkCargarMensaje(undefined));
             }, 2000);
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };
@@ -154,15 +154,19 @@ export const useConsumoStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.delete(
-                `/general/consumo/${consumo.id}`,
-                consumo
+                `/general/consumo/${consumo.id}`, {
+                    data: {
+                        dni: consumo.dni,
+                    },
+                }
             );
             dispatch(rtkCargarMensaje(data));
             setTimeout(() => {
                 dispatch(rtkCargarMensaje(undefined));
             }, 2000);
+            await fnCargarConsumos({ reserva_id: consumo.reserva_id });
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };

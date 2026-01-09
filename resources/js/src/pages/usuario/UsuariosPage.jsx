@@ -3,16 +3,22 @@ import { Container, Divider, Group } from "@mantine/core";
 import {
     ActivarElementoModal,
     BtnSection,
+    ResetearPwdModal,
     TitlePage,
     UsuarioModal,
     UsuarioTable,
 } from "../../components";
 import { IconCubePlus } from "@tabler/icons-react";
-import { useRoleStore, useTitleHook, useUiUsuario, useUsuarioStore } from "../../hooks";
+import {
+    useRoleStore,
+    useTitleHook,
+    useUiUsuario,
+    useUsuarioStore,
+} from "../../hooks";
 import Swal from "sweetalert2";
 
 const UsuariosPage = () => {
-    useTitleHook("Usuarios - Mansion Real");
+    useTitleHook("Mansión Real - Usuarios");
     const {
         fnCargarUsuarios,
         fnLimpiarUsuarios,
@@ -79,6 +85,7 @@ const UsuariosPage = () => {
             <UsuarioTable />
 
             <UsuarioModal />
+            <ResetearPwdModal />
             <ActivarElementoModal
                 titulo="Activar Usuario"
                 fnAbrirModal={fnModalAbrirActivarUsuario}

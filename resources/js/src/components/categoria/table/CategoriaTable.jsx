@@ -37,7 +37,7 @@ export const CategoriaTable = () => {
 
     const handleEditar = useCallback(
         (selected) => {
-            console.log("clic editar");
+            //console.log("clic editar");
             fnAsignarCategoria(selected);
             fnModalAbrirCategoria(true);
         },
@@ -46,7 +46,7 @@ export const CategoriaTable = () => {
 
     const handleActivar = useCallback(
         (selected) => {
-            console.log("clic activar");
+            //console.log("clic activar");
             fnAsignarCategoria(selected);
             fnModalAbrirActivarCategoria(true);
         },

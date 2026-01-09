@@ -7,6 +7,7 @@ import {
     useUiConfiguracionIva,
 } from "../../../hooks";
 import dayjs from "dayjs";
+import classes from "../../../components/elements/modules/LabelsInput.module.css";
 
 export const ConfigIvaForm = ({ form }) => {
     const { fecha_inicio } = form.values;
@@ -57,6 +58,7 @@ export const ConfigIvaForm = ({ form }) => {
                     step={0.01}
                     precision={2}
                     {...form.getInputProps("tasa_iva")}
+                    classNames={classes}
                 />
                 <Textarea
                     withAsterisk
@@ -65,12 +67,14 @@ export const ConfigIvaForm = ({ form }) => {
                     resize="vertical"
                     minRows={3}
                     {...form.getInputProps("descripcion")}
+                    classNames={classes}
                 />
                 <DateInput
                     valueFormat="YYYY-MM-DD"
                     label="Fecha inicio"
                     placeholder="Seleccione fecha de inicio"
                     {...form.getInputProps("fecha_inicio")}
+                    classNames={classes}
                 />
                 <DateInput
                     minDate={new Date(fecha_inicio)}
@@ -78,6 +82,7 @@ export const ConfigIvaForm = ({ form }) => {
                     label="Fecha final"
                     placeholder="Seleccione fecha de fin"
                     {...form.getInputProps("fecha_fin")}
+                    classNames={classes}
                 />
                 <BtnSubmit>Guardar Configuración Iva</BtnSubmit>
             </Stack>

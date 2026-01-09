@@ -116,7 +116,7 @@ export const useInventarioStore = () => {
                 dispatch(rtkCargarMensaje(undefined));
             }, 2000);
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };
@@ -135,7 +135,7 @@ export const useInventarioStore = () => {
                 dispatch(rtkCargarMensaje(undefined));
             }, 2000);
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };
@@ -157,7 +157,7 @@ export const useInventarioStore = () => {
                 dispatch(rtkCargarMensaje(undefined));
             }, 2000);
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         } finally {
             dispatch(rtkCargando(false));
@@ -185,7 +185,7 @@ export const useInventarioStore = () => {
             dispatch(rtkCargarMovimientos({ inventario, movimientos }));
             dispatch(rtkCargarPaginacion(paginacion));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         } finally {
             dispatch(rtkCargando(false));
@@ -212,7 +212,7 @@ export const useInventarioStore = () => {
             const { movimientos } = data;
             dispatch(rtkCargarMovimientos(movimientos));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         } finally {
             dispatch(rtkCargando(false));

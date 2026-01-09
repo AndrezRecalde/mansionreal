@@ -28,7 +28,7 @@ export const useCategoriaStore = () => {
             const { categorias } = data;
             dispatch(rtkCargarCategorias(categorias));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };
@@ -59,7 +59,7 @@ export const useCategoriaStore = () => {
                 dispatch(rtkCargarMensaje(undefined));
             }, 2000);
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };
@@ -76,7 +76,7 @@ export const useCategoriaStore = () => {
                 dispatch(rtkCargarMensaje(undefined));
             }, 2000);
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };

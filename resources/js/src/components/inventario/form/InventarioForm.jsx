@@ -16,6 +16,7 @@ import {
     useUiInventario,
 } from "../../../hooks";
 import { IconCheck, IconX } from "@tabler/icons-react";
+import classes from "../../../components/elements/modules/LabelsInput.module.css"
 
 export const InventarioForm = ({ form }) => {
     const {
@@ -43,7 +44,7 @@ export const InventarioForm = ({ form }) => {
         e.preventDefault();
         let objetoFinal = { ...form.getTransformedValues(), storageFields };
         fnAgregarProductoInventario(objetoFinal);
-        console.log(objetoFinal);
+        //console.log(objetoFinal);
         fnAsignarProductoInventario(null);
         fnModalInventario(false);
         form.reset();
@@ -65,6 +66,7 @@ export const InventarioForm = ({ form }) => {
                     label="Nombre del Producto"
                     placeholder="Ingrese el nombre del producto"
                     {...form.getInputProps("nombre_producto")}
+                    classNames={classes}
                 />
                 <Textarea
                     label="Descripción del producto"
@@ -74,6 +76,7 @@ export const InventarioForm = ({ form }) => {
                     maxRows={6}
                     placeholder="Ingrese una descripción del producto (opcional)"
                     {...form.getInputProps("descripcion")}
+                    classNames={classes}
                 />
                 <NumberInput
                     withAsterisk
@@ -83,6 +86,7 @@ export const InventarioForm = ({ form }) => {
                     step={0.01}
                     precision={2}
                     {...form.getInputProps("precio_unitario")}
+                    classNames={classes}
                 />
                 <Select
                     withAsterisk
@@ -93,6 +97,7 @@ export const InventarioForm = ({ form }) => {
                         label: categoria.nombre_categoria,
                     }))}
                     {...form.getInputProps("categoria_id")}
+                    classNames={classes}
                 />
                 <Switch
                     {...form.getInputProps("sin_stock", { type: "checkbox" })}

@@ -18,7 +18,7 @@ class UsuarioController extends Controller
     public function getUsuarios(): JsonResponse
     {
         try {
-            $usuarios = User::with('roles')->allowed()->get();
+            $usuarios = User::with('roles')->get();
 
             // Transforma los usuarios para incluir solo el primer nombre de rol
             $usuarios = $usuarios->map(function ($usuario) {
@@ -27,10 +27,11 @@ class UsuarioController extends Controller
                     'apellidos' => $usuario->apellidos,
                     'nombres' => $usuario->nombres,
                     'dni' => $usuario->dni,
-                    'activo' => (bool) $usuario->activo,
+                    'activo' => $usuario->activo,
                     'email' => $usuario->email,
                     // Toma solo el primer rol (si existe), si no, null
                     'role' => optional($usuario->roles->first())->name,
+                    'roles' => $usuario->roles,
                     // Agrega más campos si lo necesitas
                 ];
             });

@@ -29,7 +29,7 @@ export const DepartamentoServiciosForm = ({ form }) => {
         fnAgregarServiciosDepartamento(form.getValues());
         fnDrawerAbrirServiciosDepartamento(false);
         fnAsignarDepartamento(null);
-        console.log(form.getValues());
+        //console.log(form.getValues());
         form.reset();
     };
 

@@ -12,9 +12,13 @@ import {
     useTitleHook,
     useDatosReservaDisponibilidad,
     useDisponibilidadTabManagement,
+    usePagoStore,
+    useConsumoStore,
+    useGastoStore,
 } from "../../hooks";
 import { PAGE_CONFIG, TABS } from "../../helpers/calendario.constants";
 import classes from "./modules/Tabs.module.css";
+import Swal from "sweetalert2";
 
 /**
  * Página de disponibilidad de departamentos
@@ -42,6 +46,71 @@ const DisponibilidadDepartamentoPage = () => {
         fnAsignarEstadia,
         fnLimpiarEstadias,
     } = useEstadiaStore();
+
+    const { mensaje: mensajePagos, errores: erroresPagos } = usePagoStore();
+    const { mensaje: mensajeConsumos, errores: erroresConsumos } =
+        useConsumoStore();
+    const { mensaje: mensajeGastos, errores: erroresGastos } = useGastoStore();
+
+    useEffect(() => {
+        if (mensajeGastos !== undefined) {
+            Swal.fire({
+                icon: mensajeGastos.status,
+                text: mensajeGastos.msg,
+                showConfirmButton: true,
+            });
+        }
+    }, [mensajeGastos]);
+
+    useEffect(() => {
+        if (erroresGastos !== undefined) {
+            Swal.fire({
+                icon: erroresGastos.status,
+                text: erroresGastos,
+                showConfirmButton: true,
+            });
+        }
+    }, [erroresGastos]);
+
+    useEffect(() => {
+        if (mensajeConsumos !== undefined) {
+            Swal.fire({
+                icon: mensajeConsumos.status,
+                text: mensajeConsumos.msg,
+                showConfirmButton: true,
+            });
+        }
+    }, [mensajeConsumos]);
+
+    useEffect(() => {
+        if (erroresConsumos !== undefined) {
+            Swal.fire({
+                icon: erroresConsumos.status,
+                text: erroresConsumos,
+                showConfirmButton: true,
+            });
+        }
+    }, [erroresConsumos]);
+
+    useEffect(() => {
+        if (mensajePagos !== undefined) {
+            Swal.fire({
+                icon: mensajePagos.status,
+                text: mensajePagos.msg,
+                showConfirmButton: true,
+            });
+        }
+    }, [mensajePagos]);
+
+    useEffect(() => {
+        if (erroresPagos !== undefined) {
+            Swal.fire({
+                icon: erroresPagos.status,
+                text: erroresPagos,
+                showConfirmButton: true,
+            });
+        }
+    }, [erroresPagos]);
 
     // Hooks personalizados - Ahora retorna también activeTab
     const { activeTab, handleTabChange } = useDisponibilidadTabManagement(

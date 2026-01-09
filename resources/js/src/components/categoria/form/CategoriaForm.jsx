@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import { Box, Stack, TextInput } from "@mantine/core";
 import { BtnSubmit } from "../../../components";
 import { useCategoriaStore, useUiCategoria } from "../../../hooks";
+import classes from "../../../components/elements/modules/LabelsInput.module.css"
+
 
 export const CategoriaForm = ({ form }) => {
     const { fnAgregarCategoria, fnAsignarCategoria, activarCategoria } = useCategoriaStore();
@@ -40,6 +42,7 @@ export const CategoriaForm = ({ form }) => {
                     label="Nombre de categoria"
                     placeholder="Ingrese el nombre de la categoria"
                     {...form.getInputProps("nombre_categoria")}
+                    classNames={classes}
                 />
                 <BtnSubmit>Guardar Categoria</BtnSubmit>
             </Stack>

@@ -34,7 +34,7 @@ export const useUsuarioStore = () => {
             const { usuarios } = data;
             dispatch(rtkCargarUsuarios(usuarios));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             dispatch(rtkCargando(false));
             ExceptionMessageError(error);
         }
@@ -63,16 +63,17 @@ export const useUsuarioStore = () => {
                 dispatch(rtkCargarMensaje(undefined));
             }, 2000);
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };
 
-    const fnCambiarPassword = async (usuario) => {
+    const fnCambiarPassword = async ({ id, password, password_confirmation }) => {
         try {
+            dispatch(rtkCargando(true));
             const { data } = await apiAxios.put(
-                `/gerencia/usuario/${usuario.id}/password`,
-                usuario
+                `/general/usuario/${id}/password`,
+                { password, password_confirmation }
             );
             fnCargarUsuarios();
             dispatch(rtkCargarMensaje(data));
@@ -82,6 +83,8 @@ export const useUsuarioStore = () => {
         } catch (error) {
             console.log(error);
             ExceptionMessageError(error);
+        } finally {
+            dispatch(rtkCargando(false));
         }
     };
 
@@ -97,7 +100,7 @@ export const useUsuarioStore = () => {
                 dispatch(rtkCargarMensaje(undefined));
             }, 2000);
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };
@@ -123,7 +126,7 @@ export const useUsuarioStore = () => {
             const { results } = data;
             dispatch(rtkCargarReportes(results));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         } finally {
             dispatch(rtkCargandoReportes(false));
@@ -137,7 +140,7 @@ export const useUsuarioStore = () => {
             const { usuarios } = data;
             dispatch(rtkCargarUsuarios(usuarios));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             dispatch(rtkCargando(false));
             ExceptionMessageError(error);
         }
@@ -174,7 +177,7 @@ export const useUsuarioStore = () => {
             link.click();
             link.parentNode.removeChild(link);
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         } finally {
             dispatch(rtkCargandoReportes(false));

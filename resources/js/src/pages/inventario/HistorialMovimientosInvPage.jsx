@@ -11,6 +11,7 @@ import { TextSection, TitlePage } from "../../components";
 import { useInventarioStore, useTitleHook } from "../../hooks";
 import { MantineReactTable } from "mantine-react-table";
 import { formatFechaHoraModal } from "../../helpers/fnHelper";
+import classes from "../../components/elements/modules/LabelsInput.module.css"
 
 const HistorialMovimientosInvPage = () => {
     useTitleHook("Historial de Movimientos - Inventario");
@@ -126,6 +127,7 @@ const HistorialMovimientosInvPage = () => {
                         setProductoId(value);
                         setPagination({ ...pagination, pageIndex: 0 }); // Reinicia paginación al cambiar producto
                     }}
+                    classNames={classes}
                 />
             </Fieldset>
             <Divider my={20} />

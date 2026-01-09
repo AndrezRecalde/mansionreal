@@ -7,7 +7,6 @@ import {
     useTiposDanoStore,
     useUiGasto,
 } from "../../../hooks";
-import { IconOutbound } from "@tabler/icons-react";
 
 export const GastoModal = ( { activarElemento } ) => {
     const { abrirModalGasto, fnAbrirModalGasto } = useUiGasto();
@@ -37,7 +36,7 @@ export const GastoModal = ( { activarElemento } ) => {
             ...values,
             reserva_id: activarElemento.reserva_id
                 ? parseInt(activarElemento.reserva_id)
-                : null, // PONERLE OJO A ESTO
+                : null,
             tipo_dano_id: values.tipo_dano_id
                 ? parseInt(values.tipo_dano_id)
                 : null,

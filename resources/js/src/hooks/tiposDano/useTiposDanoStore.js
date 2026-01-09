@@ -26,7 +26,7 @@ export const useTiposDanoStore = () => {
             const { tiposDano } = data;
             dispatch(rtkCargarTiposDano(tiposDano));
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             dispatch(rtkCargando(false));
             ExceptionMessageError(error);
         }

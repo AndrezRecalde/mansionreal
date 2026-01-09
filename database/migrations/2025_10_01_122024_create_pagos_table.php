@@ -25,7 +25,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('reserva_id')->references('id')->on('reservas')->onDelete('cascade');
-            $table->foreign('concepto_pago_id')->references('id')->on('conceptos_pagos ')->onDelete('cascade');
+            $table->foreign('concepto_pago_id')->references('id')->on('conceptos_pagos')->onDelete('cascade');
         });
     }
 

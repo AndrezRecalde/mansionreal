@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('conceptos_pagos ', function (Blueprint $table) {
+        Schema::create('conceptos_pagos', function (Blueprint $table) {
             $table->id();
             $table->string('nombre_concepto', 100);
             $table->boolean('activo')->default(true);

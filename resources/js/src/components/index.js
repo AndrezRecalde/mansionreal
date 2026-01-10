@@ -156,6 +156,8 @@ import { InformacionReservaModal } from "./calendario/modal/InformacionReservaMo
 import { CalendarioHeader } from "./calendario/section/CalendarioHeader";
 import { CalendarioGrid } from "./calendario/section/CalendarioGrid";
 import { CalendarioKPIs } from "./calendario/section/CalendarioKPIs";
+import { CalendarioMobileView } from "./calendario/section/CalendarioMobileView";
+import { EventosDrawer } from "./calendario/eventos/EventosDrawer";
 
 /* Reportes Consumos */
 import { ReporteProductosTable } from "./consumo/section/ReporteProductosTable";
@@ -316,6 +318,8 @@ export {
     CalendarioHeader,
     CalendarioGrid,
     CalendarioKPIs,
+    CalendarioMobileView,
+    EventosDrawer,
 
     /* Consumos Reportes */
     ReporteProductosTable,

@@ -1,10 +1,20 @@
-/* Card + container */
+/* ============================================
+   CARD Y CONTAINER
+   ============================================ */
+
 .calendarCard {
-    background: var(--mantine-color-body);
+    background: light-dark(
+        var(--mantine-color-white),
+        var(--mantine-color-dark-7)
+    );
     border: 1px solid
-        light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-4));
-    border-radius: 12px;
+        light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+    border-radius: var(--mantine-radius-md);
     overflow: hidden;
+    box-shadow: light-dark(
+        var(--mantine-shadow-xs),
+        var(--mantine-shadow-dark-xs)
+    );
 }
 
 .calendarContainer {
@@ -12,7 +22,10 @@
     padding: 16px;
 }
 
-/* Toolbar */
+/* ============================================
+   TOOLBAR
+   ============================================ */
+
 :global(.rbc-toolbar) {
     background: light-dark(
         var(--mantine-color-gray-0),
@@ -20,9 +33,9 @@
     );
     padding: 12px 16px;
     margin-bottom: 12px;
-    border-radius: 8px;
+    border-radius: var(--mantine-radius-md);
     border: 1px solid
-        light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-4));
+        light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
     gap: 8px;
     flex-wrap: wrap;
 }
@@ -30,11 +43,14 @@
 :global(.rbc-toolbar-label) {
     font-size: 1rem;
     font-weight: 600;
-    color: light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0));
+    color: light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-1));
     text-transform: capitalize;
 }
 
-/* Buttons group */
+/* ============================================
+   BOTONES
+   ============================================ */
+
 :global(.rbc-btn-group) {
     display: flex;
     gap: 2px;
@@ -43,19 +59,19 @@
         var(--mantine-color-dark-5)
     );
     padding: 4px;
-    border-radius: 8px;
+    border-radius: var(--mantine-radius-sm);
 }
 
 :global(.rbc-btn-group button) {
     background: transparent;
     border: none;
-    color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-1));
-    padding: 6px 10px;
-    font-size: 0.85rem;
+    color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-2));
+    padding: 6px 12px;
+    font-size: 0.875rem;
     font-weight: 500;
-    border-radius: 6px;
+    border-radius: var(--mantine-radius-sm);
     cursor: pointer;
-    transition: background 0.12s ease, color 0.12s ease;
+    transition: all 0.15s ease;
 }
 
 :global(.rbc-btn-group button:hover) {
@@ -68,234 +84,75 @@
 
 :global(.rbc-btn-group button.rbc-active) {
     background: light-dark(
-        var(--mantine-color-body),
-        var(--mantine-color-dark-4)
+        var(--mantine-color-white),
+        var(--mantine-color-dark-6)
     );
     color: light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-0));
+    box-shadow: var(--mantine-shadow-xs);
 }
 
-/* Base calendar shells */
-:global(.rbc-calendar),
+/* ============================================
+   CALENDARIO BASE
+   ============================================ */
+
+:global(.rbc-calendar) {
+    background: light-dark(
+        var(--mantine-color-white),
+        var(--mantine-color-dark-7)
+    );
+}
+
 :global(.rbc-month-view),
 :global(.rbc-time-view),
 :global(.rbc-agenda-view) {
-    background: var(--mantine-color-body);
+    background: light-dark(
+        var(--mantine-color-white),
+        var(--mantine-color-dark-7)
+    );
     border: 1px solid
-        light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-4));
-    border-radius: 8px;
+        light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+    border-radius: var(--mantine-radius-md);
     overflow: hidden;
 }
 
-/* Month headers (also used by time headers) */
+/* ============================================
+   HEADERS
+   ============================================ */
+
 :global(.rbc-header) {
     background: light-dark(
         var(--mantine-color-gray-0),
         var(--mantine-color-dark-6)
     );
-    padding: 10px 6px;
+    padding: 12px 8px;
     font-weight: 600;
-    font-size: 0.82rem;
-    color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-gray-1));
+    font-size: 0.875rem;
+    color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-1));
     text-transform: uppercase;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.03em;
     border-bottom: 1px solid
-        light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-4)) !important;
+        light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
 }
 
 :global(.rbc-header + .rbc-header) {
     border-left: 1px solid
-        light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-4)) !important;
+        light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5));
 }
 
-/* ========== WEEK VIEW READABILITY (UPDATED) ========== */
-
-/* Week header row: make day names prominent and consistent height */
-:global(.rbc-time-view .rbc-time-header) {
-    border-bottom: 1px solid
-        light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-4));
-}
-
-/* Fondo del header de días */
-:global(.rbc-time-view .rbc-time-header .rbc-time-header-content) {
-    background: light-dark(
-        var(--mantine-color-gray-0),
-        var(--mantine-color-dark-6)
-    );
-}
-
-/* Cada celda de cabecera (día) - height fix to ensure visibility */
-:global(.rbc-time-view .rbc-header) {
-    min-height: 20px; /* explicit small min-height to avoid clipping */
-    padding: 6px 4px; /* compact padding to fit within toolbar height */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-transform: none;
-    border-right: 1px solid
-        light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-4));
-}
-
-/* Última cabecera sin borde derecho extra */
-:global(.rbc-time-view .rbc-time-header .rbc-header:last-child) {
-    border-right: none;
-}
-
-/* Enlace que contiene el nombre del día (ej. Lunes) */
-:global(.rbc-time-view .rbc-header a) {
-    color: light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-0));
-    text-decoration: none;
-    font-size: 0.95rem; /* slightly reduced to fit min-height */
-    font-weight: 800;
-    letter-spacing: -0.01em;
-    line-height: 1.1;
-}
-
-/* Texto secundario que suele mostrar la fecha (ej. 10 dic) */
-:global(.rbc-time-view .rbc-header small) {
-    margin-top: 2px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-1));
-}
-
-/* Resaltado del día actual en el header */
-:global(.rbc-time-view .rbc-header.rbc-today) {
-    background: light-dark(
-        var(--mantine-color-blue-0),
-        var(--mantine-color-dark-5)
-    );
-    outline: 1px solid
-        light-dark(var(--mantine-color-blue-2), var(--mantine-color-blue-7));
-}
-
-/* Ajuste de color del texto cuando es hoy */
-:global(.rbc-time-view .rbc-header.rbc-today a) {
-    color: light-dark(var(--mantine-color-blue-9), var(--mantine-color-blue-1));
-}
-
-:global(.rbc-time-view .rbc-header.rbc-today small) {
-    color: light-dark(var(--mantine-color-blue-8), var(--mantine-color-blue-2));
-}
-
-/* All-day row and row background fixes */
-:global(.rbc-allday-cell) {
-    background: light-dark(
-        var(--mantine-color-gray-0),
-        var(--mantine-color-dark-6)
-    );
-    min-height: 40px;
-    border-bottom: 1px solid
-        light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-4));
-}
-
-:global(.rbc-row-bg) {
-    background: var(--mantine-color-body);
-}
-
-/* Time grid columns */
-:global(.rbc-time-content) {
-    border-top: 1px solid
-        light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-4));
-}
-
-:global(.rbc-time-content > * + * > *) {
-    border-left: 1px solid
-        light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-4));
-}
-
-/* Time gutter */
-:global(.rbc-time-gutter) {
-    background: light-dark(
-        var(--mantine-color-gray-0),
-        var(--mantine-color-dark-6)
-    );
-}
-
-:global(.rbc-time-gutter .rbc-timeslot-group) {
-    border-bottom: 1px solid
-        light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-5));
-}
-
-/* Hour labels */
-:global(.rbc-label) {
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0));
-    padding: 0 10px;
-}
-
-/* Timeslots */
-:global(.rbc-timeslot-group) {
-    border-bottom: 1px solid
-        light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-5));
-    min-height: 44px;
-}
-
-:global(.rbc-day-slot .rbc-time-slot) {
-    border-top: 1px dashed
-        light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-5));
-}
-
-:global(.rbc-day-slot .rbc-time-slot:hover) {
-    background: light-dark(
-        var(--mantine-color-gray-0),
-        var(--mantine-color-dark-6)
-    );
-}
-
-/* Current time indicator */
-:global(.rbc-current-time-indicator) {
-    background-color: var(--mantine-color-red-5);
-    height: 2px;
-}
-
-:global(.rbc-current-time-indicator::before) {
-    content: "";
-    position: absolute;
-    left: -5px;
-    top: -4px;
-    width: 10px;
-    height: 10px;
-    background: var(--mantine-color-red-5);
-    border-radius: 50%;
-}
-
-/* Week/day events */
-:global(.rbc-time-view .rbc-event) {
-    border-radius: 6px !important;
-    padding: 6px 8px !important;
-    font-size: 0.78rem;
-    line-height: 1.25;
-}
-
-:global(.rbc-time-view .rbc-event-label) {
-    display: block;
-    font-size: 0.7rem;
-    font-weight: 600;
-    margin-bottom: 2px;
-    opacity: 0.9;
-}
-
-:global(.rbc-time-view .rbc-event-content) {
-    font-size: 0.78rem;
-    line-height: 1.2;
-}
-
-/* Month view cells */
-:global(.rbc-month-row),
-:global(.rbc-day-bg + .rbc-day-bg) {
-    border-left: 1px solid
-        light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-4));
-}
-
-:global(.rbc-month-row) {
-    border-top: 1px solid
-        light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-4));
-}
+/* ============================================
+   CELDAS Y DÍAS
+   ============================================ */
 
 :global(.rbc-day-bg) {
-    transition: background 0.12s ease;
+    background: light-dark(
+        var(--mantine-color-white),
+        var(--mantine-color-dark-7)
+    );
+    border-color: light-dark(
+        var(--mantine-color-gray-2),
+        var(--mantine-color-dark-5)
+    );
+    transition: background 0.15s ease;
 }
 
 :global(.rbc-day-bg:hover) {
@@ -305,220 +162,314 @@
     );
 }
 
+:global(.rbc-off-range-bg) {
+    background: light-dark(
+        var(--mantine-color-gray-0),
+        var(--mantine-color-dark-8)
+    );
+}
+
 :global(.rbc-today) {
     background: light-dark(
         var(--mantine-color-blue-0),
-        var(--mantine-color-blue-9)
+        color-mix(
+            in srgb,
+            var(--mantine-color-blue-9) 15%,
+            var(--mantine-color-dark-7)
+        )
     ) !important;
 }
 
-:global(.rbc-off-range-bg) {
+:global(.rbc-off-range) {
+    color: light-dark(var(--mantine-color-gray-5), var(--mantine-color-dark-3));
+}
+
+/* ============================================
+   EVENTOS
+   ============================================ */
+
+:global(.rbc-event) {
+    padding: 3px 6px;
+    font-size: 0.75rem;
+    border-radius: var(--mantine-radius-sm);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+:global(.rbc-event:hover) {
+    opacity: 0.9;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+}
+
+:global(.rbc-event:active) {
+    transform: translateY(0);
+}
+
+:global(.rbc-event-label) {
+    font-size: 0.7rem;
+    opacity: 0.9;
+}
+
+:global(.rbc-event-content) {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ============================================
+   BOTÓN "VER MÁS" - MEJORADO
+   ============================================ */
+
+:global(.rbc-show-more) {
+    background: light-dark(
+        var(--mantine-color-blue-0),
+        color-mix(
+            in srgb,
+            var(--mantine-color-blue-9) 20%,
+            var(--mantine-color-dark-6)
+        )
+    );
+    color: light-dark(
+        var(--mantine-color-blue-7),
+        var(--mantine-color-blue-3)
+    ) !important;
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    border-radius: var(--mantine-radius-sm);
+    margin-top: 2px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-block;
+    text-decoration: none;
+    border: 1px solid
+        light-dark(var(--mantine-color-blue-2), var(--mantine-color-dark-4));
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+:global(.rbc-show-more:hover) {
+    background: light-dark(
+        var(--mantine-color-blue-1),
+        color-mix(
+            in srgb,
+            var(--mantine-color-blue-8) 30%,
+            var(--mantine-color-dark-6)
+        )
+    ) !important;
+    color: light-dark(
+        var(--mantine-color-blue-8),
+        var(--mantine-color-blue-2)
+    ) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+:global(.rbc-show-more:active) {
+    transform: translateY(0);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================
+   TIME GRID (Vista Semana/Día)
+   ============================================ */
+
+:global(.rbc-time-content) {
+    border-color: light-dark(
+        var(--mantine-color-gray-2),
+        var(--mantine-color-dark-5)
+    );
+}
+
+:global(.rbc-time-slot) {
+    border-color: light-dark(
+        var(--mantine-color-gray-2),
+        var(--mantine-color-dark-5)
+    );
+}
+
+:global(.rbc-timeslot-group) {
+    border-color: light-dark(
+        var(--mantine-color-gray-3),
+        var(--mantine-color-dark-4)
+    );
+}
+
+:global(.rbc-time-header-content) {
+    border-left: 1px solid
+        light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+}
+
+:global(.rbc-current-time-indicator) {
+    background-color: var(--mantine-color-red-6);
+    height: 2px;
+}
+
+:global(.rbc-time-column) {
+    background: light-dark(
+        var(--mantine-color-white),
+        var(--mantine-color-dark-7)
+    );
+}
+
+:global(.rbc-time-gutter) {
+    background: light-dark(
+        var(--mantine-color-gray-0),
+        var(--mantine-color-dark-6)
+    );
+    color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-2));
+}
+
+/* ============================================
+   AGENDA VIEW
+   ============================================ */
+
+:global(.rbc-agenda-view) {
+    padding: 16px;
+}
+
+:global(.rbc-agenda-view table) {
+    border: 1px solid
+        light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+    border-radius: var(--mantine-radius-md);
+    overflow: hidden;
+}
+
+:global(.rbc-agenda-table) {
+    background: light-dark(
+        var(--mantine-color-white),
+        var(--mantine-color-dark-7)
+    );
+}
+
+:global(.rbc-agenda-date-cell),
+:global(.rbc-agenda-time-cell),
+:global(.rbc-agenda-event-cell) {
+    padding: 12px;
+    border-color: light-dark(
+        var(--mantine-color-gray-2),
+        var(--mantine-color-dark-5)
+    );
+    color: light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-1));
+}
+
+:global(.rbc-agenda-date-cell) {
+    background: light-dark(
+        var(--mantine-color-gray-0),
+        var(--mantine-color-dark-6)
+    );
+    font-weight: 600;
+}
+
+/* ============================================
+   SELECTED SLOT
+   ============================================ */
+
+:global(.rbc-selected-cell) {
+    background: light-dark(
+        var(--mantine-color-blue-0),
+        color-mix(
+            in srgb,
+            var(--mantine-color-blue-9) 15%,
+            var(--mantine-color-dark-7)
+        )
+    );
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width:1024px) {
+    .calendarContainer {
+        height: 600px;
+        padding: 12px;
+    }
+
+    :global(.rbc-toolbar) {
+        padding: 10px 12px;
+    }
+
+    :global(.rbc-toolbar-label) {
+        font-size: 0.95rem;
+        margin: 4px 0;
+    }
+
+    :global(.rbc-header) {
+        padding: 10px 6px;
+        font-size: 0.8rem;
+    }
+
+    :global(.rbc-event) {
+        font-size: 0.7rem;
+        padding: 2px 5px;
+    }
+
+    :global(.rbc-show-more) {
+        font-size: 0.7rem;
+        padding: 3px 8px;
+    }
+}
+
+@media (max-width: 768px) {
+    .calendarCard {
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .calendarContainer {
+        display: none;
+    }
+}
+
+/* ============================================
+   ANIMACIONES
+   ============================================ */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+:global(.rbc-month-view),
+:global(.rbc-time-view),
+:global(.rbc-agenda-view) {
+    animation: fadeIn 0.2s ease;
+}
+
+/* ============================================
+   SCROLLBAR PERSONALIZADO (Dark Mode)
+   ============================================ */
+
+:global(.rbc-time-content)::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+:global(.rbc-time-content)::-webkit-scrollbar-track {
     background: light-dark(
         var(--mantine-color-gray-0),
         var(--mantine-color-dark-7)
     );
 }
 
-/* Month date cells */
-:global(.rbc-date-cell) {
-    padding: 8px 10px;
-    text-align: right;
-}
-
-:global(.rbc-date-cell > a) {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0));
-    text-decoration: none;
-}
-
-:global(.rbc-off-range) {
-    color: light-dark(var(--mantine-color-gray-4), var(--mantine-color-dark-3));
-}
-
-:global(.rbc-now > a) {
-    background: var(--mantine-color-blue-6);
-    color: white !important;
-    width: 26px;
-    height: 26px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    font-weight: 700;
-}
-
-/* Generic events (month/list) */
-:global(.rbc-event) {
-    border-radius: 4px !important;
-    border: none !important;
-    padding: 3px 6px !important;
-    font-size: 0.75rem;
-    font-weight: 500;
-    transition: opacity 0.15s ease;
-}
-
-:global(.rbc-event:hover) {
-    opacity: 0.9;
-}
-
-:global(.rbc-event-content) {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-:global(.rbc-event.rbc-selected) {
-    box-shadow: 0 0 0 2px var(--mantine-color-body),
-        0 0 0 4px var(--mantine-color-blue-5);
-}
-
-:global(.rbc-row-segment) {
-    padding: 0 2px 2px 2px;
-}
-
-/* ========== AGENDA VIEW IMPROVEMENTS ========== */
-
-/* Contenedor general de Agenda */
-:global(.rbc-agenda-view) {
-    background: var(--mantine-color-body);
-    border: 1px solid
-        light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-4));
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-/* Tabla principal de Agenda */
-:global(.rbc-agenda-view table.rbc-agenda-table) {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-}
-
-/* Header de la tabla */
-:global(.rbc-agenda-view table.rbc-agenda-table thead > tr > th) {
+:global(.rbc-time-content)::-webkit-scrollbar-thumb {
     background: light-dark(
-        var(--mantine-color-gray-0),
-        var(--mantine-color-dark-6)
+        var(--mantine-color-gray-4),
+        var(--mantine-color-dark-4)
     );
-    padding: 14px 18px;
-    font-weight: 700;
-    color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-1));
-    text-transform: uppercase;
-    font-size: 0.8rem;
-    letter-spacing: 0.04em;
-    border-bottom: 1px solid
-        light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-4));
+    border-radius: 4px;
 }
 
-/* Filas del cuerpo */
-:global(.rbc-agenda-view table.rbc-agenda-table tbody > tr) {
-    background: var(--mantine-color-body);
-}
-
-:global(.rbc-agenda-view table.rbc-agenda-table tbody > tr:nth-child(odd)) {
+:global(.rbc-time-content)::-webkit-scrollbar-thumb:hover {
     background: light-dark(
-        var(--mantine-color-gray-0),
-        var(--mantine-color-dark-6)
+        var(--mantine-color-gray-5),
+        var(--mantine-color-dark-3)
     );
-}
-
-/* Celdas del cuerpo */
-:global(.rbc-agenda-view table.rbc-agenda-table tbody > tr > td) {
-    padding: 14px 18px;
-    vertical-align: top;
-}
-
-/* Columna Fecha */
-:global(.rbc-agenda-date-cell) {
-    width: 18%;
-    font-weight: 700;
-    color: light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0));
-    white-space: nowrap;
-}
-
-/* Columna Hora */
-:global(.rbc-agenda-time-cell) {
-    width: 16%;
-    color: light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-7));
-    font-weight: 600;
-    white-space: nowrap;
-}
-
-/* Columna Evento */
-:global(.rbc-agenda-event-cell) {
-    width: auto;
-    font-weight: 600;
-    color: light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-0));
-}
-
-/* Encabezado de día (badge) */
-:global(.rbc-agenda-date-cell > .rbc-agenda-date) {
-    display: inline-block;
-    padding: 6px 10px;
-    border-radius: 16px;
-    background: light-dark(
-        var(--mantine-color-gray-1),
-        var(--mantine-color-dark-5)
-    );
-    color: light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-0));
-    font-size: 0.8rem;
-}
-
-/* Evento renderizado como badge (cuando aplica) */
-:global(.rbc-agenda-event-cell .rbc-event) {
-    display: inline-block;
-    border-radius: 6px;
-    padding: 4px 8px;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: white;
-    border: none;
-}
-
-:global(.rbc-agenda-event-cell .rbc-event:hover) {
-    opacity: 0.95;
-}
-
-/* Texto del evento en agenda (cuando no hay .rbc-event) */
-:global(.rbc-agenda-event-cell .rbc-event-title),
-:global(.rbc-agenda-event-cell .rbc-event-content) {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-0));
-}
-
-/* Hover de fila */
-:global(.rbc-agenda-view table.rbc-agenda-table tbody > tr:hover) {
-    background: light-dark(
-        var(--mantine-color-gray-0),
-        var(--mantine-color-dark-5)
-    );
-}
-
-/* Estado vacío */
-:global(.rbc-agenda-empty) {
-    color: light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-2));
-    text-align: center;
-    padding: 36px;
-    font-size: 0.95rem;
-}
-
-/* Ajustes responsivos para agenda */
-@media (max-width: 768px) {
-    :global(.rbc-agenda-date-cell),
-    :global(.rbc-agenda-time-cell) {
-        width: auto;
-        display: block;
-        margin-bottom: 6px;
-    }
-
-    :global(.rbc-agenda-view table.rbc-agenda-table tbody > tr > td) {
-        padding: 12px 14px;
-    }
-
-    :global(.rbc-agenda-event-cell .rbc-event-title),
-    :global(.rbc-agenda-event-cell .rbc-event-content) {
-        font-size: 0.9rem;
-    }
 }

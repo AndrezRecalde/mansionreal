@@ -29,7 +29,11 @@ export const EstadiasReservadasCards = () => {
     return (
         <div>
             {estadias.length > 0 ? (
-                <SimpleGrid cols={{ base: 1, sm: 2, md: 3, lg: 3 }}>
+                <SimpleGrid
+                    cols={{ base: 1, sm: 2, md: 3, lg: 3 }}
+                    spacing={{ base: "xl", sm: "lg", md: "md" }}
+                    verticalSpacing={{ base: "xl", sm: "lg" }}
+                >
                     {estadias.map((estadia) => (
                         <Card
                             key={estadia.id}

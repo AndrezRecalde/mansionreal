@@ -1,10 +1,13 @@
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, useState } from "react";
 import { Box, Group, Loader, Text } from "@mantine/core";
 import { Calendar, dateFnsLocalizer, Views } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import { es } from "date-fns/locale";
+import { useMediaQuery } from "@mantine/hooks";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import classes from "../modules/CalendarioGrid.module.css";
+import { CalendarioMobileView } from "./CalendarioMobileView";
+import { EventosDrawer } from "../eventos/EventosDrawer";
 
 const locales = { es };
 
@@ -50,6 +53,15 @@ export const CalendarioGrid = ({
     onViewChange,
     onSelectEvent,
 }) => {
+    // Estados para el drawer de eventos
+    const [drawerOpened, setDrawerOpened] = useState(false);
+    const [drawerEvents, setDrawerEvents] = useState([]);
+    const [drawerDate, setDrawerDate] = useState(null);
+
+    // Detectar tamaño de pantalla
+    const isMobile = useMediaQuery("(max-width: 768px)");
+    const isTablet = useMediaQuery("(max-width: 1024px)");
+
     const resources = useMemo(() => {
         return recursos.map((recurso) => ({
             resourceId: recurso.id,
@@ -71,6 +83,23 @@ export const CalendarioGrid = ({
         }));
     }, [reservas]);
 
+    const handleShowMore = useCallback((events, date) => {
+        setDrawerEvents(events);
+        setDrawerDate(date);
+        setDrawerOpened(true);
+    }, []);
+
+    const handleCloseDrawer = useCallback(() => {
+        setDrawerOpened(false);
+    }, []);
+
+    const handleDrawerEventClick = useCallback(
+        (event) => {
+            onSelectEvent(event);
+            setDrawerOpened(false);
+        },
+        [onSelectEvent]
+    );
     const eventStyleGetter = useCallback(
         (event) => ({
             style: {
@@ -84,11 +113,11 @@ export const CalendarioGrid = ({
                 fontWeight: 500,
                 padding: "4px 8px",
                 boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                cursor: "pointer",
             },
         }),
         []
     );
-
     const formats = useMemo(
         () => ({
             timeGutterFormat: (date, culture, localizer) =>
@@ -98,7 +127,7 @@ export const CalendarioGrid = ({
                     start,
                     "HH:mm",
                     culture
-                )} - ${localizer.format(end, "HH: mm", culture)}`,
+                )} - ${localizer.format(end, "HH:mm", culture)}`,
             agendaTimeRangeFormat: ({ start, end }, culture, localizer) =>
                 `${localizer.format(
                     start,
@@ -106,13 +135,13 @@ export const CalendarioGrid = ({
                     culture
                 )} - ${localizer.format(end, "HH:mm", culture)}`,
             dayHeaderFormat: (date, culture, localizer) =>
-                localizer.format(date, "EEEE dd MMMM", culture),
+                localizer.format(date, "EEEE d", culture),
             dayRangeHeaderFormat: ({ start, end }, culture, localizer) =>
                 `${localizer.format(
                     start,
-                    "dd MMM",
+                    "d MMM",
                     culture
-                )} — ${localizer.format(end, "dd MMM", culture)}`,
+                )} - ${localizer.format(end, "d MMM yyyy", culture)}`,
             monthHeaderFormat: (date, culture, localizer) =>
                 localizer.format(date, "MMMM yyyy", culture),
         }),
@@ -121,21 +150,29 @@ export const CalendarioGrid = ({
 
     if (cargando) {
         return (
-            <Box className={classes.calendarWrapper}>
-                <Box className={classes.calendarInner}>
-                    <Group justify="center" py={100}>
-                        <Loader size="lg" color="violet" />
-                    </Group>
-                </Box>
+            <Box className={classes.calendarCard}>
+                <Group justify="center" p="xl">
+                    <Loader size="lg" />
+                </Group>
             </Box>
         );
     }
-
+    // Vista móvil tipo Google Calendar
+    if (isMobile) {
+        return (
+            <CalendarioMobileView
+                reservas={eventos}
+                onSelectEvent={onSelectEvent}
+            />
+        );
+    }
+    // Vista de calendario completo para desktop/tablet
     return (
-        <Box className={classes.calendarWrapper}>
-            <Box className={classes.calendarInner}>
+        <>
+            <Box className={classes.calendarCard}>
                 <Box className={classes.calendarContainer}>
                     <Calendar
+                        culture="es"
                         localizer={localizer}
                         events={eventos}
                         resources={resources}
@@ -145,33 +182,40 @@ export const CalendarioGrid = ({
                         endAccessor="end"
                         style={{ height: "100%" }}
                         messages={messages}
-                        formats={formats}
-                        culture="es"
-                        views={[
-                            Views.DAY,
-                            Views.WEEK,
-                            Views.MONTH,
-                            Views.AGENDA,
-                        ]}
-                        view={currentView}
                         date={currentDate}
+                        view={currentView}
                         onNavigate={onNavigate}
                         onView={onViewChange}
                         onSelectEvent={onSelectEvent}
+                        onShowMore={handleShowMore}
                         eventPropGetter={eventStyleGetter}
+                        formats={formats}
+                        popup={false}
+                        doShowMoreDrillDown={false}
                         components={{
                             resourceHeader: ResourceHeader,
                         }}
-                        popup
-                        selectable={false}
+                        views={
+                            isTablet
+                                ? [Views.MONTH]
+                                : [Views.MONTH, Views.WEEK, Views.DAY]
+                        }
                         step={30}
                         timeslots={2}
-                        min={new Date(2025, 0, 1, 0, 0, 0)}
-                        max={new Date(2025, 0, 1, 23, 59, 59)}
                         showMultiDayTimes
+                        defaultView={Views.MONTH}
                     />
                 </Box>
             </Box>
-        </Box>
+
+            {/* Drawer lateral de eventos */}
+            <EventosDrawer
+                opened={drawerOpened}
+                onClose={handleCloseDrawer}
+                events={drawerEvents}
+                date={drawerDate}
+                onSelectEvent={handleDrawerEventClick}
+            />
+        </>
     );
 };

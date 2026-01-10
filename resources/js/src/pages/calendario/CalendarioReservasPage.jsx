@@ -27,11 +27,6 @@ import {
 } from "../../helpers/calendario.constants";
 import Swal from "sweetalert2";
 
-/**
- * Página principal del calendario de reservas
- * Gestiona la visualización de hospedajes y estadías
- * Incluye modales para gestión de reservas, pagos y consumos
- */
 const CalendarioReservasPage = () => {
     // Configuración inicial
     useTitleHook(PAGE_CONFIG.CALENDARIO.TITLE);
@@ -54,7 +49,6 @@ const CalendarioReservasPage = () => {
         fnAsignarEstadia,
     } = useEstadiaStore();
     const { activarReserva, fnAsignarReserva } = useReservaDepartamentoStore();
-    //const { fnAsignarDepartamento } = useDepartamentoStore();
 
     // Hooks personalizados
     const { activeTab, tabsVisitados, handleTabChange } =
@@ -130,7 +124,8 @@ const CalendarioReservasPage = () => {
     return (
         <Container
             size={PAGE_CONFIG.CALENDARIO.CONTAINER_SIZE}
-            py={PAGE_CONFIG.CALENDARIO.PADDING}
+            py={{ base: "xs", sm: "sm", md: PAGE_CONFIG.CALENDARIO.PADDING }}
+            px={{ base: "xs", sm: "md" }}
         >
             <CalendarioHeader
                 onReservar={handleReservar}
@@ -145,6 +140,7 @@ const CalendarioReservasPage = () => {
                 onChange={handleTabChange}
                 classNames={classes}
                 keepMounted={false}
+                orientation="horizontal"
             >
                 <Tabs.List grow>
                     <Tabs.Tab value={TABS.HOSPEDAJE}>Hospedajes</Tabs.Tab>

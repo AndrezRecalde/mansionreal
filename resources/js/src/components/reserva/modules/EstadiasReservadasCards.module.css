@@ -4,15 +4,65 @@
     cursor: pointer;
     padding: var(--mantine-spacing-xl);
     padding-top: calc(var(--mantine-spacing-xl) * 1.5 + 20px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--mantine-shadow-md);
 }
 
 .icon {
     position: absolute;
     top: -20px;
-    left: calc(50% - 30px);
+    left: calc(50% - 35px);
+    background: light-dark(
+        var(--mantine-color-white),
+        var(--mantine-color-dark-7)
+    );
+    border-radius: 50%;
 }
 
 .title {
     font-family: Outfit, var(--mantine-font-family);
     line-height: 1;
+}
+
+.section {
+    padding: var(--mantine-spacing-sm);
+}
+
+/* Tablets */
+@media (max-width: 768px) {
+    .card {
+        padding: var(--mantine-spacing-md);
+        padding-top: var(--mantine-spacing-xl);
+    }
+
+    .icon {
+        position: relative;
+        top: 0;
+        left: 0;
+        margin: 0 auto var(--mantine-spacing-md) auto;
+    }
+
+    .card:hover {
+        transform: translateY(-2px); /* Menos movimiento en tablet */
+    }
+}
+
+/* Móviles */
+@media (max-width: 480px) {
+    .card {
+        padding: var(--mantine-spacing-sm);
+        padding-top: var(--mantine-spacing-md);
+    }
+
+    .icon {
+        margin-bottom: var(--mantine-spacing-sm);
+    }
+
+    .card:hover {
+        transform: none; /* Sin hover en móvil */
+    }
 }

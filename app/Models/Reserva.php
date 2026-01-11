@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Reserva extends Model
 {
@@ -27,7 +31,7 @@ class Reserva extends Model
         'usuario_cancelador_id',
     ];
 
-     protected $casts = [
+    protected $casts = [
         'fecha_checkin' => 'datetime',      // Convierte a Carbon
         'fecha_checkout' => 'datetime',     // Convierte a Carbon
         'fecha_creacion' => 'datetime', // Convierte a Carbon con hora
@@ -38,39 +42,55 @@ class Reserva extends Model
         return $this->belongsTo(Huesped::class);
     }
 
-    public function departamento()
+    public function departamento(): BelongsTo
     {
         return $this->belongsTo(Departamento::class);
     }
 
-    public function estado()
+    public function estado(): BelongsTo
     {
         return $this->belongsTo(Estado::class);
     }
 
-    public function consumos()
+    public function consumos(): HasMany
     {
         return $this->hasMany(Consumo::class);
     }
 
-    public function gastos()
+    public function gastos(): HasMany
     {
         return $this->hasMany(Gasto::class);
     }
 
-    public function pagos()
+    public function pagos(): HasMany
     {
         return $this->hasMany(Pago::class, 'reserva_id');
     }
 
-    public function usuarioCreador()
+    public function usuarioCreador(): BelongsTo
     {
         return $this->belongsTo(User::class, 'usuario_creador_id');
     }
 
-    public function usuarioCancelador()
+    public function usuarioCancelador(): BelongsTo
     {
         return $this->belongsTo(User::class, 'usuario_cancelador_id');
+    }
+
+    /**
+     * Cliente de facturación asignado (uno solo)
+     */
+    public function clienteFacturacion(): HasOne
+    {
+        return $this->hasOne(ReservaClienteFacturacion::class);
+    }
+
+    /**
+     * Factura generada
+     */
+    public function factura(): HasOne
+    {
+        return $this->hasOne(Factura::class);
     }
 
     public function scopeActivas(Builder $query)
@@ -140,5 +160,139 @@ class Reserva extends Model
 
             $reserva->save();
         });
+    }
+
+    // ====================================================================
+    // NUEVAS RELACIONES PARA FACTURACIÓN
+    // ====================================================================
+
+    /**
+     * Cliente de facturación (relación muchos a muchos)
+     */
+    public function clientesFacturacion(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            ClienteFacturacion::class,
+            'reserva_cliente_facturacion',
+            'reserva_id',
+            'cliente_facturacion_id'
+        )->withPivot('solicita_factura_detallada', 'usuario_asigno_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * Verificar si tiene factura generada
+     */
+    public function getTieneFacturaAttribute(): bool
+    {
+        return $this->factura()->exists();
+    }
+
+    /**
+     * Verificar si tiene cliente de facturación asignado
+     */
+    public function getTieneClienteFacturacionAttribute(): bool
+    {
+        return $this->clienteFacturacion()->exists();
+    }
+
+    /**
+     * Verificar si solicita factura detallada
+     */
+    public function getSolicitaFacturaDetalladaAttribute(): bool
+    {
+        $cliente = $this->clienteFacturacion;
+        return $cliente && $cliente->solicita_factura_detallada;
+    }
+
+    /**
+     * Verificar si es consumidor final
+     */
+    public function getEsConsumidorFinalAttribute(): bool
+    {
+        $cliente = $this->clienteFacturacion;
+        return ! $cliente || ! $cliente->solicita_factura_detallada;
+    }
+
+    /**
+     * Obtener total de consumos
+     */
+    public function getTotalConsumosAttribute(): float
+    {
+        return $this->consumos()->sum('total');
+    }
+
+    /**
+     * Obtener consumos pendientes de facturar
+     */
+    public function getConsumosPendientesFacturarAttribute()
+    {
+        return $this->consumos()->pendientesFacturar()->get();
+    }
+
+    // ====================================================================
+    // NUEVOS MÉTODOS DE INSTANCIA
+    // ====================================================================
+
+    /**
+     * Asignar cliente de facturación
+     */
+    public function asignarClienteFacturacion(
+        int $clienteFacturacionId,
+        bool $solicitaFacturaDetallada = false,
+        ?int $usuarioId = null
+    ): ReservaClienteFacturacion {
+        return $this->clienteFacturacion()->updateOrCreate(
+            ['reserva_id' => $this->id],
+            [
+                'cliente_facturacion_id' => $clienteFacturacionId,
+                'solicita_factura_detallada' => $solicitaFacturaDetallada,
+                'usuario_asigno_id' => $usuarioId,
+            ]
+        );
+    }
+
+    /**
+     * Asignar consumidor final
+     */
+    public function asignarConsumidorFinal(?int $usuarioId = null): ReservaClienteFacturacion
+    {
+        return $this->asignarClienteFacturacion(
+            ClienteFacturacion::CONSUMIDOR_FINAL_ID,
+            false,
+            $usuarioId
+        );
+    }
+
+    /**
+     * Verificar si puede generar factura
+     */
+    public function puedeGenerarFactura(): bool
+    {
+        // Ya tiene factura
+        if ($this->tiene_factura) {
+            return false;
+        }
+
+        // No tiene consumos
+        if ($this->consumos()->count() === 0) {
+            return false;
+        }
+
+        // No tiene cliente asignado
+        if (! $this->tiene_cliente_facturacion) {
+            return false;
+        }
+
+        // Puedes agregar más validaciones (ej: estado de reserva)
+        return true;
+    }
+
+    /**
+     * Obtener total pendiente de facturar
+     */
+    public function totalPendienteFacturar(): float
+    {
+        return $this->consumos()->pendientesFacturar()->sum('total');
     }
 }

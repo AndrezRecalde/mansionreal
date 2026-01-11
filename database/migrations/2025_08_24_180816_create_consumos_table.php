@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('consumos', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('reserva_id');
+            $table->unsignedBigInteger('factura_id')->nullable();
             $table->unsignedBigInteger('inventario_id');
             $table->integer('cantidad');
             $table->date('fecha_creacion');
@@ -23,6 +24,15 @@ return new class extends Migration
             $table->decimal('total', 10, 2)->default(0);
             $table->boolean('aplica_iva')->default(true);
             $table->timestamps();
+
+            $table->foreign('reserva_id')->references('id')->on('reservas')->onDelete('cascade');
+            $table->foreign('factura_id')->references('id')->on('facturas')->onDelete('set null');
+            $table->foreign('inventario_id')->references('id')->on('inventarios')->onDelete('restrict');
+
+            $table->index('reserva_id');
+            $table->index('factura_id');
+            $table->index(['reserva_id', 'factura_id']);
+            $table->index('inventario_id');
         });
     }
 
@@ -31,6 +41,15 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('consumos');
+        Schema::table('consumos', function (Blueprint $table) {
+            // Eliminar foreign key primero
+            $table->dropForeign(['factura_id']);
+
+            // Eliminar índice compuesto
+            $table->dropIndex(['reserva_id', 'factura_id']);
+
+            // Eliminar columna
+            $table->dropColumn('factura_id');
+        });
     }
 };

@@ -125,7 +125,6 @@ export const ReporteProductosTable = ({ categoria, colorScheme, theme }) => {
                     autoContrast
                     size="md"
                     variant="filled"
-                    color="teal.7"
                 >
                     {nombre_categoria}
                 </Badge>

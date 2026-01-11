@@ -1,13 +1,16 @@
 import { useEffect } from "react";
 import { Modal } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { DepartamentoForm, TextSection } from "../../../components";
 import { useTipoDepartamentoStore, useUiDepartamento } from "../../../hooks";
 import { useForm } from "@mantine/form";
 
 export const DepartamentoModal = () => {
+    const isMobile = useMediaQuery("(max-width: 768px)");
     const { abrirModalDepartamento, fnModalAbrirDepartamento } =
         useUiDepartamento();
-    const { fnCargarTiposDepartamentos, fnLimpiarTiposDepartamentos } = useTipoDepartamentoStore();
+    const { fnCargarTiposDepartamentos, fnLimpiarTiposDepartamentos } =
+        useTipoDepartamentoStore();
 
     const form = useForm({
         initialValues: {
@@ -53,6 +56,7 @@ export const DepartamentoModal = () => {
 
     return (
         <Modal
+            fullScreen={isMobile}
             opened={abrirModalDepartamento}
             onClose={handleCerrarModal}
             title={

@@ -9,6 +9,7 @@ import {
     Box,
     rem,
 } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { BtnSection, BtnSubmit, ConsumoCard } from "../../../components";
 import { IconPlus } from "@tabler/icons-react";
 import {
@@ -24,6 +25,7 @@ import {
 import Swal from "sweetalert2";
 
 export function ConsumoModal({ reserva_id }) {
+    const isMobile = useMediaQuery("(max-width: 768px)");
     const { abrirModalConsumo, fnAbrirModalConsumo } = useUiConsumo();
     const { fnCargarCategorias, fnLimpiarCategorias, categorias } =
         useCategoriaStore();
@@ -59,7 +61,11 @@ export function ConsumoModal({ reserva_id }) {
         form.setFieldValue(`consumos.${idx}.categoria_id`, value || "");
         form.setFieldValue(`consumos.${idx}.inventario_id`, "");
         if (value) {
-            fnCargarProductosInventario({ categoria_id: value, all: false, activo: 1 });
+            fnCargarProductosInventario({
+                categoria_id: value,
+                all: false,
+                activo: 1,
+            });
         } else {
             fnLimpiarInventarios();
         }
@@ -92,8 +98,10 @@ export function ConsumoModal({ reserva_id }) {
 
     return (
         <Modal
+            fullScreen={isMobile}
             opened={abrirModalConsumo}
             onClose={handleCloseModal}
+            closeOnClickOutside={false}
             size={MODAL_CONFIG.size}
             overlayProps={MODAL_CONFIG.overlayProps}
             title={
@@ -134,7 +142,6 @@ export function ConsumoModal({ reserva_id }) {
                             IconSection={IconPlus}
                             handleAction={handleAddConsumo}
                             disabled={isMaxConsumos}
-                            color="indigo"
                             radius="sm"
                         >
                             Agregar consumo

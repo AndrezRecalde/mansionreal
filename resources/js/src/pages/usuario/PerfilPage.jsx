@@ -74,7 +74,6 @@ const PerfilPage = () => {
                         fullWidth
                         variant="light"
                         size="xl"
-                        //color="teal.7"
                         radius="lg"
                         autoContrast
                     >

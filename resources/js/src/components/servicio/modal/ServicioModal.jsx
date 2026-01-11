@@ -1,12 +1,13 @@
 import { Modal } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
 import { ServicioForm, TextSection } from "../../../components";
 import { useServicioStore, useUiServicio } from "../../../hooks";
 
 export const ServicioModal = () => {
+    const isMobile = useMediaQuery("(max-width: 768px)");
     const { abrirModalServicio, fnModalAbrirServicio } = useUiServicio();
     const { fnAsignarServicio } = useServicioStore();
-
     const form = useForm({
         initialValues: {
             nombre_servicio: "",
@@ -19,16 +20,15 @@ export const ServicioModal = () => {
                 value.length < 3 ? "El tipo de servicio es muy corto" : null,
         },
     });
-
     const handleCerrarModal = () => {
         fnModalAbrirServicio(false);
         fnAsignarServicio(null);
         form.reset();
     };
-
     return (
         <Modal
             centered
+            fullScreen={isMobile}
             opened={abrirModalServicio}
             onClose={handleCerrarModal}
             title={

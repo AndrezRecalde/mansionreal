@@ -1,4 +1,5 @@
 import { Modal } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { ConfigIvaForm, TextSection } from "../../../components";
 import { isNotEmpty, useForm } from "@mantine/form";
 import {
@@ -7,6 +8,7 @@ import {
 } from "../../../hooks";
 
 export const ConfigIvaModal = () => {
+    const isMobile = useMediaQuery("(max-width: 768px)");
     const { abrirModalConfiguracionIva, fnModalAbrirConfiguracionIva } =
         useUiConfiguracionIva();
     const { fnAsignarIva } = useConfiguracionIvaStore();
@@ -32,6 +34,7 @@ export const ConfigIvaModal = () => {
 
     return (
         <Modal
+            fullScreen={isMobile}
             opened={abrirModalConfiguracionIva}
             onClose={handleCerrarModal}
             title={

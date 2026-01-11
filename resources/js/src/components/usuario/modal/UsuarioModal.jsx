@@ -1,9 +1,11 @@
 import { Modal } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { TextSection, UsuarioForm } from "../../../components";
 import { useUiUsuario, useUsuarioStore } from "../../../hooks";
 import { isNotEmpty, useForm } from "@mantine/form";
 
 export const UsuarioModal = () => {
+    const isMobile = useMediaQuery("(max-width: 768px)");
     const { abrirModalUsuario, fnModalUsuario } = useUiUsuario();
     const { fnAsignarUsuario } = useUsuarioStore();
 
@@ -39,6 +41,7 @@ export const UsuarioModal = () => {
 
     return (
         <Modal
+            fullScreen={isMobile}
             opened={abrirModalUsuario}
             onClose={handleCerrarModal}
             title={

@@ -65,7 +65,7 @@ export const ResetearPwdForm = ({ form }) => {
                                 position="right"
                             >
                                 <ActionIcon
-                                    color={copied ? "teal.5" : "gray"}
+                                    color={copied ? "indigo.5" : "gray"}
                                     onClick={() => {
                                         form.setFieldValue(
                                             "password",

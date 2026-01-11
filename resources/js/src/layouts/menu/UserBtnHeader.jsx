@@ -70,7 +70,6 @@ export const UserBtnHeader = ({ usuario }) => {
                             alt={iniciales}
                             variant="default"
                             radius="xl"
-                            //color="teal.7"
                         >
                             {iniciales}
                         </Avatar>
@@ -97,7 +96,6 @@ export const UserBtnHeader = ({ usuario }) => {
                         alt={iniciales}
                         variant="default"
                         radius="xl"
-                        //color="teal.7"
                         size="lg"
                     >
                         {iniciales}

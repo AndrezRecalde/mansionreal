@@ -31,8 +31,8 @@ export function ConsumoCard({
             }}
         >
             <Group align="center" justify="space-between">
-                <Badge color="teal" radius="sm" variant="dot">
-                    Consumo {idx + 1}
+                <Badge radius="sm" variant="light">
+                    Consumo # {idx + 1}
                 </Badge>
                 {canRemove && (
                     <Tooltip label="Eliminar consumo" withArrow>

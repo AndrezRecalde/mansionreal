@@ -1,15 +1,17 @@
 import {
+    ActionIcon,
     Badge,
     Card,
     Center,
     SimpleGrid,
     ThemeIcon,
+    Tooltip,
     useMantineTheme,
 } from "@mantine/core";
 import { TextSection } from "../../../components";
 import { useEstadiaStore, useUiConsumo } from "../../../hooks";
 import { formatFechaModal, getEstadoColor } from "../../../helpers/fnHelper";
-import { IconBeach, IconCalendar } from "@tabler/icons-react";
+import { IconBeach, IconCalendar, IconEye } from "@tabler/icons-react";
 import classes from "../modules/EstadiasReservadasCards.module.css";
 import dayjs from "dayjs";
 import "dayjs/locale/es";
@@ -42,7 +44,34 @@ export const EstadiasReservadasCards = () => {
                             className={classes.card}
                             mt={20}
                             onDoubleClick={() => handleAbrirConsumos(estadia)}
+                            style={{ position: "relative" }}
                         >
+                            {/* Botón para abrir consumos - funciona en móviles y desktop */}
+                            <Tooltip
+                                label="Ver consumos"
+                                position="left"
+                                withArrow
+                            >
+                                <ActionIcon
+                                    variant="light"
+                                    size="lg"
+                                    radius="xl"
+                                    style={{
+                                        position: "absolute",
+                                        top: 10,
+                                        right: 10,
+                                        zIndex: 1,
+                                    }}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleAbrirConsumos(estadia);
+                                    }}
+                                    aria-label="Ver consumos"
+                                >
+                                    <IconEye size={20} stroke={1.5} />
+                                </ActionIcon>
+                            </Tooltip>
+
                             <ThemeIcon
                                 className={classes.icon}
                                 size={70}
@@ -114,14 +143,11 @@ export const EstadiasReservadasCards = () => {
             ) : (
                 <Card shadow="sm" radius="md" p="lg" withBorder>
                     <Card.Section inheritPadding py="xs">
-                        <TextSection fw={600} fz={18}>
-                            Estadías
-                        </TextSection>
-                    </Card.Section>
-                    <Card.Section inheritPadding py="md">
-                        <TextSection fz={12} color="dimmed">
-                            No hay estadias que mostrar el día de hoy.
-                        </TextSection>
+                        <Center>
+                            <TextSection>
+                                No hay estadías reservadas
+                            </TextSection>
+                        </Center>
                     </Card.Section>
                 </Card>
             )}

@@ -1,9 +1,11 @@
 import { Modal } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { InventarioForm, TextSection } from "../../../components";
 import { useInventarioStore, useUiInventario } from "../../../hooks";
 
 export const InventarioModal = () => {
+    const isMobile = useMediaQuery("(max-width: 768px)");
     const { abrirModalInventario, fnModalInventario } = useUiInventario();
     const { fnAsignarProductoInventario } = useInventarioStore();
 
@@ -39,6 +41,7 @@ export const InventarioModal = () => {
 
     return (
         <Modal
+            fullScreen={isMobile}
             opened={abrirModalInventario}
             onClose={handleCerrarModal}
             title={

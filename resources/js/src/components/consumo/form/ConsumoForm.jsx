@@ -21,7 +21,7 @@ export function ConsumoForm({
 
     return (
         <Stack spacing="sm">
-            <SimpleGrid cols={2} spacing="md">
+            <SimpleGrid cols={{ base: 1, sm: 2, lg: 2 }} spacing="md">
                 <Select
                     required
                     searchable

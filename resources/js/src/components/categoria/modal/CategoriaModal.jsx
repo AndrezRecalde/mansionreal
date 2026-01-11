@@ -1,9 +1,11 @@
 import { Modal } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { CategoriaForm, TextSection } from "../../../components";
 import { useForm } from "@mantine/form";
 import { useCategoriaStore, useUiCategoria } from "../../../hooks";
 
 export const CategoriaModal = () => {
+    const isMobile = useMediaQuery("(max-width: 768px)");
     const { abrirModalCategoria, fnModalAbrirCategoria } = useUiCategoria();
     const { fnAsignarCategoria } = useCategoriaStore();
 
@@ -28,6 +30,7 @@ export const CategoriaModal = () => {
     return (
         <Modal
             centered
+            fullScreen={isMobile}
             opened={abrirModalCategoria}
             onClose={handleCerrarModal}
             title={

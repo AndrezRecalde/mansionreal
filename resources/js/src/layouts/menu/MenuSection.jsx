@@ -67,7 +67,6 @@ export const MenuSection = ({
                                         >
                                             <item.icon
                                                 size={18}
-                                                color={theme.colors.teal[8]}
                                             />
                                         </ThemeIcon>
                                         <Text size="sm">{item.title}</Text>

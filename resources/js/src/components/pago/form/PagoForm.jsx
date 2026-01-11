@@ -1,4 +1,6 @@
 import {
+    ActionIcon,
+    Badge,
     Box,
     Button,
     Divider,
@@ -9,9 +11,11 @@ import {
     Stack,
     Textarea,
     TextInput,
+    Tooltip,
 } from "@mantine/core";
 import { IconPlus, IconTrash } from "@tabler/icons-react";
 import { useConceptoPagoStore, usePagoStore } from "../../../hooks";
+import { BtnSection, BtnSubmit } from "../../elements/buttons/BtnServices";
 
 export const PagoForm = ({ form, handleCerrarModal }) => {
     const { conceptosPagos } = useConceptoPagoStore();
@@ -54,6 +58,28 @@ export const PagoForm = ({ form, handleCerrarModal }) => {
                             borderRadius: "8px",
                         }}
                     >
+                        <Group align="center" justify="space-between">
+                            <Badge radius="sm" variant="light">
+                                Pago # {index + 1}
+                            </Badge>
+                            {form.values.pagos.length > 1 && (
+                                <Tooltip label="Eliminar Pago" withArrow>
+                                    <ActionIcon
+                                        size="md"
+                                        color="red.8"
+                                        variant="filled"
+                                        onClick={() =>
+                                            handleEliminarPago(index)
+                                        }
+                                        aria-label={`Eliminar pago ${
+                                            index + 1
+                                        }`}
+                                    >
+                                        <IconTrash size={16} />
+                                    </ActionIcon>
+                                </Tooltip>
+                            )}
+                        </Group>
                         <SimpleGrid cols={{ base: 1, sm: 2, md: 2, lg: 2 }}>
                             <Select
                                 label="Método de pago"
@@ -128,37 +154,22 @@ export const PagoForm = ({ form, handleCerrarModal }) => {
                                 `pagos.${index}.observaciones`
                             )}
                         />
-
-                        <Group justify="flex-end">
-                            {form.values.pagos.length > 1 && (
-                                <Button
-                                    variant="light"
-                                    color="red"
-                                    leftSection={<IconTrash size={16} />}
-                                    onClick={() => handleEliminarPago(index)}
-                                >
-                                    Eliminar
-                                </Button>
-                            )}
-                        </Group>
-
-                        {index < form.values.pagos.length - 1 && <Divider />}
+                        {index < form.values.pagos.length - 1 && <Divider variant="dashed" />}
                     </Stack>
                 ))}
 
-                <Group justify="space-between" mt="md">
-                    <Button
+                <Group justify="space-between">
+                    <BtnSection
                         variant="light"
-                        leftSection={<IconPlus size={16} />}
-                        onClick={handleAgregarPago}
+                        IconSection={IconPlus}
+                        handleAction={handleAgregarPago}
                     >
                         Agregar otro pago
-                    </Button>
+                    </BtnSection>
                     <Group>
-                        <Button variant="default" onClick={handleCerrarModal}>
-                            Cancelar
-                        </Button>
-                        <Button type="submit">Guardar Pagos</Button>
+                        <BtnSubmit fullwidth={false} height={40} fontSize={14}>
+                            Guardar Pagos
+                        </BtnSubmit>
                     </Group>
                 </Group>
             </Stack>

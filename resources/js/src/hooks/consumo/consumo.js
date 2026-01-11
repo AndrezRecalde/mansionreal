@@ -1,4 +1,4 @@
-export const MAX_CONSUMOS = 4;
+export const MAX_CONSUMOS = 500;
 
 export const INITIAL_CONSUMO = {
     categoria_id:  "",

@@ -112,7 +112,6 @@ export const BtnAddActions = ({
             <Menu.Target>
                 <Button
                     variant="default"
-                    color="teal.8"
                     rightSection={
                         <IconChevronDown
                             style={{ width: rem(18), height: rem(18) }}

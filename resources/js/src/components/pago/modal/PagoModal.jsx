@@ -3,8 +3,10 @@ import { Modal, Group, Title } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useConceptoPagoStore, useUiPago } from "../../../hooks";
 import { PagoForm } from "../form/PagoForm";
+import { useMediaQuery } from "@mantine/hooks";
 
 export const PagoModal = ({ reservaId }) => {
+    const isMobile = useMediaQuery("(max-width: 768px)");
     const { abrirModalRegistroPago, fnAbrirModalRegistroPago } = useUiPago();
     const { fnCargarConceptosPagos, fnLimpiarConceptosPagos } =
         useConceptoPagoStore();
@@ -84,6 +86,7 @@ export const PagoModal = ({ reservaId }) => {
 
     return (
         <Modal
+            fullScreen={isMobile}
             opened={abrirModalRegistroPago}
             onClose={handleCerrarModal}
             title={

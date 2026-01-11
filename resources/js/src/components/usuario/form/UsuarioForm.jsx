@@ -46,7 +46,7 @@ export const UsuarioForm = ({ form }) => {
                     classNames={classes}
                 />
                 <SimpleGrid
-                    cols={2}
+                    cols={{ base: 1, sm: 2, lg: 2 }}
                     breakpoints={[{ maxWidth: "sm", cols: 1 }]}
                 >
                     <TextInput

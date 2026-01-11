@@ -9,6 +9,7 @@ import {
     SimpleGrid,
     Text,
     Tooltip,
+    UnstyledButton,
     useMantineTheme,
 } from "@mantine/core";
 import { BtnSection } from "../../../components";
@@ -44,27 +45,15 @@ const ESTADOS = {
     MANTENIMIENTO: "MANTENIMIENTO",
 };
 
-const ESTADOS_BLOQUEADOS = [
-    ESTADOS.OCUPADO,
-    ESTADOS.RESERVADO,
-    ESTADOS.LIMPIEZA,
-    ESTADOS.MANTENIMIENTO,
-];
-
 const ESTADOS_GESTION_CONSUMOS = [ESTADOS.OCUPADO, ESTADOS.RESERVADO];
 
 // Subcomponente para la información del departamento
 const DepartamentoInfo = ({ departamento }) => (
     <>
         <Group justify="space-between" mt="md">
-            <div>
-                <Text fw={500}>
-                    Departamento - {departamento.numero_departamento}
-                </Text>
-                <Text fz="xs" c="dimmed">
-                    Número Departamento
-                </Text>
-            </div>
+            <Text fw={500}>
+                Departamento - {departamento.numero_departamento}
+            </Text>
             <Badge variant="outline">{departamento.tipo_departamento}</Badge>
         </Group>
         <Group gap={8} mb={-8} mt={5}>
@@ -79,7 +68,11 @@ const DepartamentoInfo = ({ departamento }) => (
 );
 
 // Subcomponente para la sección de reserva
-const ReservaSection = ({ reserva }) => (
+const ReservaSection = ({
+    reserva,
+    onClickCodigoReserva,
+    puedeGestionarConsumos,
+}) => (
     <Card.Section className={classes.section} mt="sm">
         <Center>
             <IconUser size={16} className={classes.icon} stroke={1.5} />
@@ -96,54 +89,81 @@ const ReservaSection = ({ reserva }) => (
             </Text>
         </Center>
         <Center mt={10}>
-            <Badge size="lg" radius="xl" variant="outline">{reserva?.codigo_reserva || "Sin Código"}</Badge>
+            {reserva?.codigo_reserva && puedeGestionarConsumos ? (
+                <Tooltip
+                    label="Click para ver consumos del departamento"
+                    position="bottom"
+                    withArrow
+                >
+                    <UnstyledButton
+                        onClick={onClickCodigoReserva}
+                        style={{
+                            transition:
+                                "transform 0.2s ease, opacity 0.2s ease",
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = "scale(1.05)";
+                            e.currentTarget.style.opacity = "0.8";
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = "scale(1)";
+                            e.currentTarget.style.opacity = "1";
+                        }}
+                    >
+                        <Badge
+                            size="lg"
+                            radius="xl"
+                            variant="outline"
+                            style={{ cursor: "pointer" }}
+                        >
+                            # {reserva.codigo_reserva}
+                        </Badge>
+                    </UnstyledButton>
+                </Tooltip>
+            ) : (
+                <Badge size="lg" radius="xl" variant="outline">
+                    {reserva?.codigo_reserva || "Sin Código"}
+                </Badge>
+            )}
         </Center>
     </Card.Section>
 );
 
 // Subcomponente para el badge de estado
 const EstadoBadge = ({ estado, theme }) => {
-    const backgroundColor = useMemo(
-        () =>
-            estado?.color
-                ? getEstadoColor(theme, estado.color)
-                : theme.colors.gray[2],
-        [estado, theme]
-    );
+    const estadoColor = getEstadoColor(theme, estado?.color);
 
     return (
-        <Card.Section
-            withBorder
-            className={classes.section}
-            bg={backgroundColor}
-        >
+        <Card.Section withBorder className={classes.section} bg={estadoColor}>
             <Badge
                 variant="filled"
-                color={estado?.color || "gray"}
+                color={estado?.color}
                 size="lg"
                 radius="lg"
                 fullWidth
                 style={{ backgroundColor: "transparent" }}
             >
-                {estado?.nombre_estado || "Sin Estado"}
+                {estado?.nombre_estado || "SIN ESTADO"}
             </Badge>
         </Card.Section>
     );
 };
 
-// Subcomponente para los botones de acción
+// Subcomponente para los botones de acción en el footer
 const AccionesFooter = ({
     departamento,
     onHabilitar,
     onMantenimiento,
     onLimpiar,
 }) => {
-    const estadoActual = departamento.estado?.nombre_estado;
+    const estaOcupadoOReservado = ESTADOS_GESTION_CONSUMOS.includes(
+        departamento.estado?.nombre_estado
+    );
+
     const esLimpiezaOMantenimiento = [
         ESTADOS.LIMPIEZA,
         ESTADOS.MANTENIMIENTO,
-    ].includes(estadoActual);
-    const estaOcupadoOReservado = ESTADOS_BLOQUEADOS.includes(estadoActual);
+    ].includes(departamento.estado?.nombre_estado);
 
     if (esLimpiezaOMantenimiento) {
         return (
@@ -205,25 +225,42 @@ const DepartamentoCard = ({
             : "/images/default-departamento.jpg";
     }, [departamento.imagenes]);
 
+    // Verificar si se pueden gestionar consumos
+    const puedeGestionarConsumos = ESTADOS_GESTION_CONSUMOS.includes(
+        departamento.estado?.nombre_estado
+    );
+
+    const handleClickCodigoReserva = useCallback(() => {
+        onAbrirConsumos(departamento);
+    }, [departamento, onAbrirConsumos]);
+
     return (
         <Card withBorder radius="md" className={classes.card}>
             <Card.Section
                 className={classes.imageSection}
-                onDoubleClick={() => onAbrirConsumos(departamento)}
+                onDoubleClick={() =>
+                    puedeGestionarConsumos && onAbrirConsumos(departamento)
+                }
+                style={{
+                    cursor: puedeGestionarConsumos ? "pointer" : "default",
+                }}
             >
                 <Image
                     src={imageSrc}
                     alt={`departamento-${departamento.numero_departamento}`}
                     fallbackSrc="https://placehold.co/600x400? text=Placeholder"
-                    fit="cover"
+                    fit="contain"
                     w="100%"
                     h={{ base: 90, sm: 90, md: 120 }}
-                    styles={{ image: { objectPosition: "center" } }}
                 />
             </Card.Section>
 
             <DepartamentoInfo departamento={departamento} />
-            <ReservaSection reserva={departamento.reserva} />
+            <ReservaSection
+                reserva={departamento.reserva}
+                onClickCodigoReserva={handleClickCodigoReserva}
+                puedeGestionarConsumos={puedeGestionarConsumos}
+            />
             <EstadoBadge estado={departamento.estado} theme={theme} />
 
             {usuario &&
@@ -264,100 +301,57 @@ export const DepartamentosDisponiblesCards = ({ usuario }) => {
             Swal.fire({
                 icon: mensaje.status,
                 text: mensaje.msg,
-                showConfirmButton: true,
+                showConfirmButton: false,
+                timer: 1500,
             });
         }
     }, [mensaje]);
 
     useEffect(() => {
-        if (errores !== undefined) {
+        if (errores) {
             Swal.fire({
                 icon: "error",
+                title: "Oops...",
                 text: errores,
-                showConfirmButton: true,
+                showConfirmButton: false,
+                timer: 1500,
             });
         }
     }, [errores]);
 
-    // Handlers memoizados
+    // Manejador para abrir consumos (solo si está OCUPADO o RESERVADO)
     const handleAbrirConsumos = useCallback(
         (departamento) => {
-            if (
-                ESTADOS_GESTION_CONSUMOS.includes(
-                    departamento.estado?.nombre_estado
-                )
-            ) {
-                fnAsignarDepartamento(departamento);
-                fnAbrirDrawerConsumosDepartamento(true);
-            } else {
+            const puedeGestionarConsumos = ESTADOS_GESTION_CONSUMOS.includes(
+                departamento.estado?.nombre_estado
+            );
+
+            if (!puedeGestionarConsumos) {
                 Swal.fire({
-                    icon: "info",
-                    html: `Los consumos solo se pueden gestionar en departamentos con estado <strong>OCUPADO</strong> o <strong>RESERVADO</strong>. `,
-                    showConfirmButton: true,
+                    icon: "warning",
+                    title: "Acción no permitida",
+                    text: "Solo se pueden gestionar consumos en departamentos OCUPADOS o RESERVADOS",
+                    confirmButtonText: "Entendido",
                 });
+                return;
             }
+
+            fnAsignarDepartamento(departamento);
+            fnAbrirDrawerConsumosDepartamento(true);
         },
         [fnAsignarDepartamento, fnAbrirDrawerConsumosDepartamento]
     );
 
-    const handleMantenimientoDepartamento = useCallback(
+    // Manejador para habilitar departamento
+    const handleHabilitar = useCallback(
         (departamento) => {
             Swal.fire({
-                title: "¿Estás seguro? ",
-                text: `¿Deseas poner en mantenimiento el departamento ${departamento.numero_departamento}?`,
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: theme.colors.red[6],
-                cancelButtonColor: theme.colors.gray[6],
-                confirmButtonText: "Sí, poner en mantenimiento",
-                cancelButtonText: "Cancelar",
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    fnCambiarEstadoDepartamento({
-                        id: departamento.id,
-                        nombre_estado: ESTADOS.MANTENIMIENTO,
-                    });
-                    Swal.fire(
-                        "¡Hecho! ",
-                        `El departamento ${departamento.numero_departamento} está en mantenimiento. `,
-                        "success"
-                    );
-                }
-            });
-        },
-        [fnCambiarEstadoDepartamento, theme]
-    );
-
-    const handleLimpiarDepartamento = useCallback(
-        (departamento) => {
-            Swal.fire({
-                title: "¿Estás seguro? ",
-                text: `¿Deseas limpiar el departamento ${departamento.numero_departamento}?`,
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: theme.colors.blue[6],
-                cancelButtonColor: theme.colors.gray[6],
-                confirmButtonText: "Sí, limpiar",
-                cancelButtonText: "Cancelar",
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    fnAbrirModalLimpieza(true);
-                    fnAsignarDepartamento(departamento);
-                }
-            });
-        },
-        [fnAbrirModalLimpieza, fnAsignarDepartamento, theme]
-    );
-
-    const handleDepartamentoDisponible = useCallback(
-        (departamento) => {
-            Swal.fire({
-                title: "¿Estás seguro?",
+                title: "¿Habilitar Departamento?",
                 text: `¿Deseas habilitar el departamento ${departamento.numero_departamento}?`,
-                icon: "warning",
+                icon: "question",
                 showCancelButton: true,
-                confirmButtonColor: theme.colors.blue[6],
-                cancelButtonColor: theme.colors.gray[6],
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
                 confirmButtonText: "Sí, habilitar",
                 cancelButtonText: "Cancelar",
             }).then((result) => {
@@ -366,39 +360,60 @@ export const DepartamentosDisponiblesCards = ({ usuario }) => {
                         id: departamento.id,
                         nombre_estado: ESTADOS.DISPONIBLE,
                     });
-                    Swal.fire(
-                        "¡Hecho!",
-                        `El departamento ${departamento.numero_departamento} está habilitado.`,
-                        "success"
-                    );
                 }
             });
         },
-        [fnCambiarEstadoDepartamento, theme]
+        [fnCambiarEstadoDepartamento]
     );
 
-    // Renderizado condicional
-    if (!departamentos.length) {
-        return (
-            <Center h={200}>
-                <Text size="lg" c="dimmed">
-                    No se han registrado departamentos
-                </Text>
-            </Center>
-        );
-    }
+    // Manejador para mantenimiento
+    const handleMantenimiento = useCallback(
+        (departamento) => {
+            Swal.fire({
+                title: "¿Mantenimiento del Departamento?",
+                text: `¿Deseas poner en mantenimiento el departamento ${departamento.numero_departamento}? `,
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Sí, mantenimiento",
+                cancelButtonText: "Cancelar",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fnCambiarEstadoDepartamento({
+                        id: departamento.id,
+                        nombre_estado: ESTADOS.MANTENIMIENTO,
+                    });
+                }
+            });
+        },
+        [fnCambiarEstadoDepartamento]
+    );
+
+    // Manejador para limpiar
+    const handleLimpiar = useCallback(
+        (departamento) => {
+            fnAsignarDepartamento(departamento);
+            fnAbrirModalLimpieza(true);
+        },
+        [fnAsignarDepartamento, fnAbrirModalLimpieza]
+    );
 
     return (
-        <SimpleGrid cols={{ base: 1, sm: 2, md: 3, lg: 3 }}>
+        <SimpleGrid
+            cols={{ base: 1, sm: 2, md: 3, lg: 3 }}
+            spacing={{ base: "xl", sm: "lg", md: "md" }}
+            verticalSpacing={{ base: "xl", sm: "lg" }}
+        >
             {departamentos.map((departamento) => (
                 <DepartamentoCard
                     key={departamento.id}
-                    usuario={usuario}
                     departamento={departamento}
+                    usuario={usuario}
                     onAbrirConsumos={handleAbrirConsumos}
-                    onHabilitar={handleDepartamentoDisponible}
-                    onMantenimiento={handleMantenimientoDepartamento}
-                    onLimpiar={handleLimpiarDepartamento}
+                    onHabilitar={handleHabilitar}
+                    onMantenimiento={handleMantenimiento}
+                    onLimpiar={handleLimpiar}
                     theme={theme}
                 />
             ))}

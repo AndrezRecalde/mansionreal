@@ -1,10 +1,12 @@
 import { useEffect } from "react";
 import { Modal } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
 import { HuespedForm, TextSection } from "../../../components";
 import { useHuespedStore, useUiHuesped } from "../../../hooks";
 
 export const HuespedModal = () => {
+    const isMobile = useMediaQuery("(max-width: 768px)");
     const { abrirModalHuesped, fnModalHuesped } = useUiHuesped();
     const { fnAsignarHuesped } = useHuespedStore();
 
@@ -57,6 +59,7 @@ export const HuespedModal = () => {
 
     return (
         <Modal
+            fullScreen={isMobile}
             opened={abrirModalHuesped}
             onClose={handleCerrarModal}
             title={

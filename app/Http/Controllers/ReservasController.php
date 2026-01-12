@@ -24,16 +24,16 @@ class ReservasController extends Controller
 
     public function store(ReservaRequest $request): JsonResponse
     {
+        DB::beginTransaction();
         try {
-            // 1. Obtener IDs de estados activos tipo RESERVA
+            // 1. Validar traslape de reservas
             $estadoReservaIds = Estado::where('activo', 1)
                 ->where('tipo_estado', 'RESERVA')
                 ->whereIn('nombre_estado', ['RESERVADO', 'CONFIRMADO'])
                 ->pluck('id')
                 ->toArray();
 
-            // 2. Validar traslape de reservas
-            $fechaInicio = Carbon::parse($request->fecha_checkin)->startOfDay(); // 2025-12-09 00:00:00
+            $fechaInicio = Carbon::parse($request->fecha_checkin)->startOfDay();
             $fechaFin = Carbon::parse($request->fecha_checkout)->endOfDay();
 
             $traslape = Reserva::where('departamento_id', $request->departamento_id)
@@ -51,9 +51,8 @@ class ReservasController extends Controller
                 ], 409);
             }
 
-            // 3. Obtener o crear huésped
+            // 2. Obtener o crear huésped
             if ($request->huesped['huesped_id'] == null) {
-                // Crear nuevo huésped
                 $huesped = Huesped::create([
                     'nombres'       => $request->huesped['nombres'],
                     'apellidos'     => $request->huesped['apellidos'],
@@ -64,14 +63,13 @@ class ReservasController extends Controller
                     'nacionalidad'  => $request->huesped['nacionalidad'],
                 ]);
             } else {
-                // Obtener huésped existente
                 $huesped = Huesped::findOrFail($request->huesped['huesped_id']);
             }
 
-            // 4. Guardar la reserva
+            // 3. Crear reserva
             $reserva = new Reserva();
             $reserva->fill($request->validated());
-            $reserva->huesped_id = $huesped->id; // ← Ahora $huesped siempre existe
+            $reserva->huesped_id = $huesped->id;
             $reserva->estado_id = Estado::where('activo', 1)
                 ->where('tipo_estado', 'RESERVA')
                 ->where('nombre_estado', 'RESERVADO')
@@ -81,31 +79,27 @@ class ReservasController extends Controller
             $reserva->tipo_reserva = TIPOSRESERVA::HOSPEDAJE;
             $reserva->save();
 
-            // 5. Obtener inventario usando relaciones Eloquent
+            // 4. Obtener producto de hospedaje
             $inventario = $reserva->departamento
                 ->tipoDepartamento
                 ->inventario;
 
-            // 6. Obtener la tasa de IVA activa
+            // 5. Obtener tasa de IVA (para TODOS los productos)
             $ivaConfig = ConfiguracionIva::where('activo', true)->first();
+            $tasa_iva = $ivaConfig ? $ivaConfig->tasa_iva : 15.00;
 
-            // 6.1. Determinar tasa de IVA según nacionalidad
-            $nacionalidad = $huesped->nacionalidad; // ← Ahora funciona correctamente
-            if ($nacionalidad === 'ECUATORIANO') {
-                $tasa_iva = $ivaConfig ? $ivaConfig->tasa_iva : 0;
-            } else {
-                $tasa_iva = 0;
-            }
-
-            // 7. Calcular valores para consumo
+            // 6. Calcular consumo de hospedaje
             $cantidad = $reserva->total_noches;
-            $precioUnitario = $inventario->precio_unitario;
-            $subtotal = $cantidad * $precioUnitario;
-            $iva = $subtotal * ($tasa_iva / 100);
-            $total_iva = $subtotal + $iva;
-            $aplica_iva = $tasa_iva > 0 ? true : false;
+            $precio_unitario = $inventario->precio_unitario; // Base sin IVA
+            $subtotal = $cantidad * $precio_unitario;
 
-            // 8. Guardar registro en consumos
+            // ================================================================
+            // SIMPLIFICADO: IVA siempre se aplica
+            // ================================================================
+            $iva = $subtotal * ($tasa_iva / 100);
+            $total = $subtotal + $iva;
+
+            // 7. Crear consumo
             Consumo::create([
                 'reserva_id'      => $reserva->id,
                 'inventario_id'   => $inventario->id,
@@ -114,18 +108,21 @@ class ReservasController extends Controller
                 'subtotal'        => $subtotal,
                 'tasa_iva'        => $tasa_iva,
                 'iva'             => $iva,
-                'total'           => $total_iva,
-                'aplica_iva'      => $aplica_iva,
+                'total'           => $total,
             ]);
+
+            DB::commit();
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'msg'   => 'Reserva #' . $reserva->codigo_reserva . ' creada con éxito',
-            ]);
+                'msg' => 'Reserva creada exitosamente',
+                'reserva' => $reserva->load(['huesped', 'departamento', 'estado']),
+            ], 201);
         } catch (\Throwable $th) {
+            DB::rollBack();
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg'    => $th->getMessage()
+                'msg' => $th->getMessage()
             ], 500);
         }
     }

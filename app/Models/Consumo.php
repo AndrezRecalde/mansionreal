@@ -17,7 +17,6 @@ class Consumo extends Model
         'tasa_iva',
         'iva',
         'total',
-        'aplica_iva',
     ];
 
     public function reserva()

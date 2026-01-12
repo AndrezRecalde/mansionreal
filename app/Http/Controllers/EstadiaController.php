@@ -85,10 +85,10 @@ class EstadiaController extends Controller
 
     public function storeEstadia(EstadiaRequest $request): JsonResponse
     {
+        DB::beginTransaction();
         try {
             // 1. Obtener o crear huésped
             if ($request->huesped['huesped_id'] == null) {
-                // Crear nuevo huésped
                 $huesped = Huesped::create([
                     'nombres'       => $request->huesped['nombres'],
                     'apellidos'     => $request->huesped['apellidos'],
@@ -99,49 +99,43 @@ class EstadiaController extends Controller
                     'nacionalidad'  => $request->huesped['nacionalidad'],
                 ]);
             } else {
-                // Obtener huésped existente
                 $huesped = Huesped::findOrFail($request->huesped['huesped_id']);
             }
 
-            // 2. Crear la reserva tipo ESTADIA
+            // 2. Crear reserva tipo ESTADIA
             $reserva = new Reserva();
             $reserva->fill($request->validated());
-            $reserva->huesped_id = $huesped->id; // ← Simplificado
+            $reserva->huesped_id = $huesped->id;
+            $reserva->departamento_id = null;
             $reserva->estado_id = Estado::where('activo', 1)
                 ->where('tipo_estado', 'RESERVA')
                 ->where('nombre_estado', 'RESERVADO')
                 ->value('id');
             $reserva->fecha_creacion = now();
             $reserva->usuario_creador_id = Auth::id();
-
-            // ---------------- Hardcode tipo_reserva ----------------
             $reserva->tipo_reserva = TIPOSRESERVA::ESTADIA;
-            $reserva->departamento_id = null;  // No se asigna habitación
-            //$reserva->fecha_checkin = now();
-            //$reserva->fecha_checkout = now();
-            $reserva->total_noches = 0;        // No aplica para estadía
-            // --------------------------------------------------------
             $reserva->save();
 
-            // 3. Obtener inventario de estadía
-            $inventarioAdulto = Inventario::where('nombre_producto', 'Estadia Adultos')->first();
-            $inventarioNino   = Inventario::where('nombre_producto', 'Estadia Ninos')->first();
-
-            // 4. Obtener tasa de IVA activa
+            // 3. Obtener tasa de IVA (para TODOS)
             $ivaConfig = ConfiguracionIva::where('activo', true)->first();
+            $tasa_iva = $ivaConfig ? $ivaConfig->tasa_iva : 15.00;
 
-            // --- Determinar tasa de IVA según nacionalidad ---
-            $nacionalidad = $huesped->nacionalidad; // ← Ahora $huesped siempre existe
-            if ($nacionalidad === 'ECUATORIANO') {
-                $tasa_iva = $ivaConfig ? $ivaConfig->tasa_iva : 0;
-            } else {
-                $tasa_iva = 0;
-            }
+            // 4. Obtener productos de estadía
+            $inventarioAdulto = Inventario::where('nombre_producto', 'LIKE', '%ADULTO%')
+                ->where('sin_stock', true)
+                ->first();
 
-            // 5. Crear consumos automáticos
+            $inventarioNino = Inventario::where('nombre_producto', 'LIKE', '%NIÑO%')
+                ->where('sin_stock', true)
+                ->first();
+
+            // ================================================================
+            // SIMPLIFICADO:  Consumo de adultos (IVA siempre aplica)
+            // ================================================================
             if ($reserva->total_adultos > 0 && $inventarioAdulto) {
                 $subtotal = $reserva->total_adultos * $inventarioAdulto->precio_unitario;
-                $iva      = $subtotal * ($tasa_iva / 100);
+                $iva = $subtotal * ($tasa_iva / 100);
+
                 Consumo::create([
                     'reserva_id'      => $reserva->id,
                     'inventario_id'   => $inventarioAdulto->id,
@@ -151,13 +145,16 @@ class EstadiaController extends Controller
                     'tasa_iva'        => $tasa_iva,
                     'iva'             => $iva,
                     'total'           => $subtotal + $iva,
-                    'aplica_iva'      => $tasa_iva > 0,
                 ]);
             }
 
+            // ================================================================
+            // SIMPLIFICADO: Consumo de niños (IVA siempre aplica)
+            // ================================================================
             if ($reserva->total_ninos > 0 && $inventarioNino) {
                 $subtotal = $reserva->total_ninos * $inventarioNino->precio_unitario;
-                $iva      = $subtotal * ($tasa_iva / 100);
+                $iva = $subtotal * ($tasa_iva / 100);
+
                 Consumo::create([
                     'reserva_id'      => $reserva->id,
                     'inventario_id'   => $inventarioNino->id,
@@ -167,60 +164,88 @@ class EstadiaController extends Controller
                     'tasa_iva'        => $tasa_iva,
                     'iva'             => $iva,
                     'total'           => $subtotal + $iva,
-                    'aplica_iva'      => $tasa_iva > 0,
                 ]);
             }
 
+            DB::commit();
+
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'msg'    => 'Estadía #' . $reserva->codigo_reserva . ' creada con éxito',
-            ]);
+                'msg' => 'Estadía registrada exitosamente',
+                'estadia' => $reserva->load(['huesped', 'estado']),
+            ], 201);
         } catch (\Throwable $th) {
+            DB::rollBack();
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg'    => $th->getMessage()
+                'msg' => $th->getMessage()
             ], 500);
         }
     }
 
     public function updateEstadia(Request $request, int $id): JsonResponse
     {
+        DB::beginTransaction();
         try {
-            // 1. Validar entrada mínima
+            // 1. Validar entrada
             $validated = $request->validate([
-                'total_adultos' => 'nullable|integer|min:0',
-                'total_ninos'   => 'nullable|integer|min:0',
+                'total_adultos'  => 'nullable|integer|min:0',
+                'total_ninos'    => 'nullable|integer|min:0',
                 'total_mascotas' => 'nullable|integer|min:0',
             ]);
 
-            // 2. Buscar la reserva tipo ESTADIA
+            // 2. Buscar reserva tipo ESTADIA
             $reserva = Reserva::where('id', $id)
-                ->where('tipo_reserva', 'estadia')
+                ->where('tipo_reserva', 'ESTADIA')
                 ->firstOrFail();
 
-            // 3. Actualizar los campos esenciales
+            // 3. Actualizar campos
             $reserva->update([
                 'total_adultos'  => $validated['total_adultos'] ?? $reserva->total_adultos,
                 'total_ninos'    => $validated['total_ninos'] ?? $reserva->total_ninos,
                 'total_mascotas' => $validated['total_mascotas'] ?? $reserva->total_mascotas,
             ]);
 
-            // 4. Recalcular consumos (adultos y niños)
+            // ================================================================
+            // 4.  RECALCULAR CONSUMOS (SIMPLIFICADO)
+            // ================================================================
+
+            // Obtener tasa de IVA (para TODOS)
             $ivaConfig = ConfiguracionIva::where('activo', true)->first();
-            $tasa_iva = $ivaConfig ? $ivaConfig->tasa_iva : 0;
+            $tasa_iva = $ivaConfig ? $ivaConfig->tasa_iva : 15.00;
 
-            $inventarioAdulto = Inventario::where('nombre_producto', 'Estadia Adulto')->first();
-            $inventarioNino   = Inventario::where('nombre_producto', 'Estadia Niño')->first();
+            // Obtener productos de estadía
+            $inventarioAdulto = Inventario::where('nombre_producto', 'LIKE', '%ADULTO%')
+                ->where('sin_stock', true)
+                ->first();
 
-            // 👉 Eliminar consumos anteriores de adultos/niños
-            Consumo::where('reserva_id', $reserva->id)
-                ->whereIn('inventario_id', [$inventarioAdulto->id ?? 0, $inventarioNino->id ?? 0])
-                ->delete();
+            $inventarioNino = Inventario::where('nombre_producto', 'LIKE', '%NIÑO%')
+                ->where('sin_stock', true)
+                ->first();
 
-            // 👉 Crear nuevamente consumos actualizados
+            // ================================================================
+            // 5. ELIMINAR CONSUMOS ANTERIORES DE ADULTOS/NIÑOS
+            // ================================================================
+            $inventariosEstadia = array_filter([
+                $inventarioAdulto?->id,
+                $inventarioNino?->id
+            ]);
+
+            if (!empty($inventariosEstadia)) {
+                Consumo::where('reserva_id', $reserva->id)
+                    ->whereIn('inventario_id', $inventariosEstadia)
+                    ->delete();
+            }
+
+            // ================================================================
+            // 6. CREAR NUEVOS CONSUMOS ACTUALIZADOS (SIMPLIFICADO)
+            // ================================================================
+
+            // Consumo de adultos
             if ($reserva->total_adultos > 0 && $inventarioAdulto) {
                 $subtotal = $reserva->total_adultos * $inventarioAdulto->precio_unitario;
-                $iva      = $subtotal * ($tasa_iva / 100);
+                $iva = $subtotal * ($tasa_iva / 100);
+
                 Consumo::create([
                     'reserva_id'      => $reserva->id,
                     'inventario_id'   => $inventarioAdulto->id,
@@ -230,13 +255,14 @@ class EstadiaController extends Controller
                     'tasa_iva'        => $tasa_iva,
                     'iva'             => $iva,
                     'total'           => $subtotal + $iva,
-                    'aplica_iva'      => $tasa_iva > 0,
                 ]);
             }
 
+            // Consumo de niños
             if ($reserva->total_ninos > 0 && $inventarioNino) {
                 $subtotal = $reserva->total_ninos * $inventarioNino->precio_unitario;
-                $iva      = $subtotal * ($tasa_iva / 100);
+                $iva = $subtotal * ($tasa_iva / 100);
+
                 Consumo::create([
                     'reserva_id'      => $reserva->id,
                     'inventario_id'   => $inventarioNino->id,
@@ -246,18 +272,21 @@ class EstadiaController extends Controller
                     'tasa_iva'        => $tasa_iva,
                     'iva'             => $iva,
                     'total'           => $subtotal + $iva,
-                    'aplica_iva'      => $tasa_iva > 0,
                 ]);
             }
 
+            DB::commit();
+
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'msg'    => 'Estadía actualizada con éxito',
-            ]);
+                'msg' => 'Estadía actualizada correctamente',
+                'estadia' => $reserva->fresh(['huesped', 'estado']),
+            ], 200);
         } catch (\Throwable $th) {
+            DB::rollBack();
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg'    => $th->getMessage(),
+                'msg' => $th->getMessage()
             ], 500);
         }
     }

@@ -67,7 +67,7 @@ class Factura extends Model
     }
 
     /**
-     * Cliente de facturación (referencia, puede cambiar sus datos)
+     * Cliente de facturación
      */
     public function clienteFacturacion(): BelongsTo
     {
@@ -160,7 +160,7 @@ class Factura extends Model
     // ====================================================================
 
     /**
-     * Scope:  Solo facturas emitidas
+     * Scope:   Solo facturas emitidas
      */
     public function scopeEmitidas($query)
     {
@@ -184,7 +184,7 @@ class Factura extends Model
     }
 
     /**
-     * Scope: Facturas de un cliente específico
+     * Scope:  Facturas de un cliente específico
      */
     public function scopeDelCliente($query, int $clienteId)
     {
@@ -221,15 +221,26 @@ class Factura extends Model
     // ====================================================================
 
     /**
-     * Calcular totales desde los consumos
+     * Calcular totales desde los consumos (ACTUALIZADO SIN aplica_iva)
      */
     public function calcularTotales(): void
     {
         $consumos = $this->consumos;
 
-        $this->subtotal_sin_iva = $consumos->where('aplica_iva', false)->sum('subtotal');
-        $this->subtotal_con_iva = $consumos->where('aplica_iva', true)->sum('subtotal');
+        // ================================================================
+        // ACTUALIZADO:  Usar tasa_iva en lugar de aplica_iva
+        // ================================================================
+
+        // Consumos SIN IVA (tasa_iva = 0)
+        $this->subtotal_sin_iva = $consumos->where('tasa_iva', 0)->sum('subtotal');
+
+        // Consumos CON IVA (tasa_iva > 0)
+        $this->subtotal_con_iva = $consumos->where('tasa_iva', '>', 0)->sum('subtotal');
+
+        // Total IVA
         $this->total_iva = $consumos->sum('iva');
+
+        // Total factura
         $this->total_factura = $this->subtotal_sin_iva + $this->subtotal_con_iva + $this->total_iva - $this->descuento;
     }
 
@@ -286,5 +297,21 @@ class Factura extends Model
     public function tieneConsumos(): bool
     {
         return $this->consumos()->exists();
+    }
+
+    /**
+     * Obtener consumos con IVA
+     */
+    public function consumosConIva()
+    {
+        return $this->consumos()->where('tasa_iva', '>', 0)->get();
+    }
+
+    /**
+     * Obtener consumos sin IVA
+     */
+    public function consumosSinIva()
+    {
+        return $this->consumos()->where('tasa_iva', 0)->get();
     }
 }

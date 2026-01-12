@@ -21,12 +21,15 @@ use Svg\Tag\Rect;
 
 class ConsumosController extends Controller
 {
-    public function buscarConsumosPorReserva(Request $request)
+    public function buscarConsumosPorReserva(Request $request): JsonResponse
     {
         $reserva_id = $request->reserva_id;
 
         if (!$reserva_id) {
-            return response()->json(['error' => 'Debe proporcionar el reserva_id'], 400);
+            return response()->json([
+                'status' => HTTPStatus::Error,
+                'msg' => 'Debe proporcionar el reserva_id'
+            ], 400);
         }
 
         $consumos = Consumo::with('inventario')
@@ -36,9 +39,9 @@ class ConsumosController extends Controller
                 return [
                     'id'              => $c->id,
                     'inventario_id'   => $c->inventario->id,
-                    'nombre_producto' => $c->inventario ? $c->inventario->nombre_producto : null,
-                    'reserva_id'      => $c->reserva ? $c->reserva->id : null,
-                    'huespued'        => $c->reserva ? $c->reserva->huesped->nombres . ' ' . $c->reserva->huesped->apellidos : null,
+                    'nombre_producto' => $c->inventario->nombre_producto,
+                    'reserva_id'      => $c->reserva_id,
+                    'huesped'         => $c->reserva->huesped->nombres .  ' ' . $c->reserva->huesped->apellidos,
                     'cantidad'        => $c->cantidad,
                     'subtotal'        => $c->subtotal,
                     'tasa_iva'        => $c->tasa_iva,
@@ -50,11 +53,9 @@ class ConsumosController extends Controller
 
         return response()->json([
             'status' => HTTPStatus::Success,
-            'consumos'   => $consumos
-        ]);
+            'consumos' => $consumos
+        ], 200);
     }
-
-    //Funcion para registrar uno o varios consumos segun el precio_unitario que se encuentra en la tabla inventarios y calcular el iva segun la configuracion del sistema
 
     public function registrarConsumos(RegistrarConsumosRequest $request): JsonResponse
     {
@@ -63,141 +64,59 @@ class ConsumosController extends Controller
             $consumos = $request->validated()['consumos'];
             $reserva_id = $request->reserva_id;
 
-            // Obtener la reserva y la nacionalidad del huésped
+            // Validar reserva
             $reserva = Reserva::findOrFail($reserva_id);
-            $huesped = Huesped::findOrFail($reserva->huesped_id);
 
-            // Obtener la tasa de IVA activa
+            // Obtener tasa de IVA (para TODOS)
             $ivaConfig = ConfiguracionIva::where('activo', true)->first();
-
-            // Determinar tasa de IVA según nacionalidad
-            $nacionalidad = $huesped->nacionalidad; // ECUATORIANO o EXTRANJERO
-            if ($nacionalidad === 'ECUATORIANO') {
-                $tasa_iva = $ivaConfig ? $ivaConfig->tasa_iva : 0;
-            } else {
-                $tasa_iva = 0;
-            }
+            $tasa_iva = $ivaConfig ?  $ivaConfig->tasa_iva : 15.00;
 
             $consumosProcesados = [];
 
             foreach ($consumos as $c) {
-                $cantidadNueva = $c['cantidad'];
-
-                // Buscar si ya existe un consumo con la misma reserva e inventario
-                $consumo = Consumo::where('reserva_id', $reserva_id)
-                    ->where('inventario_id', $c['inventario_id'])
-                    ->first();
-
                 $inventario = Inventario::findOrFail($c['inventario_id']);
-                $precioUnitario = $inventario->precio_unitario;
+                $cantidad = $c['cantidad'];
+                $precio_unitario = $inventario->precio_unitario;
+                $subtotal = $cantidad * $precio_unitario;
 
-                if ($consumo) {
-                    // ========== ACTUALIZAR CONSUMO EXISTENTE ==========
-                    $cantidadAnterior = $consumo->cantidad;
-                    $cantidadFinal = $cantidadAnterior + $cantidadNueva;
+                // ============================================================
+                // SIMPLIFICADO:  IVA siempre se calcula (no hay condicionales)
+                // ============================================================
+                $iva = $subtotal * ($tasa_iva / 100);
+                $total = $subtotal + $iva;
 
-                    if ($cantidadFinal <= 0) {
-                        // Si la cantidad final es 0 o menos, devolver al inventario
-                        if (!$inventario->sin_stock) {
-                            $inventario->registrarEntrada(
-                                cantidad: abs($cantidadAnterior),
-                                motivo: 'Devolución de consumo eliminado',
-                                observaciones: "Consumo ID: {$consumo->id} - Reserva: {$reserva->codigo_reserva}",
-                                usuarioId: Auth::id()
-                            );
-                        }
+                $consumo = Consumo::create([
+                    'reserva_id'      => $reserva_id,
+                    'inventario_id'   => $inventario->id,
+                    'cantidad'        => $cantidad,
+                    'fecha_creacion'  => now(),
+                    'subtotal'        => $subtotal,
+                    'tasa_iva'        => $tasa_iva,
+                    'iva'             => $iva,
+                    'total'           => $total,
+                ]);
 
-                        $consumo->delete();
-                        continue;
-                    }
+                $consumosProcesados[] = $consumo;
 
-                    // Calcular diferencia para ajustar inventario
-                    $diferenciaCantidad = $cantidadNueva; // Puede ser positiva o negativa
-
-                    // Registrar movimiento de inventario según la diferencia
-                    if ($diferenciaCantidad > 0 && !$inventario->sin_stock) {
-                        // Aumentó el consumo = salida de inventario
-                        $inventario->registrarSalida(
-                            cantidad: $diferenciaCantidad,
-                            motivo: 'Consumo adicional en reserva',
-                            observaciones: "Consumo ID: {$consumo->id} - Reserva: {$reserva->codigo_reserva} - Huésped: {$huesped->nombres} {$huesped->apellidos}",
-                            reservaId: $reserva_id,
-                            consumoId: $consumo->id,
-                            usuarioId: Auth::id()
-                        );
-                    } elseif ($diferenciaCantidad < 0 && !$inventario->sin_stock) {
-                        // Disminuyó el consumo = devolución al inventario
-                        $inventario->registrarEntrada(
-                            cantidad: abs($diferenciaCantidad),
-                            motivo: 'Corrección de consumo (devolución)',
-                            observaciones: "Consumo ID: {$consumo->id} - Reserva: {$reserva->codigo_reserva}",
-                            usuarioId: Auth::id()
-                        );
-                    }
-
-                    // Actualizar el consumo
-                    $consumo->cantidad = $cantidadFinal;
-                    $consumo->subtotal = $cantidadFinal * $precioUnitario;
-                    $consumo->tasa_iva = $tasa_iva;
-                    $consumo->iva = $consumo->subtotal * ($tasa_iva / 100);
-                    $consumo->total = $consumo->iva + $consumo->subtotal;
-                    $consumo->aplica_iva = $tasa_iva > 0 ? true : false;
-                    $consumo->save();
-
-                    $consumosProcesados[] = $consumo;
-                } else {
-                    // ========== CREAR NUEVO CONSUMO ==========
-
-                    // Verificar stock disponible (solo si maneja stock)
-                    if (!$inventario->sin_stock && $inventario->stock < $cantidadNueva) {
-                        throw new \Exception("Stock insuficiente para {$inventario->nombre_producto}. Disponible: {$inventario->stock}, Solicitado: {$cantidadNueva}");
-                    }
-
-                    $subtotal = $cantidadNueva * $precioUnitario;
-                    $iva = $subtotal * ($tasa_iva / 100);
-                    $total = $iva + $subtotal;
-                    $aplica_iva = $tasa_iva > 0 ? true : false;
-
-                    $nuevoConsumo = Consumo::create([
-                        'reserva_id'      => $reserva_id,
-                        'inventario_id'   => $c['inventario_id'],
-                        'cantidad'        => $cantidadNueva,
-                        'fecha_creacion'  => now(),
-                        'subtotal'        => $subtotal,
-                        'tasa_iva'        => $tasa_iva,
-                        'iva'             => $iva,
-                        'total'           => $total,
-                        'aplica_iva'      => $aplica_iva,
-                    ]);
-
-                    // Registrar salida de inventario (solo si maneja stock)
-                    if (!$inventario->sin_stock) {
-                        $inventario->registrarSalida(
-                            cantidad: $cantidadNueva,
-                            motivo: 'Consumo en reserva',
-                            observaciones: "Consumo ID: {$nuevoConsumo->id} - Reserva: {$reserva->codigo_reserva} - Huésped: {$huesped->nombres} {$huesped->apellidos}",
-                            reservaId: $reserva_id,
-                            consumoId: $nuevoConsumo->id,
-                            usuarioId: Auth::id()
-                        );
-                    }
-
-                    $consumosProcesados[] = $nuevoConsumo;
+                // Descontar stock si aplica
+                if (! $inventario->sin_stock) {
+                    $inventario->stock -= $cantidad;
+                    $inventario->save();
                 }
             }
 
             DB::commit();
 
             return response()->json([
-                'status' => 'success',
-                'data'   => $consumosProcesados,
-                'msg' => 'Consumos registrados correctamente'
-            ]);
+                'status' => HTTPStatus::Success,
+                'msg' => 'Consumos registrados correctamente',
+                'consumos' => $consumosProcesados,
+            ], 201);
         } catch (\Throwable $th) {
             DB::rollBack();
             return response()->json([
-                'status' => 'error',
-                'msg'    => $th->getMessage()
+                'status' => HTTPStatus::Error,
+                'msg' => $th->getMessage()
             ], 500);
         }
     }
@@ -296,7 +215,6 @@ class ConsumosController extends Controller
             $consumo->tasa_iva = $tasa_iva;
             $consumo->iva = $consumo->subtotal * ($tasa_iva / 100);
             $consumo->total = $consumo->iva + $consumo->subtotal;
-            $consumo->aplica_iva = $tasa_iva > 0 ? true : false;
             $consumo->save();
 
             DB::commit();

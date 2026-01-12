@@ -3,12 +3,14 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CalendarioReservasController;
 use App\Http\Controllers\CategoriasController;
+use App\Http\Controllers\ClienteFacturacionController;
 use App\Http\Controllers\ConceptoPagoController;
 use App\Http\Controllers\ConfiguracionIvaController;
 use App\Http\Controllers\ConsumosController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartamentoController;
 use App\Http\Controllers\EstadiaController;
+use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\GastosController;
 use App\Http\Controllers\HuespedController;
 use App\Http\Controllers\InventarioController;
@@ -17,6 +19,7 @@ use App\Http\Controllers\PagoController;
 use App\Http\Controllers\ProvinciaController;
 use App\Http\Controllers\ReservasController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SecuenciaFacturaController;
 use App\Http\Controllers\ServiciosController;
 use App\Http\Controllers\TipoReservaController;
 use App\Http\Controllers\TiposDanoController;
@@ -216,4 +219,76 @@ Route::group(['prefix' => 'general', 'middleware' => ['auth:sanctum', CheckRole:
     Route::post('/reporte-departamentos', [DepartamentoController::class, 'reporteDepartamentosPorFechas']);
     Route::post('/reservas-reporte/pdf', [DepartamentoController::class, 'exportarKpiYDepartamentosPdf']);
     Route::post('/consumos-por-departamento/pdf', [DepartamentoController::class, 'exportConsumosPorDepartamentoPDF']);
+});
+
+
+Route::middleware('auth:sanctum')->group(function () {
+
+    // ========================================================================
+    // CLIENTES DE FACTURACIÓN
+    // ========================================================================
+    Route::prefix('clientes-facturacion')->group(function () {
+
+        // Listar y búsqueda
+        Route::get('/', [ClienteFacturacionController::class, 'index']);
+        Route::get('/simple', [ClienteFacturacionController::class, 'listadoSimple']); // Para selects
+        Route::get('/consumidor-final', [ClienteFacturacionController::class, 'getConsumidorFinal']);
+
+        // Búsqueda específica
+        Route::post('/buscar-identificacion', [ClienteFacturacionController::class, 'buscarPorIdentificacion']);
+        Route::post('/buscar-nombre', [ClienteFacturacionController::class, 'buscarPorNombre']);
+
+        // Prellenado desde huésped/reserva
+        Route::get('/prellenar-huesped/{huesped_id}', [ClienteFacturacionController::class, 'prellenarDesdeHuesped']);
+        Route::get('/prellenar-reserva/{reserva_id}', [ClienteFacturacionController::class, 'prellenarDesdeReserva']);
+
+        // CRUD
+        Route::post('/', [ClienteFacturacionController::class, 'store']);
+        Route::get('/{id}', [ClienteFacturacionController::class, 'show']);
+        Route::put('/{id}', [ClienteFacturacionController::class, 'update']);
+        Route::patch('/{id}/toggle-estado', [ClienteFacturacionController::class, 'toggleEstado']);
+
+        // Estadísticas
+        Route::get('/{id}/estadisticas', [ClienteFacturacionController::class, 'estadisticas']);
+    });
+
+    // ========================================================================
+    // FACTURAS
+    // ========================================================================
+    Route::prefix('facturas')->group(function () {
+
+        // Listar y búsqueda
+        Route::get('/', [FacturaController::class, 'index']);
+        Route::get('/{id}', [FacturaController::class, 'show']);
+
+        // Operaciones principales
+        Route::post('/generar', [FacturaController::class, 'generarFactura']);
+        Route::post('/{id}/anular', [FacturaController::class, 'anularFactura']);
+
+        // Consultas específicas
+        Route::get('/reserva/{reserva_id}', [FacturaController::class, 'getFacturaPorReserva']);
+        Route::get('/verificar-reserva/{reserva_id}', [FacturaController::class, 'verificarPuedeFacturar']);
+
+        // Exportación
+        Route::get('/{id}/pdf', [FacturaController::class, 'exportarPDF']);
+
+        // Reportes y estadísticas
+        Route::get('/estadisticas/generales', [FacturaController::class, 'estadisticas']);
+        Route::get('/reportes/cliente/{cliente_id}', [FacturaController::class, 'reportePorCliente']);
+        Route::post('/reportes/iva', [FacturaController::class, 'reporteIVA']);
+    });
+
+    // ========================================================================
+    // SECUENCIAS DE FACTURAS (solo administradores)
+    // ========================================================================
+    Route::prefix('secuencias-facturas')->group(function () {
+
+        Route::get('/', [SecuenciaFacturaController::class, 'index']);
+        Route::get('/activa', [SecuenciaFacturaController::class, 'getActiva']);
+        Route::get('/{id}', [SecuenciaFacturaController::class, 'show']);
+        Route::post('/', [SecuenciaFacturaController::class, 'store']);
+        Route::put('/{id}', [SecuenciaFacturaController::class, 'update']);
+        Route::patch('/{id}/toggle-estado', [SecuenciaFacturaController::class, 'toggleEstado']);
+        Route::post('/{id}/reiniciar', [SecuenciaFacturaController::class, 'reiniciar']); // Solo desarrollo
+    });
 });

@@ -22,7 +22,6 @@ return new class extends Migration
             $table->decimal('tasa_iva', 5, 2)->default(15.00);
             $table->decimal('iva', 10, 2)->default(0);
             $table->decimal('total', 10, 2)->default(0);
-            $table->boolean('aplica_iva')->default(true);
             $table->timestamps();
 
             $table->foreign('reserva_id')->references('id')->on('reservas')->onDelete('cascade');

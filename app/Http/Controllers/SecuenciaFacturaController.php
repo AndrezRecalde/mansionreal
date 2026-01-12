@@ -4,13 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Enums\HTTPStatus;
 use App\Http\Requests\SecuenciaFacturaRequest;
+use App\Services\Facturacion\SecuenciaFacturaService;
+use App\Services\Facturacion\Exceptions\FacturacionException;
 use App\Models\SecuenciaFactura;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class SecuenciaFacturaController extends Controller
 {
+    protected SecuenciaFacturaService $secuenciaService;
+
+    public function __construct(SecuenciaFacturaService $secuenciaService)
+    {
+        $this->secuenciaService = $secuenciaService;
+    }
+
     /**
      * Listar todas las secuencias de facturas
      */
@@ -81,26 +89,50 @@ class SecuenciaFacturaController extends Controller
     }
 
     /**
-     * Obtener secuencia activa por defecto
+     * Obtener secuencia activa (USANDO SERVICIO)
      */
     public function getActiva(): JsonResponse
     {
         try {
-            $secuencia = SecuenciaFactura::obtenerDefault();
+            $secuencia = $this->secuenciaService->obtenerSecuenciaActiva();
 
-            if (! $secuencia) {
-                return response()->json([
-                    'status' => HTTPStatus::Error,
-                    'msg' => 'No hay secuencia activa configurada'
-                ], 404);
-            }
+            $disponibilidad = $this->secuenciaService->verificarDisponibilidad($secuencia->id);
 
             return response()->json([
                 'status' => HTTPStatus::Success,
                 'secuencia' => $secuencia,
-                'siguiente_numero' => $secuencia->siguienteNumero(),
-                'numeros_disponibles' => $secuencia->numerosDisponibles(),
-                'puede_generar' => $secuencia->puedeGenerarMas(),
+                'siguiente_numero' => $disponibilidad['siguiente_numero'],
+                'numeros_disponibles' => $disponibilidad['numeros_disponibles'],
+                'puede_generar' => $disponibilidad['puede_generar'],
+            ], 200);
+        } catch (FacturacionException $e) {
+            return response()->json([
+                'status' => HTTPStatus::Error,
+                'msg' => $e->getMessage()
+            ], 404);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => HTTPStatus::Error,
+                'msg' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Verificar disponibilidad de números (USANDO SERVICIO)
+     */
+    public function verificarDisponibilidad(int $id): JsonResponse
+    {
+        try {
+            $disponibilidad = $this->secuenciaService->verificarDisponibilidad($id);
+
+            return response()->json([
+                'status' => HTTPStatus::Success,
+                'puede_generar' => $disponibilidad['puede_generar'],
+                'numeros_disponibles' => $disponibilidad['numeros_disponibles'],
+                'siguiente_numero' => $disponibilidad['siguiente_numero'],
+                'secuencial_actual' => $disponibilidad['secuencial_actual'],
+                'secuencial_fin' => $disponibilidad['secuencial_fin'],
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
@@ -111,54 +143,24 @@ class SecuenciaFacturaController extends Controller
     }
 
     /**
-     * Crear nueva secuencia
+     * Crear nueva secuencia (USANDO SERVICIO)
      */
     public function store(SecuenciaFacturaRequest $request): JsonResponse
     {
-        DB::beginTransaction();
         try {
-            $validated = $request->validated();
-
-            // Verificar que no exista la combinación establecimiento-punto_emision
-            $existe = SecuenciaFactura::where('establecimiento', $validated['establecimiento'])
-                ->where('punto_emision', $validated['punto_emision'])
-                ->exists();
-
-            if ($existe) {
-                return response()->json([
-                    'status' => HTTPStatus::Error,
-                    'msg' => 'Ya existe una secuencia con ese establecimiento y punto de emisión'
-                ], 409);
-            }
-
-            // Validar que secuencial_fin sea mayor que secuencial_inicio
-            if ($validated['secuencial_fin'] && $validated['secuencial_fin'] < $validated['secuencial_inicio']) {
-                return response()->json([
-                    'status' => HTTPStatus::Error,
-                    'msg' => 'El secuencial final debe ser mayor al secuencial inicial'
-                ], 400);
-            }
-
-            $secuencia = SecuenciaFactura::create([
-                'establecimiento' => $validated['establecimiento'],
-                'punto_emision' => $validated['punto_emision'],
-                'secuencial_actual' => 0, // Siempre inicia en 0
-                'secuencial_inicio' => $validated['secuencial_inicio'],
-                'secuencial_fin' => $validated['secuencial_fin'] ?? null,
-                'longitud_secuencial' => $validated['longitud_secuencial'] ?? 9,
-                'activo' => $validated['activo'] ?? true,
-                'descripcion' => $validated['descripcion'] ?? null,
-            ]);
-
-            DB::commit();
+            $secuencia = $this->secuenciaService->crearSecuencia($request->validated());
 
             return response()->json([
                 'status' => HTTPStatus::Success,
                 'msg' => 'Secuencia de facturas creada correctamente',
                 'secuencia' => $secuencia,
             ], 201);
+        } catch (FacturacionException $e) {
+            return response()->json([
+                'status' => HTTPStatus::Error,
+                'msg' => $e->getMessage()
+            ], 409);
         } catch (\Throwable $th) {
-            DB::rollBack();
             return response()->json([
                 'status' => HTTPStatus::Error,
                 'msg' => $th->getMessage()
@@ -167,59 +169,19 @@ class SecuenciaFacturaController extends Controller
     }
 
     /**
-     * Actualizar secuencia
+     * Actualizar secuencia (USANDO SERVICIO)
      */
     public function update(SecuenciaFacturaRequest $request, int $id): JsonResponse
     {
-        DB::beginTransaction();
         try {
-            $secuencia = SecuenciaFactura::findOrFail($id);
-            $validated = $request->validated();
-
-            // Solo permitir actualizar descripción y límite final (no el secuencial actual)
-            $secuencia->update([
-                'descripcion' => $validated['descripcion'] ?? $secuencia->descripcion,
-                'secuencial_fin' => $validated['secuencial_fin'] ??  $secuencia->secuencial_fin,
-            ]);
-
-            DB::commit();
+            $secuencia = $this->secuenciaService->actualizarSecuencia($id, $request->validated());
 
             return response()->json([
                 'status' => HTTPStatus::Success,
                 'msg' => 'Secuencia actualizada correctamente',
-                'secuencia' => $secuencia->fresh(),
-            ], 200);
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            return response()->json([
-                'status' => HTTPStatus::Error,
-                'msg' => $th->getMessage()
-            ], 500);
-        }
-    }
-
-    /**
-     * Activar/Desactivar secuencia
-     */
-    public function toggleEstado(int $id): JsonResponse
-    {
-        DB::beginTransaction();
-        try {
-            $secuencia = SecuenciaFactura::findOrFail($id);
-
-            $nuevoEstado = ! $secuencia->activo;
-            $secuencia->activo = $nuevoEstado;
-            $secuencia->save();
-
-            DB::commit();
-
-            return response()->json([
-                'status' => HTTPStatus::Success,
-                'msg' => $nuevoEstado ? 'Secuencia activada correctamente' : 'Secuencia desactivada correctamente',
                 'secuencia' => $secuencia,
             ], 200);
         } catch (\Throwable $th) {
-            DB::rollBack();
             return response()->json([
                 'status' => HTTPStatus::Error,
                 'msg' => $th->getMessage()
@@ -228,7 +190,28 @@ class SecuenciaFacturaController extends Controller
     }
 
     /**
-     * Reiniciar secuencia (solo para testing/desarrollo - con confirmación)
+     * Activar/Desactivar secuencia (USANDO SERVICIO)
+     */
+    public function toggleEstado(int $id): JsonResponse
+    {
+        try {
+            $secuencia = $this->secuenciaService->toggleEstado($id);
+
+            return response()->json([
+                'status' => HTTPStatus::Success,
+                'msg' => $secuencia->activo ? 'Secuencia activada correctamente' : 'Secuencia desactivada correctamente',
+                'secuencia' => $secuencia,
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => HTTPStatus::Error,
+                'msg' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Reiniciar secuencia (SOLO PARA DESARROLLO/TESTING)
      */
     public function reiniciar(Request $request, int $id): JsonResponse
     {
@@ -236,7 +219,6 @@ class SecuenciaFacturaController extends Controller
             'confirmacion' => 'required|string|in: REINICIAR_SECUENCIA'
         ]);
 
-        DB::beginTransaction();
         try {
             $secuencia = SecuenciaFactura::findOrFail($id);
 
@@ -250,15 +232,12 @@ class SecuenciaFacturaController extends Controller
 
             $secuencia->reiniciar();
 
-            DB::commit();
-
             return response()->json([
                 'status' => HTTPStatus::Success,
                 'msg' => 'Secuencia reiniciada correctamente',
                 'secuencia' => $secuencia->fresh(),
             ], 200);
         } catch (\Throwable $th) {
-            DB::rollBack();
             return response()->json([
                 'status' => HTTPStatus::Error,
                 'msg' => $th->getMessage()

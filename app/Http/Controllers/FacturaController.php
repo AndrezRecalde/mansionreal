@@ -42,9 +42,9 @@ class FacturaController extends Controller
             $search = $request->search;
 
             $query = Factura::with([
-                'reserva. huesped: id,nombres,apellidos,dni',
+                'reserva.huesped:id,nombres,apellidos,dni',
                 'reserva.departamento:id,numero_departamento',
-                'clienteFacturacion: id,identificacion,nombres,apellidos',
+                'clienteFacturacion:id,identificacion,nombres,apellidos',
                 'usuarioGenero:id,nombres,apellidos'
             ]);
 
@@ -97,10 +97,10 @@ class FacturaController extends Controller
         try {
             $factura = Factura::with([
                 'reserva.huesped',
-                'reserva.departamento. tipoDepartamento',
+                'reserva.departamento.tipoDepartamento',
                 'clienteFacturacion',
-                'consumos.inventario. categoria',
-                'usuarioGenero: id,nombres,apellidos,email',
+                'consumos.inventario.categoria',
+                'usuarioGenero:id,nombres,apellidos,email',
                 'usuarioAnulo:id,nombres,apellidos,email'
             ])->findOrFail($id);
 
@@ -287,7 +287,7 @@ class FacturaController extends Controller
         try {
             $factura = Factura::with([
                 'reserva.huesped',
-                'reserva.departamento. tipoDepartamento',
+                'reserva.departamento.tipoDepartamento',
                 'consumos.inventario.categoria',
                 'usuarioGenero'
             ])->findOrFail($id);

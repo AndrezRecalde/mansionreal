@@ -84,9 +84,9 @@ class FacturaService
             ]);
 
             return $factura->load([
-                'reserva. huesped',
-                'reserva. departamento',
-                'consumos. inventario',
+                'reserva.huesped',
+                'reserva.departamento',
+                'consumos.inventario',
                 'clienteFacturacion'
             ]);
         });
@@ -183,7 +183,7 @@ class FacturaService
     public function obtenerFacturaPorReserva(int $reservaId): ?Factura
     {
         return Factura::with([
-            'consumos. inventario',
+            'consumos.inventario',
             'clienteFacturacion',
             'usuarioGenero'
         ])->where('reserva_id', $reservaId)->first();

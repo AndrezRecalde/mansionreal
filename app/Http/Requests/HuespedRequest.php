@@ -30,8 +30,6 @@ class HuespedRequest extends FormRequest
             'dni'           => ['required', Rule::unique('huespedes')->ignore($this->request->get('id'))],
             'telefono'      => 'nullable|string|max:20',
             'email'         => 'nullable|email|max:100',
-            'direccion'     => 'required',
-            'nacionalidad'  => 'required|in:ECUATORIANO,EXTRANJERO',
             'activo'        => 'sometimes|boolean'
         ];
     }
@@ -51,10 +49,6 @@ class HuespedRequest extends FormRequest
             'telefono.max'          => 'El teléfono no debe exceder los 20 caracteres.',
             'email.email'           => 'El correo electrónico debe ser una dirección de correo válida.',
             'email.max'             => 'El correo electrónico no debe exceder los 100 caracteres.',
-            'direccion.required'    =>  'La dirección del huesped es obligatoria',
-            'nacionalidad.required' => 'La nacionalidad es obligatoria.',
-            'nacionalidad.in'       => 'La nacionalidad debe ser ECUATORIANO o EXTRANJERO.',
-            'nacionalidad.exists'   => 'La nacionalidad seleccionada no es válida.',
             'activo.boolean'        => 'El campo activo debe ser verdadero o falso.'
         ];
     }

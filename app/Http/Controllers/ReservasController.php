@@ -57,10 +57,8 @@ class ReservasController extends Controller
                     'nombres'       => $request->huesped['nombres'],
                     'apellidos'     => $request->huesped['apellidos'],
                     'dni'           => $request->huesped['dni'],
-                    'telefono'      => $request->huesped['telefono'],
-                    'email'         => $request->huesped['email'],
-                    'direccion'     => $request->huesped['direccion'],
-                    'nacionalidad'  => $request->huesped['nacionalidad'],
+                    'telefono'      => $request->huesped['telefono'] ?? null,
+                    'email'         => $request->huesped['email'] ?? null,
                 ]);
             } else {
                 $huesped = Huesped::findOrFail($request->huesped['huesped_id']);
@@ -441,7 +439,6 @@ class ReservasController extends Controller
                 'fecha_checkin'  => $reserva->fecha_checkin,
                 'fecha_checkout' => $reserva->fecha_checkout,
                 'total_noches'   => $reserva->total_noches,
-                'direccion'      => $reserva->huesped?->direccion,
                 'estado'         => [
                     'id'      => $reserva->estado?->id,
                     'nombre'  => $reserva->estado?->nombre_estado,

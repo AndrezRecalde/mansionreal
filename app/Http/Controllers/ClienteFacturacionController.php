@@ -7,6 +7,7 @@ use App\Http\Requests\ClienteFacturacionRequest;
 use App\Services\Facturacion\ClienteFacturacionService;
 use App\Services\Facturacion\Exceptions\FacturacionException;
 use App\Models\ClienteFacturacion;
+use App\Models\Reserva;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -204,6 +205,9 @@ class ClienteFacturacionController extends Controller
                 'datos' => $resultado['datos'],
                 'cliente_existente' => $resultado['cliente_existente'],
                 'existe' => $resultado['existe'],
+                'msg' => $resultado['existe']
+                    ? 'Ya existe un cliente con esta identificación'
+                    : 'Datos prellenados desde el huésped',
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
@@ -219,7 +223,7 @@ class ClienteFacturacionController extends Controller
     public function prellenarDesdeReserva(int $reservaId): JsonResponse
     {
         try {
-            $reserva = \App\Models\Reserva::with('huesped')->findOrFail($reservaId);
+            $reserva = Reserva::with('huesped')->findOrFail($reservaId);
 
             if (!$reserva->huesped) {
                 return response()->json([

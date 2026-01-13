@@ -1,14 +1,8 @@
 import { useEffect } from "react";
-import {
-    Box,
-    Select,
-    SimpleGrid,
-    Stack,
-    TextInput,
-} from "@mantine/core";
+import { Box, Select, SimpleGrid, Stack, TextInput } from "@mantine/core";
 import { BtnSubmit } from "../../../components";
 import { useHuespedStore, useUiHuesped } from "../../../hooks";
-import classes from "../../../components/elements/modules/LabelsInput.module.css"
+import classes from "../../../components/elements/modules/LabelsInput.module.css";
 
 export const HuespedForm = ({ form }) => {
     const { activarHuesped, fnAgregarHuesped, fnAsignarHuesped } =
@@ -24,8 +18,6 @@ export const HuespedForm = ({ form }) => {
                 dni: activarHuesped.dni,
                 telefono: activarHuesped.telefono || "",
                 email: activarHuesped.email,
-                direccion: activarHuesped.direccion || "",
-                nacionalidad: activarHuesped.nacionalidad || "",
             });
         }
     }, [activarHuesped]);
@@ -53,12 +45,12 @@ export const HuespedForm = ({ form }) => {
                 <TextInput
                     withAsterisk
                     label="No. Cedula"
-                    placeholder="Ingrese el numero de cedula"
+                    placeholder="Ingrese el número de cédula"
                     {...form.getInputProps("dni")}
                     classNames={classes}
                 />
                 <SimpleGrid
-                    cols={2}
+                    cols={{ base: 1, sm: 2, lg: 2 }}
                     breakpoints={[{ maxWidth: "sm", cols: 1 }]}
                 >
                     <TextInput
@@ -78,33 +70,14 @@ export const HuespedForm = ({ form }) => {
                 </SimpleGrid>
                 <TextInput
                     label="Telefono"
-                    placeholder="Ingrese el numero de telefono"
+                    placeholder="Ingrese el número de teléfono"
                     {...form.getInputProps("telefono")}
                     classNames={classes}
                 />
                 <TextInput
-                    withAsterisk
-                    label="Correo Electronico"
-                    placeholder="Ingrese el correo electronico"
+                    label="Correo Electrónico"
+                    placeholder="Ingrese el correo electrónico"
                     {...form.getInputProps("email")}
-                    classNames={classes}
-                />
-                <Select
-                    searchable
-                    clearable
-                    label="Nacionalidad"
-                    placeholder="Seleccione una nacionalidad"
-                    {...form.getInputProps("nacionalidad")}
-                    data={[
-                        { value: "ECUATORIANO", label: "ECUATORIANO" },
-                        { value: "EXTRANJERO", label: "EXTRANJERO" },
-                    ]}
-                    classNames={classes}
-                />
-                <TextInput
-                    label="Direccion del huesped"
-                    placeholder="Ingrese la direccion de domicilio del huesped"
-                    {...form.getInputProps("direccion")}
                     classNames={classes}
                 />
                 <BtnSubmit>Guardar Huesped</BtnSubmit>

@@ -17,8 +17,6 @@ export const HuespedModal = () => {
             dni: "",
             telefono: "",
             email: "",
-            direccion: "",
-            nacionalidad: "",
         },
         validate: {
             nombres: (value) =>
@@ -34,13 +32,7 @@ export const HuespedModal = () => {
                     ? "La cedula debe tener entre 10 y 15 caracteres"
                     : null,
             email: (value) =>
-                /^\S+@\S+$/.test(value) ? null : "El email no es valido",
-            direccion: (value) =>
-                value.length < 2
-                    ? "La direccion debe tener al menos 2 caracteres"
-                    : null,
-            nacionalidad: (value) =>
-                value === "" ? "La nacionalidad es obligatoria" : null,
+                /^\S+@\S+$/.test(value) ? null : "El email no es valido"
         },
     });
 

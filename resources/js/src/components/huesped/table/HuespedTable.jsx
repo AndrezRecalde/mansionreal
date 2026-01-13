@@ -34,10 +34,6 @@ export const HuespedTable = ({ pagination, setPagination }) => {
                 header: "Email",
                 accessorKey: "email",
             },
-            {
-                header: "Nacionalidad",
-                accessorFn: (row) => row.nacionalidad || "SIN DATOS",
-            },
         ],
         []
     );

@@ -103,29 +103,23 @@ class ClienteFacturacionService
     {
         $huesped = Huesped::findOrFail($huespedId);
 
-        // Mapear nacionalidad a tipo de identificación
-        $tipoIdentificacion = 'CEDULA';
-
-        if (strlen($huesped->dni) === 13) {
-            $tipoIdentificacion = 'RUC';
-        } elseif ($huesped->nacionalidad === 'EXTRANJERO') {
-            $tipoIdentificacion = 'PASAPORTE';
-        }
+        // ================================================================
+        // SIMPLIFICADO: Solo retornar datos, NO adivinar tipo
+        // ================================================================
 
         $datos = [
             'tipo_cliente' => ClienteFacturacion::TIPO_CLIENTE_REGISTRADO,
-            'tipo_identificacion' => $tipoIdentificacion,
+            // tipo_identificacion NO se incluye - el usuario lo selecciona
             'identificacion' => $huesped->dni,
             'nombres' => $huesped->nombres,
             'apellidos' => $huesped->apellidos,
-            'direccion' => $huesped->direccion,
             'telefono' => $huesped->telefono,
             'email' => $huesped->email,
             'activo' => true,
         ];
 
-        // Verificar si ya existe
-        $clienteExistente = ClienteFacturacion:: where('identificacion', $huesped->dni)->first();
+        // Verificar si ya existe un cliente con esa identificación
+        $clienteExistente = ClienteFacturacion::where('identificacion', $huesped->dni)->first();
 
         return [
             'datos' => $datos,
@@ -155,7 +149,7 @@ class ClienteFacturacionService
      */
     public function obtenerConsumidorFinal(): ClienteFacturacion
     {
-        return ClienteFacturacion:: consumidorFinal();
+        return ClienteFacturacion::consumidorFinal();
     }
 
     /**
@@ -189,7 +183,7 @@ class ClienteFacturacionService
      */
     public function obtenerEstadisticas(int $clienteId): array
     {
-        $cliente = ClienteFacturacion:: findOrFail($clienteId);
+        $cliente = ClienteFacturacion::findOrFail($clienteId);
 
         return [
             'total_reservas' => $cliente->contarReservas(),

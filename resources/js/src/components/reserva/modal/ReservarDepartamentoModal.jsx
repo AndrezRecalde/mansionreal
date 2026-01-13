@@ -31,8 +31,6 @@ export const ReservarDepartamentoModal = () => {
                 dni: "",
                 email: "",
                 telefono: "",
-                direccion: "",
-                nacionalidad: "",
             },
             tipo_reserva: "",
             departamento_id: "",
@@ -60,10 +58,6 @@ export const ReservarDepartamentoModal = () => {
                     value ? null : "El apellido del huésped es obligatorio",
                 email: (value) =>
                     /^\S+@\S+$/.test(value) ? null : "Email inválido",
-                direccion: (value) =>
-                    value.length < 2
-                        ? "La direccion debe tener al menos 2 caracteres"
-                        : null,
             },
             fecha_checkin: (value) =>
                 value ? null : "La fecha de check-in es obligatoria",

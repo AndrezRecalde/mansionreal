@@ -3,7 +3,6 @@ import {
     Group,
     Loader,
     rem,
-    Select,
     SimpleGrid,
     TextInput,
     Transition,
@@ -43,8 +42,8 @@ export const ReservarDatosClienteForm = ({
                                         base: 1,
                                         xs: 1,
                                         sm: 1,
-                                        md: 3,
-                                        lg: 3,
+                                        md: 2,
+                                        lg: 2,
                                     }}
                                     spacing="md"
                                 >
@@ -73,7 +72,6 @@ export const ReservarDatosClienteForm = ({
                                         classNames={labelStyles}
                                     />
                                     <TextInput
-                                        withAsterisk
                                         disabled={disabledInput}
                                         label="Correo"
                                         placeholder="Correo"
@@ -92,42 +90,6 @@ export const ReservarDatosClienteForm = ({
                                         )}
                                         {...reservaForm.getInputProps(
                                             "huesped.telefono"
-                                        )}
-                                        classNames={labelStyles}
-                                    />
-                                    <Select
-                                        searchable
-                                        clearable
-                                        disabled={disabledInput}
-                                        label="Nacionalidad"
-                                        placeholder="Nacionalidad"
-                                        data={[
-                                            {
-                                                value: "ECUATORIANO",
-                                                label: "ECUATORIANO",
-                                            },
-                                            {
-                                                value: "EXTRANJERO",
-                                                label: "EXTRANJERO",
-                                            },
-                                        ]}
-                                        key={reservaForm.key(
-                                            "huesped.nacionalidad"
-                                        )}
-                                        {...reservaForm.getInputProps(
-                                            "huesped.nacionalidad"
-                                        )}
-                                        classNames={labelStyles}
-                                    />
-                                    <TextInput
-                                        disabled={disabledInput}
-                                        label="Direccion del huesped"
-                                        placeholder="Ingrese la direccion del huesped"
-                                        key={reservaForm.key(
-                                            "huesped.direccion"
-                                        )}
-                                        {...reservaForm.getInputProps(
-                                            "huesped.direccion"
                                         )}
                                         classNames={labelStyles}
                                     />

@@ -14,14 +14,8 @@ class Huesped extends Model
         'dni',
         'telefono',
         'email',
-        'direccion',
-        'nacionalidad',
     ];
 
-    public function nacionalidad()
-    {
-        return $this->belongsTo(Nacionalidad::class);
-    }
 
     public function reservas()
     {

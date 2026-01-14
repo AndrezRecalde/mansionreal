@@ -93,6 +93,13 @@ import { useNotificaciones } from "./elementos/useNotificaciones";
 import { useTabManagement } from "./elementos/useTabManagement";
 import { useDisponibilidadTabManagement } from "./elementos/useDisponibilidadTabManagement";
 
+/* Facturacion */
+import { useFacturaStore } from "./facturacion/useFacturaStore";
+import { useClienteFacturacionStore } from "./facturacion/useClienteFacturacionStore";
+import { useSecuenciaFacturaStore } from "./facturacion/useSecuenciaFacturaStore";
+import { useUiFactura } from "./facturacion/useUiFactura";
+import { useUiClienteFacturacion } from "./facturacion/useUiClienteFacturacion";
+
 /* Storage Fields */
 import { useStorageField } from "./storage/useStorageField";
 
@@ -192,6 +199,13 @@ export {
     useNotificaciones,
     useTabManagement,
     useDisponibilidadTabManagement,
+
+    /* Facturacion  */
+    useFacturaStore,
+    useClienteFacturacionStore,
+    useSecuenciaFacturaStore,
+    useUiFactura,
+    useUiClienteFacturacion,
 
     /* Storage Fields */
     useStorageField,

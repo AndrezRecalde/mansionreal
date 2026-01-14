@@ -84,6 +84,13 @@ import { uiLimpiezaSlice } from "./limpieza/uiLimpiezaSlice";
 /* Calendario */
 import { calendarioSlice } from "./calendario/calendarioSlice";
 
+/* Facturacion */
+import { facturaSlice } from "./facturacion/facturaSlice";
+import { clienteFacturacionSlice } from "./facturacion/clienteFacturacionSlice";
+import { secuenciaFacturaSlice } from "./facturacion/secuenciaFacturaSlice";
+import { uiFacturaSlice } from "./facturacion/uiFacturaSlice";
+import { uiClienteFacturacionSlice } from "./facturacion/uiClienteFacturacionSlice";
+
 /* Storage Fields */
 import { storageFieldsSlice } from "./storage/storageFieldsSlice";
 
@@ -174,6 +181,13 @@ export {
 
     /* Calendario */
     calendarioSlice,
+
+    /* Facturacion */
+    facturaSlice,
+    clienteFacturacionSlice,
+    secuenciaFacturaSlice,
+    uiFacturaSlice,
+    uiClienteFacturacionSlice,
 
     /* Storage Fields */
     storageFieldsSlice,

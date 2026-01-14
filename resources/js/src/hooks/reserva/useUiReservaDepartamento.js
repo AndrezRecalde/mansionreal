@@ -1,5 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import {
+    rtkAbrirModalCancelarReserva,
     rtkAbrirModalInformacionReserva,
     rtkAbrirModalReservaFinalizar,
     rtkAbrirModalReservarDepartamento,
@@ -9,6 +10,7 @@ export const useUiReservaDepartamento = () => {
     const {
         abrirModalReservarDepartamento,
         abrirModalReservaFinalizar,
+        abrirModalCancelarReserva,
         abrirModalInformacionReserva,
     } = useSelector((state) => state.uiReserva);
     const dispatch = useDispatch();
@@ -21,6 +23,10 @@ export const useUiReservaDepartamento = () => {
         dispatch(rtkAbrirModalReservaFinalizar(estado));
     };
 
+    const fnAbrirModalCancelarReserva = (estado) => {
+        dispatch(rtkAbrirModalCancelarReserva(estado));
+    };
+
     const fnAbrirModalInformacionReserva = (estado) => {
         dispatch(rtkAbrirModalInformacionReserva(estado));
     };
@@ -28,10 +34,12 @@ export const useUiReservaDepartamento = () => {
     return {
         abrirModalReservarDepartamento,
         abrirModalReservaFinalizar,
+        abrirModalCancelarReserva,
         abrirModalInformacionReserva,
 
         fnAbrirModalReservarDepartamento,
         fnAbrirModalReservaFinalizar,
+        fnAbrirModalCancelarReserva,
         fnAbrirModalInformacionReserva,
     };
 };

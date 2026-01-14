@@ -3,6 +3,7 @@ import {
     authSlice,
     calendarioSlice,
     categoriaSlice,
+    clienteFacturacionSlice,
     conceptoPagoSlice,
     configuracionIvaSlice,
     consumoSlice,
@@ -17,6 +18,7 @@ import {
     dashResumenKPISlice,
     departamentoSlice,
     estadiaSlice,
+    facturaSlice,
     gastoSlice,
     huespedSlice,
     inventarioSlice,
@@ -25,15 +27,18 @@ import {
     provinciaSlice,
     reservaSlice,
     roleSlice,
+    secuenciaFacturaSlice,
     servicioSlice,
     storageFieldsSlice,
     tipoDepartamentoSlice,
     tiposDanoSlice,
     uiCategoriaSlice,
+    uiClienteFacturacionSlice,
     uiConfiguracionIvaSlice,
     uiConsumoSlice,
     uiDepartamentoSlice,
     uiEstadiaSlice,
+    uiFacturaSlice,
     uiGastoSlice,
     uiHeaderMenuSlice,
     uiHuespedSlice,
@@ -133,6 +138,13 @@ export const store = configureStore({
 
         /* Calendario - Reservas */
         calendario: calendarioSlice.reducer,
+
+        /* Facturacion */
+        facturacion: facturaSlice.reducer,
+        clienteFacturacion: clienteFacturacionSlice.reducer,
+        secuenciaFactura: secuenciaFacturaSlice.reducer,
+        uiFactura: uiFacturaSlice.reducer,
+        uiClienteFacturacion: uiClienteFacturacionSlice.reducer,
 
         /* Storage */
         storageFields: storageFieldsSlice.reducer,

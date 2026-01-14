@@ -95,6 +95,10 @@ import { BtnExportacionPDF } from "./reserva/btn/BtnExportacionPDF";
 import { ReservaFinalizarModal } from "./reserva/modal/ReservaFinalizarModal";
 import { ReservaFinalizarForm } from "./reserva/form/ReservaFinalizarForm";
 
+/* Reservas Cancelar Estado */
+import { ReservaCancelarModal } from "./reserva/modal/ReservaCancelarModal";
+import { ReservaCancelarForm } from "./reserva/form/ReservaCancelarForm";
+
 /* Reservas de Estadias */
 import { EstadiasReservadasCards } from "./reserva/cards/EstadiasReservadasCards";
 import { ConsultarEstadiasSection } from "./reserva/section/ConsultarEstadiasSection";
@@ -256,6 +260,10 @@ export {
     /* Reservas Finalizar Estado */
     ReservaFinalizarModal,
     ReservaFinalizarForm,
+
+    /* Reservas Cancelar Estado */
+    ReservaCancelarModal,
+    ReservaCancelarForm,
 
     /* Reservas de Estadias */
     EstadiasReservadasCards,

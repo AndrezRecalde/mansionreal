@@ -1,6 +1,6 @@
 import { ActionIcon, Group, Tooltip } from "@mantine/core";
 import { TextSection } from "../../../components";
-import { IconChecks, IconFileText } from "@tabler/icons-react";
+import { IconChecks, IconFileText, IconProgressX } from "@tabler/icons-react";
 import {
     useReservaDepartamentoStore,
     useUiConsumo,
@@ -14,14 +14,20 @@ export const ReservaAccionesTable = ({
     //handleExportarNota,
 }) => {
     const { fnAbrirDrawerConsumosDepartamento } = useUiConsumo();
-    const { fnAbrirModalReservaFinalizar } = useUiReservaDepartamento();
+    const { fnAbrirModalReservaFinalizar, fnAbrirModalCancelarReserva } = useUiReservaDepartamento();
     const { fnExportarNotaVentaPDF } = useReservaDepartamentoStore();
 
     const handleFinalizarReservaClick = () => {
         //handleFinalizarReserva(datos.reserva_id);
-        fnAbrirDrawerConsumosDepartamento(false);
+        //fnAbrirDrawerConsumosDepartamento(false);
         fnAbrirModalReservaFinalizar(true);
     };
+
+    const handleCancelarReservaClick = () => {
+        //handleFinalizarReserva(datos.reserva_id);
+        //fnAbrirDrawerConsumosDepartamento(false);
+        fnAbrirModalCancelarReserva(true);
+    }
 
     const handleExportarNotaVentaPDF = (dato) => {
         fnExportarNotaVentaPDF({ reserva_id: dato });
@@ -43,7 +49,7 @@ export const ReservaAccionesTable = ({
                         : `Resumen de Estadia  — ${datos.estado?.nombre_estado}`}
                 </TextSection>
             </Group>
-            <Group gap={25}>
+            <Group gap={20}>
                 <Tooltip label="Finalizar Reserva">
                     <ActionIcon
                         variant="default"
@@ -71,6 +77,23 @@ export const ReservaAccionesTable = ({
                         }
                     >
                         <IconFileText
+                            style={{ width: "80%", height: "80%" }}
+                            stroke={1.5}
+                        />
+                    </ActionIcon>
+                </Tooltip>
+                <Tooltip label="Cancelar Reserva">
+                    <ActionIcon
+                        variant="default"
+                        size="xl"
+                        radius="xs"
+                        onClick={handleCancelarReservaClick}
+                        disabled={
+                            datos.estado?.nombre_estado === Estados.CANCELADO ||
+                            datos.estado?.nombre_estado === Estados.PAGADO
+                        }
+                    >
+                        <IconProgressX
                             style={{ width: "80%", height: "80%" }}
                             stroke={1.5}
                         />

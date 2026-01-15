@@ -17,14 +17,20 @@ class DatabaseSeeder extends Seeder
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         $this->call(AplicativoSeeder::class);
         $this->call(UserSeeder::class);
-        $this->call(NacionalidadSeeder::class);
+        //$this->call(NacionalidadSeeder::class);
         $this->call(ProvinciaSeeder::class);
         $this->call(EstadoSeeder::class);
-        //$this->call(TipoDepartamentoSeeder::class);
+        $this->call(TipoDepartamentoSeeder::class);
         $this->call(ServicioSeeder::class);
         $this->call(CategoriaSeeder::class);
         $this->call(ConfiguracionIvaSeeder::class);
         $this->call(TiposDanosSeeder::class);
+        $this->call(ConceptosPagosSeeder::class);
+        $this->call(InventarioSeeder::class);
+
+        $this->call(ClienteFacturacionSeeder::class);
+        $this->call(SecuenciaFacturaSeeder::class);
+
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

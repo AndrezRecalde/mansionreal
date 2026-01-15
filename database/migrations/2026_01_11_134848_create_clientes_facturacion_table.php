@@ -43,7 +43,7 @@ return new class extends Migration
         });
 
         // Insertar CONSUMIDOR FINAL por defecto (ID fijo = 1)
-        DB::table('clientes_facturacion')->insert([
+       /*  DB::table('clientes_facturacion')->insert([
             'id' => 1,
             'tipo_cliente' => 'CONSUMIDOR_FINAL',
             'tipo_identificacion' => 'CF',
@@ -57,7 +57,7 @@ return new class extends Migration
             'observaciones' => 'Cliente por defecto para facturas sin identificación',
             'created_at' => now(),
             'updated_at' => now(),
-        ]);
+        ]); */
     }
 
     /**

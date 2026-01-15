@@ -41,7 +41,7 @@ return new class extends Migration
         });
 
         // Insertar configuración inicial para Hotel Mansión Real
-        DB::table('secuencia_facturas')->insert([
+        /* DB::table('secuencia_facturas')->insert([
             'id' => 1,
             'establecimiento' => '001',
             'punto_emision' => '001',
@@ -53,7 +53,7 @@ return new class extends Migration
             'longitud_secuencial' => 9,
             'created_at' => now(),
             'updated_at' => now(),
-        ]);
+        ]); */
     }
 
     /**

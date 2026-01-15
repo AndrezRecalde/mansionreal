@@ -18,20 +18,30 @@ class TipoDepartamentoSeeder extends Seeder
 
         $tipos_departamentos = [
             [
+                'nombre_tipo' => 'HABITACIÓN',
+                'descripcion' => 'Habitación estándar equipada con las comodidades básicas para una estancia agradable.',
+                'inventario_id' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
                 'nombre_tipo' => 'CABAÑA',
-                'descripcion' => 'Departamento tipo estudio, ideal para una o dos personas.',
+                'descripcion' => 'Cabaña acogedora con todas las comodidades necesarias para una estancia confortable.',
+                'inventario_id' => 2,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'nombre_tipo' => 'DEPARTAMENTO',
-                'descripcion' => 'Departamento con un dormitorio separado, adecuado para parejas o pequeñas familias.',
+                'nombre_tipo' => 'LA MANSIÓN REAL',
+                'descripcion' => 'Amplio departamento de lujo con múltiples habitaciones y servicios exclusivos.',
+                'inventario_id' => 3,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'nombre_tipo' => 'LA MANSION REAL',
-                'descripcion' => 'Departamento con dos dormitorios, perfecto para familias o grupos pequeños.',
+                'nombre_tipo' => 'SALÓN DE EVENTOS',
+                'descripcion' => 'Espacio amplio y elegante para la celebración de eventos y reuniones.',
+                'inventario_id' => 4,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

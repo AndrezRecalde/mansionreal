@@ -40,7 +40,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('consumos', function (Blueprint $table) {
+       /*  Schema::table('consumos', function (Blueprint $table) {
             // Eliminar foreign key primero
             $table->dropForeign(['factura_id']);
 
@@ -49,6 +49,7 @@ return new class extends Migration
 
             // Eliminar columna
             $table->dropColumn('factura_id');
-        });
+        }); */
+        Schema::dropIfExists('consumos');
     }
 };

@@ -140,7 +140,7 @@ export const store = configureStore({
         calendario: calendarioSlice.reducer,
 
         /* Facturacion */
-        facturacion: facturaSlice.reducer,
+        factura: facturaSlice.reducer,
         clienteFacturacion: clienteFacturacionSlice.reducer,
         secuenciaFactura: secuenciaFacturaSlice.reducer,
         uiFactura: uiFacturaSlice.reducer,

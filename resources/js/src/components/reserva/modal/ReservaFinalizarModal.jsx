@@ -1,12 +1,20 @@
 import { Modal } from "@mantine/core";
-import { TextSection, ReservaFinalizarForm } from "../../../components";
-import { usePagoStore, useUiReservaDepartamento } from "../../../hooks";
+import { TextSection } from "../../../components";
+import { ReservaFinalizarStepper } from "../../../components";
+import {
+    usePagoStore,
+    useUiReservaDepartamento,
+    useFacturaStore,
+    useClienteFacturacionStore,
+} from "../../../hooks";
 import { useEffect } from "react";
 
 export const ReservaFinalizarModal = ({ datos_reserva }) => {
     const { abrirModalReservaFinalizar, fnAbrirModalReservaFinalizar } =
         useUiReservaDepartamento();
     const { fnCargarTotalesPorReserva, fnLimpiarPago } = usePagoStore();
+    const { fnLimpiarFactura } = useFacturaStore();
+    const { fnLimpiarCliente } = useClienteFacturacionStore();
 
     useEffect(() => {
         if (abrirModalReservaFinalizar) {
@@ -15,6 +23,8 @@ export const ReservaFinalizarModal = ({ datos_reserva }) => {
 
         return () => {
             fnLimpiarPago();
+            fnLimpiarFactura();
+            fnLimpiarCliente();
         };
     }, [abrirModalReservaFinalizar]);
 
@@ -28,16 +38,18 @@ export const ReservaFinalizarModal = ({ datos_reserva }) => {
             opened={abrirModalReservaFinalizar}
             onClose={handleCerrarModal}
             title={
-                <TextSection tt="" fz={18} fw={300}>
-                    Finalizar Reserva
+                <TextSection tt="" fz={18} fw={500}>
+                    Finalizar Reserva y Facturación
                 </TextSection>
             }
             overlayProps={{
                 backgroundOpacity: 0.55,
                 blur: 3,
             }}
+            closeOnClickOutside={false}
+            closeOnEscape={false}
         >
-            <ReservaFinalizarForm datos_reserva={datos_reserva} />
+            <ReservaFinalizarStepper datos_reserva={datos_reserva} />
         </Modal>
     );
 };

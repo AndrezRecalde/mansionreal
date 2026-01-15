@@ -103,6 +103,16 @@ import { ReservaCancelarForm } from "./reserva/form/ReservaCancelarForm";
 import { EstadiasReservadasCards } from "./reserva/cards/EstadiasReservadasCards";
 import { ConsultarEstadiasSection } from "./reserva/section/ConsultarEstadiasSection";
 
+/* Facturacion */
+import { ClienteFacturacionForm } from "./facturacion/form/ClienteFacturacionForm";
+
+/* Finalizar Reserva */
+import { ReservaFinalizarStepper } from "./reserva/form/ReservaFinalizarStepper";
+import { ReservaValidacionStep } from "./reserva/steps/ReservaValidacionStep";
+import { ReservaFacturacionStep } from "./reserva/steps/ReservaFacturacionStep";
+import { ReservaConfirmacionStep } from "./reserva/steps/ReservaConfirmacionStep";
+
+
 /* Consumos */
 import { ConsumosDrawer } from "./consumo/drawer/ConsumosDrawer";
 import { ConsumosDrawerTable } from "./consumo/table/ConsumosDrawerTable";
@@ -268,6 +278,15 @@ export {
     /* Reservas de Estadias */
     EstadiasReservadasCards,
     ConsultarEstadiasSection,
+
+    /* Facturacion */
+    ClienteFacturacionForm,
+
+    /* Finalizar Reserva */
+    ReservaFinalizarStepper,
+    ReservaValidacionStep,
+    ReservaFacturacionStep,
+    ReservaConfirmacionStep,
 
     /* Consumos */
     ConsumosDrawer,

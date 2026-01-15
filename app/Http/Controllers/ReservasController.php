@@ -113,8 +113,8 @@ class ReservasController extends Controller
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'msg' => 'Reserva creada exitosamente',
-                'reserva' => $reserva->load(['huesped', 'departamento', 'estado']),
+                'msg' => "Reserva # {$reserva->codigo_reserva} creada correctamente.",
+                //'reserva' => $reserva->load(['huesped', 'departamento', 'estado']),
             ], 201);
         } catch (\Throwable $th) {
             DB::rollBack();

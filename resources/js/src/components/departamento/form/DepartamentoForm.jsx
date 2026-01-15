@@ -15,13 +15,18 @@ import {
 } from "@mantine/core";
 import { BtnSubmit } from "../../elements/buttons/BtnServices";
 import { IconPhoto, IconTrash } from "@tabler/icons-react";
-import { useDepartamentoStore, useTipoDepartamentoStore } from "../../../hooks";
-import classes from "../../elements/modules/LabelsInput.module.css"
+import {
+    useDepartamentoStore,
+    useTipoDepartamentoStore,
+    useUiDepartamento,
+} from "../../../hooks";
+import classes from "../../elements/modules/LabelsInput.module.css";
 
 export const DepartamentoForm = ({ form }) => {
     const { tiposDepartamentos } = useTipoDepartamentoStore();
-    const { activarDepartamento, fnAgregarDepartamento } =
+    const { activarDepartamento, fnAgregarDepartamento, fnAsignarDepartamento } =
         useDepartamentoStore();
+    const { fnModalAbrirDepartamento } = useUiDepartamento();
     const [imagenesExistentes, setImagenesExistentes] = useState([]);
     const [previewsNuevas, setPreviewsNuevas] = useState([]);
     const icon = (
@@ -103,7 +108,7 @@ export const DepartamentoForm = ({ form }) => {
         formData.append("tipo_departamento_id", values.tipo_departamento_id);
         formData.append("capacidad", values.capacidad);
         formData.append("precio_noche", values.precio_noche);
-        formData.append("descripcion", values.descripcion);
+        //formData.append("descripcion", values.descripcion);
 
         // 2️⃣ Imágenes existentes (IDs que se mantienen)
         // Se envía como array de IDs
@@ -120,6 +125,8 @@ export const DepartamentoForm = ({ form }) => {
         fnAgregarDepartamento(formData);
 
         // Reset del form si lo deseas
+        fnAsignarDepartamento(null);
+        fnModalAbrirDepartamento(false);
         form.reset();
     };
 
@@ -161,15 +168,6 @@ export const DepartamentoForm = ({ form }) => {
                     min={1}
                     {...form.getInputProps("capacidad")}
                     classNames={classes}
-                />
-                <Textarea
-                    label="Descripción del Departamento"
-                    resize="vertical"
-                    autosize
-                    minRows={3}
-                    maxRows={6}
-                    placeholder="Ingrese una descripción"
-                    {...form.getInputProps("descripcion")}
                 />
                 <FileInput
                     clearable

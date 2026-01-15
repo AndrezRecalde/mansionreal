@@ -9,15 +9,19 @@ import {
     TitlePage,
 } from "../../components";
 import { IconBuilding, IconCubePlus } from "@tabler/icons-react";
-import { useDepartamentoStore, useUiDepartamento } from "../../hooks";
+import { useDepartamentoStore, useTitleHook, useUiDepartamento } from "../../hooks";
+import Swal from "sweetalert2";
 
 const DepartamentosPage = () => {
+    useTitleHook("Departamentos - Mansion Real");
     const {
         fnModalAbrirDepartamento,
         fnModalAbrirActivarDepartamento,
         abrirModalActivarDepartamento,
     } = useUiDepartamento();
     const {
+        mensaje,
+        errores,
         fnCargarDepartamentos,
         activarDepartamento,
         fnAsignarDepartamento,
@@ -31,6 +35,29 @@ const DepartamentosPage = () => {
             fnLimpiarDepartamentos();
         };
     }, []);
+
+    useEffect(() => {
+        if (mensaje !== undefined) {
+            Swal.fire({
+                icon: mensaje.status,
+                text: mensaje.msg,
+                showConfirmButton: false,
+                timer: 1500,
+            });
+        }
+    }, [mensaje]);
+
+    useEffect(() => {
+        if (errores) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: errores,
+                showConfirmButton: false,
+                timer: 1500,
+            });
+        }
+    }, [errores]);
 
     const handleNuevoDepartamento = () => {
         fnModalAbrirDepartamento(true);

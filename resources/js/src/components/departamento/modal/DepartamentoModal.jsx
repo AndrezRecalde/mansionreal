@@ -2,11 +2,16 @@ import { useEffect } from "react";
 import { Modal } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { DepartamentoForm, TextSection } from "../../../components";
-import { useTipoDepartamentoStore, useUiDepartamento } from "../../../hooks";
+import {
+    useDepartamentoStore,
+    useTipoDepartamentoStore,
+    useUiDepartamento,
+} from "../../../hooks";
 import { useForm } from "@mantine/form";
 
 export const DepartamentoModal = () => {
     const isMobile = useMediaQuery("(max-width: 768px)");
+    const { fnAsignarDepartamento } = useDepartamentoStore();
     const { abrirModalDepartamento, fnModalAbrirDepartamento } =
         useUiDepartamento();
     const { fnCargarTiposDepartamentos, fnLimpiarTiposDepartamentos } =
@@ -17,7 +22,6 @@ export const DepartamentoModal = () => {
             numero_departamento: "",
             tipo_departamento_id: null,
             capacidad: 1,
-            descripcion: "",
             imagenes: [],
         },
         validate: {
@@ -27,10 +31,6 @@ export const DepartamentoModal = () => {
                 value === null ? "Tipo de departamento es requerido" : null,
             capacidad: (value) =>
                 value < 1 ? "Capacidad debe ser mayor a 0" : null,
-            descripcion: (value) =>
-                value.length > 255
-                    ? "Descripción no debe exceder los 255 caracteres"
-                    : null,
             /* imagenes: (value) =>
                 value.length < 1 ? "Debe seleccionar al menos una imagen" : null, */
         },
@@ -50,6 +50,7 @@ export const DepartamentoModal = () => {
     }, [abrirModalDepartamento]);
 
     const handleCerrarModal = () => {
+        fnAsignarDepartamento(null);
         fnModalAbrirDepartamento(false);
         form.reset();
     };

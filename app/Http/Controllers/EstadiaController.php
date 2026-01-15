@@ -53,6 +53,7 @@ class EstadiaController extends Controller
                     return [
                         'id'             => $reserva->id,
                         'codigo_reserva' => $reserva->codigo_reserva,
+                        'huesped_id'     => $reserva->huesped_id,
                         'huesped'        => $reserva->huesped->nombres . " " . $reserva->huesped->apellidos,
                         'dni'            => $reserva->huesped->dni,
                         'fecha_checkin'  => $reserva->fecha_checkin,

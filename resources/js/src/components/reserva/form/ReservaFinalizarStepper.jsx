@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { Box, Button, Group, Stepper } from "@mantine/core";
-import { IconCheck, IconFileText, IconCash } from "@tabler/icons-react";
+import { useState, useEffect } from "react";
+import { Box, Stepper } from "@mantine/core";
+import { IconFileText, IconCash } from "@tabler/icons-react";
 import {
     ReservaValidacionStep,
     ReservaFacturacionStep,
@@ -9,6 +9,7 @@ import {
 import {
     useReservaDepartamentoStore,
     useFacturaStore,
+    useClienteFacturacionStore,
     useUiReservaDepartamento,
     useUiConsumo,
     useStorageField,
@@ -19,12 +20,30 @@ export const ReservaFinalizarStepper = ({ datos_reserva }) => {
     const [datosFacturacion, setDatosFacturacion] = useState(null);
     const [generarFactura, setGenerarFactura] = useState(false);
 
-    const { cargando, fnCambiarEstadoReserva, fnExportarNotaVentaPDF } =
-        useReservaDepartamentoStore();
-    const { fnGenerarFactura } = useFacturaStore();
+    const { cargando, fnCambiarEstadoReserva } = useReservaDepartamentoStore();
+    const { fnGenerarFactura, fnDescargarFacturaPDF } = useFacturaStore();
+    const { consumidorFinal, fnCargarConsumidorFinal } =
+        useClienteFacturacionStore();
     const { fnAbrirModalReservaFinalizar } = useUiReservaDepartamento();
     const { fnAbrirDrawerConsumosDepartamento } = useUiConsumo();
     const { storageFields } = useStorageField();
+
+    // Cargar consumidor final al montar el componente
+    useEffect(() => {
+        fnCargarConsumidorFinal();
+    }, []);
+
+    // Si no genera factura personalizada, usar consumidor final
+    useEffect(() => {
+        if (!generarFactura && consumidorFinal) {
+            setDatosFacturacion({
+                cliente_id: consumidorFinal.id,
+                cliente_nombre: "CONSUMIDOR FINAL",
+                cliente_identificacion: consumidorFinal.identificacion,
+                solicita_detallada: false,
+            });
+        }
+    }, [generarFactura, consumidorFinal]);
 
     const nextStep = () => {
         setActive((current) => (current < 2 ? current + 1 : current));
@@ -36,39 +55,53 @@ export const ReservaFinalizarStepper = ({ datos_reserva }) => {
 
     const handleFinalizarReserva = async () => {
         try {
-            const { id } = datos_reserva;
+            const { reserva_id } = datos_reserva;
 
-            // 1. Cambiar estado de reserva a PAGADO
+            // ============================================================
+            // VALIDACIÓN:  Verificar que tenemos datos de facturación
+            // ============================================================
+            if (!datosFacturacion || !datosFacturacion.cliente_id) {
+                console.error("Error: No se puede generar factura sin cliente");
+                return;
+            }
+
+            // ============================================================
+            // PASO 1: Cambiar estado de reserva a PAGADO
+            // ============================================================
             await fnCambiarEstadoReserva(
                 storageFields
                     ? {
-                          id,
+                          id: reserva_id,
                           nombre_estado: "PAGADO",
                           storageFields,
                           carga_pagina:
                               storageFields.carga_pagina || "DEPARTAMENTOS",
                       }
-                    : { id, nombre_estado: "PAGADO" }
+                    : { id: reserva_id, nombre_estado: "PAGADO" }
             );
 
-            // 2. Generar factura si corresponde
-            if (generarFactura && datosFacturacion) {
-                await fnGenerarFactura({
-                    reserva_id: datos_reserva.reserva_id,
-                    cliente_facturacion_id: datosFacturacion.cliente_id,
-                    solicita_factura_detallada:
-                        datosFacturacion.solicita_detallada || false,
-                    observaciones: datosFacturacion.observaciones || null,
-                    descuento: datosFacturacion.descuento || 0,
-                });
-            }
-
-            // 3. Exportar nota de venta (PDF)
-            await fnExportarNotaVentaPDF({
-                reserva_id: datos_reserva.reserva_id,
+            // ============================================================
+            // PASO 2: GENERAR FACTURA Y OBTENER SU ID
+            // ============================================================
+            const facturaGenerada = await fnGenerarFactura({
+                reserva_id: reserva_id,
+                cliente_facturacion_id: datosFacturacion.cliente_id,
+                solicita_factura_detallada:
+                    datosFacturacion.solicita_detallada || false,
+                observaciones: datosFacturacion.observaciones || null,
+                descuento: datosFacturacion.descuento || 0,
             });
 
-            // 4. Cerrar modal y drawer
+            // ============================================================
+            // PASO 3: DESCARGAR PDF DE LA FACTURA GENERADA
+            // ============================================================
+            if (facturaGenerada && facturaGenerada.id) {
+                await fnDescargarFacturaPDF(facturaGenerada.id);
+            }
+
+            // ============================================================
+            // PASO 4: Cerrar modal y drawer
+            // ============================================================
             fnAbrirModalReservaFinalizar(false);
             fnAbrirDrawerConsumosDepartamento(false);
         } catch (error) {
@@ -110,6 +143,7 @@ export const ReservaFinalizarStepper = ({ datos_reserva }) => {
                         setGenerarFactura={setGenerarFactura}
                         datosFacturacion={datosFacturacion}
                         setDatosFacturacion={setDatosFacturacion}
+                        consumidorFinal={consumidorFinal}
                         onNext={nextStep}
                         onBack={prevStep}
                     />

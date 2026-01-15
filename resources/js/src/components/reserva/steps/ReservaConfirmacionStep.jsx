@@ -7,8 +7,10 @@ import {
     Paper,
     Stack,
     Text,
+    Badge,
 } from "@mantine/core";
 import { IconAlertCircle, IconArrowLeft, IconCheck } from "@tabler/icons-react";
+import { formatFechaHoraModal } from "../../../helpers/fnHelper"; // ← YA EXISTE EN TU PROYECTO
 
 export const ReservaConfirmacionStep = ({
     datos_reserva,
@@ -21,37 +23,41 @@ export const ReservaConfirmacionStep = ({
     return (
         <Box mt="xl">
             <Stack gap="lg">
+                {/* Alerta de confirmación */}
                 <Alert
                     icon={<IconAlertCircle size={16} />}
-                    title="Confirmar Finalización"
-                    color="blue"
+                    title="⚠️ Confirmar Finalización"
                 >
                     <Text size="sm">
-                        Está a punto de finalizar la reserva. Esta acción no se
-                        puede deshacer.
+                        Está a punto de{" "}
+                        <strong>
+                            finalizar la reserva y generar la factura
+                        </strong>
+                        .
+                    </Text>
+                    <Text size="sm" mt="xs">
+                        Esta acción no se puede deshacer. Verifique que toda la
+                        información sea correcta.
                     </Text>
                 </Alert>
 
                 {/* Resumen de la reserva */}
                 <Paper p="md" withBorder>
-                    <Text size="sm" fw={600} mb="md">
-                        Resumen de la Reserva
-                    </Text>
+                    <Group justify="space-between" mb="md">
+                        <Text size="sm" fw={600}>
+                            📋 Resumen de la Reserva
+                        </Text>
+                        <Badge variant="light">
+                            {datos_reserva.codigo_reserva}
+                        </Badge>
+                    </Group>
                     <Stack gap="xs">
-                        <Group justify="space-between">
-                            <Text size="sm" c="dimmed">
-                                Código de Reserva:
-                            </Text>
-                            <Text size="sm" fw={600}>
-                                {datos_reserva.codigo_reserva}
-                            </Text>
-                        </Group>
                         <Group justify="space-between">
                             <Text size="sm" c="dimmed">
                                 Huésped:
                             </Text>
-                            <Text size="sm" fw={600}>
-                                {datos_reserva.huesped?.nombres || "N/A"}
+                            <Text size="sm" fw={500}>
+                                {datos_reserva.huesped || "N/A"}
                             </Text>
                         </Group>
                         {datos_reserva.numero_departamento && (
@@ -59,11 +65,31 @@ export const ReservaConfirmacionStep = ({
                                 <Text size="sm" c="dimmed">
                                     Departamento:
                                 </Text>
-                                <Text size="sm" fw={600}>
-                                    {datos_reserva.numero_departamento}
+                                <Text size="sm" fw={500}>
+                                    {datos_reserva.tipo_departamento + " — " + datos_reserva.numero_departamento}
                                 </Text>
                             </Group>
                         )}
+                        <Group justify="space-between">
+                            <Text size="sm" c="dimmed">
+                                Check-in:
+                            </Text>
+                            <Text size="sm" fw={500}>
+                                {formatFechaHoraModal(
+                                    datos_reserva.fecha_checkin
+                                )}
+                            </Text>
+                        </Group>
+                        <Group justify="space-between">
+                            <Text size="sm" c="dimmed">
+                                Check-out:
+                            </Text>
+                            <Text size="sm" fw={500}>
+                                {formatFechaHoraModal(
+                                    datos_reserva.fecha_checkout
+                                )}
+                            </Text>
+                        </Group>
                     </Stack>
                 </Paper>
 
@@ -71,49 +97,92 @@ export const ReservaConfirmacionStep = ({
 
                 {/* Resumen de facturación */}
                 <Paper p="md" withBorder>
-                    <Text size="sm" fw={600} mb="md">
-                        Resumen de Facturación
-                    </Text>
+                    <Group justify="space-between" mb="md">
+                        <Text size="sm" fw={600}>
+                            📄 Resumen de Facturación
+                        </Text>
+                        <Badge
+                            color={generarFactura ? "teal" : "gray"}
+                            variant="light"
+                        >
+                            {generarFactura
+                                ? "Cliente Registrado"
+                                : "Consumidor Final"}
+                        </Badge>
+                    </Group>
                     <Stack gap="xs">
                         <Group justify="space-between">
                             <Text size="sm" c="dimmed">
-                                ¿Se generará factura?
+                                Tipo de Factura:
                             </Text>
-                            <Text
-                                size="sm"
-                                fw={600}
-                                c={generarFactura ? "teal" : "gray"}
-                            >
-                                {generarFactura
-                                    ? "SÍ"
-                                    : "NO (Consumidor Final)"}
+                            <Text size="sm" fw={500}>
+                                {generarFactura ? "Personalizada" : "Genérica"}
                             </Text>
                         </Group>
 
-                        {generarFactura && datosFacturacion && (
+                        {datosFacturacion && (
                             <>
                                 <Group justify="space-between">
                                     <Text size="sm" c="dimmed">
                                         Cliente:
                                     </Text>
-                                    <Text size="sm" fw={600}>
+                                    <Text size="sm" fw={500}>
                                         {datosFacturacion.cliente_nombre}
                                     </Text>
                                 </Group>
-                                <Group justify="space-between">
-                                    <Text size="sm" c="dimmed">
-                                        Factura detallada:
-                                    </Text>
-                                    <Text size="sm" fw={600}>
-                                        {datosFacturacion.solicita_detallada
-                                            ? "SÍ"
-                                            : "NO"}
-                                    </Text>
-                                </Group>
+
+                                {datosFacturacion.cliente_identificacion && (
+                                    <Group justify="space-between">
+                                        <Text size="sm" c="dimmed">
+                                            Identificación:
+                                        </Text>
+                                        <Text size="sm" fw={500}>
+                                            {
+                                                datosFacturacion.cliente_identificacion
+                                            }
+                                        </Text>
+                                    </Group>
+                                )}
+
+                                {generarFactura && (
+                                    <Group justify="space-between">
+                                        <Text size="sm" c="dimmed">
+                                            Factura detallada:
+                                        </Text>
+                                        <Badge
+                                            color={
+                                                datosFacturacion.solicita_detallada
+                                                    ? "teal"
+                                                    : "gray"
+                                            }
+                                            size="sm"
+                                        >
+                                            {datosFacturacion.solicita_detallada
+                                                ? "SÍ"
+                                                : "NO"}
+                                        </Badge>
+                                    </Group>
+                                )}
                             </>
                         )}
                     </Stack>
                 </Paper>
+
+                {/* Información adicional */}
+                <Alert color="gray" variant="light">
+                    <Text size="xs" c="dimmed">
+                        <strong>Nota:</strong> Al confirmar se ejecutarán las
+                        siguientes acciones:
+                    </Text>
+                    <Text size="xs" c="dimmed" mt="xs" component="ul" pl="md">
+                        <li>
+                            Se cambiará el estado de la reserva a{" "}
+                            <strong>PAGADO</strong>
+                        </li>
+                        <li>Se generará la factura automáticamente</li>
+                        <li>Se exportará la nota de venta en PDF</li>
+                    </Text>
+                </Alert>
 
                 {/* Botones de acción */}
                 <Group justify="space-between" mt="xl">
@@ -132,7 +201,7 @@ export const ReservaConfirmacionStep = ({
                         size="md"
                         leftSection={<IconCheck size={16} />}
                     >
-                        Finalizar Reserva y Generar Factura
+                        ✅ Finalizar Reserva y Generar Factura
                     </Button>
                 </Group>
             </Stack>

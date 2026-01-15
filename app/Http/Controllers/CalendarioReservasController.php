@@ -51,6 +51,7 @@ class CalendarioReservasController extends Controller
             $eventos = $reservas->map(function ($reserva) {
                 $huesped = $reserva->huesped;
                 $departamento = $reserva->departamento;
+                $tipoDepartamento = $departamento?->tipoDepartamento;
                 $estado = $reserva->estado;
 
                 return [
@@ -74,6 +75,7 @@ class CalendarioReservasController extends Controller
                         ],
                         'departamento' => [
                             'id' => $departamento?->id,
+                            'tipo_departamento' => $tipoDepartamento?->nombre_tipo,
                             'numero' => $departamento?->numero_departamento,
                             'tipo' => $departamento?->tipoDepartamento?->nombre_tipo,
                         ],

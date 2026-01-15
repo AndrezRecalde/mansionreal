@@ -174,9 +174,11 @@ export const CalendarioReservas = () => {
         // Implementar navegación a la página de detalles de la reserva si es necesario
         const datosReserva = {
             departamento_id: reserva.departamento.id,
+            tipo_departamento: reserva.departamento.tipo_departamento,
             numero_departamento: reserva.departamento.numero,
             codigo_reserva: reserva.codigo_reserva,
             reserva_id: reserva.id,
+            huesped_id: reserva.huesped.id,
             huesped: reserva.huesped.nombre_completo,
             fecha_checkin: reserva.start,
             fecha_checkout: reserva.end,

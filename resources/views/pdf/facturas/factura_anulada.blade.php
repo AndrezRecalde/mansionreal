@@ -1,4 +1,4 @@
-@extends('pdf.layouts.factura_layout')
+@extends('pdf.layout.factura_layout')
 
 @section('extra-styles')
     <style>

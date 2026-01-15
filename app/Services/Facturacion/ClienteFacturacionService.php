@@ -113,8 +113,8 @@ class ClienteFacturacionService
             'identificacion' => $huesped->dni,
             'nombres' => $huesped->nombres,
             'apellidos' => $huesped->apellidos,
-            'telefono' => $huesped->telefono,
-            'email' => $huesped->email,
+            'telefono' => $huesped->telefono ?? '',
+            'email' => $huesped->email ?? '',
             'activo' => true,
         ];
 

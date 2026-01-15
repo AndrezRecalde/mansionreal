@@ -115,7 +115,7 @@ export const useReservaDepartamentoStore = () => {
                 await fnCargarEstadias();
             }
         } catch (error) {
-            //console.log(error);
+            console.log(error);
             ExceptionMessageError(error);
         }
     };

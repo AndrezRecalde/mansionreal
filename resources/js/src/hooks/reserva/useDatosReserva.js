@@ -11,9 +11,11 @@ export const useDatosReserva = (activarReserva, activarEstadia) => {
         if (activarReserva) {
             return {
                 departamento_id: activarReserva.departamento_id,
+                tipo_departamento: activarReserva.tipo_departamento,
                 numero_departamento: activarReserva.numero_departamento,
                 codigo_reserva: activarReserva.codigo_reserva,
                 reserva_id: activarReserva.reserva_id,
+                huesped_id: activarReserva.huesped_id,
                 huesped: activarReserva.huesped,
                 fecha_checkin: activarReserva.fecha_checkin,
                 fecha_checkout: activarReserva.fecha_checkout,
@@ -26,6 +28,7 @@ export const useDatosReserva = (activarReserva, activarEstadia) => {
             return {
                 codigo_reserva: activarEstadia.codigo_reserva,
                 reserva_id: activarEstadia.id,
+                huesped_id: activarEstadia.huesped_id,
                 huesped: activarEstadia.huesped,
                 fecha_checkin: activarEstadia.fecha_checkin,
                 fecha_checkout: activarEstadia.fecha_checkout,

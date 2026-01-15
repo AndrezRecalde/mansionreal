@@ -223,7 +223,7 @@ class ReservasController extends Controller
         }
         $reservas = Reserva::with([
             'huesped',
-            'departamento',
+            'departamento.tipoDepartamento',
             'estado',
             'consumos.inventario'
         ])
@@ -235,8 +235,10 @@ class ReservasController extends Controller
                 return [
                     'id'             => $r->id,
                     'codigo_reserva' => $r->codigo_reserva,
+                    'huesped_id'      => $r->huesped_id,
                     'huesped'        => $r->huesped ? $r->huesped->nombres . ' ' . $r->huesped->apellidos : null,
                     'numero_departamento'   => $r->departamento ? $r->departamento->numero_departamento : null,
+                    'tipo_departamento' => $r->departamento && $r->departamento->tipoDepartamento ? $r->departamento->tipoDepartamento->nombre_tipo : null,
                     'fecha_checkin'  => $r->fecha_checkin,
                     'fecha_checkout' => $r->fecha_checkout,
                     'total_noches'   => $r->total_noches,
@@ -434,6 +436,7 @@ class ReservasController extends Controller
             'reserva'             => [
                 'id'             => $reserva->id,
                 'codigo_reserva' => $reserva->codigo_reserva,
+                'huesped_id'     => $reserva->huesped_id,
                 'huesped'        => $reserva->huesped?->nombres . ' ' . $reserva->huesped?->apellidos,
                 'huesped_dni'    => $reserva->huesped?->dni,
                 'fecha_checkin'  => $reserva->fecha_checkin,

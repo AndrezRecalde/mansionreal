@@ -6,7 +6,6 @@ import {
     Checkbox,
     Divider,
     Group,
-    Loader,
     Paper,
     Stack,
     Switch,
@@ -28,6 +27,7 @@ export const ReservaFacturacionStep = ({
     setGenerarFactura,
     datosFacturacion,
     setDatosFacturacion,
+    consumidorFinal,
     onNext,
     onBack,
 }) => {
@@ -38,28 +38,26 @@ export const ReservaFacturacionStep = ({
 
     const {
         cargando,
-        consumidorFinal,
         clienteExistente,
         datosPrellenados,
-        fnCargarConsumidorFinal,
         fnBuscarPorIdentificacion,
         fnPrellenarDesdeHuesped,
         fnLimpiarCliente,
     } = useClienteFacturacionStore();
 
-    // Cargar consumidor final al montar
-    useEffect(() => {
-        fnCargarConsumidorFinal();
-    }, []);
-
-    // Si no genera factura, usar consumidor final automáticamente
+    // ================================================================
+    // Efecto:  Si switch OFF, setear consumidor final automáticamente
+    // ================================================================
     useEffect(() => {
         if (!generarFactura && consumidorFinal) {
             setDatosFacturacion({
                 cliente_id: consumidorFinal.id,
                 cliente_nombre: "CONSUMIDOR FINAL",
+                cliente_identificacion: consumidorFinal.identificacion,
                 solicita_detallada: false,
             });
+            setBusquedaRealizada(false);
+            setMostrarFormulario(false);
         }
     }, [generarFactura, consumidorFinal]);
 
@@ -75,6 +73,7 @@ export const ReservaFacturacionStep = ({
             setDatosFacturacion({
                 cliente_id: resultado.cliente.id,
                 cliente_nombre: `${resultado.cliente.nombres} ${resultado.cliente.apellidos}`,
+                cliente_identificacion: resultado.cliente.identificacion,
                 solicita_detallada: solicitaDetallada,
             });
         }
@@ -86,11 +85,13 @@ export const ReservaFacturacionStep = ({
         );
 
         if (resultado.existe && resultado.cliente_existente) {
-            // Ya existe el cliente
+            // Cliente ya existe
             setDniBusqueda(resultado.cliente_existente.identificacion);
             setDatosFacturacion({
                 cliente_id: resultado.cliente_existente.id,
                 cliente_nombre: `${resultado.cliente_existente.nombres} ${resultado.cliente_existente.apellidos}`,
+                cliente_identificacion:
+                    resultado.cliente_existente.identificacion,
                 solicita_detallada: solicitaDetallada,
             });
             setBusquedaRealizada(true);
@@ -105,6 +106,7 @@ export const ReservaFacturacionStep = ({
         setDatosFacturacion({
             cliente_id: nuevoCliente.id,
             cliente_nombre: `${nuevoCliente.nombres} ${nuevoCliente.apellidos}`,
+            cliente_identificacion: nuevoCliente.identificacion,
             solicita_detallada: solicitaDetallada,
         });
         setMostrarFormulario(false);
@@ -115,16 +117,31 @@ export const ReservaFacturacionStep = ({
         setDniBusqueda("");
         setBusquedaRealizada(false);
         setMostrarFormulario(false);
-        setDatosFacturacion(null);
+
+        // Volver a consumidor final si está OFF
+        if (!generarFactura && consumidorFinal) {
+            setDatosFacturacion({
+                cliente_id: consumidorFinal.id,
+                cliente_nombre: "CONSUMIDOR FINAL",
+                cliente_identificacion: consumidorFinal.identificacion,
+                solicita_detallada: false,
+            });
+        } else {
+            setDatosFacturacion(null);
+        }
     };
 
-    const puedeAvanzar =
-        !generarFactura || (generarFactura && datosFacturacion?.cliente_id);
+    // ================================================================
+    // VALIDACIÓN: Siempre debe haber un cliente seleccionado
+    // ================================================================
+    const puedeAvanzar = datosFacturacion && datosFacturacion.cliente_id;
 
     return (
         <Box mt="xl">
             <Stack gap="lg">
-                {/* Switch para generar factura */}
+                {/* ========================================= */}
+                {/* Switch para elegir tipo de factura */}
+                {/* ========================================= */}
                 <Paper p="md" withBorder>
                     <Switch
                         size="md"
@@ -136,26 +153,38 @@ export const ReservaFacturacionStep = ({
                         }
                         checked={generarFactura}
                         onChange={(event) => {
-                            setGenerarFactura(event.currentTarget.checked);
+                            const checked = event.currentTarget.checked;
+                            setGenerarFactura(checked);
                             handleLimpiar();
                         }}
                     />
                 </Paper>
 
+                {/* ========================================= */}
                 {/* Opción CONSUMIDOR FINAL */}
+                {/* ========================================= */}
                 {!generarFactura && consumidorFinal && (
-                    <Alert color="blue" title="Consumidor Final">
+                    <Alert
+                        color="blue"
+                        title="✅ Consumidor Final Seleccionado"
+                    >
                         <Text size="sm">
                             La factura se generará a nombre de{" "}
                             <strong>CONSUMIDOR FINAL</strong>
                         </Text>
-                        <Text size="sm" mt="xs">
+                        <Text size="sm" mt="xs" c="dimmed">
                             Identificación: {consumidorFinal.identificacion}
+                        </Text>
+                        <Text size="xs" mt="sm" c="dimmed">
+                            Esta opción es ideal para clientes que no requieren
+                            datos específicos en la factura.
                         </Text>
                     </Alert>
                 )}
 
+                {/* ========================================= */}
                 {/* Opción CLIENTE REGISTRADO */}
+                {/* ========================================= */}
                 {generarFactura && (
                     <>
                         <Divider
@@ -167,10 +196,15 @@ export const ReservaFacturacionStep = ({
                         <Group grow align="flex-end">
                             <TextInput
                                 label="Identificación del Cliente"
-                                placeholder="Ej:   1712345678"
+                                placeholder="Ej: 1712345678"
                                 value={dniBusqueda}
                                 onChange={(e) => setDniBusqueda(e.target.value)}
                                 leftSection={<IconSearch size={16} />}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                        handleBuscarCliente();
+                                    }
+                                }}
                             />
                             <Button
                                 onClick={handleBuscarCliente}
@@ -188,7 +222,7 @@ export const ReservaFacturacionStep = ({
                             leftSection={<IconUserPlus size={16} />}
                             loading={cargando}
                         >
-                            Prellenar desde huésped de la reserva
+                            📋 Prellenar desde huésped de la reserva
                         </Button>
 
                         {/* Cliente encontrado */}
@@ -210,10 +244,13 @@ export const ReservaFacturacionStep = ({
                                             setDatosFacturacion({
                                                 cliente_id: clienteExistente.id,
                                                 cliente_nombre: `${clienteExistente.nombres} ${clienteExistente.apellidos}`,
+                                                cliente_identificacion:
+                                                    clienteExistente.identificacion,
                                                 solicita_detallada:
                                                     solicitaDetallada,
                                             });
                                         }}
+                                        leftSection={<IconCheck size={14} />}
                                     >
                                         Usar este cliente
                                     </Button>
@@ -251,7 +288,7 @@ export const ReservaFacturacionStep = ({
                                                 <IconUserPlus size={16} />
                                             }
                                         >
-                                            Crear nuevo cliente
+                                            ➕ Crear nuevo cliente
                                         </Button>
                                         <Button
                                             size="sm"
@@ -268,7 +305,7 @@ export const ReservaFacturacionStep = ({
                         {mostrarFormulario && (
                             <Paper p="md" withBorder>
                                 <Text size="sm" fw={600} mb="md">
-                                    Crear Nuevo Cliente
+                                    ➕ Crear Nuevo Cliente
                                 </Text>
                                 <ClienteFacturacionForm
                                     datosPrellenados={datosPrellenados}
@@ -282,25 +319,46 @@ export const ReservaFacturacionStep = ({
                         )}
 
                         {/* Checkbox:  Factura detallada */}
+                        {datosFacturacion?.cliente_id &&
+                            datosFacturacion.cliente_id !==
+                                consumidorFinal?.id && (
+                                <Checkbox
+                                    label="Solicita factura con datos completos (para deducción de impuestos)"
+                                    description="Marque esta opción si el cliente requiere factura con todos sus datos para fines tributarios"
+                                    checked={solicitaDetallada}
+                                    onChange={(e) => {
+                                        const checked = e.currentTarget.checked;
+                                        setSolicitaDetallada(checked);
+                                        setDatosFacturacion({
+                                            ...datosFacturacion,
+                                            solicita_detallada: checked,
+                                        });
+                                    }}
+                                />
+                            )}
+
+                        {/* Resumen del cliente seleccionado */}
                         {datosFacturacion?.cliente_id && (
-                            <Checkbox
-                                label="Solicita factura con datos completos (para deducción de impuestos)"
-                                description="Marque esta opción si el cliente requiere factura con todos sus datos para fines tributarios"
-                                checked={solicitaDetallada}
-                                onChange={(e) => {
-                                    const checked = e.currentTarget.checked;
-                                    setSolicitaDetallada(checked);
-                                    setDatosFacturacion({
-                                        ...datosFacturacion,
-                                        solicita_detallada: checked,
-                                    });
-                                }}
-                            />
+                            <Alert color="teal" title="✅ Cliente Seleccionado">
+                                <Text size="sm" fw={600}>
+                                    {datosFacturacion.cliente_nombre}
+                                </Text>
+                                {datosFacturacion.cliente_identificacion && (
+                                    <Text size="sm" c="dimmed">
+                                        Identificación:{" "}
+                                        {
+                                            datosFacturacion.cliente_identificacion
+                                        }
+                                    </Text>
+                                )}
+                            </Alert>
                         )}
                     </>
                 )}
 
+                {/* ========================================= */}
                 {/* Botones de navegación */}
+                {/* ========================================= */}
                 <Group justify="space-between" mt="xl">
                     <Button
                         variant="default"

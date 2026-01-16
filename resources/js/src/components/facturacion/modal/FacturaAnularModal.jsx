@@ -12,9 +12,16 @@ import {
 import { IconAlertTriangle, IconTrash, IconX } from "@tabler/icons-react";
 import { useForm } from "@mantine/form";
 import { useFacturaStore } from "../../../hooks";
+import Swal from "sweetalert2";
 
 export const FacturaAnularModal = ({ opened, onClose }) => {
-    const { activarFactura, cargando, fnAnularFactura } = useFacturaStore();
+    const {
+        activarFactura,
+        cargando,
+        ultimosFiltros,
+        fnAnularFactura,
+        fnCargarEstadisticasFacturacion,
+    } = useFacturaStore();
     const [confirmando, setConfirmando] = useState(false);
 
     const form = useForm({
@@ -34,11 +41,23 @@ export const FacturaAnularModal = ({ opened, onClose }) => {
 
         try {
             await fnAnularFactura(activarFactura.id, values.motivo_anulacion);
+            await fnCargarEstadisticasFacturacion({
+                p_fecha_inicio: ultimosFiltros?.p_fecha_inicio,
+                p_fecha_fin: ultimosFiltros?.p_fecha_fin,
+                p_anio: ultimosFiltros?.p_anio,
+            });
             form.reset();
             setConfirmando(false);
             onClose();
         } catch (error) {
-            console.error("Error al anular factura:", error);
+            //console.error("Error al anular factura:", error);
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text:
+                    error?.msg ||
+                    "Ocurrió un error al intentar anular la factura.",
+            });
         }
     };
 

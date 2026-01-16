@@ -355,39 +355,63 @@ class FacturaController extends Controller
     public function estadisticas(Request $request): JsonResponse
     {
         try {
-            $fechaInicio = $request->fecha_inicio ??  now()->startOfMonth()->toDateString();
-            $fechaFin = $request->fecha_fin ?? now()->endOfMonth()->toDateString();
+            $fechaInicio = $request->p_fecha_inicio;
+            $fechaFin = $request->p_fecha_fin;
+            $anio = $request->p_anio;
 
-            $facturasEmitidas = Factura::emitidas()
-                ->entreFechas($fechaInicio, $fechaFin);
+            // Query base para facturas emitidas
+            $facturasEmitidasQuery = Factura::emitidas();
+            $facturasAnuladasQuery = Factura::anuladas();
 
-            $facturasAnuladas = Factura::anuladas()
-                ->entreFechas($fechaInicio, $fechaFin);
+            if ($fechaInicio && $fechaFin) {
+                // Si hay rango de fechas, usarlo
+                $facturasEmitidasQuery->entreFechas($fechaInicio, $fechaFin);
+                $facturasAnuladasQuery->entreFechas($fechaInicio, $fechaFin);
+            } elseif ($anio) {
+                // Si solo hay año, filtrar por año
+                $facturasEmitidasQuery->porAnio($anio);
+                $facturasAnuladasQuery->porAnio($anio);
+            }
+
+            // Obtener colecciones
+            $facturasEmitidas = $facturasEmitidasQuery->get();
+            $facturasAnuladas = $facturasAnuladasQuery->get();
 
             $stats = [
                 'periodo' => [
                     'fecha_inicio' => $fechaInicio,
                     'fecha_fin' => $fechaFin,
+                    'anio' => $anio ?  (int)$anio : null,
+                    'es_rango' => ($fechaInicio && $fechaFin) ? true : false,
+                    'es_anio' => (! $fechaInicio && !$fechaFin && $anio) ? true : false,
                 ],
                 'facturas' => [
-                    'total_emitidas' => $facturasEmitidas->count(),
-                    'total_anuladas' => $facturasAnuladas->count(),
-                    'total_general' => Factura::entreFechas($fechaInicio, $fechaFin)->count(),
+                    'total_emitidas' => (int)$facturasEmitidas->count(),
+                    'total_anuladas' => (int)$facturasAnuladas->count(),
+                    'total_general' => (int)($facturasEmitidas->count() + $facturasAnuladas->count()),
                 ],
                 'montos' => [
-                    'total_facturado' => round($facturasEmitidas->sum('total_factura'), 2),
-                    'total_iva' => round($facturasEmitidas->sum('total_iva'), 2),
-                    'total_sin_iva' => round($facturasEmitidas->sum('subtotal_sin_iva'), 2),
-                    'total_con_iva' => round($facturasEmitidas->sum('subtotal_con_iva'), 2),
-                    'total_descuentos' => round($facturasEmitidas->sum('descuento'), 2),
-                    'promedio_factura' => round($facturasEmitidas->avg('total_factura'), 2),
+                    'total_facturado' => (float)round($facturasEmitidas->sum('total_factura'), 2),
+                    'total_iva' => (float)round($facturasEmitidas->sum('total_iva'), 2),
+                    'total_sin_iva' => (float)round($facturasEmitidas->sum('subtotal_sin_iva'), 2),
+                    'total_con_iva' => (float)round($facturasEmitidas->sum('subtotal_con_iva'), 2),
+                    'total_descuentos' => (float)round($facturasEmitidas->sum('descuento'), 2),
+                    'promedio_factura' => $facturasEmitidas->count() > 0
+                        ? (float)round($facturasEmitidas->avg('total_factura'), 2)
+                        : 0.0,
+                    'ticket_maximo' => (float)($facturasEmitidas->max('total_factura') ?? 0),
+                    'ticket_minimo' => (float)($facturasEmitidas->min('total_factura') ?? 0),
                 ],
                 'clientes' => [
-                    'consumidores_finales' => $facturasEmitidas
+                    'consumidores_finales' => (int)$facturasEmitidas
                         ->where('cliente_identificacion', ClienteFacturacion::CONSUMIDOR_FINAL_IDENTIFICACION)
                         ->count(),
-                    'clientes_registrados' => $facturasEmitidas
+                    'clientes_registrados' => (int)$facturasEmitidas
                         ->where('cliente_identificacion', '!=', ClienteFacturacion::CONSUMIDOR_FINAL_IDENTIFICACION)
+                        ->count(),
+                    'clientes_unicos' => (int)$facturasEmitidas
+                        ->where('cliente_identificacion', '!=', ClienteFacturacion::CONSUMIDOR_FINAL_IDENTIFICACION)
+                        ->unique('cliente_facturacion_id')
                         ->count(),
                 ],
             ];

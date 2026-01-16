@@ -83,7 +83,7 @@ export const FacturasTable = () => {
                 header: "Reserva",
                 size: 120,
                 Cell: ({ cell }) => (
-                    <Badge variant="light" color="blue">
+                    <Badge radius="sm" variant="light">
                         {cell.getValue()}
                     </Badge>
                 ),
@@ -105,8 +105,9 @@ export const FacturasTable = () => {
                 size: 100,
                 Cell: ({ cell }) => (
                     <Badge
+                        radius="sm"
                         color={cell.getValue() === "EMITIDA" ? "green" : "red"}
-                        variant="filled"
+                        variant="light"
                     >
                         {cell.getValue()}
                     </Badge>

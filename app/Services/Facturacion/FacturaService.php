@@ -128,7 +128,7 @@ class FacturaService
                 'usuario_id' => $usuarioId,
             ]);
 
-            return $factura->fresh(['usuarioAnulo', 'consumos']);
+            return $factura->fresh(['usuarioAnulo', 'consumos', 'reserva.huesped']);
         });
     }
 

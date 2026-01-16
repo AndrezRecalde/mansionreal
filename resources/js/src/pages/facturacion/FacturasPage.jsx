@@ -1,18 +1,5 @@
 import { useEffect } from "react";
-import {
-    Container,
-    Grid,
-    Paper,
-    Group,
-    Text,
-    Stack,
-    Divider,
-} from "@mantine/core";
-import {
-    IconFileText,
-    IconFileOff,
-    IconCurrencyDollar,
-} from "@tabler/icons-react";
+import { Container, Paper, Divider } from "@mantine/core";
 import {
     TitlePage,
     FacturasTable,
@@ -20,19 +7,19 @@ import {
     FacturaAnularModal,
     VisorFacturaPDF,
     FiltrarPorFechasForm,
+    FacturaPeriodoIndicator,
+    FacturasKPISection,
+    FacturasMontosSection,
+    FacturasDetalleSection,
 } from "../../components";
-import {
-    useFacturaStore,
-    useNotificaciones,
-    useUiFactura,
-} from "../../hooks";
+import { useFacturaStore, useNotificaciones, useUiFactura } from "../../hooks";
 import Swal from "sweetalert2";
 
 const FacturasPage = () => {
     useNotificaciones();
 
     const {
-        facturas,
+        cargando,
         estadisticas,
         pdfUrl,
         activarFactura,
@@ -54,11 +41,14 @@ const FacturasPage = () => {
         fnAbrirModalPdfFactura,
     } = useUiFactura();
 
-    useEffect(() => {
-        // Inicializar con año actual
-        const currentYear = new Date().getFullYear();
+    const formatMonto = (valor) => {
+        if (valor === null || valor === undefined) return "0.00";
+        const numero = typeof valor === "string" ? parseFloat(valor) : valor;
+        return isNaN(numero) ? "0.00" : numero.toFixed(2);
+    };
 
-        // Cargar facturas del año actual por defecto
+    useEffect(() => {
+        const currentYear = new Date().getFullYear();
         fnCargarFacturas({ p_anio: currentYear });
         fnCargarEstadisticasFacturacion({ p_anio: currentYear });
 
@@ -70,7 +60,7 @@ const FacturasPage = () => {
     const handleBuscarFacturas = (values) => {
         fnCargarFacturas(values);
         fnCargarEstadisticasFacturacion(values);
-    }
+    };
 
     // Mensajes de error/éxito
     useEffect(() => {
@@ -96,87 +86,44 @@ const FacturasPage = () => {
     return (
         <Container size="xl" my={20}>
             <TitlePage order={2}>Gestión de Facturas</TitlePage>
-            <Divider my={15} />
-            <FiltrarPorFechasForm
-                titulo="Filtrar por fechas"
-                cargando={false}
-                fnHandleAction={(values) => {
-                    fnCargarFacturas(values);
-                    fnCargarEstadisticasFacturacion(values);
-                }}
+
+            {/* Filtros */}
+            <Paper shadow="sm" p="md" withBorder mt={20}>
+                <FiltrarPorFechasForm
+                    titulo="Filtrar por fechas"
+                    cargando={cargando}
+                    fnHandleAction={handleBuscarFacturas}
+                />
+            </Paper>
+
+            <Divider my={20} />
+
+            {/* Indicador de Periodo */}
+            <FacturaPeriodoIndicator
+                periodo={estadisticas?.periodo}
+                totalFacturas={estadisticas?.facturas?.total_general}
             />
 
-            <Divider my={15} />
+            <Divider my={20} />
 
-            {/* KPIs */}
-            <Grid mt={20} mb={20}>
-                <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-                    <Paper shadow="sm" p="md" withBorder>
-                        <Group>
-                            <IconFileText size={32} color="#3498db" />
-                            <Stack gap={0}>
-                                <Text size="xl" fw={700}>
-                                    {estadisticas?.total_facturas || 0}
-                                </Text>
-                                <Text size="sm" c="dimmed">
-                                    Total Facturas
-                                </Text>
-                            </Stack>
-                        </Group>
-                    </Paper>
-                </Grid.Col>
+            {/* KPIs Principales */}
+            <FacturasKPISection
+                facturas={estadisticas?.facturas}
+                clientes={estadisticas?.clientes}
+            />
 
-                <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-                    <Paper shadow="sm" p="md" withBorder>
-                        <Group>
-                            <IconFileText size={32} color="#27ae60" />
-                            <Stack gap={0}>
-                                <Text size="xl" fw={700}>
-                                    {estadisticas?.facturas_emitidas || 0}
-                                </Text>
-                                <Text size="sm" c="dimmed">
-                                    Emitidas
-                                </Text>
-                            </Stack>
-                        </Group>
-                    </Paper>
-                </Grid.Col>
+            {/* Montos */}
+            <FacturasMontosSection
+                formatMonto={formatMonto}
+                montos={estadisticas?.montos}
+            />
 
-                <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-                    <Paper shadow="sm" p="md" withBorder>
-                        <Group>
-                            <IconFileOff size={32} color="#e74c3c" />
-                            <Stack gap={0}>
-                                <Text size="xl" fw={700}>
-                                    {estadisticas?.facturas_anuladas || 0}
-                                </Text>
-                                <Text size="sm" c="dimmed">
-                                    Anuladas
-                                </Text>
-                            </Stack>
-                        </Group>
-                    </Paper>
-                </Grid.Col>
-
-                <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-                    <Paper shadow="sm" p="md" withBorder>
-                        <Group>
-                            <IconCurrencyDollar size={32} color="#f39c12" />
-                            <Stack gap={0}>
-                                <Text size="xl" fw={700}>
-                                    $
-                                    {estadisticas?.total_facturado?.toFixed(
-                                        2
-                                    ) || "0.00"}
-                                </Text>
-                                <Text size="sm" c="dimmed">
-                                    Total Facturado
-                                </Text>
-                            </Stack>
-                        </Group>
-                    </Paper>
-                </Grid.Col>
-            </Grid>
+            {/* Detalle:  Clientes y Tickets */}
+            <FacturasDetalleSection
+                clientes={estadisticas?.clientes}
+                formatMonto={formatMonto}
+                montos={estadisticas?.montos}
+            />
 
             {/* Tabla de Facturas */}
             <FacturasTable />

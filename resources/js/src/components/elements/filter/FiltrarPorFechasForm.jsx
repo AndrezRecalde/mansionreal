@@ -26,7 +26,7 @@ export const FiltrarPorFechasForm = ({
                 ? dayjs(values.p_fecha_inicio).format("YYYY-MM-DD")
                 : null,
             p_fecha_fin: dayjs(values.p_fecha_fin).isValid()
-                ? dayjs(values.p_fecha_fin).add(1, "day").format("YYYY-MM-DD")
+                ? dayjs(values.p_fecha_fin).format("YYYY-MM-DD")
                 : null,
             p_anio: dayjs(values.p_anio).year(),
         }),

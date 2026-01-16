@@ -121,6 +121,16 @@ import { FacturaDetalleModal } from "./facturacion/modal/FacturaDetalleModal";
 import { FacturaAnularModal } from "./facturacion/modal/FacturaAnularModal";
 import { VisorFacturaPDF } from "./facturacion/modal/VisorFacturaPDF";
 
+/* KPI de Facturacion */
+import { FacturaKPICard } from "./facturacion/cards/FacturaKPICard";
+import { FacturaMontoCard } from "./facturacion/cards/FacturaMontoCard";
+import { FacturaClientesCard } from "./facturacion/cards/FacturaClientesCard";
+import { FacturaTicketsCard } from "./facturacion/cards/FacturaTicketsCard";
+import { FacturaPeriodoIndicator } from "./facturacion/sections/FacturaPeriodoIndicator";
+import { FacturasKPISection } from "./facturacion/sections/FacturasKPISection";
+import { FacturasMontosSection } from "./facturacion/sections/FacturasMontosSection";
+import { FacturasDetalleSection } from "./facturacion/sections/FacturasDetalleSection";
+
 /* Finalizar Reserva */
 import { ReservaFinalizarStepper } from "./reserva/form/ReservaFinalizarStepper";
 import { ReservaValidacionStep } from "./reserva/steps/ReservaValidacionStep";
@@ -300,6 +310,16 @@ export {
     FacturaDetalleModal,
     FacturaAnularModal,
     VisorFacturaPDF,
+
+    /* KPI de Facturacion */
+    FacturaKPICard,
+    FacturaMontoCard,
+    FacturaClientesCard,
+    FacturaTicketsCard,
+    FacturaPeriodoIndicator,
+    FacturasKPISection,
+    FacturasMontosSection,
+    FacturasDetalleSection,
 
     /* Finalizar Reserva */
     ReservaFinalizarStepper,

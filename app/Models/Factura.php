@@ -191,6 +191,11 @@ class Factura extends Model
         return $query->where('cliente_facturacion_id', $clienteId);
     }
 
+    public function scopePorAnio($query, $anio)
+    {
+        return $query->whereYear('fecha_emision', $anio);
+    }
+
     /**
      * Scope: Facturas del año actual
      */

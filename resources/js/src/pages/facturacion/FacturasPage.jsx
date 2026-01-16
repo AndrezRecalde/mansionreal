@@ -1,5 +1,13 @@
 import { useEffect } from "react";
-import { Container, Grid, Paper, Group, Text, Stack } from "@mantine/core";
+import {
+    Container,
+    Grid,
+    Paper,
+    Group,
+    Text,
+    Stack,
+    Divider,
+} from "@mantine/core";
 import {
     IconFileText,
     IconFileOff,
@@ -11,20 +19,30 @@ import {
     FacturaDetalleModal,
     FacturaAnularModal,
     VisorFacturaPDF,
+    FiltrarPorFechasForm,
 } from "../../components";
-import { useFacturaStore, useNotificaciones, useUiFactura } from "../../hooks";
+import {
+    useFacturaStore,
+    useNotificaciones,
+    useUiFactura,
+} from "../../hooks";
+import Swal from "sweetalert2";
 
 const FacturasPage = () => {
     useNotificaciones();
+
     const {
         facturas,
         estadisticas,
         pdfUrl,
         activarFactura,
+        mensaje,
+        errores,
         fnCargarFacturas,
-        //fnCargarEstadisticasFacturacion,
+        fnCargarEstadisticasFacturacion,
         fnLimpiarPdfUrl,
         fnDescargarFacturaPDF,
+        fnLimpiarFacturas,
     } = useFacturaStore();
 
     const {
@@ -37,13 +55,58 @@ const FacturasPage = () => {
     } = useUiFactura();
 
     useEffect(() => {
-        fnCargarFacturas();
-        //fnCargarEstadisticasFacturacion();
+        // Inicializar con año actual
+        const currentYear = new Date().getFullYear();
+
+        // Cargar facturas del año actual por defecto
+        fnCargarFacturas({ p_anio: currentYear });
+        fnCargarEstadisticasFacturacion({ p_anio: currentYear });
+
+        return () => {
+            fnLimpiarFacturas();
+        };
     }, []);
+
+    const handleBuscarFacturas = (values) => {
+        fnCargarFacturas(values);
+        fnCargarEstadisticasFacturacion(values);
+    }
+
+    // Mensajes de error/éxito
+    useEffect(() => {
+        if (mensaje !== undefined) {
+            Swal.fire({
+                icon: mensaje.status,
+                text: mensaje.msg,
+                showConfirmButton: true,
+            });
+        }
+    }, [mensaje]);
+
+    useEffect(() => {
+        if (errores !== undefined) {
+            Swal.fire({
+                icon: "error",
+                text: errores,
+                showConfirmButton: true,
+            });
+        }
+    }, [errores]);
 
     return (
         <Container size="xl" my={20}>
             <TitlePage order={2}>Gestión de Facturas</TitlePage>
+            <Divider my={15} />
+            <FiltrarPorFechasForm
+                titulo="Filtrar por fechas"
+                cargando={false}
+                fnHandleAction={(values) => {
+                    fnCargarFacturas(values);
+                    fnCargarEstadisticasFacturacion(values);
+                }}
+            />
+
+            <Divider my={15} />
 
             {/* KPIs */}
             <Grid mt={20} mb={20}>

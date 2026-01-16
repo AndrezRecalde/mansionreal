@@ -35,8 +35,12 @@ class FacturaController extends Controller
         try {
             $perPage = $request->per_page ?? 20;
             $estado = $request->estado;
-            $fechaInicio = $request->fecha_inicio;
-            $fechaFin = $request->fecha_fin;
+
+            $fechaInicio = $request->p_fecha_inicio;
+            $fechaFin = $request->p_fecha_fin;
+            $anio = $request->p_anio;
+
+            // Filtros existentes
             $clienteId = $request->cliente_id;
             $numeroFactura = $request->numero_factura;
             $search = $request->search;
@@ -48,22 +52,30 @@ class FacturaController extends Controller
                 'usuarioGenero:id,nombres,apellidos'
             ]);
 
+            // Filtro por estado
             if ($estado) {
                 $query->where('estado', $estado);
             }
 
             if ($fechaInicio && $fechaFin) {
+                // Si hay rango de fechas, usar ese filtro
                 $query->entreFechas($fechaInicio, $fechaFin);
+            } elseif ($anio) {
+                // Si solo hay año, filtrar por año
+                $query->porAnio($anio);
             }
 
+            // Filtro por cliente
             if ($clienteId) {
                 $query->delCliente($clienteId);
             }
 
+            // Filtro por número de factura
             if ($numeroFactura) {
                 $query->where('numero_factura', 'like', "%{$numeroFactura}%");
             }
 
+            // Búsqueda general
             if ($search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('numero_factura', 'like', "%{$search}%")
@@ -79,7 +91,22 @@ class FacturaController extends Controller
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'facturas' => $facturas,
+                'facturas' => $facturas->items(),
+                'filtros_aplicados' => [
+                    'fecha_inicio' => $fechaInicio,
+                    'fecha_fin' => $fechaFin,
+                    'anio' => $anio,
+                    'estado' => $estado,
+                    'cliente_id' => $clienteId,
+                ],
+                'paginacion' => [
+                    'total' => $facturas->total(),
+                    'por_pagina' => $facturas->perPage(),
+                    'pagina_actual' => $facturas->currentPage(),
+                    'ultima_pagina' => $facturas->lastPage(),
+                    'desde' => $facturas->firstItem(),
+                    'hasta' => $facturas->lastItem()
+                ]
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([

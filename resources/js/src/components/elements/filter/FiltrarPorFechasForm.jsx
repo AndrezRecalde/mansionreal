@@ -83,6 +83,7 @@ export const FiltrarPorFechasForm = ({
                         {...form.getInputProps("p_anio")}
                     />
                     <DateInput
+                        clearable
                         valueFormat="YYYY-MM-DD"
                         label="Fecha inicio"
                         placeholder="Ingresar fecha de inicio"
@@ -93,6 +94,7 @@ export const FiltrarPorFechasForm = ({
                         {...form.getInputProps("p_fecha_inicio")}
                     />
                     <DateInput
+                        clearable
                         minDate={
                             p_fecha_inicio
                                 ? new Date(p_fecha_inicio)

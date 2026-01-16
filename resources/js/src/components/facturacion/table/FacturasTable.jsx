@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Badge, Group, Text } from "@mantine/core";
 import { MantineReactTable, useMantineReactTable } from "mantine-react-table";
 import { MRT_Localization_ES } from "mantine-react-table/locales/es/index.cjs";
@@ -10,7 +10,9 @@ import Swal from "sweetalert2";
 export const FacturasTable = () => {
     const {
         cargando,
+        fnCargarFacturas,
         facturas,
+        paginacion,
         fnActivarFactura,
         fnPrevisualizarFacturaPDF,
         fnDescargarFacturaPDF,
@@ -24,6 +26,17 @@ export const FacturasTable = () => {
 
     const [globalFilter, setGlobalFilter] = useState("");
     const [columnFilters, setColumnFilters] = useState([]);
+    const [pagination, setPagination] = useState({
+        pageIndex: 0, // MRT usa índice 0
+        pageSize: 20, // Items por página
+    });
+
+    useEffect(() => {
+        fnCargarFacturas({
+            page: pagination.pageIndex + 1,
+            per_page: pagination.pageSize,
+        });
+    }, [pagination]);
 
     const columns = useMemo(
         () => [
@@ -157,7 +170,9 @@ export const FacturasTable = () => {
 
     const table = useMantineReactTable({
         columns,
-        data: facturas,
+        data: facturas ?? [],
+        manualPagination: true,
+        rowCount: paginacion?.total ?? 0,
         enableColumnFilterModes: true,
         enableColumnOrdering: true,
         enableFacetedValues: true,
@@ -174,7 +189,9 @@ export const FacturasTable = () => {
             showProgressBars: cargando,
             globalFilter,
             columnFilters,
+            pagination,
         },
+        onPaginationChange: setPagination,
         onGlobalFilterChange: setGlobalFilter,
         onColumnFiltersChange: setColumnFilters,
         localization: MRT_Localization_ES,

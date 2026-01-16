@@ -35,8 +35,8 @@ export const inventarioSlice = createSlice({
         rtkCargarPaginacion: (state, { payload }) => {
             state.paginacion = payload;
         },
-        rtkGuardarUltimosFiltros: (state, action) => {
-            state.ultimosFiltros = action.payload;
+        rtkGuardarUltimosFiltros: (state, { payload }) => {
+            state.ultimosFiltros = payload;
         },
         rtkAgregarInventario: (state, { payload }) => {
             state.inventarios.push(payload);

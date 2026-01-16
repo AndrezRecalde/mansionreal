@@ -16,6 +16,8 @@ import {
     rtkLimpiarFacturas,
     rtkSetPdfUrl,
     rtkSetFacturaActual,
+    rtkCargarPaginacion,
+    rtkGuardarUltimosFiltros,
 } from "../../store/facturacion/facturaSlice";
 import apiAxios from "../../api/apiAxios";
 
@@ -47,7 +49,31 @@ export const useFacturaStore = () => {
             const { data } = await apiAxios.get("/facturas", {
                 params: filtros,
             });
-            dispatch(rtkCargarFacturas(data.facturas.data || data.facturas));
+            const { facturas, paginacion, filtros_aplicados } = data;
+            dispatch(rtkCargarFacturas(facturas));
+            if (paginacion) {
+                dispatch(rtkCargarPaginacion(paginacion));
+            }
+            if (filtros_aplicados) {
+                dispatch(rtkGuardarUltimosFiltros(filtros_aplicados));
+            }
+        } catch (error) {
+            ExceptionMessageError(error);
+        } finally {
+            dispatch(rtkCargando(false));
+        }
+    };
+
+    const fnCargarEstadisticasFacturacion = async (filtros = {}) => {
+        try {
+            dispatch(rtkCargando(true));
+            const { data } = await apiAxios.get(
+                "/facturas/estadisticas/generales",
+                {
+                    params: filtros,
+                }
+            );
+            dispatch(rtkCargarEstadisticas(data.estadisticas || data));
         } catch (error) {
             ExceptionMessageError(error);
         } finally {
@@ -328,7 +354,6 @@ export const useFacturaStore = () => {
         dispatch(rtkLimpiarFacturas());
     };
 
-
     return {
         // Estado
         cargando,
@@ -346,6 +371,7 @@ export const useFacturaStore = () => {
 
         // Métodos
         fnCargarFacturas,
+        fnCargarEstadisticasFacturacion,
         fnCargarFactura,
         fnGenerarFactura,
         fnAnularFactura,

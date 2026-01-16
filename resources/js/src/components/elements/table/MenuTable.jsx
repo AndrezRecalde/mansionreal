@@ -1,8 +1,11 @@
 import { Menu, rem } from "@mantine/core";
 import {
     IconCategoryPlus,
+    IconDownload,
     IconEdit,
+    IconEye,
     IconEyeSearch,
+    IconFileText,
     IconRestore,
     IconTrash,
 } from "@tabler/icons-react";
@@ -22,18 +25,12 @@ export const MenuTable_EA = ({ row, titulo, handleAction }) => {
     );
 };
 
-export const MenuUsersTable = ({
-    row,
-    handleEditar,
-    handleResetearClave,
-}) => {
+export const MenuUsersTable = ({ row, handleEditar, handleResetearClave }) => {
     return (
         <>
             <Menu.Item
                 leftSection={
-                    <IconEdit
-                        style={{ width: rem(15), height: rem(15) }}
-                    />
+                    <IconEdit style={{ width: rem(15), height: rem(15) }} />
                 }
                 onClick={() => handleEdit(row.original)}
             >
@@ -129,6 +126,50 @@ export const MenuTable_EE = ({ row, titulo, handleEditar, handleEliminar }) => {
                 onClick={() => handleEliminar(row.original)}
             >
                 Eliminar
+            </Menu.Item>
+        </>
+    );
+};
+
+export const MenuTableFactura = ({
+    factura,
+    onVerDetalle,
+    onVerPDF,
+    onAnular,
+    onDescargar,
+}) => {
+    return (
+        <>
+            <Menu.Item
+                leftSection={<IconEye size={16} />}
+                onClick={() => onVerDetalle(factura)}
+            >
+                Ver Detalle
+            </Menu.Item>
+
+            <Menu.Item
+                leftSection={<IconFileText size={16} />}
+                onClick={() => onVerPDF(factura)}
+            >
+                Ver PDF
+            </Menu.Item>
+
+            <Menu.Item
+                leftSection={<IconDownload size={16} />}
+                onClick={() => onDescargar(factura)}
+            >
+                Descargar PDF
+            </Menu.Item>
+
+            <Menu.Divider />
+
+            <Menu.Item
+                leftSection={<IconTrash size={16} />}
+                color="red"
+                onClick={() => onAnular(factura)}
+                disabled={factura.estado !== "EMITIDA"}
+            >
+                Anular Factura
             </Menu.Item>
         </>
     );

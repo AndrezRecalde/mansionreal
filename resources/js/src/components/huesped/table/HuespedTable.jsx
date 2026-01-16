@@ -22,12 +22,12 @@ export const HuespedTable = ({ pagination, setPagination }) => {
                 filterVariant: "autocomplete",
             },
             {
-                header: "Cedula",
+                header: "Cédula",
                 accessorKey: "dni",
                 filterVariant: "autocomplete",
             },
             {
-                header: "Telefono",
+                header: "Teléfono",
                 accessorFn: (row) => row.telefono || "SIN DATOS",
             },
             {

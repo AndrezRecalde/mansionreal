@@ -4,14 +4,25 @@ import { LoadingSkeleton } from "./elements/loader/LoadingSkeleton";
 /* Elements: Logo */
 import { Logo } from "./elements/logo/Logo";
 /* Elemnsts: Botones */
-import { BtnSection, BtnSubmit, BtnAddActions } from "./elements/buttons/BtnServices";
+import {
+    BtnSection,
+    BtnSubmit,
+    BtnAddActions,
+} from "./elements/buttons/BtnServices";
 /* Elements: Titulos */
 import { TextSection } from "./elements/titles/TextSection";
 import { TitlePage } from "./elements/titles/TitlePage";
 /* Elements: AlertSection */
 import { AlertSection } from "./elements/alert/AlertSection";
 /* Elements: Menu de tables */
-import { MenuTable_EA, MenuUsersTable, MenuTable_DEPT, MenuTable_RESERVA, MenuTable_EE } from "./elements/table/MenuTable";
+import {
+    MenuTable_EA,
+    MenuUsersTable,
+    MenuTable_DEPT,
+    MenuTable_RESERVA,
+    MenuTable_EE,
+    MenuTableFactura,
+} from "./elements/table/MenuTable";
 /* Elements: Contenido de tabla */
 import { ContenidoTable } from "./elements/table/ContenidoTable";
 /* Elements: Boton de Activacion */
@@ -105,13 +116,16 @@ import { ConsultarEstadiasSection } from "./reserva/section/ConsultarEstadiasSec
 
 /* Facturacion */
 import { ClienteFacturacionForm } from "./facturacion/form/ClienteFacturacionForm";
+import { FacturasTable } from "./facturacion/table/FacturasTable";
+import { FacturaDetalleModal } from "./facturacion/modal/FacturaDetalleModal";
+import { FacturaAnularModal } from "./facturacion/modal/FacturaAnularModal";
+import { VisorFacturaPDF } from "./facturacion/modal/VisorFacturaPDF";
 
 /* Finalizar Reserva */
 import { ReservaFinalizarStepper } from "./reserva/form/ReservaFinalizarStepper";
 import { ReservaValidacionStep } from "./reserva/steps/ReservaValidacionStep";
 import { ReservaFacturacionStep } from "./reserva/steps/ReservaFacturacionStep";
 import { ReservaConfirmacionStep } from "./reserva/steps/ReservaConfirmacionStep";
-
 
 /* Consumos */
 import { ConsumosDrawer } from "./consumo/drawer/ConsumosDrawer";
@@ -196,6 +210,7 @@ export {
     MenuTable_DEPT,
     MenuTable_RESERVA,
     MenuTable_EE,
+    MenuTableFactura,
     ContenidoTable,
     BtnActivarElemento,
     ActivarElementoModal,
@@ -281,6 +296,10 @@ export {
 
     /* Facturacion */
     ClienteFacturacionForm,
+    FacturasTable,
+    FacturaDetalleModal,
+    FacturaAnularModal,
+    VisorFacturaPDF,
 
     /* Finalizar Reserva */
     ReservaFinalizarStepper,

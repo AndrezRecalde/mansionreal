@@ -13,8 +13,9 @@ import {
     rtkCargarFacturas,
     rtkCargarMensaje,
     rtkCargarReporteIVA,
-    rtkLimpiarFactura,
     rtkLimpiarFacturas,
+    rtkSetPdfUrl,
+    rtkSetFacturaActual,
 } from "../../store/facturacion/facturaSlice";
 import apiAxios from "../../api/apiAxios";
 
@@ -24,6 +25,8 @@ export const useFacturaStore = () => {
         cargandoPDF,
         facturas,
         factura,
+        facturaActual,
+        pdfUrl,
         activarFactura,
         consumosAgrupados,
         estadisticas,
@@ -193,9 +196,15 @@ export const useFacturaStore = () => {
     /**
      * Descargar factura en PDF
      */
-    const fnDescargarFacturaPDF = async (facturaId) => {
+    const fnPrevisualizarFacturaPDF = async (facturaId) => {
         try {
             dispatch(rtkCargandoPDF(true));
+
+            // Obtener datos de la factura
+            const { data } = await apiAxios.get(`/facturas/${facturaId}`);
+            dispatch(rtkSetFacturaActual(data.factura));
+
+            // Obtener PDF
             const response = await apiAxios.get(`/facturas/${facturaId}/pdf`, {
                 responseType: "blob",
             });
@@ -204,13 +213,45 @@ export const useFacturaStore = () => {
             const blob = new Blob([response.data], { type: "application/pdf" });
             const url = window.URL.createObjectURL(blob);
 
-            // Abrir en nueva pestaña
-            window.open(url, "_blank");
+            // Guardar URL en el estado
+            dispatch(rtkSetPdfUrl(url));
+        } catch (error) {
+            console.log(error);
+            ExceptionMessageError(error);
+            return null;
+        } finally {
+            dispatch(rtkCargandoPDF(false));
+        }
+    };
 
-            // Limpiar URL después de un tiempo
-            setTimeout(() => {
-                window.URL.revokeObjectURL(url);
-            }, 100);
+    /**
+     * Limpiar URL del PDF
+     */
+    const fnLimpiarPdfUrl = () => {
+        if (pdfUrl) {
+            window.URL.revokeObjectURL(pdfUrl);
+            dispatch(rtkSetPdfUrl(null));
+        }
+    };
+
+    /**
+     * Descargar factura en PDF
+     */
+    const fnDescargarFacturaPDF = async (facturaId) => {
+        try {
+            dispatch(rtkCargandoPDF(true));
+            const response = await apiAxios.get(`/facturas/${facturaId}/pdf`, {
+                responseType: "blob",
+            });
+
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", `factura_${facturaId}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
         } catch (error) {
             ExceptionMessageError(error);
         } finally {
@@ -287,9 +328,6 @@ export const useFacturaStore = () => {
         dispatch(rtkLimpiarFacturas());
     };
 
-    const fnLimpiarFactura = () => {
-        dispatch(rtkLimpiarFactura());
-    };
 
     return {
         // Estado
@@ -297,6 +335,8 @@ export const useFacturaStore = () => {
         cargandoPDF,
         facturas,
         factura,
+        facturaActual,
+        pdfUrl,
         activarFactura,
         consumosAgrupados,
         estadisticas,
@@ -312,12 +352,13 @@ export const useFacturaStore = () => {
         fnVerificarPuedeFacturar,
         fnCargarFacturaPorReserva,
         fnRecalcularTotales,
+        fnPrevisualizarFacturaPDF,
+        fnLimpiarPdfUrl,
         fnDescargarFacturaPDF,
         fnCargarEstadisticas,
         fnCargarReporteIVA,
         fnCargarReportePorCliente,
         fnActivarFactura,
         fnLimpiarFacturas,
-        fnLimpiarFactura,
     };
 };

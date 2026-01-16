@@ -7,6 +7,8 @@ export const facturaSlice = createSlice({
         cargandoPDF: false,
         facturas: [],
         factura: null,
+        facturaActual: null, // ← NUEVO
+        pdfUrl: null, // ← NUEVO
         activarFactura: null,
         consumosAgrupados: {},
         estadisticas: null,
@@ -57,20 +59,21 @@ export const facturaSlice = createSlice({
             state.reporteIVA = payload;
             state.cargando = false;
         },
+        rtkSetPdfUrl: (state, { payload }) => {
+            state.pdfUrl = payload;
+        },
+        rtkSetFacturaActual: (state, { payload }) => {
+            state.facturaActual = payload;
+        },
         rtkLimpiarFacturas: (state) => {
             state.facturas = [];
             state.factura = null;
+            state.facturaActual = null;
+            state.pdfUrl = null;
             state.activarFactura = null;
             state.consumosAgrupados = {};
             state.estadisticas = null;
             state.reporteIVA = null;
-            state.mensaje = undefined;
-            state.errores = undefined;
-        },
-        rtkLimpiarFactura: (state) => {
-            state.factura = null;
-            state.activarFactura = null;
-            state.consumosAgrupados = {};
             state.mensaje = undefined;
             state.errores = undefined;
         },
@@ -94,8 +97,9 @@ export const {
     rtkActivarFactura,
     rtkCargarEstadisticas,
     rtkCargarReporteIVA,
+    rtkSetPdfUrl,
+    rtkSetFacturaActual,
     rtkLimpiarFacturas,
-    rtkLimpiarFactura,
     rtkCargarMensaje,
     rtkCargarErrores,
 } = facturaSlice.actions;

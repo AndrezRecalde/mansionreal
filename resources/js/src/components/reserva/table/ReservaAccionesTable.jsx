@@ -1,25 +1,31 @@
 import { ActionIcon, Group, Tooltip } from "@mantine/core";
-import { TextSection } from "../../../components";
+import { TextSection, VisorFacturaPDF } from "../../../components";
 import { IconChecks, IconFileText, IconProgressX } from "@tabler/icons-react";
 import {
-    useReservaDepartamentoStore,
-    useUiConsumo,
+    //useUiConsumo,
     useUiReservaDepartamento,
-    useFacturaStore, // ← NUEVO: Importar hook de factura
+    useFacturaStore,
+    useUiFactura,
 } from "../../../hooks";
 import { Estados } from "../../../helpers/getPrefix";
 import Swal from "sweetalert2";
 
 export const ReservaAccionesTable = ({ datos }) => {
-    const { fnAbrirDrawerConsumosDepartamento } = useUiConsumo();
+    //const { fnAbrirDrawerConsumosDepartamento } = useUiConsumo();
     const { fnAbrirModalReservaFinalizar, fnAbrirModalCancelarReserva } =
         useUiReservaDepartamento();
 
-    // ❌ ELIMINAR: const { fnExportarNotaVentaPDF } = useReservaDepartamentoStore();
+    const {
+        pdfUrl,
+        activarFactura,
+        fnLimpiarPdfUrl,
+        fnDescargarFacturaPDF,
+        fnCargarFacturaPorReserva,
+        fnPrevisualizarFacturaPDF,
+        fnActivarFactura,
+    } = useFacturaStore();
 
-    // ✅ NUEVO:  Usar hook de factura
-    const { fnCargarFacturaPorReserva, fnDescargarFacturaPDF } =
-        useFacturaStore();
+    const { abrirModalPdfFactura, fnAbrirModalPdfFactura } = useUiFactura();
 
     const handleFinalizarReservaClick = () => {
         fnAbrirModalReservaFinalizar(true);
@@ -29,16 +35,20 @@ export const ReservaAccionesTable = ({ datos }) => {
         fnAbrirModalCancelarReserva(true);
     };
 
-    // ✅ NUEVO:  Función para descargar factura
-    const handleDescargarFactura = async () => {
-        console.log(datos);
+    const handlePrevisualizarFactura = async () => {
         try {
-            // Primero obtener la factura de la reserva
+            // 1. Obtener la factura de la reserva
             const factura = await fnCargarFacturaPorReserva(datos.reserva_id);
 
             if (factura && factura.id) {
-                // Descargar el PDF de la factura
-                await fnDescargarFacturaPDF(factura.id);
+                // 2. Activar la factura en el estado
+                fnActivarFactura(factura);
+
+                // 3. Previsualizar PDF
+                await fnPrevisualizarFacturaPDF(factura.id);
+
+                // 4. Abrir modal del visor
+                fnAbrirModalPdfFactura(true);
             } else {
                 // Si no hay factura, mostrar mensaje
                 Swal.fire({
@@ -48,97 +58,115 @@ export const ReservaAccionesTable = ({ datos }) => {
                     showConfirmButton: true,
                     confirmButtonText: "Aceptar",
                 });
-                // Opcional: Mostrar notificación al usuario
-                // notifications.show({
-                //     title: 'Sin factura',
-                //     message: 'Esta reserva aún no tiene una factura generada',
-                //     color: 'yellow'
-                // });
             }
         } catch (error) {
-            //console.error("Error al descargar factura:", error);
             Swal.fire({
                 icon: "error",
                 title: "Error",
-                text: "Ocurrió un error al descargar la factura.",
+                text: "Ocurrió un error al cargar la factura.",
                 showConfirmButton: true,
                 confirmButtonText: "Aceptar",
             });
         }
     };
 
+    const handleCerrarPdfModal = () => {
+        fnAbrirModalPdfFactura(false);
+        fnLimpiarPdfUrl();
+    };
+
+    const handleDescargarPdf = () => {
+        if (activarFactura) {
+            fnDescargarFacturaPDF(activarFactura.id);
+        }
+    };
+
     return (
-        <Group justify="space-between" align="center">
-            <Group gap={25}>
-                <TextSection
-                    color={datos.estado?.color || "indigo. 7"}
-                    fs="italic"
-                    tt=""
-                    fz={16}
-                    fw={800}
-                >
-                    {datos.numero_departamento
-                        ? `${datos.tipo_departamento + " " + datos.numero_departamento} — ${datos.estado?.nombre_estado}`
-                        : `Resumen de Estadia  — ${datos.estado?.nombre_estado}`}
-                </TextSection>
-            </Group>
-            <Group gap={20}>
-                {/* Botón Finalizar Reserva */}
-                <Tooltip label="Finalizar Reserva">
-                    <ActionIcon
-                        variant="default"
-                        size="xl"
-                        radius="xs"
-                        onClick={handleFinalizarReservaClick}
-                        disabled={
-                            datos.estado?.nombre_estado === Estados.CANCELADO ||
-                            datos.estado?.nombre_estado === Estados.PAGADO
-                        }
+        <div>
+            <Group justify="space-between" align="center">
+                <Group gap={25}>
+                    <TextSection
+                        color={datos.estado?.color || "indigo. 7"}
+                        fs="italic"
+                        tt=""
+                        fz={16}
+                        fw={800}
                     >
-                        <IconChecks
-                            style={{ width: "80%", height: "80%" }}
-                            stroke={1.5}
-                        />
-                    </ActionIcon>
-                </Tooltip>
+                        {datos.numero_departamento
+                            ? `${
+                                  datos.tipo_departamento +
+                                  " " +
+                                  datos.numero_departamento
+                              } — ${datos.estado?.nombre_estado}`
+                            : `Resumen de Estadia  — ${datos.estado?.nombre_estado}`}
+                    </TextSection>
+                </Group>
+                <Group gap={20}>
+                    {/* Botón Finalizar Reserva */}
+                    <Tooltip label="Finalizar Reserva">
+                        <ActionIcon
+                            variant="default"
+                            size="xl"
+                            radius="xs"
+                            onClick={handleFinalizarReservaClick}
+                            disabled={
+                                datos.estado?.nombre_estado ===
+                                    Estados.CANCELADO ||
+                                datos.estado?.nombre_estado === Estados.PAGADO
+                            }
+                        >
+                            <IconChecks
+                                style={{ width: "80%", height: "80%" }}
+                                stroke={1.5}
+                            />
+                        </ActionIcon>
+                    </Tooltip>
 
-                {/* ✅ BOTÓN ACTUALIZADO: Descargar Factura */}
-                <Tooltip label="Descargar Factura">
-                    <ActionIcon
-                        variant="default"
-                        size="xl"
-                        radius="xs"
-                        onClick={handleDescargarFactura}
-                        disabled={
-                            datos.estado?.nombre_estado !== Estados.PAGADO
-                        }
-                    >
-                        <IconFileText
-                            style={{ width: "80%", height: "80%" }}
-                            stroke={1.5}
-                        />
-                    </ActionIcon>
-                </Tooltip>
+                    <Tooltip label="Ver Factura PDF">
+                        <ActionIcon
+                            variant="default"
+                            size="xl"
+                            radius="xs"
+                            onClick={handlePrevisualizarFactura}
+                            disabled={
+                                datos.estado?.nombre_estado !== Estados.PAGADO
+                            }
+                        >
+                            <IconFileText
+                                style={{ width: "80%", height: "80%" }}
+                                stroke={1.5}
+                            />
+                        </ActionIcon>
+                    </Tooltip>
 
-                {/* Botón Cancelar Reserva */}
-                <Tooltip label="Cancelar Reserva">
-                    <ActionIcon
-                        variant="default"
-                        size="xl"
-                        radius="xs"
-                        onClick={handleCancelarReservaClick}
-                        disabled={
-                            datos.estado?.nombre_estado === Estados.CANCELADO ||
-                            datos.estado?.nombre_estado === Estados.PAGADO
-                        }
-                    >
-                        <IconProgressX
-                            style={{ width: "80%", height: "80%" }}
-                            stroke={1.5}
-                        />
-                    </ActionIcon>
-                </Tooltip>
+                    {/* Botón Cancelar Reserva */}
+                    <Tooltip label="Cancelar Reserva">
+                        <ActionIcon
+                            variant="default"
+                            size="xl"
+                            radius="xs"
+                            onClick={handleCancelarReservaClick}
+                            disabled={
+                                datos.estado?.nombre_estado ===
+                                    Estados.CANCELADO ||
+                                datos.estado?.nombre_estado === Estados.PAGADO
+                            }
+                        >
+                            <IconProgressX
+                                style={{ width: "80%", height: "80%" }}
+                                stroke={1.5}
+                            />
+                        </ActionIcon>
+                    </Tooltip>
+                </Group>
             </Group>
-        </Group>
+            <VisorFacturaPDF
+                opened={abrirModalPdfFactura}
+                onClose={handleCerrarPdfModal}
+                pdfUrl={pdfUrl}
+                facturaNumero={activarFactura?.numero_factura}
+                onDownload={handleDescargarPdf}
+            />
+        </div>
     );
 };

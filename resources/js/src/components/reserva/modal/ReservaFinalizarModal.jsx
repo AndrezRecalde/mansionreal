@@ -13,7 +13,7 @@ export const ReservaFinalizarModal = ({ datos_reserva }) => {
     const { abrirModalReservaFinalizar, fnAbrirModalReservaFinalizar } =
         useUiReservaDepartamento();
     const { fnCargarTotalesPorReserva, fnLimpiarPago } = usePagoStore();
-    const { fnLimpiarFactura } = useFacturaStore();
+    const { fnLimpiarFacturas } = useFacturaStore();
     const { fnLimpiarCliente } = useClienteFacturacionStore();
 
     useEffect(() => {
@@ -23,7 +23,7 @@ export const ReservaFinalizarModal = ({ datos_reserva }) => {
 
         return () => {
             fnLimpiarPago();
-            fnLimpiarFactura();
+            fnLimpiarFacturas();
             fnLimpiarCliente();
         };
     }, [abrirModalReservaFinalizar]);

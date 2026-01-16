@@ -121,6 +121,12 @@ const HistorialPagosPage = lazy(() =>
     )
 );
 
+const FacturasPage = lazy(() =>
+    import(
+        /* webpackChunkName: "FacturasPage" */ "../pages/facturacion/FacturasPage"
+    )
+);
+
 const ErrorNotFound = lazy(() =>
     import(
         /* webpackChunkName: "ErrorNotFound" */ "../pages/error/ErrorNotFound"
@@ -159,6 +165,7 @@ export const MENU_PATH = {
     CALENDARIO_RESERVAS: "calendario-reservas",
     REPORTE_CONSUMOS: "reporte-consumos",
     HISTORIAL_PAGOS: "historial-pagos",
+    FACTURAS: "facturas",
 
     PERFIL: "perfil",
     CAMBIAR_CONTRASENA: "cambiar-contrasena",
@@ -189,7 +196,6 @@ const generalRoutes = generateRoutes(
     ],
     [Roles.ASISTENTE, Roles.GERENCIA, Roles.ADMINISTRADOR]
 );
-
 
 const gerenciaRoutes = generateRoutes(
     "gerencia",
@@ -232,6 +238,7 @@ const gerenciaRoutes = generateRoutes(
             Component: HistorialPagosPage,
         },
 
+        { path: MENU_PATH.FACTURAS, Component: FacturasPage },
     ],
     [Roles.ADMINISTRADOR, Roles.GERENCIA]
 );

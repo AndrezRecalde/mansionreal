@@ -17,12 +17,12 @@ export const STORAGE_FIELDS = {
 
 export const PAGE_CONFIG = {
     CALENDARIO: {
-        TITLE: "Mansion Real - Calendario de Reservas",
+        TITLE: "Calendario de Reservas - Mansión Real",
         CONTAINER_SIZE: "xl",
         PADDING: "md",
     },
     DISPONIBILIDAD: {
-        TITLE: "Disponibilidad Actual - Mansion Real",
+        TITLE: "Disponibilidad Actual - Mansión Real",
         CONTAINER_SIZE: "xl",
         MARGIN_Y: 20,
         DIVIDER_MARGIN: 10,

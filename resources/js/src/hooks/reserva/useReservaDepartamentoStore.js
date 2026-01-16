@@ -31,7 +31,7 @@ export const useReservaDepartamentoStore = () => {
         errores,
     } = useSelector((state) => state.reserva);
     const { fnConsultarDisponibilidadDepartamentos } = useDepartamentoStore();
-    const { fnCargarDatosCalendario, actualizarEstadisticas } =
+    const { fnCargarDatosCalendario } =
         useCalendarioStore();
     const { fnCargarEstadias } = useEstadiaStore();
     const dispatch = useDispatch();
@@ -55,7 +55,7 @@ export const useReservaDepartamentoStore = () => {
                     end: formatDateStr(reserva.fecha_fin),
                 });
 
-                await actualizarEstadisticas(new Date());
+                //await actualizarEstadisticas(new Date());
                 return;
             }
             //creando
@@ -73,7 +73,7 @@ export const useReservaDepartamentoStore = () => {
                 end: formatDateStr(reserva.fecha_fin),
             });
 
-            await actualizarEstadisticas(new Date());
+            //await actualizarEstadisticas(new Date());
         } catch (error) {
             console.log(error);
             ExceptionMessageError(error);
@@ -111,7 +111,7 @@ export const useReservaDepartamentoStore = () => {
                     end: formatDateStr(fin),
                 });
 
-                await actualizarEstadisticas(new Date());
+                //await actualizarEstadisticas(new Date());
                 await fnCargarEstadias();
             }
         } catch (error) {
@@ -250,7 +250,7 @@ export const useReservaDepartamentoStore = () => {
                     end: formatDateStr(fin),
                 });
 
-                await actualizarEstadisticas(new Date());
+                //await actualizarEstadisticas(new Date());
                 await fnCargarEstadias();
             }
         } catch (error) {

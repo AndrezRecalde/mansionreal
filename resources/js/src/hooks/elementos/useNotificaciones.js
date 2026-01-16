@@ -3,6 +3,7 @@ import Swal from "sweetalert2";
 import {
     useCalendarioStore,
     useEstadiaStore,
+    useFacturaStore,
     useReservaDepartamentoStore,
 } from "../../hooks";
 
@@ -16,10 +17,10 @@ export const useNotificaciones = () => {
     const {
         mensaje: mensajeReserva,
         errores: erroresReserva,
-        cargandoPDFNotaVenta,
     } = useReservaDepartamentoStore();
     const { mensaje: mensajeEstadia, errores: erroresEstadia } =
         useEstadiaStore();
+    const { cargandoPDF } = useFacturaStore();
 
     useEffect(() => {
         const notificaciones = [
@@ -49,7 +50,7 @@ export const useNotificaciones = () => {
     ]);
 
     useEffect(() => {
-        cargandoPDFNotaVenta
+        cargandoPDF
             ? Swal.fire({
                   icon: "info",
                   text: "Generando nota de venta, un momento por favor...",
@@ -59,5 +60,5 @@ export const useNotificaciones = () => {
                   },
               })
             : Swal.close();
-    }, [cargandoPDFNotaVenta]);
+    }, [cargandoPDF]);
 };

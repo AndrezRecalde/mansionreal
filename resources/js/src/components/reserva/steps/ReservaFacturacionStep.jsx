@@ -222,7 +222,7 @@ export const ReservaFacturacionStep = ({
                             leftSection={<IconUserPlus size={16} />}
                             loading={cargando}
                         >
-                            📋 Prellenar desde huésped de la reserva
+                            Prellenar desde huésped de la reserva
                         </Button>
 
                         {/* Cliente encontrado */}
@@ -288,7 +288,7 @@ export const ReservaFacturacionStep = ({
                                                 <IconUserPlus size={16} />
                                             }
                                         >
-                                            ➕ Crear nuevo cliente
+                                            Crear nuevo cliente
                                         </Button>
                                         <Button
                                             size="sm"
@@ -305,7 +305,7 @@ export const ReservaFacturacionStep = ({
                         {mostrarFormulario && (
                             <Paper p="md" withBorder>
                                 <Text size="sm" fw={600} mb="md">
-                                    ➕ Crear Nuevo Cliente
+                                    Crear nuevo cliente
                                 </Text>
                                 <ClienteFacturacionForm
                                     datosPrellenados={datosPrellenados}

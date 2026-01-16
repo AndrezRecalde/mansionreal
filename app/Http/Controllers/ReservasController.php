@@ -233,10 +233,11 @@ class ReservasController extends Controller
             ->get()
             ->map(function ($r) {
                 return [
-                    'id'             => $r->id,
+                    'reserva_id'             => $r->id,
                     'codigo_reserva' => $r->codigo_reserva,
                     'huesped_id'      => $r->huesped_id,
                     'huesped'        => $r->huesped ? $r->huesped->nombres . ' ' . $r->huesped->apellidos : null,
+                    'departamento_id' => $r->departamento_id,
                     'numero_departamento'   => $r->departamento ? $r->departamento->numero_departamento : null,
                     'tipo_departamento' => $r->departamento && $r->departamento->tipoDepartamento ? $r->departamento->tipoDepartamento->nombre_tipo : null,
                     'fecha_checkin'  => $r->fecha_checkin,
@@ -249,6 +250,9 @@ class ReservasController extends Controller
                     'fecha_cancelacion' => $r->fecha_cancelacion ? $r->fecha_cancelacion : null,
                     'usuario_cancelador' => $r->usuarioCancelador ? $r->usuarioCancelador->apellidos . ' ' . $r->usuarioCancelador->nombres : null,
                     'estado'         => $r->estado ? $r->estado : null,
+                    'total_adultos'   => $r->total_adultos,
+                    'total_ninos'    => $r->total_ninos,
+                    'total_mascotas'  => $r->total_mascotas,
                     //'color_estado'   => $r->estado ? $r->estado->color : null,
                     'consumos'       => $r->consumos->map(function ($c) {
                         return [
@@ -428,7 +432,8 @@ class ReservasController extends Controller
 
         if (!$reserva) {
             return response()->json([
-                'error' => 'Reserva no encontrada'
+                'status' => HTTPStatus::Error,
+                'msg' => 'Reserva no encontrada'
             ], 404);
         }
         // 3. Armar estructura igual a consultarDisponibilidadDepartamentosPorFecha

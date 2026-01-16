@@ -66,7 +66,9 @@ export const ReservaConfirmacionStep = ({
                                     Departamento:
                                 </Text>
                                 <Text size="sm" fw={500}>
-                                    {datos_reserva.tipo_departamento + " — " + datos_reserva.numero_departamento}
+                                    {datos_reserva.tipo_departamento +
+                                        " — " +
+                                        datos_reserva.numero_departamento}
                                 </Text>
                             </Group>
                         )}
@@ -201,7 +203,7 @@ export const ReservaConfirmacionStep = ({
                         size="md"
                         leftSection={<IconCheck size={16} />}
                     >
-                        ✅ Finalizar Reserva y Generar Factura
+                        Finalizar Reserva y Generar Factura
                     </Button>
                 </Group>
             </Stack>

@@ -225,7 +225,8 @@ class ReservasController extends Controller
             'huesped',
             'departamento.tipoDepartamento',
             'estado',
-            'consumos.inventario'
+            'consumos.inventario',
+            'factura:id,reserva_id,numero_factura,estado,fecha_emision,total_factura'
         ])
             ->codigoReserva($codigo_reserva)
             ->fechaCheckin($fecha_inicio, $fecha_fin)
@@ -233,27 +234,26 @@ class ReservasController extends Controller
             ->get()
             ->map(function ($r) {
                 return [
-                    'reserva_id'             => $r->id,
-                    'codigo_reserva' => $r->codigo_reserva,
+                    'reserva_id'      => $r->id,
+                    'codigo_reserva'  => $r->codigo_reserva,
                     'huesped_id'      => $r->huesped_id,
-                    'huesped'        => $r->huesped ? $r->huesped->nombres . ' ' . $r->huesped->apellidos : null,
+                    'huesped'         => $r->huesped ? $r->huesped->nombres . ' ' . $r->huesped->apellidos : null,
                     'departamento_id' => $r->departamento_id,
                     'numero_departamento'   => $r->departamento ? $r->departamento->numero_departamento : null,
                     'tipo_departamento' => $r->departamento && $r->departamento->tipoDepartamento ? $r->departamento->tipoDepartamento->nombre_tipo : null,
-                    'fecha_checkin'  => $r->fecha_checkin,
-                    'fecha_checkout' => $r->fecha_checkout,
-                    'total_noches'   => $r->total_noches,
-                    'fecha_creacion' => $r->fecha_creacion,
+                    'fecha_checkin'   => $r->fecha_checkin,
+                    'fecha_checkout'  => $r->fecha_checkout,
+                    'total_noches'    => $r->total_noches,
+                    'fecha_creacion'  => $r->fecha_creacion,
                     'usuario_creador' => $r->usuarioCreador ? $r->usuarioCreador->apellidos . ' ' . $r->usuarioCreador->nombres : null,
                     'motivo_cancelacion' => $r->motivo_cancelacion ? $r->motivo_cancelacion : null,
                     'observacion_cancelacion' => $r->observacion_cancelacion ? $r->observacion_cancelacion : null,
                     'fecha_cancelacion' => $r->fecha_cancelacion ? $r->fecha_cancelacion : null,
                     'usuario_cancelador' => $r->usuarioCancelador ? $r->usuarioCancelador->apellidos . ' ' . $r->usuarioCancelador->nombres : null,
                     'estado'         => $r->estado ? $r->estado : null,
-                    'total_adultos'   => $r->total_adultos,
+                    'total_adultos'  => $r->total_adultos,
                     'total_ninos'    => $r->total_ninos,
-                    'total_mascotas'  => $r->total_mascotas,
-                    //'color_estado'   => $r->estado ? $r->estado->color : null,
+                    'total_mascotas' => $r->total_mascotas,
                     'consumos'       => $r->consumos->map(function ($c) {
                         return [
                             'nombre_producto' => $c->inventario ? $c->inventario->nombre_producto : null,

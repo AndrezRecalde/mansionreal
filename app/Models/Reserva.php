@@ -93,6 +93,13 @@ class Reserva extends Model
         return $this->hasOne(Factura::class);
     }
 
+    public function ultimaFactura(): HasOne
+    {
+        return $this->hasOne(Factura::class, 'reserva_id')
+            ->latestOfMany('created_at');
+    }
+
+
     public function scopeActivas(Builder $query)
     {
         return $query->whereHas('estado', function ($q) {

@@ -13,8 +13,10 @@ import { IconAlertTriangle, IconTrash, IconX } from "@tabler/icons-react";
 import { useForm } from "@mantine/form";
 import { useFacturaStore } from "../../../hooks";
 import Swal from "sweetalert2";
+import { useMediaQuery } from "@mantine/hooks";
 
 export const FacturaAnularModal = ({ opened, onClose }) => {
+    const isMobile = useMediaQuery("(max-width: 768px)");
     const {
         activarFactura,
         cargando,
@@ -71,6 +73,7 @@ export const FacturaAnularModal = ({ opened, onClose }) => {
 
     return (
         <Modal
+            fullScreen={isMobile}
             opened={opened}
             onClose={handleClose}
             title={

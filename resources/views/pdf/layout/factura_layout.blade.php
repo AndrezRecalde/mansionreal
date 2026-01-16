@@ -1,320 +1,317 @@
 <!DOCTYPE html>
-<html lang="es">
+    <html lang="es">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Factura {{ $factura->numero_factura }}</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    <head>
+        <meta charset="UTF-8">
+        <title>Factura {{ $factura->numero_factura ?? '' }}</title>
+        <style>
+            @page {
+                size: A4 portrait;
+            }
 
-        body {
-            font-family: 'Helvetica', 'Arial', sans-serif;
-            font-size: 10pt;
-            color: #333;
-            line-height: 1.4;
-        }
+            body {
+                font-size: 9pt;
+                color: #333;
+                line-height: 1.3;
+                padding: 0;
+            }
 
-        .container {
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+            /* HEADER */
+            .header {
+                width: 100%;
+                margin-bottom: 15px;
+                padding-bottom: 10px;
+                border-bottom: 2px solid #2c3e50;
+            }
 
-        /* HEADER */
-        .header {
-            display: table;
-            width: 100%;
-            margin-bottom: 20px;
-            border-bottom: 3px solid #2c3e50;
-            padding-bottom: 15px;
-        }
+            .header-content {
+                width: 100%;
+            }
 
-        . header-left {
-            display: table-cell;
-            width: 60%;
-            vertical-align: top;
-        }
+            .header-left {
+                width: 58%;
+                float: left;
+            }
 
-        .header-right {
-            display: table-cell;
-            width: 40%;
-            vertical-align: top;
-            text-align: right;
-        }
+            .header-right {
+                width: 38%;
+                float: right;
+                text-align: right;
+            }
 
-        .logo {
-            font-size: 24pt;
-            font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 5px;
-        }
+            .logo {
+                font-size: 16pt;
+                font-weight: bold;
+                color: #2c3e50;
+                margin-bottom: 5px;
+            }
 
-        . company-info {
-            font-size: 9pt;
-            color: #666;
-            line-height: 1.6;
-        }
+            .company-info {
+                font-size: 8pt;
+                color: #666;
+                line-height: 1.4;
+            }
 
-        .factura-box {
-            background-color: #2c3e50;
-            color: white;
-            padding: 15px;
-            border-radius: 5px;
-            text-align: center;
-        }
+            .factura-box {
+                background-color: #2c3e50;
+                color: white;
+                padding: 10px;
+                border-radius: 3px;
+            }
 
-        .factura-title {
-            font-size: 16pt;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
+            .factura-title {
+                font-size: 11pt;
+                font-weight: bold;
+                margin-bottom: 3px;
+            }
 
-        .factura-numero {
-            font-size: 14pt;
-            font-weight: bold;
-            letter-spacing: 1px;
-        }
+            .factura-numero {
+                font-size: 12pt;
+                font-weight: bold;
+                letter-spacing: 0.5px;
+            }
 
-        .factura-fecha {
-            font-size: 9pt;
-            margin-top: 5px;
-        }
+            .factura-fecha {
+                font-size: 7pt;
+                margin-top: 3px;
+            }
 
-        /* CLIENTE INFO */
-        .cliente-section {
-            margin: 20px 0;
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-left: 4px solid #3498db;
-        }
+            /* CLEAR FLOATS */
+            .clearfix::after {
+                content: "";
+                display: table;
+                clear: both;
+            }
 
-        . section-title {
-            font-size: 11pt;
-            font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-        }
+            /* CLIENTE SECTION */
+            .cliente-section {
+                margin: 12px 0;
+                background-color: #f8f9fa;
+                padding: 10px;
+                border-left: 3px solid #3498db;
+                clear: both;
+            }
 
-        .cliente-data {
-            display: table;
-            width: 100%;
-        }
+            .section-title {
+                font-size: 10pt;
+                font-weight: bold;
+                color: #2c3e50;
+                margin-bottom: 8px;
+                text-transform: uppercase;
+            }
 
-        .cliente-row {
-            display: table-row;
-        }
+            .cliente-data {
+                width: 100%;
+            }
 
-        .cliente-label {
-            display: table-cell;
-            width: 25%;
-            font-weight: bold;
-            padding: 3px 0;
-            color: #555;
-        }
+            .cliente-row {
+                margin-bottom: 3px;
+            }
 
-        .cliente-value {
-            display: table-cell;
-            padding: 3px 0;
-            color: #333;
-        }
+            .cliente-label {
+                display: inline-block;
+                width: 28%;
+                font-weight: bold;
+                color: #555;
+                font-size: 8pt;
+            }
 
-        /* DETALLES DE FACTURA */
-        .detalles-section {
-            margin: 20px 0;
-        }
+            .cliente-value {
+                display: inline-block;
+                width: 70%;
+                color: #333;
+                font-size: 8pt;
+            }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
+            /* TABLAS */
+            .detalles-section {
+                margin: 12px 0;
+                clear: both;
+            }
 
-        thead {
-            background-color: #2c3e50;
-            color: white;
-        }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 8px;
+            }
 
-        th {
-            padding: 10px;
-            text-align: left;
-            font-size: 9pt;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
+            thead {
+                background-color: #2c3e50;
+                color: white;
+            }
 
-        th. text-center {
-            text-align: center;
-        }
+            th {
+                padding: 6px 5px;
+                text-align: left;
+                font-size: 8pt;
+                font-weight: bold;
+            }
 
-        th.text-right {
-            text-align: right;
-        }
+            tbody tr {
+                border-bottom: 1px solid #e0e0e0;
+            }
 
-        tbody tr {
-            border-bottom: 1px solid #e0e0e0;
-        }
+            td {
+                padding: 5px;
+                font-size: 8pt;
+            }
 
-        tbody tr:hover {
-            background-color: #f8f9fa;
-        }
+            .text-center {
+                text-align: center;
+            }
 
-        td {
-            padding: 8px 10px;
-            font-size: 9pt;
-        }
+            .text-right {
+                text-align: right;
+            }
 
-        td.text-center {
-            text-align: center;
-        }
+            .categoria-header {
+                background-color: #ecf0f1;
+                font-weight: bold;
+                padding: 6px 5px;
+                color: #2c3e50;
+                font-size: 9pt;
+            }
 
-        td.text-right {
-            text-align: right;
-        }
+            /* TOTALES */
+            .totales-section {
+                width: 45%;
+                float: right;
+                margin-top: 15px;
+            }
 
-        /* TOTALES */
-        .totales-section {
-            margin-top: 30px;
-            display: table;
-            width: 100%;
-        }
+            .totales-box {
+                border: 2px solid #2c3e50;
+                border-radius: 5px;
+                overflow: hidden;
+            }
 
-        .totales-left {
-            display: table-cell;
-            width: 50%;
-            vertical-align: top;
-        }
+            .totales-row {
+                padding: 6px 10px;
+                border-bottom: 1px solid #dee2e6;
+            }
 
-        .totales-right {
-            display: table-cell;
-            width: 50%;
-            vertical-align: top;
-        }
+            .totales-row:last-child {
+                border-bottom: none;
+            }
 
-        .totales-box {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 5px;
-        }
+            .totales-label {
+                display: inline-block;
+                width: 55%;
+                font-weight: bold;
+                color: #555;
+                font-size: 8pt;
+                text-align: right;
+            }
 
-        .total-row {
-            display: table;
-            width: 100%;
-            margin-bottom: 8px;
-        }
+            .totales-value {
+                display: inline-block;
+                width: 42%;
+                text-align: right;
+                font-size: 9pt;
+                font-weight: bold;
+            }
 
-        . total-label {
-            display: table-cell;
-            width: 70%;
-            font-size: 10pt;
-            color: #555;
-        }
+            .total-final {
+                background-color: #2c3e50;
+                color: white;
+                padding: 10px;
+            }
 
-        .total-value {
-            display: table-cell;
-            width: 30%;
-            text-align: right;
-            font-size: 10pt;
-            font-weight: bold;
-        }
+            .total-final .totales-label,
+            .total-final .totales-value {
+                color: white;
+                font-size: 10pt;
+            }
 
-        . total-final {
-            border-top: 2px solid #2c3e50;
-            padding-top: 10px;
-            margin-top: 10px;
-        }
+            /* OBSERVACIONES */
+            .observaciones-section {
+                clear: both;
+                margin: 12px 0;
+                padding: 10px;
+                background-color: #fff3cd;
+                border-left: 3px solid #ffc107;
+            }
 
-        . total-final . total-label {
-            font-size: 12pt;
-            font-weight: bold;
-            color: #2c3e50;
-        }
+            .observaciones-title {
+                font-weight: bold;
+                color: #856404;
+                margin-bottom: 5px;
+                font-size: 9pt;
+            }
 
-        .total-final .total-value {
-            font-size: 14pt;
-            color: #27ae60;
-        }
+            .observaciones-text {
+                font-size: 8pt;
+                color: #856404;
+            }
 
-        /* OBSERVACIONES */
-        .observaciones-section {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #fff9e6;
-            border-left: 4px solid #f39c12;
-        }
+            /* FOOTER */
+            .footer {
+                clear: both;
+                margin-top: 25px;
+                padding-top: 10px;
+                border-top: 1px solid #dee2e6;
+                text-align: center;
+                font-size: 7pt;
+                color: #777;
+            }
 
-        /* FOOTER */
-        .footer {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 2px solid #e0e0e0;
-            font-size: 8pt;
-            color: #999;
-            text-align: center;
-        }
+            .footer-text {
+                margin-bottom: 3px;
+            }
 
-        /* MARCA DE AGUA ANULADA */
-        .anulada-watermark {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-45deg);
-            font-size: 120pt;
-            font-weight: bold;
-            color: rgba(231, 76, 60, 0.15);
-            z-index: -1;
-            pointer-events: none;
-        }
+            /* FACTURA ANULADA */
+            .anulada-watermark {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) rotate(-45deg);
+                font-size: 100pt;
+                font-weight: bold;
+                color: rgba(231, 76, 60, 0.1);
+                z-index: -1;
+            }
 
-        . anulada-banner {
-            background-color: #e74c3c;
-            color: white;
-            padding: 15px;
-            text-align: center;
-            font-size: 14pt;
-            font-weight: bold;
-            margin-bottom: 20px;
-            border-radius: 5px;
-        }
+            .anulada-banner {
+                background-color: #e74c3c;
+                color: white;
+                padding: 12px;
+                text-align: center;
+                font-size: 12pt;
+                font-weight: bold;
+                margin-bottom: 15px;
+                border-radius: 3px;
+            }
 
-        /* UTILIDADES */
-        .text-right {
-            text-align: right;
-        }
+            .content-wrapper {
+                opacity: 0.6;
+            }
 
-        .text-center {
-            text-align: center;
-        }
+            /* DESGLOSE TRIBUTARIO */
+            .tributario-section {
+                clear: both;
+                margin: 12px 0;
+                padding: 10px;
+                background-color: #e8f4f8;
+                border-left: 3px solid #3498db;
+            }
 
-        .font-bold {
-            font-weight: bold;
-        }
+            /* BADGE DETALLADA */
+            .badge-detallada {
+                background-color: #3498db;
+                color: white;
+                padding: 4px 8px;
+                border-radius: 3px;
+                font-size: 7pt;
+                text-align: center;
+                margin-top: 4px;
+                display: inline-block;
+            }
+        </style>
+        @yield('extra-styles')
+    </head>
 
-        .categoria-header {
-            background-color: #ecf0f1;
-            font-weight: bold;
-            padding: 8px 10px ! important;
-            color: #2c3e50;
-        }
+    <body>
+        @yield('content')
+    </body>
 
-        /* PAGE BREAK */
-        .page-break {
-            page-break-after: always;
-        }
-    </style>
-
-    @yield('extra-styles')
-</head>
-
-<body>
-    @yield('content')
-</body>
-
-</html>
+    </html>

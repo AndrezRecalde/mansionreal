@@ -311,7 +311,7 @@ class ConsumosController extends Controller
 
             // Obtener el ID del estado PAGADO
             $estadoPagado = Estado::where('nombre_estado', 'PAGADO')
-                ->where('tipo_estado', 'RESERVA')
+                ->where('tipo_estado', 'PAGO')
                 ->first();
 
             if (!$estadoPagado) {
@@ -367,7 +367,7 @@ class ConsumosController extends Controller
 
             // Obtener el ID del estado PAGADO
             $estadoPagado = Estado::where('nombre_estado', 'PAGADO')
-                ->where('tipo_estado', 'RESERVA')
+                ->where('tipo_estado', 'PAGO')
                 ->first();
 
             if (!$estadoPagado) {

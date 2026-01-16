@@ -200,15 +200,17 @@ export const useFacturaStore = () => {
                 responseType: "blob",
             });
 
-            // Crear URL del blob y descargar
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement("a");
-            link.href = url;
-            link.setAttribute("download", `factura_${facturaId}.pdf`);
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            window.URL.revokeObjectURL(url);
+            // Crear URL del blob
+            const blob = new Blob([response.data], { type: "application/pdf" });
+            const url = window.URL.createObjectURL(blob);
+
+            // Abrir en nueva pestaña
+            window.open(url, "_blank");
+
+            // Limpiar URL después de un tiempo
+            setTimeout(() => {
+                window.URL.revokeObjectURL(url);
+            }, 100);
         } catch (error) {
             ExceptionMessageError(error);
         } finally {

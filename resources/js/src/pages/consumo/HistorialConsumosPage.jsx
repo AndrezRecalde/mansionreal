@@ -11,6 +11,7 @@ import {
     useDatosReserva,
     useEstadiaStore,
     useGastoStore,
+    useNotificaciones,
     usePagoStore,
     useReservaDepartamentoStore,
     useStorageField,
@@ -20,6 +21,7 @@ import Swal from "sweetalert2";
 
 const HistorialConsumosPage = () => {
     useTitleHook("Historial Reservas - Mansion Real");
+    useNotificaciones();
     const {
         cargando,
         activarReserva,

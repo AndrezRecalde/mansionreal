@@ -51,11 +51,6 @@ const HistorialConsumosPage = lazy(() =>
     )
 );
 
-const DisponibilidadActualPage = lazy(() =>
-    import(
-        /* webpackChunkName: "DisponibilidadActualPage" */ "../pages/reserva/DisponibilidadActualPage"
-    )
-);
 
 const DepartamentosPage = lazy(() =>
     import(
@@ -185,10 +180,6 @@ const generalRoutes = generateRoutes(
             path: MENU_PATH.DISPONIBILIDAD_DEPARTAMENTO,
             Component: DisponibilidadDepartamentoPage,
         },
-        /* {
-            path: MENU_PATH.DISPONIBILIDAD_ACTUAL,
-            Component: DisponibilidadActualPage,
-        }, */
         {
             path: MENU_PATH.CALENDARIO_RESERVAS,
             Component: CalendarioReservasPage,

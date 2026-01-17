@@ -28,7 +28,6 @@ export const ReservarDepartamentoForm = ({ reservaForm }) => {
     const handleSubmitHuesped = (e) => {
         e.preventDefault();
         const dni = reservaForm.getValues().huesped.dni;
-        //console.log(dni);
         fnBuscarHuespedPorDni(dni);
         setShowDetails(true);
     };

@@ -67,7 +67,6 @@ export const VisorFacturaPDF = ({
                     <Button
                         leftSection={<IconX size={16} />}
                         onClick={onClose}
-                        variant="light"
                     >
                         Cerrar
                     </Button>

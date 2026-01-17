@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Modal } from "@mantine/core";
 import { TextSection } from "../../../components";
 import { ReservaFinalizarStepper } from "../../../components";
@@ -7,7 +8,6 @@ import {
     useFacturaStore,
     useClienteFacturacionStore,
 } from "../../../hooks";
-import { useEffect } from "react";
 
 export const ReservaFinalizarModal = ({ datos_reserva }) => {
     const { abrirModalReservaFinalizar, fnAbrirModalReservaFinalizar } =

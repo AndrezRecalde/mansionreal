@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Drawer, Modal } from "@mantine/core";
+import { Drawer } from "@mantine/core";
 import { ReservarDepartamentoForm, TextSection } from "../../../components";
 import {
     useDepartamentoStore,
@@ -9,8 +9,8 @@ import {
     useUiReservaDepartamento,
 } from "../../../hooks";
 import { hasLength, useForm } from "@mantine/form";
-import dayjs from "dayjs";
 import { capitalizarCadaPalabra } from "../../../helpers/fnHelper";
+import dayjs from "dayjs";
 
 export const ReservarDepartamentoModal = () => {
     const { fnCargarDepartamentosDisponibles, fnAsignarDepartamento } =

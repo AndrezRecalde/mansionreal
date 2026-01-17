@@ -7,8 +7,8 @@ import {
     useStorageField,
     useUiLimpieza,
 } from "../../../hooks";
-import Swal from "sweetalert2";
 import { Estados } from "../../../helpers/getPrefix";
+import Swal from "sweetalert2";
 
 export const LimpiezaForm = ({ form }) => {
     const { cargando, fnAgregarLimpieza, activarLimpieza } = useLimpiezaStore();

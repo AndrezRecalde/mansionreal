@@ -10,7 +10,7 @@ import {
     Badge,
 } from "@mantine/core";
 import { IconAlertCircle, IconArrowLeft, IconCheck } from "@tabler/icons-react";
-import { formatFechaHoraModal } from "../../../helpers/fnHelper"; // ← YA EXISTE EN TU PROYECTO
+import { formatFechaHoraModal } from "../../../helpers/fnHelper";
 
 export const ReservaConfirmacionStep = ({
     datos_reserva,
@@ -26,7 +26,7 @@ export const ReservaConfirmacionStep = ({
                 {/* Alerta de confirmación */}
                 <Alert
                     icon={<IconAlertCircle size={16} />}
-                    title="⚠️ Confirmar Finalización"
+                    title="Confirmar Finalización"
                 >
                     <Text size="sm">
                         Está a punto de{" "}
@@ -45,7 +45,7 @@ export const ReservaConfirmacionStep = ({
                 <Paper p="md" withBorder>
                     <Group justify="space-between" mb="md">
                         <Text size="sm" fw={600}>
-                            📋 Resumen de la Reserva
+                            Resumen de la Reserva
                         </Text>
                         <Badge variant="light">
                             {datos_reserva.codigo_reserva}
@@ -78,7 +78,7 @@ export const ReservaConfirmacionStep = ({
                             </Text>
                             <Text size="sm" fw={500}>
                                 {formatFechaHoraModal(
-                                    datos_reserva.fecha_checkin
+                                    datos_reserva.fecha_checkin,
                                 )}
                             </Text>
                         </Group>
@@ -88,7 +88,7 @@ export const ReservaConfirmacionStep = ({
                             </Text>
                             <Text size="sm" fw={500}>
                                 {formatFechaHoraModal(
-                                    datos_reserva.fecha_checkout
+                                    datos_reserva.fecha_checkout,
                                 )}
                             </Text>
                         </Group>
@@ -101,7 +101,7 @@ export const ReservaConfirmacionStep = ({
                 <Paper p="md" withBorder>
                     <Group justify="space-between" mb="md">
                         <Text size="sm" fw={600}>
-                            📄 Resumen de Facturación
+                            Resumen de Facturación
                         </Text>
                         <Badge
                             color={generarFactura ? "teal" : "gray"}

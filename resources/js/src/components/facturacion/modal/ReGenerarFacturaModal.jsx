@@ -20,7 +20,6 @@ import {
     IconRefresh,
     IconSearch,
     IconUserPlus,
-    IconCheck,
     IconX,
 } from "@tabler/icons-react";
 import { ClienteFacturacionForm } from "../../../components";
@@ -193,7 +192,7 @@ export const ReGenerarFacturaModal = () => {
                 if (facturaGenerada) {
                     await Swal.fire({
                         icon: "success",
-                        title: "✅ Factura Re-Generada",
+                        title: "Factura Re-Generada",
                         text: `Factura ${facturaGenerada.numero_factura} generada exitosamente`,
                         timer: 3000,
                         showConfirmButton: true,
@@ -330,7 +329,7 @@ export const ReGenerarFacturaModal = () => {
                     <Alert
                         color="blue"
                         variant="light"
-                        title="✅ Consumidor Final Seleccionado"
+                        title="Consumidor Final Seleccionado"
                     >
                         <Text size="sm">
                             La factura se generará a nombre de{" "}
@@ -392,7 +391,7 @@ export const ReGenerarFacturaModal = () => {
                             !mostrarFormulario && (
                                 <Alert
                                     color="green"
-                                    title="✅ Cliente Encontrado"
+                                    title="Cliente Encontrado"
                                 >
                                     <Text size="sm" fw={600}>
                                         {clienteExistente.apellidos}{" "}

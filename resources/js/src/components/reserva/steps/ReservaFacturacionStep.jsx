@@ -227,7 +227,7 @@ export const ReservaFacturacionStep = ({
 
                         {/* Cliente encontrado */}
                         {busquedaRealizada && clienteExistente && (
-                            <Alert color="green" title="✅ Cliente Encontrado">
+                            <Alert color="green" title="Cliente Encontrado">
                                 <Text size="sm" fw={600}>
                                     {clienteExistente.nombres}{" "}
                                     {clienteExistente.apellidos}
@@ -271,7 +271,7 @@ export const ReservaFacturacionStep = ({
                             !mostrarFormulario && (
                                 <Alert
                                     color="yellow"
-                                    title="❌ Cliente No Encontrado"
+                                    title="Cliente No Encontrado"
                                 >
                                     <Text size="sm">
                                         No se encontró un cliente con la

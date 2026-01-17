@@ -1,10 +1,10 @@
 import { useCallback, useMemo } from "react";
-import { ContenidoTable, MenuTable_EE, TextSection } from "../../../components";
 import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
 import { useMantineReactTable } from "mantine-react-table";
-import { IconCashRegister } from "@tabler/icons-react";
 import { usePagoStore, useUiPago } from "../../../hooks";
+import { ContenidoTable, MenuTable_EE, TextSection } from "../../../components";
 import { Estados } from "../../../helpers/getPrefix";
+import { IconCashRegister } from "@tabler/icons-react";
 
 export const PagosTable = ({ estado }) => {
     const { cargando, pagos, fnAsignarPago } = usePagoStore();
@@ -58,7 +58,7 @@ export const PagosTable = ({ estado }) => {
                 ),
             },
         ],
-        [pagos, totalPagos]
+        [pagos, totalPagos],
     );
 
     const handleAgregarVoucherClick = () => {
@@ -73,7 +73,7 @@ export const PagosTable = ({ estado }) => {
             fnAbrirModalEditarRegistroPago(true);
             fnAsignarPago(selected);
         },
-        [pagos]
+        [pagos],
     );
 
     const handleEliminarPago = useCallback(
@@ -82,7 +82,7 @@ export const PagosTable = ({ estado }) => {
             fnAbrirModalEliminarRegistroPago(true);
             fnAsignarPago(selected);
         },
-        [pagos]
+        [pagos],
     );
 
     const table = useMantineReactTable({

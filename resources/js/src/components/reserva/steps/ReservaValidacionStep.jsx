@@ -40,7 +40,7 @@ export const ReservaValidacionStep = ({ datos_reserva, onNext }) => {
                 {puedeAvanzar ? (
                     <Alert
                         icon={<IconCheck size={16} />}
-                        title="✅ Validación Exitosa"
+                        title="Validación Exitosa"
                         color="teal"
                     >
                         <Text size="sm">
@@ -51,7 +51,7 @@ export const ReservaValidacionStep = ({ datos_reserva, onNext }) => {
                 ) : (
                     <Alert
                         icon={<IconAlertCircle size={16} />}
-                        title="⚠️ Montos No Coinciden"
+                        title="Montos No Coinciden"
                         color="red"
                     >
                         <Text size="sm">

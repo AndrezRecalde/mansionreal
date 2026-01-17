@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { Group, Modal, Title } from "@mantine/core";
-import { useConceptoPagoStore, useUiPago } from "../../../hooks";
-import { IconEdit } from "@tabler/icons-react";
-import { PagoEditarForm } from "../form/PagoEditarForm";
 import { useForm } from "@mantine/form";
+import { useConceptoPagoStore, useUiPago } from "../../../hooks";
+import { PagoEditarForm } from "../../../components";
+import { IconEdit } from "@tabler/icons-react";
 
 export const PagoEditarModal = ({ reservaId }) => {
     const { abrirModalEditarRegistroPago, fnAbrirModalEditarRegistroPago } =

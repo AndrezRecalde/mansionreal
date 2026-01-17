@@ -98,7 +98,6 @@ import { ReservaModals } from "./reserva/modal/ReservaModals";
 
 /* Reservas: Consultar Reservas */
 import { ConsultarReservaSection } from "./reserva/section/ConsultarReservaSection";
-import { ConsultaClientesTable } from "./reserva/table/ConsultaClientesTable";
 import { ReservasInformacionTable } from "./reserva/table/ReservasInformacionTable";
 import { BtnExportacionPDF } from "./reserva/btn/BtnExportacionPDF";
 
@@ -289,7 +288,6 @@ export {
 
     /* Reservas: Consultar Reservas */
     ConsultarReservaSection,
-    ConsultaClientesTable,
     ReservasInformacionTable,
     BtnExportacionPDF,
 

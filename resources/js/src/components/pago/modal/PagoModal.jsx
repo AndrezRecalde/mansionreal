@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { Modal, Group, Title } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
 import { useConceptoPagoStore, useUiPago } from "../../../hooks";
-import { PagoForm } from "../form/PagoForm";
-import { useMediaQuery } from "@mantine/hooks";
+import { PagoForm } from "../../../components";
 
 export const PagoModal = ({ reservaId }) => {
     const isMobile = useMediaQuery("(max-width: 768px)");

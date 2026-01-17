@@ -78,13 +78,12 @@ export const FacturaAnularModal = ({ opened, onClose }) => {
             onClose={handleClose}
             title={
                 <Group>
-                    <IconAlertTriangle size={24} color="red" />
                     <Text fw={700} size="lg">
                         Anular Factura
                     </Text>
                 </Group>
             }
-            size="md"
+            size="lg"
             padding="lg"
         >
             <form onSubmit={form.onSubmit(handleSubmit)}>
@@ -92,7 +91,7 @@ export const FacturaAnularModal = ({ opened, onClose }) => {
                     {/* Alerta de Advertencia */}
                     <Alert
                         icon={<IconAlertTriangle size={16} />}
-                        title="⚠️ Acción Irreversible"
+                        title="Acción Irreversible"
                         color="red"
                     >
                         <Text size="sm">

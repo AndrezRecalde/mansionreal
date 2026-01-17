@@ -103,7 +103,14 @@ export const DepartamentoTable = () => {
         state: { showProgressBars: cargando },
         enableFacetedValues: true,
         enableRowActions: true,
+        enableStickyHeader: true,
+        enableColumnPinning: true,
         localization: MRT_Localization_ES,
+         initialState: {
+            density: "md",
+            columnPinning: { right: ["mrt-row-actions"] },
+            sorting: [{ id: "numero_departamento", asc: true }],
+        },
         renderRowActionMenuItems: ({ row }) => (
             <MenuTable_DEPT
                 row={row}

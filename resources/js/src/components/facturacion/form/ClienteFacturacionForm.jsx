@@ -3,6 +3,7 @@ import { Button, Group, Select, Stack, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { useClienteFacturacionStore } from "../../../hooks";
+import Swal from "sweetalert2";
 
 export const ClienteFacturacionForm = ({
     datosPrellenados,
@@ -61,7 +62,12 @@ export const ClienteFacturacionForm = ({
                 form.reset();
             }
         } catch (error) {
-            console.error("Error al crear cliente:", error);
+            //console.error("Error al crear cliente:", error);
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "Ocurrió un error al crear el cliente. Por favor, intente nuevamente.",
+            });
         }
     };
 

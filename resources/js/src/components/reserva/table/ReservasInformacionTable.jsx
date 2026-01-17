@@ -34,6 +34,20 @@ export const ReservasInformacionTable = () => {
                 ),
             },
             {
+                accessorKey: "estado.nombre_estado",
+                header: "Estado",
+                size: 130,
+                Cell: ({ cell }) => (
+                    <Badge
+                        radius="sm"
+                        color={cell.row.original.estado.color}
+                        variant="light"
+                    >
+                        {cell.getValue()}
+                    </Badge>
+                ),
+            },
+            {
                 accessorKey: "huesped",
                 header: "Huésped",
                 size: 200,
@@ -58,21 +72,12 @@ export const ReservasInformacionTable = () => {
                     </Text>
                 ),
             },
+
             {
-                accessorKey: "estado.nombre_estado",
-                header: "Estado",
-                size: 130,
-                Cell: ({ cell }) => (
-                    <Badge
-                        color={cell.row.original.estado.color}
-                        variant="filled"
-                    >
-                        {cell.getValue()}
-                    </Badge>
-                ),
-            },
-            {
-                accessorKey: "numero_departamento",
+                accessorFn: (row) =>
+                    row.numero_departamento
+                        ? row.tipo_departamento + " " + row.numero_departamento
+                        : "ESTADÍA",
                 header: "Departamento",
                 size: 120,
             },
@@ -93,7 +98,7 @@ export const ReservasInformacionTable = () => {
                                             : "red"
                                     }
                                     variant="light"
-                                    size="sm"
+                                    radius="sm"
                                 >
                                     {reserva.factura_estado}
                                 </Badge>
@@ -110,7 +115,12 @@ export const ReservasInformacionTable = () => {
                     }
 
                     return (
-                        <Badge color="gray" variant="light" size="sm">
+                        <Badge
+                            radius="sm"
+                            color="gray"
+                            variant="light"
+                            size="sm"
+                        >
                             Sin Factura
                         </Badge>
                     );
@@ -150,14 +160,21 @@ export const ReservasInformacionTable = () => {
 
     const table = useMantineReactTable({
         columns,
-        data: reservas || [],
+        data: reservas ?? [],
         localization: MRT_Localization_ES,
         enableColumnActions: false,
         enableColumnFilters: true,
         enableSorting: true,
         enablePagination: true,
         enableRowActions: true,
+        enableStickyHeader: true,
+        enableColumnPinning: true,
         positionActionsColumn: "last",
+        initialState: {
+            density: "md",
+            columnPinning: { right: ["mrt-row-actions"] },
+            sorting: [{ id: "fecha_checkin", desc: true }],
+        },
         state: {
             isLoading: cargando,
         },
@@ -181,15 +198,13 @@ export const ReservasInformacionTable = () => {
                         </Menu.Item>
                     )}
 
-                    {reserva.puede_refacturar && (
+                    {reserva.factura_estado === "ANULADA" && (
                         <Menu.Item
                             leftSection={<IconRefresh size={16} />}
                             color="orange"
                             onClick={() => handleReGenerarFactura(reserva)}
                         >
-                            {reserva.tiene_factura
-                                ? "Volver a Generar Factura"
-                                : "Generar Factura"}
+                            Volver a Generar Factura
                         </Menu.Item>
                     )}
 

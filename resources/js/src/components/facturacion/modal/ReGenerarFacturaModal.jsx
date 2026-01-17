@@ -454,7 +454,7 @@ export const ReGenerarFacturaModal = () => {
                 {clienteSeleccionado && (
                     <Alert
                         color="teal"
-                        title="✅ Cliente Seleccionado"
+                        title="Cliente Seleccionado"
                         variant="light"
                     >
                         <Group justify="space-between">

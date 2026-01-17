@@ -53,7 +53,7 @@ export const FacturasTable = () => {
             {
                 accessorKey: "fecha_emision",
                 header: "Fecha Emisión",
-                size: 120,
+                size: 80,
                 Cell: ({ cell }) => (
                     <Text size="sm">
                         {dayjs(cell.getValue()).format("DD/MM/YYYY")}
@@ -182,7 +182,7 @@ export const FacturasTable = () => {
         enableStickyHeader: true,
         enableDensityToggle: false,
         initialState: {
-            density: "xs",
+            density: "sm",
             columnPinning: { right: ["mrt-row-actions"] },
             sorting: [{ id: "fecha_emision", desc: true }],
         },
@@ -201,9 +201,6 @@ export const FacturasTable = () => {
             highlightOnHover: true,
             withColumnBorders: true,
             withTableBorder: true,
-        },
-        mantineTableContainerProps: {
-            style: { maxHeight: "600px" },
         },
         renderRowActionMenuItems: ({ row }) => (
             <MenuTableFactura

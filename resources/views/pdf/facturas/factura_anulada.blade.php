@@ -6,7 +6,7 @@
 
     {{-- BANNER --}}
     <div class="anulada-banner">
-        ⚠️ FACTURA ANULADA ⚠️
+        FACTURA ANULADA
     </div>
 
     <div class="content-wrapper">
@@ -36,7 +36,7 @@
 
         {{-- INFORMACIÓN DE ANULACIÓN --}}
         <div class="cliente-section" style="background-color: #ffe6e6; border-left-color: #e74c3c;">
-            <div class="section-title" style="color: #e74c3c;">⚠️ Información de Anulación</div>
+            <div class="section-title" style="color: #e74c3c;">Información de Anulación</div>
             <div class="cliente-data">
                 <div class="cliente-row">
                     <span class="cliente-label">Fecha Anulación:</span>

@@ -9,6 +9,11 @@
                 size: A4 portrait;
             }
 
+            * {
+                font-family: "Helvetica", Helvetica, Arial, sans-serif;
+                box-sizing: border-box;
+            }
+
             body {
                 font-size: 9pt;
                 color: #333;

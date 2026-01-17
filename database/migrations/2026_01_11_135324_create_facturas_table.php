@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('numero_factura', 50)->unique();
 
             // Relaciones principales
-            $table->unsignedBigInteger('reserva_id')->unique()->comment('Una factura por reserva');
+            $table->unsignedBigInteger('reserva_id')->comment('Una factura por reserva');
             $table->unsignedBigInteger('cliente_facturacion_id')->comment('Referencia al cliente (puede ser id=1 CF)');
 
             // Fecha de emisión

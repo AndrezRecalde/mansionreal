@@ -151,7 +151,7 @@ export const useReservaDepartamentoStore = () => {
             const { reservas } = data;
             dispatch(rtkCargarReservas(reservas));
         } catch (error) {
-            //console.log(error);
+            console.log(error);
             ExceptionMessageError(error);
         } finally {
             dispatch(rtkCargando(false));

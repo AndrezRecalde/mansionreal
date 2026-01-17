@@ -218,54 +218,71 @@ class ReservasController extends Controller
         $fecha_fin = $request->fecha_fin;
         $codigo_reserva = $request->codigo_reserva;
 
-        if (!$codigo_reserva && (!$fecha_inicio || !$fecha_fin)) {
+        if (!$codigo_reserva && (! $fecha_inicio || !$fecha_fin)) {
             return response()->json(['error' => 'Debe proporcionar un código de reserva o el rango de fechas'], 400);
         }
+
         $reservas = Reserva::with([
             'huesped',
             'departamento.tipoDepartamento',
             'estado',
             'consumos.inventario',
-            'factura:id,reserva_id,numero_factura,estado,fecha_emision,total_factura'
+            'ultimaFactura:id,facturas.reserva_id,numero_factura,estado,fecha_emision,total_factura,motivo_anulacion'
+
         ])
             ->codigoReserva($codigo_reserva)
             ->fechaCheckin($fecha_inicio, $fecha_fin)
             ->orderBy('fecha_checkin', 'DESC')
             ->get()
             ->map(function ($r) {
-                return [
+                $reservaData = [
                     'reserva_id'      => $r->id,
                     'codigo_reserva'  => $r->codigo_reserva,
                     'huesped_id'      => $r->huesped_id,
-                    'huesped'         => $r->huesped ? $r->huesped->nombres . ' ' . $r->huesped->apellidos : null,
+                    'huesped'         => $r->huesped ?  $r->huesped->nombres . ' ' . $r->huesped->apellidos : null,
                     'departamento_id' => $r->departamento_id,
-                    'numero_departamento'   => $r->departamento ? $r->departamento->numero_departamento : null,
-                    'tipo_departamento' => $r->departamento && $r->departamento->tipoDepartamento ? $r->departamento->tipoDepartamento->nombre_tipo : null,
+                    'numero_departamento'   => $r->departamento ?  $r->departamento->numero_departamento : null,
+                    'tipo_departamento'     => $r->departamento && $r->departamento->tipoDepartamento
+                        ? $r->departamento->tipoDepartamento->nombre_tipo
+                        : null,
                     'fecha_checkin'   => $r->fecha_checkin,
                     'fecha_checkout'  => $r->fecha_checkout,
                     'total_noches'    => $r->total_noches,
-                    'fecha_creacion'  => $r->fecha_creacion,
-                    'usuario_creador' => $r->usuarioCreador ? $r->usuarioCreador->apellidos . ' ' . $r->usuarioCreador->nombres : null,
-                    'motivo_cancelacion' => $r->motivo_cancelacion ? $r->motivo_cancelacion : null,
-                    'observacion_cancelacion' => $r->observacion_cancelacion ? $r->observacion_cancelacion : null,
-                    'fecha_cancelacion' => $r->fecha_cancelacion ? $r->fecha_cancelacion : null,
-                    'usuario_cancelador' => $r->usuarioCancelador ? $r->usuarioCancelador->apellidos . ' ' . $r->usuarioCancelador->nombres : null,
-                    'estado'         => $r->estado ? $r->estado : null,
-                    'total_adultos'  => $r->total_adultos,
-                    'total_ninos'    => $r->total_ninos,
-                    'total_mascotas' => $r->total_mascotas,
-                    'consumos'       => $r->consumos->map(function ($c) {
-                        return [
-                            'nombre_producto' => $c->inventario ? $c->inventario->nombre_producto : null,
-                            'cantidad'        => $c->cantidad,
-                            'subtotal'        => $c->subtotal,
-                            'tasa_iva'        => $c->tasa_iva,
-                            'iva'             => $c->iva,
-                            'total'           => $c->total,
-                        ];
-                    }),
+                    'estado'          => [
+                        'id' => $r->estado->id,
+                        'nombre_estado' => $r->estado->nombre_estado,
+                        'color' => $r->estado->color,
+                    ],
+                    'total_consumos'  => $r->consumos->sum('total'),
+                    'total_pagos'     => $r->pagos->sum('monto'),
+                    'total_gastos'    => $r->gastos->sum('monto'),
                 ];
+
+                if ($r->ultimaFactura) {
+                    $reservaData['factura'] = [
+                        'id' => $r->ultimaFactura->id,
+                        'numero_factura' => $r->ultimaFactura->numero_factura,
+                        'estado' => $r->ultimaFactura->estado,
+                        'fecha_emision' => $r->ultimaFactura->fecha_emision,
+                        'total_factura' => $r->ultimaFactura->total_factura,
+                        'motivo_anulacion' => $r->ultimaFactura->motivo_anulacion,
+                    ];
+                    $reservaData['tiene_factura'] = true;
+                    $reservaData['factura_estado'] = $r->ultimaFactura->estado;
+                    $reservaData['puede_refacturar'] = $r->ultimaFactura->estado === 'ANULADA';
+                } else {
+                    $reservaData['factura'] = null;
+                    $reservaData['tiene_factura'] = false;
+                    $reservaData['factura_estado'] = null;
+
+                    // Puede generar factura si tiene consumos pendientes
+                    $consumosPendientes = $r->consumos()->whereNull('factura_id')->count() > 0;
+                    $reservaData['puede_refacturar'] = $consumosPendientes;
+                }
+
+                return $reservaData;
             });
+
         return response()->json([
             'status'     => HTTPStatus::Success,
             'reservas'   => $reservas

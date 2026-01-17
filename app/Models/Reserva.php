@@ -188,11 +188,16 @@ class Reserva extends Model
     }
 
     /**
-     * Verificar si tiene factura generada
+     * Verificar si tiene factura generada con estado: EMITIDA
      */
     public function getTieneFacturaAttribute(): bool
     {
         return $this->factura()->exists();
+    }
+
+    public function getTieneFacturaEmitidaAttribute(): bool
+    {
+        return $this->factura()->where('estado', 'EMITIDA')->exists();
     }
 
     /**

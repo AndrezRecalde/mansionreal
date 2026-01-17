@@ -119,6 +119,7 @@ import { ClienteFacturacionForm } from "./facturacion/form/ClienteFacturacionFor
 import { FacturasTable } from "./facturacion/table/FacturasTable";
 import { FacturaDetalleModal } from "./facturacion/modal/FacturaDetalleModal";
 import { FacturaAnularModal } from "./facturacion/modal/FacturaAnularModal";
+import { ReGenerarFacturaModal } from "./facturacion/modal/ReGenerarFacturaModal";
 import { VisorFacturaPDF } from "./facturacion/modal/VisorFacturaPDF";
 
 /* KPI de Facturacion */
@@ -309,6 +310,7 @@ export {
     FacturasTable,
     FacturaDetalleModal,
     FacturaAnularModal,
+    ReGenerarFacturaModal,
     VisorFacturaPDF,
 
     /* KPI de Facturacion */

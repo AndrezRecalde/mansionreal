@@ -10,6 +10,7 @@ const initialState = {
     // ✅ NUEVOS:  Modales para la página de gestión de facturas
     abrirModalDetalleFactura: false,
     abrirModalPdfFactura: false,
+    abrirModalReGenerarFactura: false,
 };
 
 export const uiFacturaSlice = createSlice({
@@ -37,6 +38,9 @@ export const uiFacturaSlice = createSlice({
         rtkAbrirModalPdfFactura: (state, { payload }) => {
             state.abrirModalPdfFactura = payload;
         },
+        rtkAbrirModalReGenerarFactura: (state, { payload }) => {
+            state.abrirModalReGenerarFactura = payload;
+        },
     },
 });
 
@@ -50,4 +54,5 @@ export const {
     // ✅ NUEVOS: Exports para gestión de facturas
     rtkAbrirModalDetalleFactura,
     rtkAbrirModalPdfFactura,
+    rtkAbrirModalReGenerarFactura
 } = uiFacturaSlice.actions;

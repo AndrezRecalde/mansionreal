@@ -6,6 +6,7 @@ import {
     rtkAbrirModalVerFactura,
     rtkAbrirModalDetalleFactura,
     rtkAbrirModalPdfFactura,
+    rtkAbrirModalReGenerarFactura,
 } from "../../store/facturacion/uiFacturaSlice";
 
 export const useUiFactura = () => {
@@ -19,6 +20,7 @@ export const useUiFactura = () => {
         // ✅ NUEVOS: Estados para gestión de facturas
         abrirModalDetalleFactura,
         abrirModalPdfFactura,
+        abrirModalReGenerarFactura
     } = useSelector((state) => state.uiFactura);
 
     const dispatch = useDispatch();
@@ -49,6 +51,10 @@ export const useUiFactura = () => {
         dispatch(rtkAbrirModalPdfFactura(abrir));
     };
 
+    const fnAbrirModalReGenerarFactura = (abrir) => {
+        dispatch(rtkAbrirModalReGenerarFactura(abrir));
+    };
+
     return {
         // Estados existentes
         abrirModalGenerarFactura,
@@ -59,6 +65,7 @@ export const useUiFactura = () => {
         // ✅ NUEVOS: Estados para gestión de facturas
         abrirModalDetalleFactura,
         abrirModalPdfFactura,
+        abrirModalReGenerarFactura,
 
         // Funciones existentes
         fnAbrirModalGenerarFactura,
@@ -69,5 +76,6 @@ export const useUiFactura = () => {
         // ✅ NUEVAS: Funciones para gestión de facturas
         fnAbrirModalDetalleFactura,
         fnAbrirModalPdfFactura,
+        fnAbrirModalReGenerarFactura,
     };
 };

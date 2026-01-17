@@ -151,7 +151,7 @@ class FacturaService
 
         $motivos = [];
 
-        if ($reserva->tiene_factura) {
+        if ($reserva->tiene_factura_emitida) {
             $motivos[] = 'Ya tiene factura generada';
         }
 
@@ -167,7 +167,7 @@ class FacturaService
         return [
             'puede_facturar' => empty($motivos),
             'motivos' => $motivos,
-            'tiene_factura' => $reserva->tiene_factura,
+            'tiene_factura' => $reserva->tiene_factura_emitida,
             'factura_existente' => $reserva->factura,
             'total_consumos' => $reserva->consumos->sum('total'),
             'cantidad_consumos' => $reserva->consumos->count(),
@@ -234,7 +234,7 @@ class FacturaService
         }
 
         // Validar que no tenga factura
-        if ($reserva->tiene_factura) {
+        if ($reserva->tiene_factura_emitida) {
             throw FacturacionException::reservaYaFacturada($reservaId);
         }
 

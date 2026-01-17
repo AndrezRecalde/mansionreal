@@ -1,182 +1,209 @@
-import { Badge, Group, Table, UnstyledButton } from "@mantine/core";
-import { useMantineReactTable } from "mantine-react-table";
-import { ContenidoTable } from "../../../components";
-import { useCallback, useMemo } from "react";
-import { useReservaDepartamentoStore, useUiConsumo } from "../../../hooks";
+import { useMemo } from "react";
+import { Badge, Group, Menu, Text, Tooltip, Box } from "@mantine/core";
+import { MantineReactTable, useMantineReactTable } from "mantine-react-table";
 import { MRT_Localization_ES } from "mantine-react-table/locales/es/index.cjs";
-import { formatFechaHoraModal } from "../../../helpers/fnHelper";
+import {
+    IconFileText,
+    IconRefresh,
+    IconEye,
+    IconAlertCircle,
+} from "@tabler/icons-react";
+import {
+    useReservaDepartamentoStore,
+    useUiConsumo,
+    useUiFactura,
+} from "../../../hooks";
+import dayjs from "dayjs";
 
-export const ReservasInformacionTable = ({ cargando }) => {
-    const { reservas, fnAsignarReserva } = useReservaDepartamentoStore();
+export const ReservasInformacionTable = () => {
+    const { cargando, reservas, fnAsignarReserva } =
+        useReservaDepartamentoStore();
+    const { fnAbrirModalReGenerarFactura } = useUiFactura();
     const { fnAbrirDrawerConsumosDepartamento } = useUiConsumo();
 
     const columns = useMemo(
         () => [
             {
-                header: "Estado",
-                accessorKey: "estado.nombre_estado",
+                accessorKey: "codigo_reserva",
+                header: "Código Reserva",
+                size: 150,
                 Cell: ({ cell }) => (
-                    <Group>
-                        <Badge
-                            radius="sm"
-                            color={cell.row.original.estado.color}
-                            variant="transparent"
-                        >
-                            {cell.row.original.estado.nombre_estado}
+                    <Text size="sm" fw={600}>
+                        {cell.getValue()}
+                    </Text>
+                ),
+            },
+            {
+                accessorKey: "huesped",
+                header: "Huésped",
+                size: 200,
+            },
+            {
+                accessorKey: "fecha_checkin",
+                header: "Check-in",
+                size: 120,
+                Cell: ({ cell }) => (
+                    <Text size="sm">
+                        {dayjs(cell.getValue()).format("DD/MM/YYYY")}
+                    </Text>
+                ),
+            },
+            {
+                accessorKey: "fecha_checkout",
+                header: "Check-out",
+                size: 120,
+                Cell: ({ cell }) => (
+                    <Text size="sm">
+                        {dayjs(cell.getValue()).format("DD/MM/YYYY")}
+                    </Text>
+                ),
+            },
+            {
+                accessorKey: "estado.nombre_estado",
+                header: "Estado",
+                size: 130,
+                Cell: ({ cell }) => (
+                    <Badge
+                        color={cell.row.original.estado.color}
+                        variant="filled"
+                    >
+                        {cell.getValue()}
+                    </Badge>
+                ),
+            },
+            {
+                accessorKey: "numero_departamento",
+                header: "Departamento",
+                size: 120,
+            },
+            {
+                accessorKey: "factura_estado",
+                header: "Facturación",
+                size: 150,
+                Cell: ({ row }) => {
+                    const reserva = row.original;
+
+                    if (reserva.tiene_factura) {
+                        return (
+                            <Group gap="xs">
+                                <Badge
+                                    color={
+                                        reserva.factura_estado === "EMITIDA"
+                                            ? "green"
+                                            : "red"
+                                    }
+                                    variant="light"
+                                    size="sm"
+                                >
+                                    {reserva.factura_estado}
+                                </Badge>
+                                {reserva.factura_estado === "ANULADA" && (
+                                    <Tooltip label="Puede re-facturar">
+                                        <IconAlertCircle
+                                            size={16}
+                                            color="#ea580c"
+                                        />
+                                    </Tooltip>
+                                )}
+                            </Group>
+                        );
+                    }
+
+                    return (
+                        <Badge color="gray" variant="light" size="sm">
+                            Sin Factura
                         </Badge>
+                    );
+                },
+            },
+            {
+                accessorKey: "total_consumos",
+                header: "Total",
+                size: 120,
+                Cell: ({ row }) => (
+                    <Group gap={4}>
+                        <Text size="sm" fw={600}>
+                            $
+                            {parseFloat(row.original.total_consumos).toFixed(2)}
+                        </Text>
                     </Group>
                 ),
-                size: 80,
-                filterVariant: "autocomplete",
-            },
-            {
-                header: "Codigo Reserva",
-                accessorFn: (row) =>
-                    row?.codigo_reserva || "NO CONTIENE INFORMACION",
-                filterVariant: "autocomplete",
-                Cell: ({ cell }) => (
-                    <UnstyledButton
-                        onDoubleClick={() =>
-                            handleAgregarConsumos(cell.row.original)
-                        }
-                    >
-                        {cell.row.original.codigo_reserva}
-                    </UnstyledButton>
-                ),
-            },
-            {
-                header: "Departamento",
-                accessorFn: (row) => row?.numero_departamento || "ESTADIA",
-                size: 80,
-            },
-            {
-                header: "Huesped Anfitrión",
-                accessorFn: (row) => row?.huesped || "NO CONTIENE INFORMACION",
-                filterVariant: "autocomplete",
-            },
-            {
-                header: "Fecha Check-In",
-                accessorFn: (row) =>
-                    formatFechaHoraModal(row?.fecha_checkin) || "NO CONTIENE INFORMACION",
-                enableColumnActions: true,
-                size: 80,
-            },
-            {
-                header: "Fecha Check-Out",
-                accessorFn: (row) =>
-                    formatFechaHoraModal(row?.fecha_checkout) || "NO CONTIENE INFORMACION",
-                enableColumnActions: true,
-                size: 80,
-            },
-            {
-                header: "Total Noches",
-                accessorFn: (row) => row?.total_noches,
-                size: 80,
             },
         ],
-        [reservas]
+        []
     );
 
-    const handleAgregarConsumos = useCallback(
-        (selected) => {
-            //console.log(selected);
-            fnAsignarReserva(selected);
-            fnAbrirDrawerConsumosDepartamento(true);
-        },
-        [reservas]
-    );
+    const handleReGenerarFactura = (reserva) => {
+        fnAsignarReserva(reserva);
+        fnAbrirModalReGenerarFactura(true);
+    };
+
+    const handleVerFactura = (reserva) => {
+        // Implementar navegación a factura o modal
+        console.log("Ver factura:", reserva.factura);
+    };
+
+    const handleVerDetalles = (reserva) => {
+        fnAsignarReserva(reserva);
+        fnAbrirDrawerConsumosDepartamento(true);
+    };
 
     const table = useMantineReactTable({
         columns,
-        data: reservas,
-        state: { showProgressBars: cargando },
+        data: reservas || [],
         localization: MRT_Localization_ES,
-        enableFacetedValues: false,
-        enableColumnDragging: false,
-        enableDensityToggle: false,
-        enableSorting: false,
         enableColumnActions: false,
-        enableRowActions: false,
-        renderDetailPanel: ({ row }) => (
-            <Group>
-                <Table withTableBorder withColumnBorders mb={10}>
-                    <Table.Thead>
-                        <Table.Tr>
-                            <Table.Th>Total Adultos</Table.Th>
-                            <Table.Th>Total Niños</Table.Th>
-                            <Table.Th>Total Mascotas</Table.Th>
-                        </Table.Tr>
-                    </Table.Thead>
-                    <Table.Tbody>
-                        <Table.Tr>
-                            <Table.Td>
-                                {row.original.total_adultos || 0}
-                            </Table.Td>
-                            <Table.Td>{row.original.total_ninos || 0}</Table.Td>
-                            <Table.Td>
-                                {row.original.total_mascotas || 0}
-                            </Table.Td>
-                        </Table.Tr>
-                    </Table.Tbody>
-                </Table>
-                <Table withTableBorder withColumnBorders mb={10}>
-                    <Table.Thead>
-                        <Table.Tr>
-                            <Table.Th>Usuario Creador</Table.Th>
-                            <Table.Th>Fecha Creacion</Table.Th>
-                            <Table.Th>Motivo Cancelacion</Table.Th>
-                            <Table.Th>Observacion Cancelacion</Table.Th>
-                            <Table.Th>Fecha Cancelacion</Table.Th>
-                            <Table.Th>Usuario Cancelador</Table.Th>
-                        </Table.Tr>
-                    </Table.Thead>
-                    <Table.Tbody>
-                        <Table.Tr>
-                            <Table.Td>
-                                {row.original.usuario_creador ||
-                                    "SIN INFORMACION"}
-                            </Table.Td>
-                            <Table.Td>
-                                { formatFechaHoraModal(row.original.fecha_creacion) ||
-                                    "SIN INFORMACION"}
-                            </Table.Td>
-                            <Table.Td>
-                                {row.original.motivo_cancelacion ||
-                                    "SIN INFORMACION"}
-                            </Table.Td>
-                            <Table.Td>
-                                {row.original.observacion_cancelacion ||
-                                    "SIN INFORMACION"}
-                            </Table.Td>
-                            <Table.Td>
-                                {formatFechaHoraModal(row.original.fecha_cancelacion) ||
-                                    "SIN INFORMACION"}
-                            </Table.Td>
-                            <Table.Td>
-                                {row.original.usuario_cancelador ||
-                                    "SIN INFORMACION"}
-                            </Table.Td>
-                        </Table.Tr>
-                    </Table.Tbody>
-                </Table>
-            </Group>
-        ),
+        enableColumnFilters: true,
+        enableSorting: true,
+        enablePagination: true,
+        enableRowActions: true,
+        positionActionsColumn: "last",
+        state: {
+            isLoading: cargando,
+        },
         mantineTableProps: {
+            striped: true,
+            highlightOnHover: true,
             withColumnBorders: true,
             withTableBorder: true,
-            sx: {
-                "thead > tr": {
-                    backgroundColor: "inherit",
-                },
-                "thead > tr > th": {
-                    backgroundColor: "inherit",
-                },
-                "tbody > tr > td": {
-                    backgroundColor: "inherit",
-                },
-            },
+        },
+        renderRowActionMenuItems: ({ row }) => {
+            const reserva = row.original;
+
+            return (
+                <Box>
+                    {reserva.tiene_factura && (
+                        <Menu.Item
+                            leftSection={<IconFileText size={16} />}
+                            onClick={() => handleVerFactura(reserva)}
+                        >
+                            Ver Factura
+                        </Menu.Item>
+                    )}
+
+                    {reserva.puede_refacturar && (
+                        <Menu.Item
+                            leftSection={<IconRefresh size={16} />}
+                            color="orange"
+                            onClick={() => handleReGenerarFactura(reserva)}
+                        >
+                            {reserva.tiene_factura
+                                ? "Volver a Generar Factura"
+                                : "Generar Factura"}
+                        </Menu.Item>
+                    )}
+
+                    {/* Ver Detalles */}
+                    <Menu.Item
+                        leftSection={<IconEye size={16} />}
+                        onClick={() => handleVerDetalles(reserva)}
+                    >
+                        Ver Detalles
+                    </Menu.Item>
+                </Box>
+            );
         },
     });
 
-    return <ContenidoTable table={table} />;
+    return <MantineReactTable table={table} />;
 };

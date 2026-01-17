@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Container, Divider } from "@mantine/core";
 import {
     FiltrarPorFechasCodigo,
+    ReGenerarFacturaModal,
     ReservaModals,
     ReservasInformacionTable,
     TitlePage,
@@ -121,6 +122,7 @@ const HistorialConsumosPage = () => {
                     activarReserva ? fnAsignarReserva : fnAsignarEstadia
                 }
             />
+            <ReGenerarFacturaModal />
         </Container>
     );
 };

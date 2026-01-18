@@ -4,7 +4,7 @@ import { TextSection, UsuarioForm } from "../../../components";
 import { useUiUsuario, useUsuarioStore } from "../../../hooks";
 import { isNotEmpty, useForm } from "@mantine/form";
 
-export const UsuarioModal = () => {
+export const UsuarioModal = ({ PAGE_TITLE }) => {
     const isMobile = useMediaQuery("(max-width: 768px)");
     const { abrirModalUsuario, fnModalUsuario } = useUiUsuario();
     const { fnAsignarUsuario } = useUsuarioStore();
@@ -46,7 +46,7 @@ export const UsuarioModal = () => {
             onClose={handleCerrarModal}
             title={
                 <TextSection tt="" fz={16} fw={700}>
-                    Usuario
+                    {PAGE_TITLE.CAMPOS_MODAL.TITULO_MODAL}
                 </TextSection>
             }
             overlayProps={{
@@ -55,7 +55,7 @@ export const UsuarioModal = () => {
             }}
             size="lg"
         >
-            <UsuarioForm form={form} />
+            <UsuarioForm form={form} PAGE_TITLE={PAGE_TITLE} />
         </Modal>
     );
 };

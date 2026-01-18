@@ -4,7 +4,7 @@ import { BtnSubmit } from "../../../components";
 import { useRoleStore, useUiUsuario, useUsuarioStore } from "../../../hooks";
 import classes from "../../../components/elements/modules/LabelsInput.module.css";
 
-export const UsuarioForm = ({ form }) => {
+export const UsuarioForm = ({ form, PAGE_TITLE }) => {
     const { roles } = useRoleStore();
     const { activarUsuario, fnAgregarUsuario, fnAsignarUsuario } =
         useUsuarioStore();
@@ -40,8 +40,8 @@ export const UsuarioForm = ({ form }) => {
             >
                 <TextInput
                     withAsterisk
-                    label="No. Cedula"
-                    placeholder="Ingrese el numero de cedula"
+                    label={PAGE_TITLE.CAMPOS_MODAL.INPUT_CEDULA.LABEL}
+                    placeholder={PAGE_TITLE.CAMPOS_MODAL.INPUT_CEDULA.PLACEHOLDER}
                     {...form.getInputProps("dni")}
                     classNames={classes}
                 />
@@ -51,23 +51,23 @@ export const UsuarioForm = ({ form }) => {
                 >
                     <TextInput
                         withAsterisk
-                        label="Apellidos"
-                        placeholder="Ingrese los apellidos"
+                        label={PAGE_TITLE.CAMPOS_MODAL.INPUT_APELLIDOS.LABEL}
+                        placeholder={PAGE_TITLE.CAMPOS_MODAL.INPUT_APELLIDOS.PLACEHOLDER}
                         {...form.getInputProps("apellidos")}
                         classNames={classes}
                     />
                     <TextInput
                         withAsterisk
-                        label="Nombres"
-                        placeholder="Ingrese los nombres"
+                        label={PAGE_TITLE.CAMPOS_MODAL.INPUT_NOMBRES.LABEL}
+                        placeholder={PAGE_TITLE.CAMPOS_MODAL.INPUT_NOMBRES.PLACEHOLDER}
                         {...form.getInputProps("nombres")}
                         classNames={classes}
                     />
                 </SimpleGrid>
                 <TextInput
                     withAsterisk
-                    label="Correo Electronico"
-                    placeholder="Ingrese el correo electronico"
+                    label={PAGE_TITLE.CAMPOS_MODAL.INPUT_EMAIL.LABEL}
+                    placeholder={PAGE_TITLE.CAMPOS_MODAL.INPUT_EMAIL.PLACEHOLDER}
                     {...form.getInputProps("email")}
                     classNames={classes}
                 />
@@ -75,9 +75,9 @@ export const UsuarioForm = ({ form }) => {
                     withAsterisk
                     searchable
                     clearable
-                    nothingFoundMessage="No hay datos"
-                    label="Role"
-                    placeholder="Seleccione un role"
+                    nothingFoundMessage={PAGE_TITLE.CAMPOS_MODAL.SELECT_ROL.NOTHING_FOUND}
+                    label={PAGE_TITLE.CAMPOS_MODAL.SELECT_ROL.LABEL}
+                    placeholder={PAGE_TITLE.CAMPOS_MODAL.SELECT_ROL.PLACEHOLDER}
                     data={roles.map((role) => ({
                         value: role.id.toString(),
                         label: role.name,
@@ -85,7 +85,7 @@ export const UsuarioForm = ({ form }) => {
                     {...form.getInputProps("role")}
                     classNames={classes}
                 />
-                <BtnSubmit>Guardar Usuario</BtnSubmit>
+                <BtnSubmit>{PAGE_TITLE.CAMPOS_MODAL.BUTTON_GUARDAR}</BtnSubmit>
             </Stack>
         </Box>
     );

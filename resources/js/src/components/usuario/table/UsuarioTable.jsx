@@ -5,32 +5,32 @@ import { useUiUsuario, useUsuarioStore } from "../../../hooks";
 import {
     BtnActivarElemento,
     ContenidoTable,
-    MenuTable_EA,
     MenuUsersTable,
 } from "../../../components";
 import { Badge } from "@mantine/core";
 
-export const UsuarioTable = () => {
+export const UsuarioTable = ({ PAGE_TITLE }) => {
     const { cargando, usuarios, fnAsignarUsuario } = useUsuarioStore();
-    const { fnModalUsuario, fnModalAbrirActivarUsuario, fnModalResetearPwd } = useUiUsuario();
+    const { fnModalUsuario, fnModalAbrirActivarUsuario, fnModalResetearPwd } =
+        useUiUsuario();
 
     const columns = useMemo(
         () => [
             {
-                header: "Nombres Completos",
+                header: PAGE_TITLE.CAMPOS_TABLA.NOMBRES_COMPLETOS,
                 accessorFn: (row) => row.apellidos + " " + row.nombres, //normal accessorKey
                 //filterVariant: "autocomplete",
             },
             {
-                header: "Cedula",
+                header: PAGE_TITLE.CAMPOS_TABLA.CEDULA,
                 accessorKey: "dni", //normal accessorKey
             },
             {
-                header: "Email",
+                header: PAGE_TITLE.CAMPOS_TABLA.EMAIL,
                 accessorKey: "email", //normal accessorKey
             },
             {
-                header: "Roles",
+                header: PAGE_TITLE.CAMPOS_TABLA.ROL,
                 accessorKey: "role", //normal accessorKey
                 Cell: ({ cell }) => (
                     <Badge color="indigo.7" radius="sm" variant="light">
@@ -40,8 +40,8 @@ export const UsuarioTable = () => {
                 //filterVariant: "autocomplete",
             },
             {
+                header: PAGE_TITLE.CAMPOS_TABLA.ACTIVO,
                 id: "activo", //id is still required when using accessorFn instead of accessorKey
-                header: "Activo",
                 accessorKey: "activo",
                 Cell: ({ cell }) => (
                     <BtnActivarElemento
@@ -52,7 +52,7 @@ export const UsuarioTable = () => {
                 size: 80,
             },
         ],
-        [usuarios]
+        [usuarios],
     );
 
     const handleEditar = useCallback(
@@ -61,7 +61,7 @@ export const UsuarioTable = () => {
             fnAsignarUsuario(selected);
             fnModalUsuario(true);
         },
-        [usuarios]
+        [usuarios],
     );
 
     const handleResetearClave = useCallback(
@@ -70,7 +70,7 @@ export const UsuarioTable = () => {
             fnAsignarUsuario(selected);
             fnModalResetearPwd(true);
         },
-        [usuarios]
+        [usuarios],
     );
 
     const handleActivar = useCallback(
@@ -79,7 +79,7 @@ export const UsuarioTable = () => {
             fnAsignarUsuario(selected);
             fnModalAbrirActivarUsuario(true);
         },
-        [usuarios]
+        [usuarios],
     );
 
     const table = useMantineReactTable({

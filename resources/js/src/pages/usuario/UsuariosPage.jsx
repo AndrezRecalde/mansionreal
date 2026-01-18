@@ -16,9 +16,10 @@ import {
     useUsuarioStore,
 } from "../../hooks";
 import Swal from "sweetalert2";
+import { PAGE_TITLE } from "../../helpers/getPrefix";
 
 const UsuariosPage = () => {
-    useTitleHook("Usuarios - Mansión Real");
+    useTitleHook(PAGE_TITLE.USUARIOS.TITLE);
     const {
         fnCargarUsuarios,
         fnLimpiarUsuarios,
@@ -73,18 +74,18 @@ const UsuariosPage = () => {
     return (
         <Container size="xl" my={20}>
             <Group justify="space-between" mb={10}>
-                <TitlePage order={2}>Usuarios del Sistema</TitlePage>
+                <TitlePage order={2}>{PAGE_TITLE.USUARIOS.TITLE_PAGE}</TitlePage>
                 <BtnSection
                     IconSection={IconCubePlus}
                     handleAction={handleNuevoHuesped}
                 >
-                    Nuevo Usuario
+                    {PAGE_TITLE.USUARIOS.BUTTONS.NUEVO_USUARIO}
                 </BtnSection>
             </Group>
             <Divider my={10} />
-            <UsuarioTable />
+            <UsuarioTable PAGE_TITLE={PAGE_TITLE.USUARIOS} />
 
-            <UsuarioModal />
+            <UsuarioModal PAGE_TITLE={PAGE_TITLE.USUARIOS} />
             <ResetearPwdModal />
             <ActivarElementoModal
                 titulo="Activar Usuario"

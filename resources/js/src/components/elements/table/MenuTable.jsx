@@ -32,7 +32,7 @@ export const MenuUsersTable = ({ row, handleEditar, handleResetearClave }) => {
                 leftSection={
                     <IconEdit style={{ width: rem(15), height: rem(15) }} />
                 }
-                onClick={() => handleEdit(row.original)}
+                onClick={() => handleEditar(row.original)}
             >
                 Editar
             </Menu.Item>

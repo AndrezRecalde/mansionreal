@@ -329,12 +329,52 @@ export const PAGE_TITLE = {
         }
     },
 
+    USUARIOS: {
+        TITLE: "Gestión de Usuarios - Mansión Real",
+        TITLE_PAGE: "Gestión de Usuarios",
+        BUTTONS: {
+            NUEVO_USUARIO: "Nuevo Usuario",
+        },
+        CAMPOS_TABLA: {
+            NOMBRES_COMPLETOS: "Nombres Completos",
+            CEDULA: "Cédula",
+            EMAIL: "Correo",
+            ROL: "Rol",
+            ACTIVO: "Activo",
+        },
+        CAMPOS_MODAL: {
+            TITULO_MODAL: "Usuario",
+            INPUT_CEDULA: {
+                LABEL: "Número de Cédula",
+                PLACEHOLDER: "Ingrese número de cédula",
+            },
+            INPUT_APELLIDOS: {
+                LABEL: "Apellidos",
+                PLACEHOLDER: "Ingrese apellidos",
+            },
+            INPUT_NOMBRES: {
+                LABEL: "Nombres",
+                PLACEHOLDER: "Ingrese nombres",
+            },
+            INPUT_EMAIL: {
+                LABEL: "Correo Electrónico",
+                PLACEHOLDER: "Ingrese correo electrónico",
+            },
+            SELECT_ROL: {
+                LABEL: "Rol",
+                PLACEHOLDER: "Seleccione un rol",
+                NOTHING_FOUND: "No se encontraron roles",
+            },
+            BUTTON_GUARDAR: "Guardar Usuario",
+        },
+    },
+
+
     PRODUCTOS: "Gestión de Productos - Mansión Real",
     REPORTES: "Reportes - Mansión Real",
     PAGOS: "Gestión de Pagos - Mansión Real",
     FACTURAS: "Gestión de Facturas - Mansión Real",
 
-    USUARIOS: "Gestión de Usuarios - Mansión Real",
     IVA: "Gestión de IVA - Mansión Real",
     CATEGORIAS: "Gestión de Categorías - Mansión Real",
     CONSUMOS: "Gestión de Consumos - Mansión Real",

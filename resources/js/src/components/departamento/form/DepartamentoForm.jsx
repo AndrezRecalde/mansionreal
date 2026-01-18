@@ -10,7 +10,6 @@ import {
     rem,
     Select,
     Stack,
-    Textarea,
     TextInput,
 } from "@mantine/core";
 import { BtnSubmit } from "../../elements/buttons/BtnServices";
@@ -22,7 +21,7 @@ import {
 } from "../../../hooks";
 import classes from "../../elements/modules/LabelsInput.module.css";
 
-export const DepartamentoForm = ({ form }) => {
+export const DepartamentoForm = ({ form, PAGE_TITLE }) => {
     const { tiposDepartamentos } = useTipoDepartamentoStore();
     const { activarDepartamento, fnAgregarDepartamento, fnAsignarDepartamento } =
         useDepartamentoStore();
@@ -99,7 +98,7 @@ export const DepartamentoForm = ({ form }) => {
         // Crear FormData
         const formData = new FormData();
 
-        // 1️⃣ Campos normales
+        // Campos normales
         const values = form.getTransformedValues();
         if (values.id) {
             formData.append("id", values.id);
@@ -110,13 +109,13 @@ export const DepartamentoForm = ({ form }) => {
         formData.append("precio_noche", values.precio_noche);
         //formData.append("descripcion", values.descripcion);
 
-        // 2️⃣ Imágenes existentes (IDs que se mantienen)
+        // Imágenes existentes (IDs que se mantienen)
         // Se envía como array de IDs
         imagenesExistentes.forEach((img) => {
             formData.append("imagenesExistentes[]", img.id);
         });
 
-        // 3️⃣ Imágenes nuevas (archivos)
+        // Imágenes nuevas (archivos)
         (values.imagenes || []).forEach((file) => {
             formData.append("imagenesNuevas[]", file);
         });
@@ -143,28 +142,28 @@ export const DepartamentoForm = ({ form }) => {
             >
                 <TextInput
                     withAsterisk
-                    label="Número de Departamento"
-                    placeholder="Ingrese número de departamento"
+                    label={PAGE_TITLE.INPUT_NUMERO_DEPARTAMENTO.LABEL}
+                    placeholder={PAGE_TITLE.INPUT_NUMERO_DEPARTAMENTO.PLACEHOLDER}
                     {...form.getInputProps("numero_departamento")}
                     classNames={classes}
                 />
                 <Select
                     withAsterisk
-                    label="Tipo de Departamento"
-                    placeholder="Ingrese tipo de departamento"
+                    label={PAGE_TITLE.INPUT_TIPO_DEPARTAMENTO.LABEL}
+                    placeholder={PAGE_TITLE.INPUT_TIPO_DEPARTAMENTO.PLACEHOLDER}
                     data={tiposDepartamentos.map((tipo) => ({
                         value: tipo.id.toString(),
                         label: tipo.nombre_tipo,
                     }))}
                     searchable
-                    nothingFoundMessage="No se encontraron tipos de departamentos"
+                    nothingFoundMessage={PAGE_TITLE.INPUT_TIPO_DEPARTAMENTO.NOTHING_FOUND}
                     {...form.getInputProps("tipo_departamento_id")}
                     classNames={classes}
                 />
                 <NumberInput
                     withAsterisk
-                    label="Capacidad"
-                    placeholder="Ingrese capacidad"
+                    label={PAGE_TITLE.INPUT_CAPACIDAD.LABEL}
+                    placeholder={PAGE_TITLE.INPUT_CAPACIDAD.PLACEHOLDER}
                     min={1}
                     {...form.getInputProps("capacidad")}
                     classNames={classes}
@@ -173,8 +172,8 @@ export const DepartamentoForm = ({ form }) => {
                     clearable
                     withAsterisk
                     multiple
-                    label="Imagenes del Departamento"
-                    placeholder="Seleccione imagenes"
+                    label={PAGE_TITLE.INPUT_IMAGENES.LABEL}
+                    placeholder={PAGE_TITLE.INPUT_IMAGENES.PLACEHOLDER}
                     accept="image/png,image/jpeg,image/jpeg"
                     leftSection={icon}
                     valueComponent={ValueComponent}
@@ -223,7 +222,7 @@ export const DepartamentoForm = ({ form }) => {
                         />
                     ))}
                 </Group>
-                <BtnSubmit>Guardar Departamento</BtnSubmit>
+                <BtnSubmit>{PAGE_TITLE.BUTTON_GUARDAR}</BtnSubmit>
             </Stack>
         </Box>
     );

@@ -10,10 +10,11 @@ import {
 } from "../../components";
 import { IconBuilding, IconCubePlus } from "@tabler/icons-react";
 import { useDepartamentoStore, useTitleHook, useUiDepartamento } from "../../hooks";
+import { PAGE_TITLE } from "../../helpers/getPrefix";
 import Swal from "sweetalert2";
 
 const DepartamentosPage = () => {
-    useTitleHook("Departamentos - Mansion Real");
+    useTitleHook(PAGE_TITLE.DEPARTAMENTOS.TITLE);
     const {
         fnModalAbrirDepartamento,
         fnModalAbrirActivarDepartamento,
@@ -66,21 +67,21 @@ const DepartamentosPage = () => {
     return (
         <Container size="xl" my={20}>
             <Group justify="space-between" mb={10}>
-                <TitlePage>Departamentos</TitlePage>
+                <TitlePage>{PAGE_TITLE.DEPARTAMENTOS.TITLE_PAGE}</TitlePage>
                 <BtnSection
                     IconSection={IconCubePlus}
                     handleAction={handleNuevoDepartamento}
                 >
-                    Nuevo Departamento
+                    {PAGE_TITLE.DEPARTAMENTOS.BUTTONS.NUEVO_DEPARTAMENTO}
                 </BtnSection>
             </Group>
             <Divider my={10} />
             <DepartamentoTable />
 
-            <DepartamentoModal />
+            <DepartamentoModal PAGE_TITLE={PAGE_TITLE.DEPARTAMENTOS.CAMPOS_MODAL} />
             <DepartamentoDrawer />
             <ActivarElementoModal
-                titulo="Activar Departamento"
+                titulo={PAGE_TITLE.DEPARTAMENTOS.ACTIVAR_ELEMENTO.TITLE}
                 fnAbrirModal={fnModalAbrirActivarDepartamento}
                 abrirModal={abrirModalActivarDepartamento}
                 elementoActivado={activarDepartamento}

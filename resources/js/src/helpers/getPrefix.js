@@ -297,7 +297,38 @@ export const PAGE_TITLE = {
         },
     },
 
-    DEPARTAMENTOS: "Gestión de Departamentos - Mansión Real",
+    DEPARTAMENTOS: {
+        TITLE: "Gestión de Departamentos - Mansión Real",
+        TITLE_PAGE: "Gestión de Departamentos",
+        BUTTONS: {
+            NUEVO_DEPARTAMENTO: "Nuevo Departamento",
+        },
+        ACTIVAR_ELEMENTO: {
+            TITLE: "¿Deseas activar este departamento?",
+        },
+        CAMPOS_MODAL : {
+            TITULO_MODAL: "Departamento",
+            INPUT_NUMERO_DEPARTAMENTO: {
+                LABEL: "Número de Departamento",
+                PLACEHOLDER: "Ingrese número de departamento",
+            },
+            INPUT_TIPO_DEPARTAMENTO: {
+                LABEL: "Tipo de Departamento",
+                PLACEHOLDER: "Ingrese tipo de departamento",
+                NOTHING_FOUND: "No se encontraron tipos de departamentos",
+            },
+            INPUT_CAPACIDAD: {
+                LABEL: "Capacidad",
+                PLACEHOLDER: "Ingrese capacidad",
+            },
+            INPUT_IMAGENES: {
+                LABEL: "Imágenes del Departamento",
+                PLACEHOLDER: "Seleccione imágenes",
+            },
+            BUTTON_GUARDAR: "Guardar Departamento",
+        }
+    },
+
     PRODUCTOS: "Gestión de Productos - Mansión Real",
     REPORTES: "Reportes - Mansión Real",
     PAGOS: "Gestión de Pagos - Mansión Real",

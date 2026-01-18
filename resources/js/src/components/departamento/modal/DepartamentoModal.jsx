@@ -9,7 +9,7 @@ import {
 } from "../../../hooks";
 import { useForm } from "@mantine/form";
 
-export const DepartamentoModal = () => {
+export const DepartamentoModal = ({ PAGE_TITLE }) => {
     const isMobile = useMediaQuery("(max-width: 768px)");
     const { fnAsignarDepartamento } = useDepartamentoStore();
     const { abrirModalDepartamento, fnModalAbrirDepartamento } =
@@ -62,7 +62,7 @@ export const DepartamentoModal = () => {
             onClose={handleCerrarModal}
             title={
                 <TextSection tt="" fz={16} fw={700}>
-                    Departamento
+                    {PAGE_TITLE.TITULO_MODAL}
                 </TextSection>
             }
             overlayProps={{
@@ -71,7 +71,7 @@ export const DepartamentoModal = () => {
             }}
             size="lg"
         >
-            <DepartamentoForm form={form} />
+            <DepartamentoForm form={form} PAGE_TITLE={PAGE_TITLE} />
         </Modal>
     );
 };

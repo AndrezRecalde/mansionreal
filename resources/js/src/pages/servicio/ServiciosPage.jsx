@@ -8,10 +8,11 @@ import {
 } from "../../components";
 import { IconCubePlus } from "@tabler/icons-react";
 import { useServicioStore, useTitleHook, useUiServicio } from "../../hooks";
+import { PAGE_TITLE } from "../../helpers/getPrefix";
 import Swal from "sweetalert2";
 
 const ServiciosPage = () => {
-    useTitleHook("Servicios - Mansión Real");
+    useTitleHook(PAGE_TITLE.SERVICIOS.TITLE);
     const { fnCargarServicios, fnLimpiarServicios, mensaje, errores } = useServicioStore();
     const { fnModalAbrirServicio } = useUiServicio();
 
@@ -52,18 +53,18 @@ const ServiciosPage = () => {
     return (
         <Container size="xl" my={20}>
             <Group justify="space-between" mb={10}>
-                <TitlePage>Servicios</TitlePage>
+                <TitlePage>{PAGE_TITLE.SERVICIOS.TITLE_PAGE}</TitlePage>
                 <BtnSection
                     IconSection={IconCubePlus}
                     handleAction={handleNuevoServicio}
                 >
-                    Nuevo Servicio
+                    {PAGE_TITLE.SERVICIOS.BUTTONS.NUEVO_SERVICIO}
                 </BtnSection>
             </Group>
             <Divider my={10} />
-            <ServicioTable />
+            <ServicioTable PAGE_TITLE={PAGE_TITLE.SERVICIOS} />
 
-            <ServicioModal />
+            <ServicioModal PAGE_TITLE={PAGE_TITLE.SERVICIOS} />
         </Container>
     );
 };

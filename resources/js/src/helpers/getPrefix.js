@@ -369,6 +369,30 @@ export const PAGE_TITLE = {
         },
     },
 
+    SERVICIOS: {
+        TITLE: "Gestión de Servicios - Mansión Real",
+        TITLE_PAGE: "Gestión de Servicios",
+        BUTTONS: {
+            NUEVO_SERVICIO: "Nuevo Servicio",
+        },
+        CAMPOS_TABLA: {
+            NOMBRE_SERVICIO: "Nombre de Servicio",
+            TIPO_SERVICIO: "Tipo de Servicio",
+        },
+        CAMPOS_MODAL: {
+            TITULO_MODAL: "Servicio",
+            INPUT_NOMBRE_SERVICIO: {
+                LABEL: "Nombre del Servicio",
+                PLACEHOLDER: "Ingrese nombre del servicio",
+            },
+            INPUT_TIPO_SERVICIO: {
+                LABEL: "Tipo de Servicio",
+                PLACEHOLDER: "Ingrese tipo de servicio",
+            },
+            BUTTON_GUARDAR: "Guardar Servicio",
+        },
+    },
+
 
     PRODUCTOS: "Gestión de Productos - Mansión Real",
     REPORTES: "Reportes - Mansión Real",
@@ -379,5 +403,4 @@ export const PAGE_TITLE = {
     CATEGORIAS: "Gestión de Categorías - Mansión Real",
     CONSUMOS: "Gestión de Consumos - Mansión Real",
     GASTOS: "Gestión de Gastos - Mansión Real",
-    SERVICIOS: "Gestión de Servicios - Mansión Real",
 };

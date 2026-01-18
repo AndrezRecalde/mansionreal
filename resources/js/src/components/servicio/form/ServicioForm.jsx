@@ -2,9 +2,9 @@ import { useEffect } from "react";
 import { Box, Stack, TextInput } from "@mantine/core";
 import { BtnSubmit } from "../../../components";
 import { useServicioStore, useUiServicio } from "../../../hooks";
-import classes from "../../../components/elements/modules/LabelsInput.module.css"
+import classes from "../../../components/elements/modules/LabelsInput.module.css";
 
-export const ServicioForm = ({ form }) => {
+export const ServicioForm = ({ form, PAGE_TITLE }) => {
     const { activarServicio, fnAgregarServicio, fnAsignarServicio } =
         useServicioStore();
     const { fnModalAbrirServicio } = useUiServicio();
@@ -40,19 +40,24 @@ export const ServicioForm = ({ form }) => {
             >
                 <TextInput
                     withAsterisk
-                    label="Nombre de servicio"
-                    placeholder="Ingrese el nombre del servicio"
+                    label={PAGE_TITLE.CAMPOS_MODAL.INPUT_NOMBRE_SERVICIO.LABEL}
+                    placeholder={
+                        PAGE_TITLE.CAMPOS_MODAL.INPUT_NOMBRE_SERVICIO
+                            .PLACEHOLDER
+                    }
                     {...form.getInputProps("nombre_servicio")}
                     classNames={classes}
                 />
                 <TextInput
                     withAsterisk
-                    label="Tipo de servicio"
-                    placeholder="Ingrese el tipo de servicio"
+                    label={PAGE_TITLE.CAMPOS_MODAL.INPUT_TIPO_SERVICIO.LABEL}
+                    placeholder={
+                        PAGE_TITLE.CAMPOS_MODAL.INPUT_TIPO_SERVICIO.PLACEHOLDER
+                    }
                     {...form.getInputProps("tipo_servicio")}
                     classNames={classes}
                 />
-                <BtnSubmit>Guardar Servicio</BtnSubmit>
+                <BtnSubmit>{PAGE_TITLE.CAMPOS_MODAL.BUTTON_GUARDAR}</BtnSubmit>
             </Stack>
         </Box>
     );

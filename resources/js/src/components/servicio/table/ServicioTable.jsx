@@ -4,19 +4,19 @@ import { MRT_Localization_ES } from "mantine-react-table/locales/es/index.cjs";
 import { ContenidoTable, MenuTable_EA } from "../../../components";
 import { useServicioStore, useUiServicio } from "../../../hooks";
 
-export const ServicioTable = () => {
+export const ServicioTable = ({ PAGE_TITLE }) => {
     const { cargando, servicios, fnAsignarServicio } = useServicioStore();
     const { fnModalAbrirServicio } = useUiServicio();
 
     const columns = useMemo(
         () => [
             {
-                header: "Nombre de Servicio",
+                header: PAGE_TITLE.CAMPOS_TABLA.NOMBRE_SERVICIO,
                 accessorKey: "nombre_servicio", //normal accessorKey
                 filterVariant: "autocomplete",
             },
             {
-                header: "Tipo de Servicio",
+                header: PAGE_TITLE.CAMPOS_TABLA.TIPO_SERVICIO,
                 accessorKey: "tipo_servicio", //normal accessorKey
                 //filterVariant: "autocomplete",
             },

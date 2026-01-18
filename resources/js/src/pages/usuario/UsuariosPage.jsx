@@ -15,8 +15,8 @@ import {
     useUiUsuario,
     useUsuarioStore,
 } from "../../hooks";
-import Swal from "sweetalert2";
 import { PAGE_TITLE } from "../../helpers/getPrefix";
+import Swal from "sweetalert2";
 
 const UsuariosPage = () => {
     useTitleHook(PAGE_TITLE.USUARIOS.TITLE);

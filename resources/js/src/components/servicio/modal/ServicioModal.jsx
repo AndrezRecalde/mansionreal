@@ -4,7 +4,7 @@ import { useForm } from "@mantine/form";
 import { ServicioForm, TextSection } from "../../../components";
 import { useServicioStore, useUiServicio } from "../../../hooks";
 
-export const ServicioModal = () => {
+export const ServicioModal = ({ PAGE_TITLE }) => {
     const isMobile = useMediaQuery("(max-width: 768px)");
     const { abrirModalServicio, fnModalAbrirServicio } = useUiServicio();
     const { fnAsignarServicio } = useServicioStore();
@@ -33,7 +33,7 @@ export const ServicioModal = () => {
             onClose={handleCerrarModal}
             title={
                 <TextSection tt="" fz={16} fw={700}>
-                    Servicio
+                    {PAGE_TITLE.CAMPOS_MODAL.TITULO_MODAL}
                 </TextSection>
             }
             overlayProps={{
@@ -42,7 +42,7 @@ export const ServicioModal = () => {
             }}
             size="lg"
         >
-            <ServicioForm form={form} />
+            <ServicioForm form={form} PAGE_TITLE={PAGE_TITLE} />
         </Modal>
     );
 };

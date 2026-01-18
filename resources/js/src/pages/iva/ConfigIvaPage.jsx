@@ -6,11 +6,12 @@ import {
     ConfigIvaTable,
     TitlePage,
 } from "../../components";
-import { useConfiguracionIvaStore, useUiConfiguracionIva } from "../../hooks";
+import { useConfiguracionIvaStore, useTitleHook, useUiConfiguracionIva } from "../../hooks";
 import { IconCubePlus } from "@tabler/icons-react";
 import Swal from "sweetalert2";
 
 const ConfigIvaPage = () => {
+    useTitleHook("Configuración del IVA - Mansión Real");
     const {
         fnCargarIvas,
         activarIva,

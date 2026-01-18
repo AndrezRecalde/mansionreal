@@ -36,8 +36,6 @@ import { FiltrarPorFechasForm } from "./elements/filter/FiltrarPorFechasForm";
 import { FiltrarPorFechasCodigo } from "./elements/filter/FiltrarPorFechasCodigo";
 /* Elements: Filtrar disponibilidad departamentos */
 import { FiltroDisponibilidad } from "./elements/filter/FiltroDisponibilidad";
-/* Elements: Filtrar por Gerentes */
-import { FiltrarPorGerentes } from "./elements/filter/FiltrarPorGerentes";
 /* Elements: Contenido de TABS */
 import { TabContent } from "./elements/tabs/TabContent";
 import { TabContentDisponibilidad } from "./elements/tabs/TabContentDisponibilidad";
@@ -50,7 +48,6 @@ import { ContrasenaForm } from "./usuario/password/ContrasenaForm";
 import { UsuarioModal } from "./usuario/modal/UsuarioModal";
 import { UsuarioForm } from "./usuario/form/UsuarioForm";
 import { UsuarioTable } from "./usuario/table/UsuarioTable";
-import { ReportesPagosTable } from "./usuario/table/ReportesPagosTable";
 import { ResetearPwdModal } from "./usuario/modal/ResetearPwdModal";
 import { ResetearPwdForm } from "./usuario/form/ResetearPwdForm";
 
@@ -228,7 +225,6 @@ export {
     FiltrarPorFechasForm,
     FiltrarPorFechasCodigo,
     FiltroDisponibilidad,
-    FiltrarPorGerentes,
     TabContent,
     TabContentDisponibilidad,
 
@@ -240,7 +236,6 @@ export {
     UsuarioModal,
     UsuarioForm,
     UsuarioTable,
-    ReportesPagosTable,
     ResetearPwdModal,
     ResetearPwdForm,
 

@@ -6,11 +6,12 @@ import {
     TitlePage,
     HuespedTable,
 } from "../../components";
-import { useHuespedStore, useProvinciaStore, useUiHuesped } from "../../hooks";
+import { useHuespedStore, useProvinciaStore, useTitleHook, useUiHuesped } from "../../hooks";
 import { IconCubePlus } from "@tabler/icons-react";
 import Swal from "sweetalert2";
 
 const HuespedPage = () => {
+    useTitleHook("Huéspedes - Mansión Real");
     const { fnCargarHuespedes, fnLimpiarHuespedes, mensaje, errores } =
         useHuespedStore();
     const { fnModalHuesped } = useUiHuesped();

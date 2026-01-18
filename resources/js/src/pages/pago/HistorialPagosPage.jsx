@@ -12,9 +12,10 @@ import { useForm } from "@mantine/form";
 import { IconSearch } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import classes from "../../components/elements/modules/LabelsInput.module.css";
-import { usePagoStore } from "../../hooks";
+import { usePagoStore, useTitleHook } from "../../hooks";
 
 const HistorialPagosPage = () => {
+    useTitleHook("Historial de Pagos - Mansión Real");
     const { cargando, fnCargarHistorialPagos } = usePagoStore();
 
     const form = useForm({

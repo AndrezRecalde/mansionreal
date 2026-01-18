@@ -5,10 +5,11 @@ import {
     TitlePage,
     ReporteConsumosVisualizacion,
 } from "../../components";
-import { useConsumoStore } from "../../hooks";
+import { useConsumoStore, useTitleHook } from "../../hooks";
 import { IconAlertCircle } from "@tabler/icons-react";
 
 const ReporteConsumosPage = () => {
+    useTitleHook("Reporte de Consumos - Mansión Real");
     const {
         cargando,
         cargandoPDFReporte,

@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import Swal from "sweetalert2";
 
 const CambioContrasenaPage = () => {
-    useTitleHook("Mansión Real - Cambiar Contraseña");
+    useTitleHook("Cambiar Contraseña - Mansión Real");
     const { mensaje, errores } = useUsuarioStore();
 
     useEffect(() => {

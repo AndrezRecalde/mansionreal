@@ -86,12 +86,6 @@ const DisponibilidadDepartamentoPage = lazy(() =>
     )
 );
 
-const ReportesGerentesPage = lazy(() =>
-    import(
-        /* webpackChunkName: "ReportesGerentesPage" */ "../pages/usuario/ReportesGerentesPage"
-    )
-);
-
 const LimpiezaPage = lazy(() =>
     import(
         /* webpackChunkName: "LimpiezaPage" */ "../pages/limpieza/LimpiezaPage"
@@ -164,7 +158,6 @@ export const MENU_PATH = {
 
     PERFIL: "perfil",
     CAMBIAR_CONTRASENA: "cambiar-contrasena",
-    REPORTES_GERENTES: "reportes-gerentes",
 };
 
 export const authRoutes = {
@@ -202,23 +195,24 @@ const gerenciaRoutes = generateRoutes(
             path: MENU_PATH.HISTORIAL_RESERVAS,
             Component: HistorialConsumosPage,
         },
-        { path: MENU_PATH.DEPARTAMENTOS, Component: DepartamentosPage },
+        {
+            path: MENU_PATH.DEPARTAMENTOS,
+            Component: DepartamentosPage },
         {
             path: MENU_PATH.REPORTE_RESERVAS,
             Component: ReporteDepartamentosPage,
         },
 
-        { path: MENU_PATH.INVENTARIO, Component: InventarioPage },
+        {
+            path: MENU_PATH.INVENTARIO,
+            Component: InventarioPage },
         {
             path: MENU_PATH.HISTORIAL_MOVIMIENTOS,
             Component: HistorialMovimientosInvPage,
         },
-        { path: MENU_PATH.IVA, Component: IvaPage },
-
         {
-            path: MENU_PATH.REPORTES_GERENTES,
-            Component: ReportesGerentesPage,
-        },
+            path: MENU_PATH.IVA,
+            Component: IvaPage },
         {
             path: MENU_PATH.REPORTE_CONSUMOS,
             Component: ReporteConsumosPage,
@@ -229,7 +223,10 @@ const gerenciaRoutes = generateRoutes(
             Component: HistorialPagosPage,
         },
 
-        { path: MENU_PATH.FACTURAS, Component: FacturasPage },
+        {
+            path: MENU_PATH.FACTURAS,
+            Component: FacturasPage
+        },
     ],
     [Roles.ADMINISTRADOR, Roles.GERENCIA]
 );

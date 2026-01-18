@@ -6,10 +6,11 @@ import {
     LimpiezaTable,
     TitlePage,
 } from "../../components";
-import { useLimpiezaStore } from "../../hooks";
+import { useLimpiezaStore, useTitleHook } from "../../hooks";
 
 const LimpiezaPage = () => {
-    const { fnCargarLimpiezas, cargando, fnLimpiarLimpiezas, limpiezas } =
+    useTitleHook("Historial de Limpiezas - Mansión Real");
+    const { fnCargarLimpiezas, cargando, fnLimpiarLimpiezas } =
         useLimpiezaStore();
 
     // Estado local para controlar la paginación

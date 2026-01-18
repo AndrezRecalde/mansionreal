@@ -18,7 +18,7 @@ import {
 import Swal from "sweetalert2";
 
 const UsuariosPage = () => {
-    useTitleHook("Mansión Real - Usuarios");
+    useTitleHook("Usuarios - Mansión Real");
     const {
         fnCargarUsuarios,
         fnLimpiarUsuarios,

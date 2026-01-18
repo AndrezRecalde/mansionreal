@@ -277,6 +277,26 @@ export const PAGE_TITLE = {
         },
     },
 
+    HISTORIAL_CONSUMOS: {
+        TITLE: "Historial de Reservas - Mansión Real",
+        TITLE_PAGE: "Historial de Reservas",
+
+        CAMPOS_TABLA: {
+            CODIGO_RESERVA: "Código de Reserva",
+            ESTADO: "Estado",
+            HUESPED: "Huésped",
+            CHECKIN: "Check-in",
+            CHECKOUT: "Check-out",
+            DEPARTAMENTO: "Departamento",
+            FACTURACION: "Facturación",
+            SIN_FACTURA: "SIN FACTURA",
+            TOTAL: "Total",
+            VER_FACTURA: "Ver Factura",
+            VOLVER_GENERAR_FACTURA: "Volver a Generar Factura",
+            VER_DETALLES: "Ver Detalles",
+        },
+    },
+
     DEPARTAMENTOS: "Gestión de Departamentos - Mansión Real",
     PRODUCTOS: "Gestión de Productos - Mansión Real",
     REPORTES: "Reportes - Mansión Real",
@@ -288,6 +308,5 @@ export const PAGE_TITLE = {
     CATEGORIAS: "Gestión de Categorías - Mansión Real",
     CONSUMOS: "Gestión de Consumos - Mansión Real",
     GASTOS: "Gestión de Gastos - Mansión Real",
-    HISTORIAL_CONSUMOS: "Historial Reservas - Mansión Real",
     SERVICIOS: "Gestión de Servicios - Mansión Real",
 };

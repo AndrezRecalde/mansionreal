@@ -18,10 +18,11 @@ import {
     useStorageField,
     useTitleHook,
 } from "../../hooks";
+import { PAGE_TITLE } from "../../helpers/getPrefix";
 import Swal from "sweetalert2";
 
 const HistorialConsumosPage = () => {
-    useTitleHook("Historial Reservas - Mansion Real");
+    useTitleHook(PAGE_TITLE.HISTORIAL_CONSUMOS.TITLE);
     useNotificaciones();
     const {
         cargando,
@@ -108,14 +109,18 @@ const HistorialConsumosPage = () => {
 
     return (
         <Container size="xl" my={20}>
-            <TitlePage order={2}>Historial Reservas</TitlePage>
+            <TitlePage order={2}>
+                {PAGE_TITLE.HISTORIAL_CONSUMOS.TITLE_PAGE}
+            </TitlePage>
             <Divider my={10} />
             <FiltrarPorFechasCodigo
-                titulo="Filtrar por fechas y código"
                 cargando={cargando}
                 fnHandleAction={fnBuscarReservas}
             />
-            <ReservasInformacionTable cargando={cargando} />
+            <ReservasInformacionTable
+                cargando={cargando}
+                PAGE_TITLE={PAGE_TITLE.HISTORIAL_CONSUMOS.CAMPOS_TABLA}
+            />
             <ReservaModals
                 datos_reserva={datos_reserva}
                 fnAsignarDepartamento={

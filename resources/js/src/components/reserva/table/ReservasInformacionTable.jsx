@@ -15,9 +15,8 @@ import {
 } from "../../../hooks";
 import dayjs from "dayjs";
 
-export const ReservasInformacionTable = () => {
-    const { cargando, reservas, fnAsignarReserva } =
-        useReservaDepartamentoStore();
+export const ReservasInformacionTable = ({ cargando, PAGE_TITLE }) => {
+    const { reservas, fnAsignarReserva } = useReservaDepartamentoStore();
     const { fnAbrirModalReGenerarFactura } = useUiFactura();
     const { fnAbrirDrawerConsumosDepartamento } = useUiConsumo();
 
@@ -25,7 +24,7 @@ export const ReservasInformacionTable = () => {
         () => [
             {
                 accessorKey: "codigo_reserva",
-                header: "Código Reserva",
+                header: PAGE_TITLE.CODIGO_RESERVA,
                 size: 150,
                 Cell: ({ cell }) => (
                     <Text size="sm" fw={600}>
@@ -35,7 +34,7 @@ export const ReservasInformacionTable = () => {
             },
             {
                 accessorKey: "estado.nombre_estado",
-                header: "Estado",
+                header: PAGE_TITLE.ESTADO,
                 size: 130,
                 Cell: ({ cell }) => (
                     <Badge
@@ -49,12 +48,12 @@ export const ReservasInformacionTable = () => {
             },
             {
                 accessorKey: "huesped",
-                header: "Huésped",
+                header: PAGE_TITLE.HUESPED,
                 size: 200,
             },
             {
                 accessorKey: "fecha_checkin",
-                header: "Check-in",
+                header: PAGE_TITLE.CHECKIN,
                 size: 120,
                 Cell: ({ cell }) => (
                     <Text size="sm">
@@ -64,7 +63,7 @@ export const ReservasInformacionTable = () => {
             },
             {
                 accessorKey: "fecha_checkout",
-                header: "Check-out",
+                header: PAGE_TITLE.CHECKOUT,
                 size: 120,
                 Cell: ({ cell }) => (
                     <Text size="sm">
@@ -78,12 +77,12 @@ export const ReservasInformacionTable = () => {
                     row.numero_departamento
                         ? row.tipo_departamento + " " + row.numero_departamento
                         : "ESTADÍA",
-                header: "Departamento",
+                header: PAGE_TITLE.DEPARTAMENTO,
                 size: 120,
             },
             {
                 accessorKey: "factura_estado",
-                header: "Facturación",
+                header: PAGE_TITLE.FACTURACION,
                 size: 150,
                 Cell: ({ row }) => {
                     const reserva = row.original;
@@ -121,14 +120,14 @@ export const ReservasInformacionTable = () => {
                             variant="light"
                             size="sm"
                         >
-                            Sin Factura
+                            {PAGE_TITLE.SIN_FACTURACION}
                         </Badge>
                     );
                 },
             },
             {
                 accessorKey: "total_consumos",
-                header: "Total",
+                header: PAGE_TITLE.TOTAL,
                 size: 120,
                 Cell: ({ row }) => (
                     <Group gap={4}>
@@ -140,7 +139,7 @@ export const ReservasInformacionTable = () => {
                 ),
             },
         ],
-        []
+        [],
     );
 
     const handleReGenerarFactura = (reserva) => {
@@ -194,7 +193,10 @@ export const ReservasInformacionTable = () => {
                             leftSection={<IconFileText size={16} />}
                             onClick={() => handleVerFactura(reserva)}
                         >
-                            Ver Factura
+                            {
+                                PAGE_TITLE.HISTORIAL_CONSUMOS.CAMPOS_TABLA
+                                    .VER_FACTURA
+                            }
                         </Menu.Item>
                     )}
 
@@ -204,7 +206,10 @@ export const ReservasInformacionTable = () => {
                             color="orange"
                             onClick={() => handleReGenerarFactura(reserva)}
                         >
-                            Volver a Generar Factura
+                            {
+                                PAGE_TITLE.HISTORIAL_CONSUMOS.CAMPOS_TABLA
+                                    .VOLVER_A_GENERAR_FACTURA
+                            }
                         </Menu.Item>
                     )}
 
@@ -213,7 +218,10 @@ export const ReservasInformacionTable = () => {
                         leftSection={<IconEye size={16} />}
                         onClick={() => handleVerDetalles(reserva)}
                     >
-                        Ver Detalles
+                        {
+                            PAGE_TITLE.HISTORIAL_CONSUMOS.CAMPOS_TABLA
+                                .VER_DETALLES
+                        }
                     </Menu.Item>
                 </Box>
             );

@@ -1,5 +1,5 @@
 import { Box, Fieldset, SimpleGrid, TextInput } from "@mantine/core";
-import { BtnSubmit, TextSection } from "../../../components";
+import { BtnSubmit } from "../../../components";
 import { DateInput } from "@mantine/dates";
 import { useForm } from "@mantine/form";
 import { IconSearch } from "@tabler/icons-react";
@@ -8,7 +8,6 @@ import classes from "../modules/LabelsInput.module.css";
 import dayjs from "dayjs";
 
 export const FiltrarPorFechasCodigo = ({
-    titulo = "",
     fnHandleAction = () => {},
     cargando = false,
 }) => {
@@ -65,11 +64,7 @@ export const FiltrarPorFechasCodigo = ({
         <Fieldset
             mt={20}
             mb={20}
-            legend={
-                <TextSection tt="" fw={500} fz={16}>
-                    {titulo}
-                </TextSection>
-            }
+            legend="Filtrar por fechas y código"
         >
             <Box
                 component="form"

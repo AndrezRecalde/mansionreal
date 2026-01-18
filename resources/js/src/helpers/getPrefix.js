@@ -103,7 +103,7 @@ export const PAGE_TITLE = {
                 COLOR_HUESPEDES: "#102A56",
                 GANANCIAS: "Ganancias (USD)",
                 COLOR_GANANCIAS: "#25B475",
-            }
+            },
         },
 
         CHART_INGRESOS_DEPARTAMENTO: {
@@ -113,7 +113,7 @@ export const PAGE_TITLE = {
             Y_AXIS: "Ingresos (USD)",
             SERIES: {
                 INGRESOS: "Ingresos (USD)",
-            }
+            },
         },
 
         CHART_ESTADIAS: {
@@ -129,13 +129,13 @@ export const PAGE_TITLE = {
             Y_AXIS: "Valores",
             SERIES: {
                 ESTADIAS: "Estadías",
-            }
+            },
         },
 
         CHART_PRODUCTOS: {
             TITLE: "Consumo por Producto",
             SUBTITLE: "Distribución de ventas por categoría",
-            NAME_SERIES: "Consumos"
+            NAME_SERIES: "Consumos",
         },
 
         TABLE_RANKING_HUESPEDES: {
@@ -145,31 +145,27 @@ export const PAGE_TITLE = {
                 NOMBRE_HUESPED: "Nombre del Huésped",
                 CEDULA: "No. de Cédula",
                 TOTAL_RESERVAS: "Total de Reservas",
-            }
+            },
         },
-
     },
 
     /* CALENDARIO RESERVAS */
     CALENDARIO_RESERVAS: {
         TITLE: "Calendario de Reservas - Mansión Real",
         TITLE_PAGE: "Calendario de Disponibilidad",
-        DESCRIPCION_PAGE: "Gestiona las reservas y estadías de tus huéspedes de manera eficiente.",
+        DESCRIPCION_PAGE:
+            "Gestiona las reservas y estadías de tus huéspedes de manera eficiente.",
         KPI_OCUPACION: {
             TITLE: "Tasa de Ocupación",
-
         },
         TABS: {
             RESERVAS: "Reservas",
-            ESTADIAS: "Estadías"
+            ESTADIAS: "Estadías",
         },
         BUTTONS: {
-            CREAR_NUEVO: "Crear nuevo"
-        }
-
+            CREAR_NUEVO: "Crear nuevo",
+        },
     },
-
-
 
     HUESPEDES: {
         TITLE: "Gestión de Huéspedes - Mansión Real",
@@ -199,6 +195,87 @@ export const PAGE_TITLE = {
         },
     },
 
+    REPORTE_DEPARTAMENTOS: {
+        TITLE: "Reporte Reservas & Estadías - Mansión Real",
+        TITLE_PAGE: "Reporte Reservas & Estadías",
+    },
+
+    REPORTE_CONSUMOS: {
+        TITLE: "Reporte de Consumos - Mansión Real",
+        TITLE_PAGE: "Reporte de Consumos por Categoría",
+        ALERTS_SECTION: {
+            ERROR_ALERT: {
+                TITLE: "Error",
+                COLOR: "red",
+                MESSAGE: "Ocurrió un error al cargar los datos",
+            },
+            SUCCESS_ALERT: {
+                TITLE: "Éxito",
+                COLOR: "green",
+                MESSAGE: "Reporte cargado correctamente",
+            },
+            SIN_DATOS_ALERT: {
+                TITLE: "Sin datos",
+                COLOR: "gray",
+                MESSAGE:
+                    "No hay datos para mostrar. Por favor, seleccione un rango de fechas y presione 'Buscar'.",
+            },
+            NOT_FOUND_ALERT: {
+                TITLE: "Sin resultados",
+                COLOR: "yellow",
+                MESSAGE:
+                    "No se encontraron consumos para el período seleccionado.",
+            },
+        },
+        META_DATOS_SECTION: {
+            PERIODO: "Período",
+            GENERADO: "Generado",
+            TOTAL_CATEGORIAS: "Total Categorías",
+            TOTAL_PRODUCTOS: "Total Productos",
+        },
+
+        SEGMENTED_CONTROL: {
+            POR_CATEGORIAS: "Por Categorías",
+            VALUE_CATEGORIAS: "categorias",
+            CONSOLIDADO: "Vista Consolidada",
+            VALUE_CONSOLIDADO: "consolidado",
+        },
+
+        SECCIONES: {
+            SECCION_CATEGORIAS: "Detalle por Categorías",
+            SECCION_CONSOLIDADO: "Vista Consolidada - Todos los Productos",
+        },
+
+        CAMPOS_TABLA: {
+            CATEGORIA: "Categoría",
+            PRODUCTO: "Producto",
+            CANTIDAD: "Cantidad",
+            PRECIO_UNITARIO: "P. Unitario",
+            SUBTOTAL: "Subtotal",
+            IVA: "IVA",
+            TOTAL: "Total",
+        },
+
+        TOTALES_GENERALES: {
+            TITLE: "Totales Generales del Reporte",
+            CANTIDAD_TOTAL_PRODUCTOS: {
+                TITLE: "Cantidad Total de Productos",
+                COLOR: "blue",
+            },
+            SUBTOTAL_GENERAL: {
+                TITLE: "Subtotal General",
+                COLOR: "cyan",
+            },
+            IVA_GENERAL: {
+                TITLE: "IVA General",
+                COLOR: "orange",
+            },
+            TOTAL_GENERAL: {
+                TITLE: "Total General",
+                COLOR: "green",
+            },
+        },
+    },
 
     DEPARTAMENTOS: "Gestión de Departamentos - Mansión Real",
     PRODUCTOS: "Gestión de Productos - Mansión Real",

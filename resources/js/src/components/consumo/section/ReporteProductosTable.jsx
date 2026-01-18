@@ -8,6 +8,7 @@ import {
 } from "@mantine/core";
 import { MRT_Localization_ES } from "mantine-react-table/locales/es/index.cjs";
 import { TextSection } from "../../../components";
+import { PAGE_TITLE } from "../../../helpers/getPrefix";
 
 export const ReporteProductosTable = ({ categoria, colorScheme, theme }) => {
     const { nombre_categoria, productos, totales_categoria } = categoria;
@@ -15,7 +16,7 @@ export const ReporteProductosTable = ({ categoria, colorScheme, theme }) => {
 
     const columns = useMemo(
         () => [
-            {
+            /* {
                 accessorKey: "producto_id",
                 header: "ID",
                 size: 80,
@@ -24,10 +25,10 @@ export const ReporteProductosTable = ({ categoria, colorScheme, theme }) => {
                         {cell.getValue()}
                     </TextSection>
                 ),
-            },
+            }, */
             {
                 accessorKey: "nombre_producto",
-                header: "Producto",
+                header: PAGE_TITLE.REPORTE_CONSUMOS.CAMPOS_TABLA.PRODUCTO,
                 size: 300,
                 Cell: ({ cell }) => (
                     <TextSection>{cell.getValue()}</TextSection>
@@ -35,7 +36,7 @@ export const ReporteProductosTable = ({ categoria, colorScheme, theme }) => {
             },
             {
                 accessorKey: "cantidad_total",
-                header: "Cantidad",
+                header: PAGE_TITLE.REPORTE_CONSUMOS.CAMPOS_TABLA.CANTIDAD,
                 size: 100,
                 Cell: ({ cell }) => (
                     <Badge radius="sm" variant="light" color="indigo" size="lg">
@@ -45,7 +46,7 @@ export const ReporteProductosTable = ({ categoria, colorScheme, theme }) => {
             },
             {
                 accessorKey: "precio_unitario",
-                header: "P.  Unitario",
+                header: PAGE_TITLE.REPORTE_CONSUMOS.CAMPOS_TABLA.PRECIO_UNITARIO,
                 size: 120,
                 Cell: ({ cell }) => (
                     <TextSection ta="right">
@@ -55,7 +56,7 @@ export const ReporteProductosTable = ({ categoria, colorScheme, theme }) => {
             },
             {
                 accessorKey: "subtotal",
-                header: "Subtotal",
+                header: PAGE_TITLE.REPORTE_CONSUMOS.CAMPOS_TABLA.SUBTOTAL,
                 size: 120,
                 Cell: ({ cell }) => (
                     <TextSection ta="right">
@@ -65,7 +66,7 @@ export const ReporteProductosTable = ({ categoria, colorScheme, theme }) => {
             },
             {
                 accessorKey: "iva",
-                header: "IVA",
+                header: PAGE_TITLE.REPORTE_CONSUMOS.CAMPOS_TABLA.IVA,
                 size: 120,
                 Cell: ({ cell }) => (
                     <TextSection ta="right">
@@ -75,7 +76,7 @@ export const ReporteProductosTable = ({ categoria, colorScheme, theme }) => {
             },
             {
                 accessorKey: "total",
-                header: "Total",
+                header: PAGE_TITLE.REPORTE_CONSUMOS.CAMPOS_TABLA.TOTAL,
                 size: 120,
                 Cell: ({ cell }) => (
                     <TextSection fw={600} color="indigo" ta="right">

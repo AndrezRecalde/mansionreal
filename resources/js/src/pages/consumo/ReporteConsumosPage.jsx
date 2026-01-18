@@ -1,15 +1,17 @@
-import { Container, Divider, Alert } from "@mantine/core";
+import { Container, Divider } from "@mantine/core";
 import { useEffect } from "react";
 import {
     FiltrarPorFechasForm,
     TitlePage,
     ReporteConsumosVisualizacion,
+    AlertSection,
 } from "../../components";
 import { useConsumoStore, useTitleHook } from "../../hooks";
 import { IconAlertCircle } from "@tabler/icons-react";
+import { PAGE_TITLE } from "../../helpers/getPrefix";
 
 const ReporteConsumosPage = () => {
-    useTitleHook("Reporte de Consumos - Mansión Real");
+    useTitleHook(PAGE_TITLE.REPORTE_CONSUMOS.TITLE);
     const {
         cargando,
         cargandoPDFReporte,
@@ -36,7 +38,8 @@ const ReporteConsumosPage = () => {
         if (reporteConsumosCategoria?.metadatos) {
             //console.log(reporteConsumosCategoria?.metadatos);
             fnExportarReporteConsumosPDF({
-                p_fecha_inicio: reporteConsumosCategoria.metadatos.p_fecha_inicio,
+                p_fecha_inicio:
+                    reporteConsumosCategoria.metadatos.p_fecha_inicio,
                 p_fecha_fin: reporteConsumosCategoria.metadatos.p_fecha_fin,
                 p_anio: null,
             });
@@ -45,7 +48,9 @@ const ReporteConsumosPage = () => {
 
     return (
         <Container size="xl" py="md">
-            <TitlePage order={2}>Reporte de Consumos por Categoría</TitlePage>
+            <TitlePage order={2}>
+                {PAGE_TITLE.REPORTE_CONSUMOS.TITLE_PAGE}
+            </TitlePage>
             <Divider my={10} />
 
             {/* Formulario de filtros */}
@@ -57,30 +62,26 @@ const ReporteConsumosPage = () => {
 
             {/* Mensajes de error */}
             {errores && (
-                <Alert
-                    icon={<IconAlertCircle size={16} />}
-                    title="Error"
-                    color="red"
-                    mt="md"
-                    withCloseButton
+                <AlertSection
+                    icon={IconAlertCircle}
+                    title={PAGE_TITLE.REPORTE_CONSUMOS.ALERTS_SECTION.ERROR_ALERT.TITLE}
+                    color={PAGE_TITLE.REPORTE_CONSUMOS.ALERTS_SECTION.ERROR_ALERT.COLOR}
                 >
                     {errores.general
                         ? errores.general[0]
-                        : "Ocurrió un error al cargar los datos"}
-                </Alert>
+                        : PAGE_TITLE.REPORTE_CONSUMOS.ALERTS_SECTION.ERROR_ALERT.MESSAGE}
+                </AlertSection>
             )}
 
             {/* Mensajes de éxito */}
             {mensaje && (
-                <Alert
-                    icon={<IconAlertCircle size={16} />}
-                    title="Éxito"
-                    color="green"
-                    mt="md"
-                    withCloseButton
+                <AlertSection
+                    icon={IconAlertCircle}
+                    title={PAGE_TITLE.REPORTE_CONSUMOS.ALERTS_SECTION.SUCCESS_ALERT.TITLE}
+                    color={PAGE_TITLE.REPORTE_CONSUMOS.ALERTS_SECTION.SUCCESS_ALERT.COLOR}
                 >
                     {mensaje.msg}
-                </Alert>
+                </AlertSection>
             )}
 
             {/* Visualización del reporte */}

@@ -158,7 +158,7 @@ const ReporteDepartamentosPage = () => {
 
     return (
         <Container size="xl" my={20}>
-            <TitlePage order={2}>Reporte Reservas — Estadías</TitlePage>
+            <TitlePage order={2}>Reporte Reservas & Estadías</TitlePage>
             <Divider my={10} />
             <FiltrarPorFechasForm
                 titulo="Filtrar por fechas"

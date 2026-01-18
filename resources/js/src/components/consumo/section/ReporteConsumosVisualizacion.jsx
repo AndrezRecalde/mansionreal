@@ -1,7 +1,6 @@
 import { useState } from "react";
 import {
     Stack,
-    Alert,
     LoadingOverlay,
     Box,
     Group,
@@ -22,7 +21,9 @@ import {
     TotalesGeneralesSection,
     BtnSection,
     TitlePage,
+    AlertSection,
 } from "../../../components";
+import { PAGE_TITLE } from "../../../helpers/getPrefix";
 
 export const ReporteConsumosVisualizacion = ({
     reporteData,
@@ -35,15 +36,22 @@ export const ReporteConsumosVisualizacion = ({
 
     if (!reporteData) {
         return (
-            <Alert
-                icon={<IconAlertCircle size={16} />}
-                title="Sin datos"
-                color="gray"
-                mt="xl"
+            <AlertSection
+                icon={IconAlertCircle}
+                title={
+                    PAGE_TITLE.REPORTE_CONSUMOS.ALERTS_SECTION.SIN_DATOS_ALERT
+                        .TITLE
+                }
+                color={
+                    PAGE_TITLE.REPORTE_CONSUMOS.ALERTS_SECTION.SIN_DATOS_ALERT
+                        .COLOR
+                }
             >
-                No hay datos para mostrar. Por favor, seleccione un rango de
-                fechas y presione "Buscar".
-            </Alert>
+                {
+                    PAGE_TITLE.REPORTE_CONSUMOS.ALERTS_SECTION.SIN_DATOS_ALERT
+                        .MESSAGE
+                }
+            </AlertSection>
         );
     }
 
@@ -51,14 +59,22 @@ export const ReporteConsumosVisualizacion = ({
 
     if (categorias.length === 0) {
         return (
-            <Alert
-                icon={<IconAlertCircle size={16} />}
-                title="Sin resultados"
-                color="yellow"
-                mt="xl"
+            <AlertSection
+                icon={IconAlertCircle}
+                title={
+                    PAGE_TITLE.REPORTE_CONSUMOS.ALERTS_SECTION.NOT_FOUND_ALERT
+                        .TITLE
+                }
+                color={
+                    PAGE_TITLE.REPORTE_CONSUMOS.ALERTS_SECTION.NOT_FOUND_ALERT
+                        .COLOR
+                }
             >
-                No se encontraron consumos para el período seleccionado.
-            </Alert>
+                {
+                    PAGE_TITLE.REPORTE_CONSUMOS.ALERTS_SECTION.NOT_FOUND_ALERT
+                        .MESSAGE
+                }
+            </AlertSection>
         );
     }
 
@@ -73,7 +89,10 @@ export const ReporteConsumosVisualizacion = ({
 
             <Stack gap="xl" mt="xl">
                 {/* Metadatos */}
-                <MetadatosSection metadatos={metadatos} />
+                <MetadatosSection
+                    metadatos={metadatos}
+                    PAGE_TITLE={PAGE_TITLE}
+                />
 
                 {/* Controles superiores */}
                 <Group justify="space-between">
@@ -89,10 +108,17 @@ export const ReporteConsumosVisualizacion = ({
                                         wrap="nowrap"
                                     >
                                         <IconCategory size={15} />
-                                        <span>Por Categorías</span>
+                                        <span>
+                                            {
+                                                PAGE_TITLE.REPORTE_CONSUMOS
+                                                    .SEGMENTED_CONTROL
+                                                    .POR_CATEGORIAS
+                                            }
+                                        </span>
                                     </Group>
                                 ),
-                                value: "categorias",
+                                value: PAGE_TITLE.REPORTE_CONSUMOS
+                                    .SEGMENTED_CONTROL.VALUE_CATEGORIAS,
                             },
                             {
                                 label: (
@@ -102,10 +128,17 @@ export const ReporteConsumosVisualizacion = ({
                                         wrap="nowrap"
                                     >
                                         <IconTable size={15} />
-                                        <span>Vista Consolidada</span>
+                                        <span>
+                                            {
+                                                PAGE_TITLE.REPORTE_CONSUMOS
+                                                    .SEGMENTED_CONTROL
+                                                    .CONSOLIDADO
+                                            }
+                                        </span>
                                     </Group>
                                 ),
-                                value: "consolidado",
+                                value: PAGE_TITLE.REPORTE_CONSUMOS
+                                    .SEGMENTED_CONTROL.VALUE_CONSOLIDADO,
                             },
                         ]}
                     />
@@ -121,9 +154,16 @@ export const ReporteConsumosVisualizacion = ({
                 </Group>
 
                 {/* Vista por categorías */}
-                {vistaActiva === "categorias" && (
+                {vistaActiva ===
+                    PAGE_TITLE.REPORTE_CONSUMOS.SEGMENTED_CONTROL
+                        .VALUE_CATEGORIAS && (
                     <>
-                        <TitlePage order={3}>Detalle por Categorías</TitlePage>
+                        <TitlePage order={3}>
+                            {
+                                PAGE_TITLE.REPORTE_CONSUMOS.SECCIONES
+                                    .SECCION_CATEGORIAS
+                            }
+                        </TitlePage>
 
                         {categorias.map((categoria) => (
                             <ReporteProductosTable
@@ -137,10 +177,15 @@ export const ReporteConsumosVisualizacion = ({
                 )}
 
                 {/* Vista consolidada */}
-                {vistaActiva === "consolidado" && (
+                {vistaActiva ===
+                    PAGE_TITLE.REPORTE_CONSUMOS.SEGMENTED_CONTROL
+                        .VALUE_CONSOLIDADO && (
                     <>
                         <TitlePage order={3}>
-                            Vista Consolidada - Todos los Productos
+                            {
+                                PAGE_TITLE.REPORTE_CONSUMOS.SECCIONES
+                                    .SECCION_CONSOLIDADO
+                            }
                         </TitlePage>
 
                         <ReporteConsolidadoTable

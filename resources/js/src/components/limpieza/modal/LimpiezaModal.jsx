@@ -3,7 +3,7 @@ import { useForm } from "@mantine/form";
 import { useDepartamentoStore, useUiLimpieza } from "../../../hooks";
 import { LimpiezaForm, TextSection } from "../../../components";
 
-export const LimpiezaModal = () => {
+export const LimpiezaModal = ({ PAGE_TITLE}) => {
     const { abrirModalLimpieza, fnAbrirModalLimpieza } = useUiLimpieza();
     const { activarDepartamento, fnAsignarDepartamento } = useDepartamentoStore();
     const form = useForm({
@@ -46,7 +46,7 @@ export const LimpiezaModal = () => {
             }}
             size="lg"
         >
-            <LimpiezaForm form={form} />
+            <LimpiezaForm form={form} PAGE_TITLE={PAGE_TITLE} />
         </Modal>
     );
 };

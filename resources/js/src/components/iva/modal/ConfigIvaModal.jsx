@@ -7,7 +7,7 @@ import {
     useUiConfiguracionIva,
 } from "../../../hooks";
 
-export const ConfigIvaModal = () => {
+export const ConfigIvaModal = ({ PAGE_TITLE }) => {
     const isMobile = useMediaQuery("(max-width: 768px)");
     const { abrirModalConfiguracionIva, fnModalAbrirConfiguracionIva } =
         useUiConfiguracionIva();
@@ -39,7 +39,7 @@ export const ConfigIvaModal = () => {
             onClose={handleCerrarModal}
             title={
                 <TextSection tt="" fz={16} fw={700}>
-                    Configuración Iva
+                    {PAGE_TITLE.TITULO_MODAL}
                 </TextSection>
             }
             overlayProps={{
@@ -48,7 +48,7 @@ export const ConfigIvaModal = () => {
             }}
             size="lg"
         >
-            <ConfigIvaForm form={form} />
+            <ConfigIvaForm form={form} PAGE_TITLE={PAGE_TITLE} />
         </Modal>
     );
 };

@@ -5,9 +5,9 @@ const initialState = {
     limpiezas: [],
     paginacion: {},
     ultimosFiltros: {
-        fecha_inicio: null,
-        fecha_fin: null,
-        anio: null,
+        p_fecha_inicio: null,
+        p_fecha_fin: null,
+        p_anio: null,
         page: 1,
         per_page: 20,
     },
@@ -51,6 +51,13 @@ export const limpiezaSlice = createSlice({
         rtkLimpiarLimpiezas: (state) => {
             state.limpiezas = [];
             state.activarLimpieza = null;
+            state.ultimosFiltros = {
+                p_fecha_inicio: null,
+                p_fecha_fin: null,
+                p_anio: null,
+                page: 1,
+                per_page: 20,
+            };
             state.errores = undefined;
             state.mensaje = undefined;
         },

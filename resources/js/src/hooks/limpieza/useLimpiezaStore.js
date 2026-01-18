@@ -7,6 +7,7 @@ import {
     rtkCargarLimpiezas,
     rtkCargarMensaje,
     rtkCargarPaginacion,
+    rtkGuardarUltimosFiltros,
     rtkLimpiarLimpiezas,
 } from "../../store/limpieza/limpiezaSlice";
 import apiAxios from "../../api/apiAxios";
@@ -66,9 +67,16 @@ export const useLimpiezaStore = () => {
                 //actualizando
                 const { data } = await apiAxios.put(
                     `/gerencia/limpieza/${limpieza.id}`,
-                    limpieza
+                    limpieza,
                 );
-                //await fnCargarLimpiezas(ultimosFiltros);
+
+                if (
+                    ultimosFiltros?.p_fecha_inicio ||
+                    ultimosFiltros?.p_fecha_fin ||
+                    ultimosFiltros?.p_anio
+                ) {
+                    await fnCargarLimpiezas(ultimosFiltros);
+                }
 
                 dispatch(rtkCargarMensaje(data));
                 setTimeout(() => {
@@ -81,9 +89,15 @@ export const useLimpiezaStore = () => {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.post(
                 "/gerencia/limpieza",
-                limpieza
+                limpieza,
             );
-            //await fnCargarLimpiezas(ultimosFiltros);
+            if (
+                ultimosFiltros?.p_fecha_inicio ||
+                ultimosFiltros?.p_fecha_fin ||
+                ultimosFiltros?.p_anio
+            ) {
+                await fnCargarLimpiezas(ultimosFiltros);
+            }
 
             dispatch(rtkCargarMensaje(data));
             setTimeout(() => {
@@ -95,6 +109,10 @@ export const useLimpiezaStore = () => {
         } finally {
             dispatch(rtkCargando(false));
         }
+    };
+
+    const fnGuardarUltimosFiltros = (filtros) => {
+        dispatch(rtkGuardarUltimosFiltros(filtros));
     };
 
     const fnAsignarLimpieza = (limpieza) => {
@@ -117,5 +135,6 @@ export const useLimpiezaStore = () => {
         fnAgregarLimpieza,
         fnAsignarLimpieza,
         fnLimpiarLimpiezas,
+        fnGuardarUltimosFiltros,
     };
 };

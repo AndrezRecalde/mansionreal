@@ -5,7 +5,7 @@ import { ContenidoTable, MenuTable_EA } from "../../../components";
 import { useLimpiezaStore, useUiLimpieza } from "../../../hooks";
 import dayjs from "dayjs";
 
-export const LimpiezaTable = ({ pagination, setPagination }) => {
+export const LimpiezaTable = ({ pagination, setPagination, PAGE_TITLE }) => {
     const { limpiezas, paginacion, cargando, fnAsignarLimpieza } =
         useLimpiezaStore();
     const { fnAbrirModalLimpieza } = useUiLimpieza();
@@ -13,12 +13,12 @@ export const LimpiezaTable = ({ pagination, setPagination }) => {
     const columns = useMemo(
         () => [
             {
-                header: "Departamento",
+                header: PAGE_TITLE.DEPARTAMENTO,
                 accessorKey: "departamento.numero_departamento",
                 size: 80,
             },
             {
-                header: "Fecha Limpieza",
+                header: PAGE_TITLE.FECHA_LIMPIEZA,
                 size: 80,
                 accessorFn: (row) =>
                     dayjs(row.fecha_limpieza).isValid()
@@ -26,11 +26,11 @@ export const LimpiezaTable = ({ pagination, setPagination }) => {
                         : "SIN FECHA",
             },
             {
-                header: "Personal Limpieza",
+                header: PAGE_TITLE.PERSONAL,
                 accessorKey: "personal_limpieza",
             },
             {
-                header: "Registrado Por",
+                header: PAGE_TITLE.REGISTRADO_POR,
                 accessorFn: (row) =>
                     row.usuario
                         ? `${row.usuario.nombres} ${row.usuario.apellidos}`

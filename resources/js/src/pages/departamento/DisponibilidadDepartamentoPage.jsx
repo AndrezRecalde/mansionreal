@@ -17,6 +17,7 @@ import {
     useGastoStore,
 } from "../../hooks";
 import { PAGE_CONFIG, TABS } from "../../helpers/calendario.constants";
+import { PAGE_TITLE } from "../../helpers/getPrefix";
 import classes from "./modules/Tabs.module.css";
 import Swal from "sweetalert2";
 
@@ -172,7 +173,7 @@ const DisponibilidadDepartamentoPage = () => {
                 datos_reserva={datos_reserva}
                 fnAsignarDepartamento={fnAsignarElemento}
             />
-            <LimpiezaModal />
+            <LimpiezaModal PAGE_TITLE={PAGE_TITLE.LIMPIEZA.CAMPOS_MODAL} />
         </Container>
     );
 };

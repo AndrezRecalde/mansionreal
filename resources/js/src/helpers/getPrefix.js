@@ -393,13 +393,70 @@ export const PAGE_TITLE = {
         },
     },
 
+    IVA: {
+        TITLE: "Gestión de IVA - Mansión Real",
+        TITLE_PAGE: "Gestión de IVA",
+        BUTTONS: {
+            NUEVO_IVA: "Nuevo IVA",
+        },
+        CAMPOS_TABLA: {
+            NOMBRE_IVA: "Tasa de IVA (%)",
+            DESCRIPCION: "Descripción",
+            FECHA_INICIO: "Fecha de Inicio",
+            FECHA_FIN: "Fecha de Fin",
+            ACTIVO: "Activo",
+            SIN_FECHA: "SIN FECHA",
+        },
+        CAMPOS_MODAL: {
+            TITULO_MODAL: "Configuración IVA",
+            INPUT_TASA_IVA: {
+                LABEL: "Tasa del IVA (%)",
+                PLACEHOLDER: "Ingrese tasa del IVA en porcentaje",
+            },
+            INPUT_DESCRIPCION_IVA: {
+                LABEL: "Descripción",
+                PLACEHOLDER: "Ingrese descripción",
+            },
+            INPUT_FECHA_INICIO: {
+                LABEL: "Fecha de Inicio",
+                PLACEHOLDER: "Seleccione fecha de inicio",
+            },
+            INPUT_FECHA_FIN: {
+                LABEL: "Fecha de Fin",
+                PLACEHOLDER: "Seleccione fecha de fin",
+            },
+            BUTTON_GUARDAR: "Guardar IVA",
+        },
+    },
+
+    LIMPIEZA: {
+        TITLE: "Historial de Limpiezas - Mansión Real",
+        TITLE_PAGE: "Historial de Limpiezas",
+        BUTTONS: {
+            FILTRAR_LIMPIEZAS: "Filtrar Limpiezas",
+        },
+        CAMPOS_TABLA: {
+            DEPARTAMENTO: "Departamento",
+            FECHA_LIMPIEZA: "Fecha de Limpieza",
+            PERSONAL: "Personal de Limpieza",
+            REGISTRADO_POR: "Registrado Por",
+        },
+        CAMPOS_MODAL: {
+            TITULO_MODAL: "Limpieza",
+            INPUT_PERSONAL_LIMPIEZA: {
+                LABEL: "Nombres del Personal de Limpieza",
+                PLACEHOLDER: "Ingrese nombres del personal de limpieza",
+            },
+            BUTTON_GUARDAR: "Guardar Limpieza",
+        },
+    },
+
 
     PRODUCTOS: "Gestión de Productos - Mansión Real",
     REPORTES: "Reportes - Mansión Real",
     PAGOS: "Gestión de Pagos - Mansión Real",
     FACTURAS: "Gestión de Facturas - Mansión Real",
 
-    IVA: "Gestión de IVA - Mansión Real",
     CATEGORIAS: "Gestión de Categorías - Mansión Real",
     CONSUMOS: "Gestión de Consumos - Mansión Real",
     GASTOS: "Gestión de Gastos - Mansión Real",

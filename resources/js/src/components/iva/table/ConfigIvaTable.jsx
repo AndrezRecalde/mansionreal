@@ -12,7 +12,7 @@ import {
 } from "../../../hooks";
 import dayjs from "dayjs";
 
-export const ConfigIvaTable = () => {
+export const ConfigIvaTable = ({ PAGE_TITLE }) => {
     const { cargando, ivas, fnAsignarIva } = useConfiguracionIvaStore();
     const {
         fnModalAbrirActivarConfiguracionIva,
@@ -22,32 +22,32 @@ export const ConfigIvaTable = () => {
     const columns = useMemo(
         () => [
             {
-                header: "Tasa Iva",
+                header: PAGE_TITLE.NOMBRE_IVA,
                 accessorKey: "tasa_iva", //normal accessorKey
             },
             {
-                header: "Descripcion",
+                header: PAGE_TITLE.DESCRIPCION,
                 accessorKey: "descripcion",
             },
             {
-                header: "Fecha Inicio",
+                header: PAGE_TITLE.FECHA_INICIO,
                 accessorFn: (row) =>
                     dayjs(row.fecha_inicio).isValid()
                         ? dayjs(row.fecha_inicio).format("YYYY-MM-DD")
-                        : "SIN FECHA", //normal accessorKey
+                        : PAGE_TITLE.SIN_FECHA, //normal accessorKey
                 //filterVariant: "autocomplete",
             },
             {
-                header: "Fecha Fin",
+                header: PAGE_TITLE.FECHA_FIN,
                 accessorFn: (row) =>
                     dayjs(row.fecha_fin).isValid()
                         ? dayjs(row.fecha_fin).format("YYYY-MM-DD")
-                        : "SIN FECHA", //normal accessorKey
+                        : PAGE_TITLE.SIN_FECHA, //normal accessorKey
                 //filterVariant: "autocomplete",
             },
             {
                 id: "activo", //id is still required when using accessorFn instead of accessorKey
-                header: "Activo",
+                header: PAGE_TITLE.ACTIVO,
                 accessorKey: "activo",
                 Cell: ({ cell }) => (
                     <BtnActivarElemento
@@ -58,7 +58,7 @@ export const ConfigIvaTable = () => {
                 size: 80,
             },
         ],
-        [ivas]
+        [ivas],
     );
 
     const handleEditar = useCallback(
@@ -66,7 +66,7 @@ export const ConfigIvaTable = () => {
             fnAsignarIva(selected);
             fnModalAbrirConfiguracionIva(true);
         },
-        [ivas]
+        [ivas],
     );
 
     const handleActivar = useCallback(
@@ -74,7 +74,7 @@ export const ConfigIvaTable = () => {
             fnAsignarIva(selected);
             fnModalAbrirActivarConfiguracionIva(true);
         },
-        [ivas]
+        [ivas],
     );
 
     const table = useMantineReactTable({

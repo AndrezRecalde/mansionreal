@@ -9,7 +9,7 @@ import {
 import dayjs from "dayjs";
 import classes from "../../../components/elements/modules/LabelsInput.module.css";
 
-export const ConfigIvaForm = ({ form }) => {
+export const ConfigIvaForm = ({ form, PAGE_TITLE }) => {
     const { fecha_inicio } = form.values;
     const { fnAgregarIva, fnAsignarIva, activarIva } =
         useConfiguracionIvaStore();
@@ -52,8 +52,8 @@ export const ConfigIvaForm = ({ form }) => {
             >
                 <NumberInput
                     withAsterisk
-                    label="Tasa Iva (%)"
-                    placeholder="Ingrese la tasa del iva"
+                    label={PAGE_TITLE.INPUT_TASA_IVA.LABEL}
+                    placeholder={PAGE_TITLE.INPUT_TASA_IVA.PLACEHOLDER}
                     min={1}
                     step={0.01}
                     precision={2}
@@ -62,8 +62,8 @@ export const ConfigIvaForm = ({ form }) => {
                 />
                 <Textarea
                     withAsterisk
-                    label="Descripción"
-                    placeholder="Ingrese una descripción"
+                    label={PAGE_TITLE.INPUT_DESCRIPCION_IVA.LABEL}
+                    placeholder={PAGE_TITLE.INPUT_DESCRIPCION_IVA.PLACEHOLDER}
                     resize="vertical"
                     minRows={3}
                     {...form.getInputProps("descripcion")}
@@ -71,20 +71,20 @@ export const ConfigIvaForm = ({ form }) => {
                 />
                 <DateInput
                     valueFormat="YYYY-MM-DD"
-                    label="Fecha inicio"
-                    placeholder="Seleccione fecha de inicio"
+                    label={PAGE_TITLE.INPUT_FECHA_INICIO.LABEL}
+                    placeholder={PAGE_TITLE.INPUT_FECHA_INICIO.PLACEHOLDER}
                     {...form.getInputProps("fecha_inicio")}
                     classNames={classes}
                 />
                 <DateInput
                     minDate={new Date(fecha_inicio)}
                     valueFormat="YYYY-MM-DD"
-                    label="Fecha final"
-                    placeholder="Seleccione fecha de fin"
+                    label={PAGE_TITLE.INPUT_FECHA_FIN.LABEL}
+                    placeholder={PAGE_TITLE.INPUT_FECHA_FIN.PLACEHOLDER}
                     {...form.getInputProps("fecha_fin")}
                     classNames={classes}
                 />
-                <BtnSubmit>Guardar Configuración Iva</BtnSubmit>
+                <BtnSubmit>{PAGE_TITLE.BUTTON_GUARDAR}</BtnSubmit>
             </Stack>
         </Box>
     );

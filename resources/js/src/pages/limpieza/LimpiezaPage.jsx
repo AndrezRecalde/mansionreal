@@ -7,11 +7,17 @@ import {
     TitlePage,
 } from "../../components";
 import { useLimpiezaStore, useTitleHook } from "../../hooks";
+import { PAGE_TITLE } from "../../helpers/getPrefix";
 
 const LimpiezaPage = () => {
-    useTitleHook("Historial de Limpiezas - Mansión Real");
-    const { fnCargarLimpiezas, cargando, fnLimpiarLimpiezas } =
-        useLimpiezaStore();
+    useTitleHook(PAGE_TITLE.LIMPIEZA.TITLE);
+    const {
+        fnCargarLimpiezas,
+        cargando,
+        ultimosFiltros,
+        fnGuardarUltimosFiltros,
+        fnLimpiarLimpiezas,
+    } = useLimpiezaStore();
 
     // Estado local para controlar la paginación
     const [pagination, setPagination] = useState({
@@ -19,12 +25,6 @@ const LimpiezaPage = () => {
         pageSize: 20,
     });
 
-    // Estado para mantener los filtros aplicados
-    const [filtrosActuales, setFiltrosActuales] = useState({
-        p_fecha_inicio: null,
-        p_fecha_fin: null,
-        p_anio: null,
-    });
 
     // Bandera para saber si ya se ha filtrado al menos una vez
     const [haFiltrado, setHaFiltrado] = useState(false);
@@ -33,7 +33,7 @@ const LimpiezaPage = () => {
     useEffect(() => {
         if (haFiltrado) {
             fnCargarLimpiezas({
-                ...filtrosActuales,
+                ...ultimosFiltros,
                 page: pagination.pageIndex + 1, // Backend usa base 1
                 per_page: pagination.pageSize,
             });
@@ -54,13 +54,15 @@ const LimpiezaPage = () => {
         // Marcar que ya se ha filtrado
         setHaFiltrado(true);
 
-        // Guardar los filtros actuales
-        setFiltrosActuales(filtros);
-
         // Resetear a la primera página cuando se aplican nuevos filtros
         setPagination({
             pageIndex: 0,
             pageSize: pagination.pageSize,
+        });
+        fnGuardarUltimosFiltros({
+            ...filtros,
+            page: 1,
+            per_page: pagination.pageSize,
         });
 
         // Cargar con los nuevos filtros
@@ -73,19 +75,21 @@ const LimpiezaPage = () => {
 
     return (
         <Container size="xl" my={20}>
-            <TitlePage order={2}>Historial de Limpiezas</TitlePage>
+            <TitlePage order={2}>{PAGE_TITLE.LIMPIEZA.TITLE_PAGE}</TitlePage>
             <Divider my={10} />
             <FiltrarPorFechasForm
-                titulo="Filtrar por fechas"
+                titulo={PAGE_TITLE.LIMPIEZA.BUTTONS.FILTRAR_LIMPIEZAS}
                 cargando={cargando}
                 fnHandleAction={handleFiltrar}
             />
             <LimpiezaTable
                 pagination={pagination}
                 setPagination={setPagination}
+                PAGE_TITLE={PAGE_TITLE.LIMPIEZA.CAMPOS_TABLA}
             />
 
-            <LimpiezaModal />
+            {/*  Solo sirve para modificar al personal de limpieza */}
+            <LimpiezaModal PAGE_TITLE={PAGE_TITLE.LIMPIEZA.CAMPOS_MODAL} />
         </Container>
     );
 };

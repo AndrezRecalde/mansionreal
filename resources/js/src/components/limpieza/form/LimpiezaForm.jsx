@@ -10,7 +10,7 @@ import {
 import { Estados } from "../../../helpers/getPrefix";
 import Swal from "sweetalert2";
 
-export const LimpiezaForm = ({ form }) => {
+export const LimpiezaForm = ({ form, PAGE_TITLE }) => {
     const { cargando, fnAgregarLimpieza, activarLimpieza } = useLimpiezaStore();
     const { fnAbrirModalLimpieza } = useUiLimpieza();
     const {
@@ -78,12 +78,12 @@ export const LimpiezaForm = ({ form }) => {
                 gap="md"
             >
                 <TextInput
-                    label="Ingrese los nombres del personal de limpieza"
+                    label={PAGE_TITLE.INPUT_PERSONAL_LIMPIEZA.LABEL}
                     description="Ingrese los nombres de cada uno de los personal de limpieza asignado"
-                    placeholder="Nombres del personal de limpieza"
+                    placeholder={PAGE_TITLE.INPUT_PERSONAL_LIMPIEZA.PLACEHOLDER}
                     {...form.getInputProps("personal_limpieza")}
                 />
-                <BtnSubmit loading={cargando}>Guardar</BtnSubmit>
+                <BtnSubmit loading={cargando}>{PAGE_TITLE.BUTTON_GUARDAR}</BtnSubmit>
             </Stack>
         </Box>
     );

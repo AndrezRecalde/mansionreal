@@ -6,12 +6,17 @@ import {
     ConfigIvaTable,
     TitlePage,
 } from "../../components";
-import { useConfiguracionIvaStore, useTitleHook, useUiConfiguracionIva } from "../../hooks";
+import {
+    useConfiguracionIvaStore,
+    useTitleHook,
+    useUiConfiguracionIva,
+} from "../../hooks";
 import { IconCubePlus } from "@tabler/icons-react";
+import { PAGE_TITLE } from "../../helpers/getPrefix";
 import Swal from "sweetalert2";
 
 const ConfigIvaPage = () => {
-    useTitleHook("Configuración del IVA - Mansión Real");
+    useTitleHook(PAGE_TITLE.IVA.TITLE);
     const {
         fnCargarIvas,
         activarIva,
@@ -59,12 +64,12 @@ const ConfigIvaPage = () => {
 
     return (
         <Container size="xl" my={20}>
-            <TitlePage order={2}>Configuracion del Iva</TitlePage>
+            <TitlePage order={2}>{PAGE_TITLE.IVA.TITLE_PAGE}</TitlePage>
             <Divider my={10} />
 
-            <ConfigIvaTable />
+            <ConfigIvaTable PAGE_TITLE={PAGE_TITLE.IVA.CAMPOS_TABLA} />
 
-            <ConfigIvaModal />
+            <ConfigIvaModal PAGE_TITLE={PAGE_TITLE.IVA.CAMPOS_MODAL} />
             <ActivarElementoModal
                 titulo="Activar Iva"
                 fnAbrirModal={fnModalAbrirActivarConfiguracionIva}

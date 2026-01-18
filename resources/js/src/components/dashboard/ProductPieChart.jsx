@@ -2,6 +2,7 @@ import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import { useMantineColorScheme } from "@mantine/core";
 import { useDashRankingProductosStore } from "../../hooks";
+import { PAGE_TITLE } from "../../helpers/getPrefix";
 
 export default function ProductPieChart() {
     const { rankingProductos } = useDashRankingProductosStore();
@@ -39,7 +40,7 @@ export default function ProductPieChart() {
             },
         },
         title: {
-            text: "Consumo por Producto",
+            text: PAGE_TITLE.DASHBOARD.CHART_PRODUCTOS.TITLE,
             style: {
                 color: isDark ? "#F8F9FA" : "#1A1B1E",
                 fontWeight: "700",
@@ -48,7 +49,7 @@ export default function ProductPieChart() {
             },
         },
         subtitle: {
-            text: "Distribución de ventas por categoría",
+            text: PAGE_TITLE.DASHBOARD.CHART_PRODUCTOS.SUBTITLE,
             style: {
                 color: isDark ? "#909296" : "#636E72",
                 fontSize: "14px",
@@ -175,7 +176,7 @@ export default function ProductPieChart() {
         },
         series: [
             {
-                name: "Consumo",
+                name: PAGE_TITLE.DASHBOARD.CHART_PRODUCTOS.NAME_SERIES,
                 colorByPoint: true,
                 innerSize: "0%",
                 data: productosOrdenados.map((item, idx) => ({

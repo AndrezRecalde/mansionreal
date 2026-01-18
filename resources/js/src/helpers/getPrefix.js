@@ -21,8 +21,22 @@ export const Estados = {
     VENCIDO: "VENCIDO",
 };
 
-export const PAGE_TITLE = {
+export const meses = [
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre",
+];
 
+export const PAGE_TITLE = {
     AUTENTICACION: {
         TITLE: "Autenticación - Mansión Real",
         INPUTS: {
@@ -33,7 +47,7 @@ export const PAGE_TITLE = {
         },
         BUTTONS: {
             ACCEDER: "Acceder",
-        }
+        },
     },
 
     /* ** PAGINA DE PERFIL ** */
@@ -72,10 +86,70 @@ export const PAGE_TITLE = {
         NAVEGACIONES: {
             REGRESAR_PERFIL: "/staff/perfil",
         },
+    },
+
+    /* ** DASHBOARD ** */
+    DASHBOARD: {
+        TITLE: "Dashboard - Mansión Real",
+        TITLE_PAGE: "Panel Administrativo",
+
+        CHART_HUESPEDES_GANANCIAS: {
+            TITLE: "Huéspedes y Ganancias Mensuales",
+            SUBTITLE: "Análisis comparativo de ocupación e ingresos",
+            Y_AXIS_HUESPEDES: "Total de Huéspedes",
+            Y_AXIS_GANANCIAS: "Total de Ganancias (USD)",
+            SERIES: {
+                HUESPEDES: "Huéspedes",
+                COLOR_HUESPEDES: "#102A56",
+                GANANCIAS: "Ganancias (USD)",
+                COLOR_GANANCIAS: "#25B475",
+            }
+        },
+
+        CHART_INGRESOS_DEPARTAMENTO: {
+            TITLE: "Ingresos por Departamento",
+            SUBTITLE: "Distribución de ingresos por tipo de departamento",
+            X_AXIS: "Tipo de Departamento",
+            Y_AXIS: "Ingresos (USD)",
+            SERIES: {
+                INGRESOS: "Ingresos (USD)",
+            }
+        },
+
+        CHART_ESTADIAS: {
+            TITLE: "Resumen de Estadías",
+            SUBTITLE: "Métricas principales del período",
+            categories: [
+                "Total Estadías",
+                "Subtotal Consumos",
+                "IVA Recaudado",
+                "Total Consumos",
+                "Total Huéspedes",
+            ],
+            Y_AXIS: "Valores",
+            SERIES: {
+                ESTADIAS: "Estadías",
+            }
+        },
+
+        CHART_PRODUCTOS: {
+            TITLE: "Consumo por Producto",
+            SUBTITLE: "Distribución de ventas por categoría",
+            NAME_SERIES: "Consumos"
+        },
+
+        TABLE_RANKING_HUESPEDES: {
+            TITLE: "Ranking de Huéspedes por Consumo",
+            SUBTITLE: "Top 10 huéspedes con mayor gasto",
+            COLUMNS: {
+                NOMBRE_HUESPED: "Nombre del Huésped",
+                CEDULA: "No. de Cédula",
+                TOTAL_RESERVAS: "Total de Reservas",
+            }
+        },
 
     },
 
-    DASHBOARD: "Dashboard - Mansión Real",
     RESERVAS: "Gestión de Reservas - Mansión Real",
     HUESPEDES: "Gestión de Huéspedes - Mansión Real",
     DEPARTAMENTOS: "Gestión de Departamentos - Mansión Real",

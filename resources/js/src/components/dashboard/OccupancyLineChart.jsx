@@ -2,27 +2,12 @@ import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import { useDashHuepedGananciaStore } from "../../hooks";
 import { useMantineColorScheme } from "@mantine/core";
+import { meses, PAGE_TITLE } from "../../helpers/getPrefix";
 
 export default function OccupancyLineChart() {
     const { huespedesGananciasMes } = useDashHuepedGananciaStore();
     const { colorScheme } = useMantineColorScheme();
     const isDark = colorScheme === "dark";
-
-    // Lista completa de los nombres de los meses
-    const meses = [
-        "Enero",
-        "Febrero",
-        "Marzo",
-        "Abril",
-        "Mayo",
-        "Junio",
-        "Julio",
-        "Agosto",
-        "Septiembre",
-        "Octubre",
-        "Noviembre",
-        "Diciembre",
-    ];
 
     // Asegura que siempre hay datos para todos los meses
     const huespedesPorMes = meses.map(
@@ -48,7 +33,7 @@ export default function OccupancyLineChart() {
             },
         },
         title: {
-            text: "Huéspedes y Ganancias Mensuales",
+            text: PAGE_TITLE.DASHBOARD.CHART_HUESPEDES_GANANCIAS.TITLE,
             align: "left",
             style: {
                 color: isDark ? "#F8F9FA" : "#1A1B1E",
@@ -58,7 +43,7 @@ export default function OccupancyLineChart() {
             },
         },
         subtitle: {
-            text: "Análisis comparativo de ocupación e ingresos",
+            text: PAGE_TITLE.DASHBOARD.CHART_HUESPEDES_GANANCIAS.SUBTITLE,
             align: "left",
             style: {
                 color: isDark ? "#909296" : "#636E72",
@@ -83,7 +68,7 @@ export default function OccupancyLineChart() {
             {
                 // Eje Y para huéspedes
                 title: {
-                    text: "Total de Huéspedes",
+                    text: PAGE_TITLE.DASHBOARD.CHART_HUESPEDES_GANANCIAS.Y_AXIS_HUESPEDES,
                     style: {
                         color: isDark ? "#C1C2C5" : "#495057",
                         fontWeight: "600",
@@ -104,7 +89,7 @@ export default function OccupancyLineChart() {
             {
                 // Eje Y para ganancias
                 title: {
-                    text: "Total de Ganancias (USD)",
+                    text: PAGE_TITLE.DASHBOARD.CHART_HUESPEDES_GANANCIAS.Y_AXIS_GANANCIAS,
                     style: {
                         color: isDark ? "#C1C2C5" : "#495057",
                         fontWeight: "600",
@@ -147,10 +132,10 @@ export default function OccupancyLineChart() {
             },
             formatter: function () {
                 let huespedes =
-                    this.points?.find((p) => p.series.name === "Huéspedes")
+                    this.points?.find((p) => p.series.name === PAGE_TITLE.DASHBOARD.CHART_HUESPEDES_GANANCIAS.SERIES.HUESPEDES)
                         ?.y ?? 0;
                 let ganancias =
-                    this.points?.find((p) => p.series.name === "Ganancias")
+                    this.points?.find((p) => p.series.name === PAGE_TITLE.DASHBOARD.CHART_HUESPEDES_GANANCIAS.SERIES.GANANCIAS)
                         ?.y ?? 0;
                 return `
                     <b>${meses[this.x]}</b><br/><br/>
@@ -234,17 +219,17 @@ export default function OccupancyLineChart() {
         },
         series: [
             {
-                name: "Huéspedes",
+                name: PAGE_TITLE.DASHBOARD.CHART_HUESPEDES_GANANCIAS.SERIES.HUESPEDES,
                 type: "column",
                 data: huespedesPorMes,
-                color: "#102A56", // Azul brillante
+                color: PAGE_TITLE.DASHBOARD.CHART_HUESPEDES_GANANCIAS.SERIES.COLOR_HUESPEDES, // Azul brillante
                 yAxis: 0,
             },
             {
-                name: "Ganancias",
+                name: PAGE_TITLE.DASHBOARD.CHART_HUESPEDES_GANANCIAS.SERIES.GANANCIAS,
                 type: "spline",
                 data: gananciasPorMes,
-                color: "#25B475", // Verde esmeralda
+                color: PAGE_TITLE.DASHBOARD.CHART_HUESPEDES_GANANCIAS.SERIES.COLOR_GANANCIAS, // Verde esmeralda
                 yAxis: 1,
                 tooltip: {
                     valuePrefix: "$",

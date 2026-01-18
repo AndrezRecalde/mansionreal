@@ -2,6 +2,7 @@ import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import { useDashIngresosPorDepartamentoStore } from "../../hooks";
 import { useMantineColorScheme } from "@mantine/core";
+import { PAGE_TITLE } from "../../helpers/getPrefix";
 
 export default function DepartmentBarChart() {
     const { ingresosPorDepartamento } = useDashIngresosPorDepartamentoStore();
@@ -10,12 +11,12 @@ export default function DepartmentBarChart() {
 
     // Categorías dinámicas según la data
     const categorias = ingresosPorDepartamento.map(
-        (item) => item.tipo_departamento
+        (item) => item.tipo_departamento,
     );
 
     // Datos dinámicos, convierte ingresos a número
     const data = ingresosPorDepartamento.map((item) =>
-        parseFloat(item.ingresos)
+        parseFloat(item.ingresos),
     );
 
     // Paleta de colores vibrantes (igual al pie chart)
@@ -42,7 +43,7 @@ export default function DepartmentBarChart() {
             },
         },
         title: {
-            text: "Ingresos por Departamento",
+            text: PAGE_TITLE.DASHBOARD.CHART_INGRESOS_DEPARTAMENTO.TITLE,
             align: "left",
             style: {
                 color: isDark ? "#F8F9FA" : "#1A1B1E",
@@ -52,7 +53,7 @@ export default function DepartmentBarChart() {
             },
         },
         subtitle: {
-            text: "Distribución de ingresos por tipo de departamento",
+            text: PAGE_TITLE.DASHBOARD.CHART_INGRESOS_DEPARTAMENTO.SUBTITLE,
             align: "left",
             style: {
                 color: isDark ? "#909296" : "#636E72",
@@ -62,7 +63,7 @@ export default function DepartmentBarChart() {
         xAxis: {
             categories: categorias,
             title: {
-                text: "Tipo de Departamento",
+                text: PAGE_TITLE.DASHBOARD.CHART_INGRESOS_DEPARTAMENTO.X_AXIS,
                 style: {
                     color: isDark ? "#C1C2C5" : "#495057",
                     fontWeight: "600",
@@ -83,7 +84,7 @@ export default function DepartmentBarChart() {
         },
         yAxis: {
             title: {
-                text: "Ingresos (USD)",
+                text: PAGE_TITLE.DASHBOARD.CHART_INGRESOS_DEPARTAMENTO.Y_AXIS,
                 style: {
                     color: isDark ? "#C1C2C5" : "#495057",
                     fontWeight: "600",
@@ -174,7 +175,8 @@ export default function DepartmentBarChart() {
         },
         series: [
             {
-                name: "Ingresos",
+                name: PAGE_TITLE.DASHBOARD.CHART_INGRESOS_DEPARTAMENTO.SERIES
+                    .INGRESOS,
                 data: data,
                 colorByPoint: true,
             },

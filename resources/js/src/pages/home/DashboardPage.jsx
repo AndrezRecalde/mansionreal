@@ -20,7 +20,7 @@ import { FiltrarPorFechasForm } from "../../components";
 import { PAGE_TITLE } from "../../helpers/getPrefix";
 
 export default function DashboardPage() {
-    useTitleHook(PAGE_TITLE.DASHBOARD);
+    useTitleHook(PAGE_TITLE.DASHBOARD.TITLE);
     const { kpis, fnCargarResumenKPI, fnLimpiarResumenKPI } =
         useDashboardKPIStore();
     const { fnCargarHuespedesGananciasMes, fnLimpiarHuespedesGananciasMes } =
@@ -57,7 +57,7 @@ export default function DashboardPage() {
         <Container size="xl">
             <Group justify="space-between">
                 <Title order={2} mb="md">
-                    Panel Administrativo
+                    {PAGE_TITLE.DASHBOARD.TITLE_PAGE}
                 </Title>
             </Group>
             {/* Filtros */}

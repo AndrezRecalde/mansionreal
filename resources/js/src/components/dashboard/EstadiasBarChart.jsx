@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import Highcharts from "highcharts";
 import { useEstadiaStore } from "../../hooks";
 import { useMantineColorScheme } from "@mantine/core";
+import { PAGE_TITLE } from "../../helpers/getPrefix";
 
 // Paleta de colores corporativos
 const CORPORATE_COLORS = {
@@ -34,7 +35,7 @@ const EstadiasBarChart = () => {
                     },
                 },
                 title: {
-                    text: "Resumen de Estadías",
+                    text: PAGE_TITLE.DASHBOARD.CHART_ESTADIAS.TITLE,
                     align: "left",
                     style: {
                         color: isDark ? "#F8F9FA" : "#1A1B1E",
@@ -44,7 +45,7 @@ const EstadiasBarChart = () => {
                     },
                 },
                 subtitle: {
-                    text: "Métricas principales del período",
+                    text: PAGE_TITLE.DASHBOARD.CHART_ESTADIAS.SUBTITLE,
                     align: "left",
                     style: {
                         color: isDark ? "#909296" : "#636E72",
@@ -52,13 +53,7 @@ const EstadiasBarChart = () => {
                     },
                 },
                 xAxis: {
-                    categories: [
-                        "Total Estadías",
-                        "Subtotal Consumos",
-                        "IVA Recaudado",
-                        "Total Consumos",
-                        "Total Huéspedes",
-                    ],
+                    categories: PAGE_TITLE.DASHBOARD.CHART_ESTADIAS.categories,
                     title: {
                         text: null,
                     },
@@ -77,7 +72,7 @@ const EstadiasBarChart = () => {
                 yAxis: {
                     min: 0,
                     title: {
-                        text: "Valores",
+                        text: PAGE_TITLE.DASHBOARD.CHART_ESTADIAS.Y_AXIS,
                         align: "high",
                         style: {
                             color: isDark ? "#C1C2C5" : "#495057",
@@ -183,7 +178,7 @@ const EstadiasBarChart = () => {
                 },
                 series: [
                     {
-                        name: "Valores",
+                        name: PAGE_TITLE.DASHBOARD.CHART_ESTADIAS.SERIES.ESTADIAS,
                         data: [
                             {
                                 y: parseFloat(data.total_estadias),

@@ -1,6 +1,7 @@
 import { Card, Table, useMantineColorScheme } from "@mantine/core";
 import { TitlePage } from "../../components";
 import { useDashHuespedStore } from "../../hooks";
+import { PAGE_TITLE } from "../../helpers/getPrefix";
 
 export default function GuestsRankingTable() {
     const { colorScheme } = useMantineColorScheme();
@@ -31,13 +32,13 @@ export default function GuestsRankingTable() {
                 border: isDark ? "1px solid #373A40" : "none",
             }}
         >
-            <TitlePage order={3}>Ranking Huéspedes Recurrentes</TitlePage>
+            <TitlePage order={3}>{PAGE_TITLE.DASHBOARD.TABLE_RANKING_HUESPEDES.TITLE}</TitlePage>
             <Table striped withTableBorder withColumnBorders mt={20}>
                 <Table.Thead style={{ backgroundColor: isDark ? "#2C2E33" : "#C8C8C8" }}>
                     <Table.Tr>
-                        <Table.Th>Nombre</Table.Th>
-                        <Table.Th>Cédula</Table.Th>
-                        <Table.Th>Total Reservas</Table.Th>
+                        <Table.Th>{PAGE_TITLE.DASHBOARD.TABLE_RANKING_HUESPEDES.COLUMNS.NOMBRE_HUESPED}</Table.Th>
+                        <Table.Th>{PAGE_TITLE.DASHBOARD.TABLE_RANKING_HUESPEDES.COLUMNS.CEDULA}</Table.Th>
+                        <Table.Th>{PAGE_TITLE.DASHBOARD.TABLE_RANKING_HUESPEDES.COLUMNS.TOTAL_RESERVAS}</Table.Th>
                     </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>{rows}</Table.Tbody>

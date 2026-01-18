@@ -1,4 +1,8 @@
 .wrapper {
+    background-image: url("https://prefecturadeesmeraldas.gob.ec/wp-content/uploads/2026/01/4890914-scaled.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -29,6 +33,7 @@
     background-image: url("https://prefecturadeesmeraldas.gob.ec/wp-content/uploads/2025/10/HOTEL-2.png");
     background-size: cover;
     background-position: center;
+    background-repeat: no-repeat;
     width: 50%;
     background-color: #1a1a1a;
     color: white;

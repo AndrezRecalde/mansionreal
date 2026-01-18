@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Container, Divider, Group } from "@mantine/core";
 import {
     ActivarElementoModal,
@@ -7,12 +8,12 @@ import {
     TitlePage,
 } from "../../components";
 import { useCategoriaStore, useTitleHook, useUiCategoria } from "../../hooks";
+import { PAGE_TITLE } from "../../helpers/getPrefix";
 import { IconCubePlus } from "@tabler/icons-react";
-import { useEffect } from "react";
 import Swal from "sweetalert2";
 
 const CategoriasPage = () => {
-    useTitleHook("Categorias - Mansión Real");
+    useTitleHook(PAGE_TITLE.CATEGORIAS);
     const {
         activarCategoria,
         fnCargarCategorias,

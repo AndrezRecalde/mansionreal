@@ -17,10 +17,10 @@ import ProductPieChart from "../../components/dashboard/ProductPieChart";
 import GuestsRankingTable from "../../components/dashboard/GuestsRankingTable";
 import EstadiasBarChart from "../../components/dashboard/EstadiasBarChart";
 import { FiltrarPorFechasForm } from "../../components";
+import { PAGE_TITLE } from "../../helpers/getPrefix";
 
 export default function DashboardPage() {
-    useTitleHook("Dashboard - Mansión Real");
-
+    useTitleHook(PAGE_TITLE.DASHBOARD);
     const { kpis, fnCargarResumenKPI, fnLimpiarResumenKPI } =
         useDashboardKPIStore();
     const { fnCargarHuespedesGananciasMes, fnLimpiarHuespedesGananciasMes } =

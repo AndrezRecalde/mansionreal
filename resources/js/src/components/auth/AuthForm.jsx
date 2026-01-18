@@ -55,7 +55,6 @@ export const AuthForm = () => {
                     withAsterisk
                     label="Usuario"
                     placeholder="Digite su usuario"
-                    size="md"
                     classNames={{
                         input: classes.input,
                         label: classes.label,
@@ -66,7 +65,6 @@ export const AuthForm = () => {
                     withAsterisk
                     label="Contraseña"
                     placeholder="Tu contraseña"
-                    size="md"
                     classNames={{
                         input: classes.input,
                         label: classes.label,
@@ -76,8 +74,8 @@ export const AuthForm = () => {
 
                 <Checkbox
                     label="Recuérdame"
-                    size="sm"
                     className={classes.checkbox}
+                    {...form.getInputProps("remember")}
                 />
 
                 {errores ? (

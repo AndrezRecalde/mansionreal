@@ -10,7 +10,7 @@ import {
 import classes from "./modules/AuthPageBackground.module.css";
 
 const AuthPage = () => {
-    useTitleHook(PAGE_TITLE.AUTENTICACION);
+    useTitleHook(PAGE_TITLE.AUTENTICACION.TITLE);
     return (
         <div className={classes.wrapper}>
             <Paper radius="md" shadow="md" className={classes.card}>

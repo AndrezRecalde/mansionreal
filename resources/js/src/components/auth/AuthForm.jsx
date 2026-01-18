@@ -11,6 +11,7 @@ import { AlertSection, BtnSubmit } from "../../components";
 import { IconChevronsRight, IconInfoCircle } from "@tabler/icons-react";
 import { useForm } from "@mantine/form";
 import { useAuthStore } from "../../hooks";
+import { PAGE_TITLE } from "../../helpers/getPrefix";
 import classes from "./modules/AuthForm.module.css";
 
 export const AuthForm = () => {
@@ -53,8 +54,8 @@ export const AuthForm = () => {
             <Stack gap={{ base: "md", sm: "lg" }}>
                 <TextInput
                     withAsterisk
-                    label="Usuario"
-                    placeholder="Digite su usuario"
+                    label={PAGE_TITLE.AUTENTICACION.INPUTS.LABEL_USUARIO}
+                    placeholder={PAGE_TITLE.AUTENTICACION.INPUTS.PLACEHOLDER_USUARIO}
                     classNames={{
                         input: classes.input,
                         label: classes.label,
@@ -63,8 +64,8 @@ export const AuthForm = () => {
                 />
                 <PasswordInput
                     withAsterisk
-                    label="Contraseña"
-                    placeholder="Tu contraseña"
+                    label={PAGE_TITLE.AUTENTICACION.INPUTS.LABEL_CONTRASEÑA}
+                    placeholder={PAGE_TITLE.AUTENTICACION.INPUTS.PLACEHOLDER_CONTRASENA}
                     classNames={{
                         input: classes.input,
                         label: classes.label,
@@ -96,7 +97,7 @@ export const AuthForm = () => {
                     IconSection={IconChevronsRight}
                     className={classes.submitButton}
                 >
-                    Acceder
+                    {PAGE_TITLE.AUTENTICACION.BUTTONS.ACCEDER}
                 </BtnSubmit>
             </Stack>
         </Box>

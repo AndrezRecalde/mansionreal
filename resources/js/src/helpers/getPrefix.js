@@ -22,7 +22,20 @@ export const Estados = {
 };
 
 export const PAGE_TITLE = {
-    AUTENTICACION: "Acceder - Mansión Real",
+
+    AUTENTICACION: {
+        TITLE: "Autenticación - Mansión Real",
+        INPUTS: {
+            LABEL_USUARIO: "Usuario",
+            PLACEHOLDER_USUARIO: "Digite su usuario",
+            LABEL_CONTRASEÑA: "Contraseña",
+            PLACEHOLDER_CONTRASENA: "Tu contraseña",
+        },
+        BUTTONS: {
+            ACCEDER: "Acceder",
+        }
+    },
+
     DASHBOARD: "Dashboard - Mansión Real",
     RESERVAS: "Gestión de Reservas - Mansión Real",
     HUESPEDES: "Gestión de Huéspedes - Mansión Real",

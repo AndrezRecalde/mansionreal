@@ -6,12 +6,18 @@ import {
     TitlePage,
     HuespedTable,
 } from "../../components";
-import { useHuespedStore, useProvinciaStore, useTitleHook, useUiHuesped } from "../../hooks";
+import {
+    useHuespedStore,
+    useProvinciaStore,
+    useTitleHook,
+    useUiHuesped,
+} from "../../hooks";
 import { IconCubePlus } from "@tabler/icons-react";
 import Swal from "sweetalert2";
+import { PAGE_TITLE } from "../../helpers/getPrefix";
 
 const HuespedPage = () => {
-    useTitleHook("Huéspedes - Mansión Real");
+    useTitleHook(PAGE_TITLE.HUESPEDES.TITLE);
     const { fnCargarHuespedes, fnLimpiarHuespedes, mensaje, errores } =
         useHuespedStore();
     const { fnModalHuesped } = useUiHuesped();
@@ -70,21 +76,22 @@ const HuespedPage = () => {
     return (
         <Container size="xl" my={20}>
             <Group justify="space-between" mb={10}>
-                <TitlePage>Huespedes</TitlePage>
+                <TitlePage>{PAGE_TITLE.HUESPEDES.TITLE_PAGE}</TitlePage>
                 <BtnSection
                     IconSection={IconCubePlus}
                     handleAction={handleNuevoHuesped}
                 >
-                    Nuevo Huesped
+                    {PAGE_TITLE.HUESPEDES.BUTTONS.NUEVO_HUESPED}
                 </BtnSection>
             </Group>
             <Divider my={10} />
             <HuespedTable
                 pagination={pagination}
                 setPagination={setPagination}
+                PAGE_TITLE={PAGE_TITLE}
             />
 
-            <HuespedModal />
+            <HuespedModal PAGE_TITLE={PAGE_TITLE} />
         </Container>
     );
 };

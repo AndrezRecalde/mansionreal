@@ -171,7 +171,35 @@ export const PAGE_TITLE = {
 
 
 
-    HUESPEDES: "Gestión de Huéspedes - Mansión Real",
+    HUESPEDES: {
+        TITLE: "Gestión de Huéspedes - Mansión Real",
+        TITLE_PAGE: "Gestión de Huéspedes",
+        BUTTONS: {
+            NUEVO_HUESPED: "Nuevo Huésped",
+        },
+
+        CAMPOS_TABLA: {
+            NOMBRES_COMPLETOS: "Nombres Completos",
+            CEDULA: "Cédula",
+            TELEFONO: "Teléfono",
+            EMAIL: "Correo",
+            SIN_DATOS: "SIN DATOS",
+        },
+
+        CAMPOS_MODAL: {
+            TITULO_MODAL: "Huésped",
+            CAMPOS_FORMULARIO: {
+                LABEL_CEDULA: "Número de Cédula",
+                LABEL_APELLIDOS: "Apellidos",
+                LABEL_NOMBRES: "Nombres",
+                LABEL_TELEFONO: "Teléfono",
+                LABEL_EMAIL: "Correo Electrónico",
+                BUTTON: "Guardar Huésped",
+            },
+        },
+    },
+
+
     DEPARTAMENTOS: "Gestión de Departamentos - Mansión Real",
     PRODUCTOS: "Gestión de Productos - Mansión Real",
     REPORTES: "Reportes - Mansión Real",

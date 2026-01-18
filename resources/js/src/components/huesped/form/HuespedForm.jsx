@@ -4,7 +4,7 @@ import { BtnSubmit } from "../../../components";
 import { useHuespedStore, useUiHuesped } from "../../../hooks";
 import classes from "../../../components/elements/modules/LabelsInput.module.css";
 
-export const HuespedForm = ({ form }) => {
+export const HuespedForm = ({ form, PAGE_TITLE }) => {
     const { activarHuesped, fnAgregarHuesped, fnAsignarHuesped } =
         useHuespedStore();
     const { fnModalHuesped } = useUiHuesped();
@@ -44,7 +44,7 @@ export const HuespedForm = ({ form }) => {
             >
                 <TextInput
                     withAsterisk
-                    label="No. Cedula"
+                    label={PAGE_TITLE.HUESPEDES.CAMPOS_MODAL.CAMPOS_FORMULARIO.LABEL_CEDULA}
                     placeholder="Ingrese el número de cédula"
                     {...form.getInputProps("dni")}
                     classNames={classes}
@@ -55,32 +55,32 @@ export const HuespedForm = ({ form }) => {
                 >
                     <TextInput
                         withAsterisk
-                        label="Apellidos"
+                        label={PAGE_TITLE.HUESPEDES.CAMPOS_MODAL.CAMPOS_FORMULARIO.LABEL_APELLIDOS}
                         placeholder="Ingrese los apellidos"
                         {...form.getInputProps("apellidos")}
                         classNames={classes}
                     />
                     <TextInput
                         withAsterisk
-                        label="Nombres"
+                        label={PAGE_TITLE.HUESPEDES.CAMPOS_MODAL.CAMPOS_FORMULARIO.LABEL_NOMBRES}
                         placeholder="Ingrese los nombres"
                         {...form.getInputProps("nombres")}
                         classNames={classes}
                     />
                 </SimpleGrid>
                 <TextInput
-                    label="Telefono"
+                    label={PAGE_TITLE.HUESPEDES.CAMPOS_MODAL.CAMPOS_FORMULARIO.LABEL_TELEFONO}
                     placeholder="Ingrese el número de teléfono"
                     {...form.getInputProps("telefono")}
                     classNames={classes}
                 />
                 <TextInput
-                    label="Correo Electrónico"
+                    label={PAGE_TITLE.HUESPEDES.CAMPOS_MODAL.CAMPOS_FORMULARIO.LABEL_EMAIL}
                     placeholder="Ingrese el correo electrónico"
                     {...form.getInputProps("email")}
                     classNames={classes}
                 />
-                <BtnSubmit>Guardar Huesped</BtnSubmit>
+                <BtnSubmit>{PAGE_TITLE.HUESPEDES.CAMPOS_MODAL.CAMPOS_FORMULARIO.BUTTON}</BtnSubmit>
             </Stack>
         </Box>
     );

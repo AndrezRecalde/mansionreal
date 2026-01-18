@@ -4,7 +4,7 @@ import { MRT_Localization_ES } from "mantine-react-table/locales/es/index.cjs";
 import { ContenidoTable, MenuTable_EA } from "../../../components";
 import { useHuespedStore, useUiHuesped } from "../../../hooks";
 
-export const HuespedTable = ({ pagination, setPagination }) => {
+export const HuespedTable = ({ pagination, setPagination, PAGE_TITLE }) => {
     const {
         cargando,
         huespedes,
@@ -17,25 +17,25 @@ export const HuespedTable = ({ pagination, setPagination }) => {
     const columns = useMemo(
         () => [
             {
-                header: "Nombres Completos",
+                header: PAGE_TITLE.HUESPEDES.CAMPOS_TABLA.NOMBRES_COMPLETOS,
                 accessorFn: (row) => row.apellidos + " " + row.nombres,
                 filterVariant: "autocomplete",
             },
             {
-                header: "Cédula",
+                header: PAGE_TITLE.HUESPEDES.CAMPOS_TABLA.CEDULA,
                 accessorKey: "dni",
                 filterVariant: "autocomplete",
             },
             {
-                header: "Teléfono",
-                accessorFn: (row) => row.telefono || "SIN DATOS",
+                header: PAGE_TITLE.HUESPEDES.CAMPOS_TABLA.TELEFONO,
+                accessorFn: (row) => row.telefono || PAGE_TITLE.HUESPEDES.CAMPOS_TABLA.SIN_DATOS,
             },
             {
-                header: "Email",
+                header: PAGE_TITLE.HUESPEDES.CAMPOS_TABLA.EMAIL,
                 accessorKey: "email",
             },
         ],
-        []
+        [PAGE_TITLE]
     );
 
     const handleEditar = useCallback(

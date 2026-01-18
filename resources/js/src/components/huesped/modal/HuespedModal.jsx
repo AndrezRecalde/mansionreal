@@ -5,7 +5,7 @@ import { useForm } from "@mantine/form";
 import { HuespedForm, TextSection } from "../../../components";
 import { useHuespedStore, useUiHuesped } from "../../../hooks";
 
-export const HuespedModal = () => {
+export const HuespedModal = ({ PAGE_TITLE }) => {
     const isMobile = useMediaQuery("(max-width: 768px)");
     const { abrirModalHuesped, fnModalHuesped } = useUiHuesped();
     const { fnAsignarHuesped } = useHuespedStore();
@@ -32,7 +32,7 @@ export const HuespedModal = () => {
                     ? "La cedula debe tener entre 10 y 15 caracteres"
                     : null,
             email: (value) =>
-                /^\S+@\S+$/.test(value) ? null : "El email no es valido"
+                /^\S+@\S+$/.test(value) ? null : "El email no es valido",
         },
     });
 
@@ -56,7 +56,7 @@ export const HuespedModal = () => {
             onClose={handleCerrarModal}
             title={
                 <TextSection tt="" fz={16} fw={700}>
-                    Huesped
+                    {PAGE_TITLE.HUESPEDES.CAMPOS_MODAL.TITULO_MODAL}
                 </TextSection>
             }
             overlayProps={{
@@ -65,7 +65,7 @@ export const HuespedModal = () => {
             }}
             size="lg"
         >
-            <HuespedForm form={form} />
+            <HuespedForm form={form} PAGE_TITLE={PAGE_TITLE} />
         </Modal>
     );
 };

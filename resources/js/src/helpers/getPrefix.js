@@ -56,6 +56,25 @@ export const PAGE_TITLE = {
         },
     },
 
+    /* ** CAMBIO DE CONTRASEÑA ** */
+    CAMBIO_CONTRASENA: {
+        TITLE: "Cambiar Contraseña - Mansión Real",
+        TITLE_PAGE: "Cambiar Contraseña",
+        DESCRIPCION_PAGE: "Ingresa tu nueva contraseña y verificala.",
+        INPUTS: {
+            LABEL_NUEVA_CONTRASENA: "Digita tu nueva contraseña",
+            LABEL_CONFIRMAR_CONTRASENA: "Confirma tu nueva contraseña",
+        },
+        BUTTONS: {
+            REGRESAR_PERFIL: "Regresar a mi perfil",
+            CAMBIAR_CONTRASENA: "Cambiar contraseña",
+        },
+        NAVEGACIONES: {
+            REGRESAR_PERFIL: "/staff/perfil",
+        },
+
+    },
+
     DASHBOARD: "Dashboard - Mansión Real",
     RESERVAS: "Gestión de Reservas - Mansión Real",
     HUESPEDES: "Gestión de Huéspedes - Mansión Real",

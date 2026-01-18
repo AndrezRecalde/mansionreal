@@ -1,7 +1,6 @@
 import {
     Anchor,
     Box,
-    Button,
     Center,
     Group,
     Paper,
@@ -14,9 +13,9 @@ import { IconArrowLeft } from "@tabler/icons-react";
 import { useUsuarioStore } from "../../../hooks/usuario/useUsuarioStore";
 import { useNavigate } from "react-router-dom";
 import { BtnSubmit } from "../../elements/buttons/BtnServices";
+import { PAGE_TITLE } from "../../../helpers/getPrefix";
 
-export const ContrasenaForm = () => {
-    const usuario = JSON.parse(localStorage.getItem("service_user"));
+export const ContrasenaForm = ({ usuario }) => {
     const navigate = useNavigate();
     const { cargando, fnCambiarPassword } = useUsuarioStore();
     const form = useForm({
@@ -25,8 +24,10 @@ export const ContrasenaForm = () => {
             password_confirmation: "",
         },
         validate: {
-            password_confirmation : (value, values) =>
-                value !== values.password ? "Las contraseñas no coinciden" : null,
+            password_confirmation: (value, values) =>
+                value !== values.password
+                    ? "Las contraseñas no coinciden"
+                    : null,
         },
     });
 
@@ -49,18 +50,29 @@ export const ContrasenaForm = () => {
             <Paper withBorder shadow="md" p={30} radius="md" mt="xl">
                 <Stack>
                     <PasswordInput
-                        label="Digita tu nueva contraseña"
+                        label={
+                            PAGE_TITLE.CAMBIO_CONTRASENA.INPUTS
+                                .LABEL_NUEVA_CONTRASENA
+                        }
                         {...form.getInputProps("password")}
                     />
                     <PasswordInput
-                        label="Confirma tu nueva contraseña"
+                        label={
+                            PAGE_TITLE.CAMBIO_CONTRASENA.INPUTS
+                                .LABEL_CONFIRMAR_CONTRASENA
+                        }
                         {...form.getInputProps("password_confirmation")}
                     />
                 </Stack>
                 <Group justify="space-between" mt="lg">
                     <Anchor
                         component="button"
-                        onClick={() => navigate("/intranet/profile")}
+                        onClick={() =>
+                            navigate(
+                                PAGE_TITLE.CAMBIO_CONTRASENA.NAVEGACIONES
+                                    .REGRESAR_PERFIL,
+                            )
+                        }
                         c="dimmed"
                         size="sm"
                     >
@@ -69,10 +81,20 @@ export const ContrasenaForm = () => {
                                 style={{ width: rem(12), height: rem(12) }}
                                 stroke={1.5}
                             />
-                            <Box ml={5}>Regresar a mi perfil</Box>
+                            <Box ml={5}>
+                                {
+                                    PAGE_TITLE.CAMBIO_CONTRASENA.BUTTONS
+                                        .REGRESAR_PERFIL
+                                }
+                            </Box>
                         </Center>
                     </Anchor>
-                    <BtnSubmit loading={cargando}>Cambiar contraseña</BtnSubmit>
+                    <BtnSubmit loading={cargando}>
+                        {
+                            PAGE_TITLE.CAMBIO_CONTRASENA.BUTTONS
+                                .CAMBIAR_CONTRASENA
+                        }
+                    </BtnSubmit>
                 </Group>
             </Paper>
         </Box>

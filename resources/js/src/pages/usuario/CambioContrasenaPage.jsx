@@ -3,9 +3,11 @@ import { ContrasenaForm, TextSection, TitlePage } from "../../components";
 import { useTitleHook, useUsuarioStore } from "../../hooks";
 import { useEffect } from "react";
 import Swal from "sweetalert2";
+import { PAGE_TITLE } from "../../helpers/getPrefix";
 
 const CambioContrasenaPage = () => {
-    useTitleHook("Cambiar Contraseña - Mansión Real");
+    useTitleHook(PAGE_TITLE.CAMBIO_CONTRASENA.TITLE);
+    const usuario = JSON.parse(localStorage.getItem("service_user"));
     const { mensaje, errores } = useUsuarioStore();
 
     useEffect(() => {
@@ -33,13 +35,13 @@ const CambioContrasenaPage = () => {
     return (
         <Container size={560} my={30}>
             <TitlePage order={2} ta="center">
-                Cambiar Contraseña
+                {PAGE_TITLE.CAMBIO_CONTRASENA.TITLE_PAGE}
             </TitlePage>
             <TextSection color="dimmed" tt="" fz={16} ta="center">
-                Ingresa tu nueva contraseña y verificala.
+                {PAGE_TITLE.CAMBIO_CONTRASENA.DESCRIPCION_PAGE}
             </TextSection>
             <Divider my={20} />
-            <ContrasenaForm />
+            <ContrasenaForm usuario={usuario} />
         </Container>
     );
 };

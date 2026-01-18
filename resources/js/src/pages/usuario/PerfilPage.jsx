@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import {
     Badge,
     Button,
@@ -14,27 +13,32 @@ import { TextSection, TitlePage } from "../../components";
 import { useTitleHook } from "../../hooks";
 import { IconBookmarksFilled, IconKeyFilled } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
+import {
+    BIENVENIDA,
+    NOMBRE_SISTEMA,
+    PAGE_TITLE,
+} from "../../helpers/getPrefix";
 import classes from "./modules/Perfil.module.css";
 import bg from "../../assets/images/hotel_mansion_real.jpg";
 
 const PerfilPage = () => {
-    useTitleHook("Perfil - Mansion Real");
+    useTitleHook(PAGE_TITLE.PERFIL.TITLE);
     const navigate = useNavigate();
     const { colorScheme } = useMantineColorScheme();
     const isDark = colorScheme === "dark";
     const usuario = JSON.parse(localStorage.getItem("service_user") || "{}");
 
     const handleNavigateChangePassword = () => {
-        navigate("/staff/cambiar-contrasena");
+        navigate(PAGE_TITLE.PERFIL.NAVEGACIONES.CAMBIAR_CONTRASENA);
     };
 
     const handleNavigateGestionarReservas = () => {
-        navigate("/hotel/disponibilidad-departamento");
+        navigate(PAGE_TITLE.PERFIL.NAVEGACIONES.GESTIONAR_RESERVAS);
     };
 
     return (
         <Container size="md" my={20}>
-            <TitlePage order={2}>Mi Perfil</TitlePage>
+            <TitlePage order={2}>{PAGE_TITLE.PERFIL.TITLE_PAGE}</TitlePage>
             <Divider my={10} />
             <Card
                 radius="md"
@@ -67,8 +71,9 @@ const PerfilPage = () => {
                         fz={24}
                         fw={900}
                         color={isDark ? "blue.5" : "blue.7"}
+                        style={{ letterSpacing: "2px" }}
                     >
-                        Mansión Real
+                        {NOMBRE_SISTEMA}
                     </TextSection>
                     <Badge
                         fullWidth
@@ -82,30 +87,48 @@ const PerfilPage = () => {
                         </TextSection>
                     </Badge>
                     <Divider />
-                    <TitlePage order={3}>Bienvenido</TitlePage>
+                    <TitlePage order={3}>{BIENVENIDA}</TitlePage>
                     <Stack gap="md">
                         <div>
                             <TextSection tt="" fz={16} fw={500}>
                                 {usuario.apellidos + " " + usuario.nombres}
                             </TextSection>
-                            <TextSection tt="" fw={700} color="dimmed">
-                                Nombres Completos
+                            <TextSection
+                                fz={12}
+                                fw={700}
+                                color="dimmed"
+                                style={{ letterSpacing: "0.5px" }}
+                            >
+                                {
+                                    PAGE_TITLE.PERFIL.SECTION_LABELS
+                                        .NOMBRES_COMPLETOS
+                                }
                             </TextSection>
                         </div>
                         <div>
                             <TextSection tt="" fz={16} fw={500}>
                                 {usuario.dni}
                             </TextSection>
-                            <TextSection tt="" fw={700} color="dimmed">
-                                Numero cedula
+                            <TextSection
+                                fz={12}
+                                fw={700}
+                                color="dimmed"
+                                style={{ letterSpacing: "0.5px" }}
+                            >
+                                {PAGE_TITLE.PERFIL.SECTION_LABELS.NUMERO_CEDULA}
                             </TextSection>
                         </div>
                         <div>
                             <TextSection tt="" fz={16} fw={500}>
                                 {usuario.email}
                             </TextSection>
-                            <TextSection tt="" fw={700} color="dimmed">
-                                Correo
+                            <TextSection
+                                fz={12}
+                                fw={700}
+                                color="dimmed"
+                                style={{ letterSpacing: "0.5px" }}
+                            >
+                                {PAGE_TITLE.PERFIL.SECTION_LABELS.CORREO}
                             </TextSection>
                         </div>
                         <div>
@@ -114,8 +137,16 @@ const PerfilPage = () => {
                                     ? "Usuario Activo"
                                     : "No activo"}
                             </Badge>
-                            <TextSection tt="" fw={700} color="dimmed">
-                                Estado
+                            <TextSection
+                                fz={12}
+                                fw={700}
+                                color="dimmed"
+                                style={{ letterSpacing: "0.5px" }}
+                            >
+                                {
+                                    PAGE_TITLE.PERFIL.SECTION_LABELS
+                                        .ESTADO_USUARIO
+                                }
                             </TextSection>
                         </div>
                     </Stack>
@@ -143,12 +174,11 @@ const PerfilPage = () => {
                                 },
                             }}
                         >
-                            Gestionar Reservas
+                            {PAGE_TITLE.PERFIL.BUTTONS.GESTIONAR_RESERVAS}
                         </Button>
                         <Button
                             size="sm"
                             variant="default"
-                            //color="orange"
                             leftSection={<IconKeyFilled size={25} />}
                             onClick={handleNavigateChangePassword}
                             styles={{
@@ -168,7 +198,7 @@ const PerfilPage = () => {
                                 },
                             }}
                         >
-                            Cambiar Contraseña
+                            {PAGE_TITLE.PERFIL.BUTTONS.CAMBIAR_CONTRASENA}
                         </Button>
                     </Group>
                 </div>

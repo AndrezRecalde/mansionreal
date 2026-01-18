@@ -36,6 +36,26 @@ export const PAGE_TITLE = {
         }
     },
 
+    /* ** PAGINA DE PERFIL ** */
+    PERFIL: {
+        TITLE: "Mi Perfil - Mansión Real",
+        TITLE_PAGE: "Mi Perfil",
+        SECTION_LABELS: {
+            NOMBRES_COMPLETOS: "Nombres Completos",
+            NUMERO_CEDULA: "Número de Cédula",
+            CORREO: "Correo",
+            ESTADO_USUARIO: "Estado del Usuario",
+        },
+        BUTTONS: {
+            GESTIONAR_RESERVAS: "Gestionar Reservas",
+            CAMBIAR_CONTRASENA: "Cambiar Contraseña",
+        },
+        NAVEGACIONES: {
+            GESTIONAR_RESERVAS: "/hotel/disponibilidad-departamento",
+            CAMBIAR_CONTRASENA: "/staff/cambiar-contrasena",
+        },
+    },
+
     DASHBOARD: "Dashboard - Mansión Real",
     RESERVAS: "Gestión de Reservas - Mansión Real",
     HUESPEDES: "Gestión de Huéspedes - Mansión Real",

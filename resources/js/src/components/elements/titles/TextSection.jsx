@@ -10,10 +10,11 @@ export const TextSection = ({
     children,
     fs = "",
     mb = 0,
-    mt = 0
+    mt = 0,
+    ...props
 }) => {
     return (
-        <Text c={color} fz={fz} tt={tt} td={td} ta={ta} fw={fw} fs={fs} mb={mb} mt={mt}>
+        <Text c={color} fz={fz} tt={tt} td={td} ta={ta} fw={fw} fs={fs} mb={mb} mt={mt} {...props}>
             {children}
         </Text>
     );

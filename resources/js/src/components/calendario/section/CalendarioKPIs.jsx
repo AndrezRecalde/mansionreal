@@ -62,6 +62,39 @@ export const CalendarioKPIs = ({ estadisticas, onRefresh, cargando }) => {
 
     const ocupacionColor = getOcupacionColor(estadisticas.porcentaje_ocupacion);
 
+    const KPi_CARDS = [
+        {
+            icon: IconBed,
+            label: "Departamentos",
+            value: estadisticas.total_departamentos,
+            color: "blue.8",
+        },
+        {
+            icon: IconCalendar,
+            label: "Días Periodo",
+            value: estadisticas.dias_periodo,
+            color: "indigo.7",
+        },
+        {
+            icon: IconClock,
+            label: "Noches Posibles",
+            value: estadisticas.noches_posibles,
+            color: "gray.7",
+        },
+        {
+            icon: IconBed,
+            label: "Noches Ocupadas",
+            value: estadisticas.noches_ocupadas,
+            color: "blue.6",
+        },
+        {
+            icon: IconUsers,
+            label: "Ocupación",
+            value: `${estadisticas.porcentaje_ocupacion}%`,
+            color: ocupacionColor,
+        },
+    ];
+
     return (
         <Card shadow="sm" padding="lg" radius="md" withBorder>
             <Stack gap="md">
@@ -84,36 +117,15 @@ export const CalendarioKPIs = ({ estadisticas, onRefresh, cargando }) => {
                     cols={{ base: 1, xs: 2, sm: 3, md: 5 }}
                     spacing={{ base: "xs", sm: "sm", md: "md" }}
                 >
-                    <KPICard
-                        icon={IconBed}
-                        label="Departamentos"
-                        value={estadisticas.total_departamentos}
-                        color="blue.8"
-                    />
-                    <KPICard
-                        icon={IconCalendar}
-                        label="Días Periodo"
-                        value={estadisticas.dias_periodo}
-                        color="indigo.7"
-                    />
-                    <KPICard
-                        icon={IconClock}
-                        label="Noches Posibles"
-                        value={estadisticas.noches_posibles}
-                        color="gray.7"
-                    />
-                    <KPICard
-                        icon={IconBed}
-                        label="Noches Ocupadas"
-                        value={estadisticas.noches_ocupadas}
-                        color="blue.6"
-                    />
-                    <KPICard
-                        icon={IconUsers}
-                        label="Ocupación"
-                        value={`${estadisticas.porcentaje_ocupacion}%`}
-                        color={ocupacionColor}
-                    />
+                    {KPi_CARDS.map((kpi) => (
+                        <KPICard
+                            key={kpi.label}
+                            icon={kpi.icon}
+                            label={kpi.label}
+                            value={kpi.value}
+                            color={kpi.color}
+                        />
+                    ))}
                 </SimpleGrid>
             </Stack>
         </Card>

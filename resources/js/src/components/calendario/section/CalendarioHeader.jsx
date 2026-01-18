@@ -3,6 +3,7 @@ import { TitlePage } from "../../../components";
 import { IconBeach, IconBuilding } from "@tabler/icons-react";
 import { BtnAddActions } from "../../../components";
 import { useMediaQuery } from "@mantine/hooks";
+import { PAGE_TITLE } from "../../../helpers/getPrefix";
 
 export const CalendarioHeader = ({ onReservar, onEstadia }) => {
     const isMobile = useMediaQuery("(max-width: 768px)");
@@ -28,12 +29,12 @@ export const CalendarioHeader = ({ onReservar, onEstadia }) => {
                 <>
                     <Group justify="center">
                         <TitlePage order={3}>
-                            Calendario de Disponibilidad
+                            {PAGE_TITLE.CALENDARIO_RESERVAS.TITLE_PAGE}
                         </TitlePage>
                     </Group>
                     <Group justify="center">
                         <BtnAddActions actions={menuActions} fullWidth>
-                            Crear nuevo
+                            {PAGE_TITLE.CALENDARIO_RESERVAS.BUTTONS.CREAR_NUEVO}
                         </BtnAddActions>
                     </Group>
                 </>
@@ -41,12 +42,12 @@ export const CalendarioHeader = ({ onReservar, onEstadia }) => {
                 <Group justify="space-between">
                     <Group>
                         <TitlePage order={2}>
-                            Calendario de Disponibilidad
+                            {PAGE_TITLE.CALENDARIO_RESERVAS.TITLE_PAGE}
                         </TitlePage>
                     </Group>
                     <Group>
                         <BtnAddActions actions={menuActions}>
-                            Crear nuevo
+                            {PAGE_TITLE.CALENDARIO_RESERVAS.BUTTONS.CREAR_NUEVO}
                         </BtnAddActions>
                     </Group>
                 </Group>

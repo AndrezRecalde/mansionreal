@@ -25,6 +25,7 @@ import {
     STORAGE_FIELDS,
     TABS,
 } from "../../helpers/calendario.constants";
+import { PAGE_TITLE } from "../../helpers/getPrefix";
 import Swal from "sweetalert2";
 
 const CalendarioReservasPage = () => {
@@ -143,8 +144,8 @@ const CalendarioReservasPage = () => {
                 orientation="horizontal"
             >
                 <Tabs.List grow>
-                    <Tabs.Tab value={TABS.HOSPEDAJE}>Hospedajes</Tabs.Tab>
-                    <Tabs.Tab value={TABS.ESTADIA}>Estadías</Tabs.Tab>
+                    <Tabs.Tab value={TABS.HOSPEDAJE}>{PAGE_TITLE.CALENDARIO_RESERVAS.TABS.RESERVAS}</Tabs.Tab>
+                    <Tabs.Tab value={TABS.ESTADIA}>{PAGE_TITLE.CALENDARIO_RESERVAS.TABS.ESTADIAS}</Tabs.Tab>
                 </Tabs.List>
 
                 <TabContent

@@ -150,7 +150,27 @@ export const PAGE_TITLE = {
 
     },
 
-    RESERVAS: "Gestión de Reservas - Mansión Real",
+    /* CALENDARIO RESERVAS */
+    CALENDARIO_RESERVAS: {
+        TITLE: "Calendario de Reservas - Mansión Real",
+        TITLE_PAGE: "Calendario de Disponibilidad",
+        DESCRIPCION_PAGE: "Gestiona las reservas y estadías de tus huéspedes de manera eficiente.",
+        KPI_OCUPACION: {
+            TITLE: "Tasa de Ocupación",
+
+        },
+        TABS: {
+            RESERVAS: "Reservas",
+            ESTADIAS: "Estadías"
+        },
+        BUTTONS: {
+            CREAR_NUEVO: "Crear nuevo"
+        }
+
+    },
+
+
+
     HUESPEDES: "Gestión de Huéspedes - Mansión Real",
     DEPARTAMENTOS: "Gestión de Departamentos - Mansión Real",
     PRODUCTOS: "Gestión de Productos - Mansión Real",

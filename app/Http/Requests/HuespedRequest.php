@@ -25,8 +25,7 @@ class HuespedRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'apellidos'     => 'required|string|max:100',
-            'nombres'       => 'required|string|max:100',
+            'nombres_completos' => 'required|string|max:250',
             'dni'           => ['required', Rule::unique('huespedes')->ignore($this->request->get('id'))],
             'telefono'      => 'nullable|string|max:20',
             'email'         => 'nullable|email|max:100',
@@ -37,12 +36,9 @@ class HuespedRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'apellidos.required'    => 'Los apellidos son obligatorios.',
-            'apellidos.string'      => 'Los apellidos deben ser una cadena de texto.',
-            'apellidos.max'         => 'Los apellidos no deben exceder los 100 caracteres.',
-            'nombres.required'      => 'Los nombres son obligatorios.',
-            'nombres.string'        => 'Los nombres deben ser una cadena de texto.',
-            'nombres.max'           => 'Los nombres no deben exceder los 100 caracteres.',
+            'nombres_completos.required' => 'El nombre completo es obligatorio.',
+            'nombres_completos.string'   => 'El nombre completo debe ser una cadena de texto.',
+            'nombres_completos.max'      => 'El nombre completo no debe exceder los 250 caracteres.',
             'dni.required'          => 'El DNI es obligatorio.',
             'dni.unique'            => 'El DNI ya existe.',
             'telefono.string'       => 'El teléfono debe ser una cadena de texto.',

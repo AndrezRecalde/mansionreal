@@ -120,8 +120,7 @@ export const FacturaAnularModal = ({ opened, onClose }) => {
                                     Cliente:
                                 </Text>
                                 <Text size="sm" fw={500}>
-                                    {activarFactura.cliente_apellidos}{" "}
-                                    {activarFactura.cliente_nombres}
+                                    {activarFactura.cliente_nombres_completos}
                                 </Text>
                             </Group>
                             <Group justify="space-between">

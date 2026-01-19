@@ -179,7 +179,7 @@ export const CalendarioReservas = () => {
             codigo_reserva: reserva.codigo_reserva,
             reserva_id: reserva.id,
             huesped_id: reserva.huesped.id,
-            huesped: reserva.huesped.nombre_completo,
+            huesped: reserva.huesped.nombres_completos,
             fecha_checkin: reserva.start,
             fecha_checkout: reserva.end,
             total_noches: reserva.total_noches,

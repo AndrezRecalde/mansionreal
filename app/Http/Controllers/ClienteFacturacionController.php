@@ -50,14 +50,11 @@ class ClienteFacturacionController extends Controller
             if ($search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('identificacion', 'like', "%{$search}%")
-                        ->orWhere('nombres', 'like', "%{$search}%")
-                        ->orWhere('apellidos', 'like', "%{$search}%")
-                        ->orWhereRaw("CONCAT(apellidos, ' ', nombres) LIKE ?", ["%{$search}%"]);
+                        ->orWhere('nombres_completos', 'like', "%{$search}%");
                 });
             }
 
-            $clientes = $query->orderBy('apellidos')
-                ->orderBy('nombres')
+            $clientes = $query->orderBy('nombres_completos')
                 ->paginate($perPage);
 
             // Agregar estadísticas a cada cliente
@@ -178,7 +175,7 @@ class ClienteFacturacionController extends Controller
                 ->activos()
                 ->where('id', '!=', ClienteFacturacion::CONSUMIDOR_FINAL_ID)
                 ->limit(10)
-                ->get(['id', 'identificacion', 'nombres', 'apellidos', 'tipo_identificacion']);
+                ->get(['id', 'identificacion', 'nombres_completos', 'tipo_identificacion']);
 
             return response()->json([
                 'status' => HTTPStatus::Success,
@@ -354,9 +351,8 @@ class ClienteFacturacionController extends Controller
         try {
             $clientes = ClienteFacturacion::activos()
                 ->registrados()
-                ->orderBy('apellidos')
-                ->orderBy('nombres')
-                ->get(['id', 'identificacion', 'nombres', 'apellidos', 'tipo_identificacion']);
+                ->orderBy('nombres_completos')
+                ->get(['id', 'identificacion', 'nombres_completos', 'tipo_identificacion']);
 
             return response()->json([
                 'status' => HTTPStatus::Success,

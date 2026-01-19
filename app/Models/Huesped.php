@@ -9,8 +9,7 @@ class Huesped extends Model
     protected $table = 'huespedes';
 
     protected $fillable = [
-        'apellidos',
-        'nombres',
+        'nombres_completos',
         'dni',
         'telefono',
         'email',

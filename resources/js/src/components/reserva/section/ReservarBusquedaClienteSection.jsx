@@ -1,11 +1,6 @@
 import { useEffect } from "react";
-import {
-    Fieldset
-} from "@mantine/core";
-import {
-    useHuespedStore,
-    useReservaDepartamentoStore,
-} from "../../../hooks";
+import { Fieldset } from "@mantine/core";
+import { useHuespedStore, useReservaDepartamentoStore } from "../../../hooks";
 import {
     ReservarBusquedaClienteForm,
     ReservarDatosClienteForm,
@@ -26,12 +21,10 @@ export const ReservarBusquedaClienteSection = ({
 
     useEffect(() => {
         if (activarHuesped !== null) {
-            //console.log(activarTipoReserva);
             reservaForm.setValues({
                 huesped: {
                     huesped_id: activarHuesped.id,
-                    nombres: activarHuesped.nombres,
-                    apellidos: activarHuesped.apellidos,
+                    nombres_completos: activarHuesped.nombres_completos,
                     dni: activarHuesped.dni,
                     email: activarHuesped.email,
                     telefono: activarHuesped.telefono || "",
@@ -49,8 +42,7 @@ export const ReservarBusquedaClienteSection = ({
         reservaForm.setValues({
             huesped: {
                 huesped_id: "",
-                nombres: "",
-                apellidos: "",
+                nombres_completos: "",
                 dni: "",
                 email: "",
                 telefono: "",
@@ -72,7 +64,6 @@ export const ReservarBusquedaClienteSection = ({
         fnAsignarHuesped(null);
         setShowDetails(false);
     };
-
 
     return (
         <Fieldset

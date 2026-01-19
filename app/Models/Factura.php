@@ -18,8 +18,7 @@ class Factura extends Model
         'fecha_emision',
         'cliente_tipo_identificacion',
         'cliente_identificacion',
-        'cliente_nombres',
-        'cliente_apellidos',
+        'cliente_nombres_completos',
         'cliente_direccion',
         'cliente_telefono',
         'cliente_email',
@@ -111,7 +110,7 @@ class Factura extends Model
             return 'CONSUMIDOR FINAL';
         }
 
-        return trim($this->cliente_apellidos . ' ' . $this->cliente_nombres);
+        return trim($this->cliente_nombres_completos);
     }
 
     /**
@@ -281,8 +280,7 @@ class Factura extends Model
     {
         $this->cliente_tipo_identificacion = $cliente->tipo_identificacion;
         $this->cliente_identificacion = $cliente->identificacion;
-        $this->cliente_nombres = $cliente->nombres;
-        $this->cliente_apellidos = $cliente->apellidos;
+        $this->cliente_nombres_completos = $cliente->nombres_completos;
         $this->cliente_direccion = $cliente->direccion;
         $this->cliente_telefono = $cliente->telefono;
         $this->cliente_email = $cliente->email;

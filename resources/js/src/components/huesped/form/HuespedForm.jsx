@@ -13,8 +13,7 @@ export const HuespedForm = ({ form, PAGE_TITLE }) => {
         if (activarHuesped !== null) {
             form.setValues({
                 ...activarHuesped,
-                nombres: activarHuesped.nombres,
-                apellidos: activarHuesped.apellidos,
+                nombres_completos: activarHuesped.nombres_completos,
                 dni: activarHuesped.dni,
                 telefono: activarHuesped.telefono || "",
                 email: activarHuesped.email,
@@ -44,43 +43,45 @@ export const HuespedForm = ({ form, PAGE_TITLE }) => {
             >
                 <TextInput
                     withAsterisk
-                    label={PAGE_TITLE.HUESPEDES.CAMPOS_MODAL.CAMPOS_FORMULARIO.LABEL_CEDULA}
+                    label={
+                        PAGE_TITLE.HUESPEDES.CAMPOS_MODAL.CAMPOS_FORMULARIO
+                            .LABEL_CEDULA
+                    }
                     placeholder="Ingrese el número de cédula"
                     {...form.getInputProps("dni")}
                     classNames={classes}
                 />
-                <SimpleGrid
-                    cols={{ base: 1, sm: 2, lg: 2 }}
-                    breakpoints={[{ maxWidth: "sm", cols: 1 }]}
-                >
-                    <TextInput
-                        withAsterisk
-                        label={PAGE_TITLE.HUESPEDES.CAMPOS_MODAL.CAMPOS_FORMULARIO.LABEL_APELLIDOS}
-                        placeholder="Ingrese los apellidos"
-                        {...form.getInputProps("apellidos")}
-                        classNames={classes}
-                    />
-                    <TextInput
-                        withAsterisk
-                        label={PAGE_TITLE.HUESPEDES.CAMPOS_MODAL.CAMPOS_FORMULARIO.LABEL_NOMBRES}
-                        placeholder="Ingrese los nombres"
-                        {...form.getInputProps("nombres")}
-                        classNames={classes}
-                    />
-                </SimpleGrid>
                 <TextInput
-                    label={PAGE_TITLE.HUESPEDES.CAMPOS_MODAL.CAMPOS_FORMULARIO.LABEL_TELEFONO}
+                    withAsterisk
+                    label={
+                        PAGE_TITLE.HUESPEDES.CAMPOS_MODAL.CAMPOS_FORMULARIO
+                            .LABEL_NOMBRES_COMPLETOS
+                    }
+                    placeholder="Ingrese los nombres completos Nombres y apellidos"
+                    {...form.getInputProps("nombres_completos")}
+                    classNames={classes}
+                />
+                <TextInput
+                    label={
+                        PAGE_TITLE.HUESPEDES.CAMPOS_MODAL.CAMPOS_FORMULARIO
+                            .LABEL_TELEFONO
+                    }
                     placeholder="Ingrese el número de teléfono"
                     {...form.getInputProps("telefono")}
                     classNames={classes}
                 />
                 <TextInput
-                    label={PAGE_TITLE.HUESPEDES.CAMPOS_MODAL.CAMPOS_FORMULARIO.LABEL_EMAIL}
+                    label={
+                        PAGE_TITLE.HUESPEDES.CAMPOS_MODAL.CAMPOS_FORMULARIO
+                            .LABEL_EMAIL
+                    }
                     placeholder="Ingrese el correo electrónico"
                     {...form.getInputProps("email")}
                     classNames={classes}
                 />
-                <BtnSubmit>{PAGE_TITLE.HUESPEDES.CAMPOS_MODAL.CAMPOS_FORMULARIO.BUTTON}</BtnSubmit>
+                <BtnSubmit>
+                    {PAGE_TITLE.HUESPEDES.CAMPOS_MODAL.CAMPOS_FORMULARIO.BUTTON}
+                </BtnSubmit>
             </Stack>
         </Box>
     );

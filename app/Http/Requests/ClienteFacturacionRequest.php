@@ -42,8 +42,7 @@ class ClienteFacturacionRequest extends FormRequest
                 'max:20',
                 Rule::unique('clientes_facturacion', 'identificacion')->ignore($clienteId)
             ],
-            'nombres' => 'required|string|max:150',
-            'apellidos' => 'required|string|max:150',
+            'nombres_completos' => 'required|string|max:300',
             'direccion' => 'nullable|string|max:500',
             'telefono' => 'nullable|string|max:15',
             'email' => 'nullable|email|max:100',
@@ -55,7 +54,7 @@ class ClienteFacturacionRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'tipo_cliente. required' => 'El tipo de cliente es obligatorio',
+            'tipo_cliente.required' => 'El tipo de cliente es obligatorio',
             'tipo_cliente.in' => 'El tipo de cliente debe ser CONSUMIDOR_FINAL o CLIENTE_REGISTRADO',
 
             'tipo_identificacion.required' => 'El tipo de identificación es obligatorio',
@@ -65,11 +64,8 @@ class ClienteFacturacionRequest extends FormRequest
             'identificacion.unique' => 'Ya existe un cliente con esa identificación',
             'identificacion.max' => 'La identificación no puede exceder 20 caracteres',
 
-            'nombres.required' => 'Los nombres son obligatorios',
-            'nombres.max' => 'Los nombres no pueden exceder 150 caracteres',
-
-            'apellidos. required' => 'Los apellidos son obligatorios',
-            'apellidos.max' => 'Los apellidos no pueden exceder 150 caracteres',
+            'nombres_completos.required' => 'Los nombres completos son obligatorios',
+            'nombres_completos.max' => 'Los nombres completos no pueden exceder 300 caracteres',
 
             'direccion.max' => 'La dirección no puede exceder 500 caracteres',
 

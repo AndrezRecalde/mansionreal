@@ -176,6 +176,18 @@ export const headerInventarioRoutes = {
     ],
 };
 
+export const headerFacturasRoutes = {
+    FACTURAS: [
+        {
+            icon: IconReceiptTax,
+            title: "Facturas",
+            path: "facturas",
+            link: "/gerencia/facturas",
+            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+        },
+    ],
+};
+
 export const menuConfiguracionRapida = [
     {
         icon: IconUserCheck,

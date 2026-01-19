@@ -186,8 +186,7 @@ export const PAGE_TITLE = {
             TITULO_MODAL: "Huésped",
             CAMPOS_FORMULARIO: {
                 LABEL_CEDULA: "Número de Cédula",
-                LABEL_APELLIDOS: "Apellidos",
-                LABEL_NOMBRES: "Nombres",
+                LABEL_NOMBRES_COMPLETOS: "Nombres Completos",
                 LABEL_TELEFONO: "Teléfono",
                 LABEL_EMAIL: "Correo Electrónico",
                 BUTTON: "Guardar Huésped",

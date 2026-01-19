@@ -54,8 +54,7 @@ class ReservasController extends Controller
             // 2. Obtener o crear huésped
             if ($request->huesped['huesped_id'] == null) {
                 $huesped = Huesped::create([
-                    'nombres'       => $request->huesped['nombres'],
-                    'apellidos'     => $request->huesped['apellidos'],
+                    'nombres_completos'       => $request->huesped['nombres_completos'],
                     'dni'           => $request->huesped['dni'],
                     'telefono'      => $request->huesped['telefono'] ?? null,
                     'email'         => $request->huesped['email'] ?? null,
@@ -113,7 +112,7 @@ class ReservasController extends Controller
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'msg' => "Reserva # {$reserva->codigo_reserva} creada correctamente.",
+                'msg' => "Reserva # {$reserva->codigo_reserva} registrada correctamente.",
                 //'reserva' => $reserva->load(['huesped', 'departamento', 'estado']),
             ], 201);
         } catch (\Throwable $th) {
@@ -227,8 +226,9 @@ class ReservasController extends Controller
             'departamento.tipoDepartamento',
             'estado',
             'consumos.inventario',
-            'ultimaFactura:id,facturas.reserva_id,numero_factura,estado,fecha_emision,total_factura,motivo_anulacion'
-
+            'ultimaFactura:id,facturas.reserva_id,numero_factura,estado,fecha_emision,total_factura,motivo_anulacion',
+            'usuarioCreador:id,apellidos,nombres',
+            'usuarioCancelador:id,apellidos,nombres'
         ])
             ->codigoReserva($codigo_reserva)
             ->fechaCheckin($fecha_inicio, $fecha_fin)
@@ -239,7 +239,7 @@ class ReservasController extends Controller
                     'reserva_id'      => $r->id,
                     'codigo_reserva'  => $r->codigo_reserva,
                     'huesped_id'      => $r->huesped_id,
-                    'huesped'         => $r->huesped ?  $r->huesped->nombres . ' ' . $r->huesped->apellidos : null,
+                    'huesped'         => $r->huesped ?  $r->huesped->nombres_completos : null,
                     'departamento_id' => $r->departamento_id,
                     'numero_departamento'   => $r->departamento ?  $r->departamento->numero_departamento : null,
                     'tipo_departamento'     => $r->departamento && $r->departamento->tipoDepartamento
@@ -253,6 +253,15 @@ class ReservasController extends Controller
                         'nombre_estado' => $r->estado->nombre_estado,
                         'color' => $r->estado->color,
                     ],
+                    'fecha_creacion'  => $r->fecha_creacion,
+                    'usuario_creador' => $r->usuarioCreador ? $r->usuarioCreador->nombres . ' ' . $r->usuarioCreador->apellidos : null,
+                    'total_adultos'    => $r->total_adultos,
+                    'total_ninos'      => $r->total_ninos,
+                    'total_mascotas'    => $r->total_mascotas,
+                    'motivo_cancelacion' => $r->motivo_cancelacion ?? null,
+                    'observacion_cancelacion' => $r->observacion_cancelacion ?? null,
+                    'fecha_cancelacion' => $r->fecha_cancelacion ?? null,
+                    'usuario_cancelador' => $r->usuarioCancelador ? $r->usuarioCancelador->nombres . ' ' . $r->usuarioCancelador->apellidos : null,
                     'total_consumos'  => $r->consumos->sum('total'),
                     'total_pagos'     => $r->pagos->sum('monto'),
                     'total_gastos'    => $r->gastos->sum('monto'),
@@ -459,7 +468,7 @@ class ReservasController extends Controller
                 'id'             => $reserva->id,
                 'codigo_reserva' => $reserva->codigo_reserva,
                 'huesped_id'     => $reserva->huesped_id,
-                'huesped'        => $reserva->huesped?->nombres . ' ' . $reserva->huesped?->apellidos,
+                'huesped'        => $reserva->huesped?->nombres_completos,
                 'huesped_dni'    => $reserva->huesped?->dni,
                 'fecha_checkin'  => $reserva->fecha_checkin,
                 'fecha_checkout' => $reserva->fecha_checkout,

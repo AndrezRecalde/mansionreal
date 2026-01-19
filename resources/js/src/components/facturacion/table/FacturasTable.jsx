@@ -62,14 +62,13 @@ export const FacturasTable = () => {
                 filterVariant: "date-range",
             },
             {
-                accessorKey: "cliente_nombres",
+                accessorKey: "cliente_nombres_completos",
                 header: "Cliente",
                 size: 200,
                 Cell: ({ row }) => (
                     <div>
                         <Text size="sm" fw={500}>
-                            {row.original.cliente_apellidos}{" "}
-                            {row.original.cliente_nombres}
+                            {row.original.cliente_nombres_completos}
                         </Text>
                         <Text size="xs" c="dimmed">
                             {row.original.cliente_tipo_identificacion}:{" "}

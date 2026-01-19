@@ -23,8 +23,7 @@ return new class extends Migration
 
             // Datos del cliente
             $table->string('identificacion', 20)->unique()->comment('DNI/RUC o 9999999999999 para CF');
-            $table->string('nombres', 150);
-            $table->string('apellidos', 150);
+            $table->string('nombres_completos', 300);
             $table->text('direccion')->nullable();
             $table->string('telefono', 15)->nullable();
             $table->string('email', 100)->nullable();

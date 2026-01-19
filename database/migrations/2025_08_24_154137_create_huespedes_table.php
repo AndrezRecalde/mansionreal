@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('huespedes', function (Blueprint $table) {
             $table->id();
-            $table->string('apellidos', 100);
-            $table->string('nombres', 150);
+            $table->string('nombres_completos', 250);
             $table->string('dni', 15)->unique();
             $table->string('telefono', 15)->nullable();
             $table->string('email')->nullable();

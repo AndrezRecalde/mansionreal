@@ -46,9 +46,9 @@ class FacturaController extends Controller
             $search = $request->search;
 
             $query = Factura::with([
-                'reserva.huesped:id,nombres,apellidos,dni',
+                'reserva.huesped:id,nombres_completos,dni',
                 'reserva.departamento:id,numero_departamento',
-                'clienteFacturacion:id,identificacion,nombres,apellidos',
+                'clienteFacturacion:id,identificacion,nombres_completos',
                 'usuarioGenero:id,nombres,apellidos'
             ]);
 
@@ -79,8 +79,7 @@ class FacturaController extends Controller
             if ($search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('numero_factura', 'like', "%{$search}%")
-                        ->orWhere('cliente_nombres', 'like', "%{$search}%")
-                        ->orWhere('cliente_apellidos', 'like', "%{$search}%")
+                        ->orWhere('cliente_nombres_completos', 'like', "%{$search}%")
                         ->orWhere('cliente_identificacion', 'like', "%{$search}%");
                 });
             }

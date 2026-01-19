@@ -72,8 +72,7 @@ class FacturaSeeder extends Seeder
                 // Copiar datos del cliente (inmutabilidad)
                 'cliente_tipo_identificacion' => $cliente->tipo_identificacion,
                 'cliente_identificacion' => $cliente->identificacion,
-                'cliente_nombres' => $cliente->nombres,
-                'cliente_apellidos' => $cliente->apellidos,
+                'cliente_nombres_completos' => $cliente->nombres_completos,
                 'cliente_direccion' => $cliente->direccion,
                 'cliente_telefono' => $cliente->telefono,
                 'cliente_email' => $cliente->email,

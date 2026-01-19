@@ -63,7 +63,7 @@
             <div class="cliente-data">
                 <div class="cliente-row">
                     <span class="cliente-label">Nombre:</span>
-                    <span class="cliente-value">{{ $factura->cliente_apellidos }} {{ $factura->cliente_nombres }}</span>
+                    <span class="cliente-value">{{ $factura->cliente_nombres_completos }}</span>
                 </div>
                 <div class="cliente-row">
                     <span class="cliente-label">{{ $factura->cliente_tipo_identificacion }}:</span>

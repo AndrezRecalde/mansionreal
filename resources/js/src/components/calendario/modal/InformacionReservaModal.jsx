@@ -53,7 +53,7 @@ const SeccionHuesped = ({ huesped }) => {
                 <Stack gap="xs">
                     <InfoRow
                         label="Huésped Anfitrión"
-                        value={huesped?.nombre_completo}
+                        value={huesped?.nombres_completos}
                     />
                     <InfoRow label="DNI" value={huesped?.dni} />
                     <InfoRow label="Teléfono" value={huesped?.telefono} />
@@ -64,7 +64,7 @@ const SeccionHuesped = ({ huesped }) => {
                     <Table.Tbody>
                         <Table.Tr>
                             <Table.Th w={160}>Huésped Anfitrión</Table.Th>
-                            <Table.Td>{huesped?.nombre_completo}</Table.Td>
+                            <Table.Td>{huesped?.nombres_completos}</Table.Td>
                         </Table.Tr>
                         <Table.Tr>
                             <Table.Th>DNI</Table.Th>
@@ -104,18 +104,18 @@ const SeccionDepartamento = ({ departamento }) => {
                         value={departamento?.numero}
                         icon={IconBed}
                     />
-                    <InfoRow label="Tipo" value={departamento?.tipo} />
+                    <InfoRow label="Tipo Departamento" value={departamento?.tipo} />
                 </Stack>
             ) : (
                 <Table variant="vertical" layout="fixed" withTableBorder>
                     <Table.Tbody>
                         <Table.Tr>
-                            <Table.Th w={160}>Departamento</Table.Th>
-                            <Table.Td>{departamento?.numero}</Table.Td>
+                            <Table.Th>Tipo Departamento</Table.Th>
+                            <Table.Td>{departamento?.tipo}</Table.Td>
                         </Table.Tr>
                         <Table.Tr>
-                            <Table.Th>Tipo</Table.Th>
-                            <Table.Td>{departamento?.tipo}</Table.Td>
+                            <Table.Th w={160}>Departamento</Table.Th>
+                            <Table.Td>{departamento?.numero}</Table.Td>
                         </Table.Tr>
                     </Table.Tbody>
                 </Table>

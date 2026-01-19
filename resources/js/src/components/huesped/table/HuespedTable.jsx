@@ -18,7 +18,7 @@ export const HuespedTable = ({ pagination, setPagination, PAGE_TITLE }) => {
         () => [
             {
                 header: PAGE_TITLE.HUESPEDES.CAMPOS_TABLA.NOMBRES_COMPLETOS,
-                accessorFn: (row) => row.apellidos + " " + row.nombres,
+                accessorKey: "nombres_completos",
                 filterVariant: "autocomplete",
             },
             {
@@ -28,14 +28,15 @@ export const HuespedTable = ({ pagination, setPagination, PAGE_TITLE }) => {
             },
             {
                 header: PAGE_TITLE.HUESPEDES.CAMPOS_TABLA.TELEFONO,
-                accessorFn: (row) => row.telefono || PAGE_TITLE.HUESPEDES.CAMPOS_TABLA.SIN_DATOS,
+                accessorFn: (row) =>
+                    row.telefono || PAGE_TITLE.HUESPEDES.CAMPOS_TABLA.SIN_DATOS,
             },
             {
                 header: PAGE_TITLE.HUESPEDES.CAMPOS_TABLA.EMAIL,
                 accessorKey: "email",
             },
         ],
-        [PAGE_TITLE]
+        [PAGE_TITLE],
     );
 
     const handleEditar = useCallback(
@@ -43,7 +44,7 @@ export const HuespedTable = ({ pagination, setPagination, PAGE_TITLE }) => {
             fnAsignarHuesped(selected);
             fnModalHuesped(true);
         },
-        [fnAsignarHuesped, fnModalHuesped]
+        [fnAsignarHuesped, fnModalHuesped],
     );
 
     const table = useMantineReactTable({

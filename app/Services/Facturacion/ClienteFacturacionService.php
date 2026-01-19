@@ -111,8 +111,7 @@ class ClienteFacturacionService
             'tipo_cliente' => ClienteFacturacion::TIPO_CLIENTE_REGISTRADO,
             // tipo_identificacion NO se incluye - el usuario lo selecciona
             'identificacion' => $huesped->dni,
-            'nombres' => $huesped->nombres,
-            'apellidos' => $huesped->apellidos,
+            'nombres_completos' => $huesped->nombres_completos,
             'telefono' => $huesped->telefono ?? '',
             'email' => $huesped->email ?? '',
             'activo' => true,

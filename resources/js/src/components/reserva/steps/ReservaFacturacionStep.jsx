@@ -52,7 +52,7 @@ export const ReservaFacturacionStep = ({
         if (!generarFactura && consumidorFinal) {
             setDatosFacturacion({
                 cliente_id: consumidorFinal.id,
-                cliente_nombre: "CONSUMIDOR FINAL",
+                cliente_nombres_completos: "CONSUMIDOR FINAL",
                 cliente_identificacion: consumidorFinal.identificacion,
                 solicita_detallada: false,
             });
@@ -62,7 +62,14 @@ export const ReservaFacturacionStep = ({
     }, [generarFactura, consumidorFinal]);
 
     const handleBuscarCliente = async () => {
-        if (!dniBusqueda.trim()) return;
+        if (!dniBusqueda.trim()) {
+            Swal.fire({
+                icon: "warning",
+                title: "Campo vacío",
+                text: "Ingrese una identificación para buscar",
+            });
+            return;
+        }
 
         setBusquedaRealizada(true);
         setMostrarFormulario(false);
@@ -72,16 +79,19 @@ export const ReservaFacturacionStep = ({
         if (resultado.existe && resultado.cliente) {
             setDatosFacturacion({
                 cliente_id: resultado.cliente.id,
-                cliente_nombre: `${resultado.cliente.nombres} ${resultado.cliente.apellidos}`,
+                cliente_nombres_completos: resultado.cliente.nombres_completos,
                 cliente_identificacion: resultado.cliente.identificacion,
                 solicita_detallada: solicitaDetallada,
             });
+        } else {
+            setDatosFacturacion(null);
+            //setMostrarFormulario(true);
         }
     };
 
     const handlePrellenarDesdeHuesped = async () => {
         const resultado = await fnPrellenarDesdeHuesped(
-            datos_reserva.huesped_id
+            datos_reserva.huesped_id,
         );
 
         if (resultado.existe && resultado.cliente_existente) {
@@ -89,7 +99,8 @@ export const ReservaFacturacionStep = ({
             setDniBusqueda(resultado.cliente_existente.identificacion);
             setDatosFacturacion({
                 cliente_id: resultado.cliente_existente.id,
-                cliente_nombre: `${resultado.cliente_existente.nombres} ${resultado.cliente_existente.apellidos}`,
+                cliente_nombres_completos:
+                    resultado.cliente_existente.nombres_completos,
                 cliente_identificacion:
                     resultado.cliente_existente.identificacion,
                 solicita_detallada: solicitaDetallada,
@@ -105,7 +116,7 @@ export const ReservaFacturacionStep = ({
     const handleClienteCreado = (nuevoCliente) => {
         setDatosFacturacion({
             cliente_id: nuevoCliente.id,
-            cliente_nombre: `${nuevoCliente.nombres} ${nuevoCliente.apellidos}`,
+            cliente_nombres_completos: nuevoCliente.nombres_completos,
             cliente_identificacion: nuevoCliente.identificacion,
             solicita_detallada: solicitaDetallada,
         });
@@ -229,8 +240,7 @@ export const ReservaFacturacionStep = ({
                         {busquedaRealizada && clienteExistente && (
                             <Alert color="green" title="Cliente Encontrado">
                                 <Text size="sm" fw={600}>
-                                    {clienteExistente.nombres}{" "}
-                                    {clienteExistente.apellidos}
+                                    {clienteExistente.nombres_completos}
                                 </Text>
                                 <Text size="sm" c="dimmed">
                                     {clienteExistente.tipo_identificacion}:{" "}
@@ -243,7 +253,8 @@ export const ReservaFacturacionStep = ({
                                         onClick={() => {
                                             setDatosFacturacion({
                                                 cliente_id: clienteExistente.id,
-                                                cliente_nombre: `${clienteExistente.nombres} ${clienteExistente.apellidos}`,
+                                                cliente_nombres_completos:
+                                                    clienteExistente.nombres_completos,
                                                 cliente_identificacion:
                                                     clienteExistente.identificacion,
                                                 solicita_detallada:
@@ -308,6 +319,7 @@ export const ReservaFacturacionStep = ({
                                     Crear nuevo cliente
                                 </Text>
                                 <ClienteFacturacionForm
+                                    dniBusqueda={dniBusqueda}
                                     datosPrellenados={datosPrellenados}
                                     onClienteCreado={handleClienteCreado}
                                     onCancelar={() => {
@@ -339,9 +351,9 @@ export const ReservaFacturacionStep = ({
 
                         {/* Resumen del cliente seleccionado */}
                         {datosFacturacion?.cliente_id && (
-                            <Alert color="teal" title="✅ Cliente Seleccionado">
+                            <Alert color="teal" title="Cliente Seleccionado">
                                 <Text size="sm" fw={600}>
-                                    {datosFacturacion.cliente_nombre}
+                                    {datosFacturacion.cliente_nombres_completos}
                                 </Text>
                                 {datosFacturacion.cliente_identificacion && (
                                     <Text size="sm" c="dimmed">

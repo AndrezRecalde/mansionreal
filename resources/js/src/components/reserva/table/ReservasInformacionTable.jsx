@@ -120,7 +120,7 @@ export const ReservasInformacionTable = ({ cargando, PAGE_TITLE }) => {
                             variant="light"
                             size="sm"
                         >
-                            {PAGE_TITLE.SIN_FACTURACION}
+                            {PAGE_TITLE.SIN_FACTURA}
                         </Badge>
                     );
                 },
@@ -194,8 +194,7 @@ export const ReservasInformacionTable = ({ cargando, PAGE_TITLE }) => {
                             onClick={() => handleVerFactura(reserva)}
                         >
                             {
-                                PAGE_TITLE.HISTORIAL_CONSUMOS.CAMPOS_TABLA
-                                    .VER_FACTURA
+                                PAGE_TITLE.VER_FACTURA
                             }
                         </Menu.Item>
                     )}
@@ -207,8 +206,7 @@ export const ReservasInformacionTable = ({ cargando, PAGE_TITLE }) => {
                             onClick={() => handleReGenerarFactura(reserva)}
                         >
                             {
-                                PAGE_TITLE.HISTORIAL_CONSUMOS.CAMPOS_TABLA
-                                    .VOLVER_A_GENERAR_FACTURA
+                                PAGE_TITLE.VOLVER_GENERAR_FACTURA
                             }
                         </Menu.Item>
                     )}
@@ -219,8 +217,7 @@ export const ReservasInformacionTable = ({ cargando, PAGE_TITLE }) => {
                         onClick={() => handleVerDetalles(reserva)}
                     >
                         {
-                            PAGE_TITLE.HISTORIAL_CONSUMOS.CAMPOS_TABLA
-                                .VER_DETALLES
+                            PAGE_TITLE.VER_DETALLES
                         }
                     </Menu.Item>
                 </Box>

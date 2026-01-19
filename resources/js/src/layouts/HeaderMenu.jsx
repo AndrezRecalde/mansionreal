@@ -3,6 +3,7 @@ import { Logo } from "../components";
 import { Roles } from "../helpers/getPrefix";
 import { HeaderBtnInicio } from "./HeaderBtnInicio";
 import {
+    headerFacturasRoutes,
     headerGerenciaRoutes,
     headerInventarioRoutes,
     menuConfiguracionRapida,
@@ -60,6 +61,17 @@ export const HeaderMenu = ({ usuario }) => {
                                 <GestionMenu
                                     title="Inventario"
                                     menuData={headerInventarioRoutes}
+                                    usuario={usuario}
+                                    classes={classes}
+                                    theme={theme}
+                                />
+                            ) : null}
+
+                            {usuario.role === Roles.ADMINISTRADOR ||
+                            usuario.role === Roles.GERENCIA ? (
+                                <GestionMenu
+                                    title="Facturas"
+                                    menuData={headerFacturasRoutes}
                                     usuario={usuario}
                                     classes={classes}
                                     theme={theme}

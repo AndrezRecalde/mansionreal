@@ -6,6 +6,7 @@ import { useClienteFacturacionStore } from "../../../hooks";
 import Swal from "sweetalert2";
 
 export const ClienteFacturacionForm = ({
+    dniBusqueda = "",
     datosPrellenados,
     onClienteCreado,
     onCancelar,
@@ -15,9 +16,8 @@ export const ClienteFacturacionForm = ({
     const form = useForm({
         initialValues: {
             tipo_identificacion: "",
-            identificacion: "",
-            nombres: "",
-            apellidos: "",
+            identificacion: dniBusqueda,
+            nombres_completos: "",
             direccion: "",
             telefono: "",
             email: "",
@@ -27,10 +27,8 @@ export const ClienteFacturacionForm = ({
                 value ? null : "Seleccione el tipo de identificación",
             identificacion: (value) =>
                 value?.trim() ? null : "La identificación es obligatoria",
-            nombres: (value) =>
-                value?.trim() ? null : "El nombre es obligatorio",
-            apellidos: (value) =>
-                value?.trim() ? null : "Los apellidos son obligatorios",
+            nombres_completos: (value) =>
+                value?.trim() ? null : "El nombre completo es obligatorio",
         },
     });
 
@@ -40,8 +38,7 @@ export const ClienteFacturacionForm = ({
             form.setValues({
                 tipo_identificacion: datosPrellenados.tipo_identificacion || "",
                 identificacion: datosPrellenados.identificacion || "",
-                nombres: datosPrellenados.nombres || "",
-                apellidos: datosPrellenados.apellidos || "",
+                nombres_completos:  datosPrellenados.nombres_completos || "",
                 direccion: datosPrellenados.direccion || "",
                 telefono: datosPrellenados.telefono || "",
                 email: datosPrellenados.email || "",
@@ -95,16 +92,10 @@ export const ClienteFacturacionForm = ({
 
                 <Group grow>
                     <TextInput
-                        label="Nombres"
-                        placeholder="Nombres"
+                        label="Nombres Completos"
+                        placeholder="Nombres Completos"
                         withAsterisk
-                        {...form.getInputProps("nombres")}
-                    />
-                    <TextInput
-                        label="Apellidos"
-                        placeholder="Apellidos"
-                        withAsterisk
-                        {...form.getInputProps("apellidos")}
+                        {...form.getInputProps("nombres_completos")}
                     />
                 </Group>
 

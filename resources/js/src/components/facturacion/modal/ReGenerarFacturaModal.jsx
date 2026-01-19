@@ -71,7 +71,7 @@ export const ReGenerarFacturaModal = () => {
         if (usarConsumidorFinal && consumidorFinal && !clienteSeleccionado) {
             setClienteSeleccionado({
                 id: consumidorFinal.id,
-                nombre: "CONSUMIDOR FINAL",
+                nombres_completos: "CONSUMIDOR FINAL",
                 identificacion: consumidorFinal.identificacion,
             });
         } else if (!usarConsumidorFinal) {
@@ -90,6 +90,7 @@ export const ReGenerarFacturaModal = () => {
         }
 
         setBusquedaRealizada(true);
+        setMostrarFormulario(false);
 
         const resultado = await fnBuscarPorIdentificacion(dniBusqueda);
 
@@ -97,11 +98,10 @@ export const ReGenerarFacturaModal = () => {
             // Cliente encontrado
             setClienteSeleccionado({
                 id: resultado.cliente.id,
-                nombre: `${resultado.cliente.apellidos} ${resultado.cliente.nombres}`,
+                nombres_completos: resultado.cliente.nombres_completos,
                 identificacion: resultado.cliente.identificacion,
                 tipo_identificacion: resultado.cliente.tipo_identificacion,
             });
-            setMostrarFormulario(false);
         } else {
             // No existe, mostrar formulario
             setClienteSeleccionado(null);
@@ -113,7 +113,7 @@ export const ReGenerarFacturaModal = () => {
         if (!activarReserva?.huesped_id) return;
 
         const resultado = await fnPrellenarDesdeHuesped(
-            activarReserva.huesped_id
+            activarReserva.huesped_id,
         );
 
         if (resultado?.existe && resultado?.cliente_existente) {
@@ -121,7 +121,8 @@ export const ReGenerarFacturaModal = () => {
             setDniBusqueda(resultado.cliente_existente.identificacion);
             setClienteSeleccionado({
                 id: resultado.cliente_existente.id,
-                nombre: `${resultado.cliente_existente.apellidos} ${resultado.cliente_existente.nombres}`,
+                nombres_completos:
+                    resultado.cliente_existente.nombres_completos,
                 identificacion: resultado.cliente_existente.identificacion,
                 tipo_identificacion:
                     resultado.cliente_existente.tipo_identificacion,
@@ -138,7 +139,7 @@ export const ReGenerarFacturaModal = () => {
     const handleClienteCreado = (nuevoCliente) => {
         setClienteSeleccionado({
             id: nuevoCliente.id,
-            nombre: `${nuevoCliente.apellidos} ${nuevoCliente.nombres}`,
+            nombres_completos: nuevoCliente.nombres_completos,
             identificacion: nuevoCliente.identificacion,
             tipo_identificacion: nuevoCliente.tipo_identificacion,
         });
@@ -171,7 +172,7 @@ export const ReGenerarFacturaModal = () => {
             html: `
                 <div style="text-align: left;">
                     <p><strong>Reserva:</strong> ${activarReserva.codigo_reserva}</p>
-                    <p><strong>Cliente:</strong> ${clienteSeleccionado.nombre}</p>
+                    <p><strong>Cliente:</strong> ${clienteSeleccionado.nombres_completos}</p>
                     <p style="color: #ea580c; font-weight: bold;">Esta es una RE-FACTURACIÓN</p>
                 </div>
             `,
@@ -389,13 +390,9 @@ export const ReGenerarFacturaModal = () => {
                         {busquedaRealizada &&
                             clienteExistente &&
                             !mostrarFormulario && (
-                                <Alert
-                                    color="green"
-                                    title="Cliente Encontrado"
-                                >
+                                <Alert color="green" title="Cliente Encontrado">
                                     <Text size="sm" fw={600}>
-                                        {clienteExistente.apellidos}{" "}
-                                        {clienteExistente.nombres}
+                                        {clienteExistente.nombres_completos}
                                     </Text>
                                     <Text size="sm" c="dimmed">
                                         {clienteExistente.tipo_identificacion}:{" "}
@@ -420,6 +417,7 @@ export const ReGenerarFacturaModal = () => {
                                     Crear nuevo cliente
                                 </Text>
                                 <ClienteFacturacionForm
+                                    dniBusqueda={dniBusqueda}
                                     datosPrellenados={datosPrellenados}
                                     onClienteCreado={handleClienteCreado}
                                     onCancelar={() => {
@@ -439,7 +437,7 @@ export const ReGenerarFacturaModal = () => {
                                     checked={solicitaDetallada}
                                     onChange={(e) =>
                                         setSolicitaDetallada(
-                                            e.currentTarget.checked
+                                            e.currentTarget.checked,
                                         )
                                     }
                                 />
@@ -459,7 +457,7 @@ export const ReGenerarFacturaModal = () => {
                         <Group justify="space-between">
                             <div>
                                 <Text size="sm" fw={600}>
-                                    {clienteSeleccionado.nombre}
+                                    {clienteSeleccionado.nombres_completos}
                                 </Text>
                                 {clienteSeleccionado.identificacion && (
                                     <Text size="sm" c="dimmed">

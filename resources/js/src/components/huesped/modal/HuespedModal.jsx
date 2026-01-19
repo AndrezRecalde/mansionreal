@@ -12,20 +12,15 @@ export const HuespedModal = ({ PAGE_TITLE }) => {
 
     const form = useForm({
         initialValues: {
-            nombres: "",
-            apellidos: "",
+            nombres_completos: "",
             dni: "",
             telefono: "",
             email: "",
         },
         validate: {
-            nombres: (value) =>
-                value.length < 2
-                    ? "Los nombres deben tener al menos 2 caracteres"
-                    : null,
-            apellidos: (value) =>
-                value.length < 2
-                    ? "Los apellidos deben tener al menos 2 caracteres"
+            nombres_completos: (value) =>
+                value.length < 3
+                    ? "El nombre completo debe tener al menos 3 caracteres"
                     : null,
             dni: (value) =>
                 value.length < 10 || value.length > 15

@@ -110,7 +110,7 @@ export const EventosDrawer = ({
                                 </Text>
                             </Group>
 
-                            {event?.huesped?.nombre_completo && (
+                            {event?.huesped?.nombres_completos && (
                                 <Group gap="sm">
                                     <IconUser
                                         size={18}
@@ -118,7 +118,7 @@ export const EventosDrawer = ({
                                         className={classes.icon}
                                     />
                                     <Text size="xs">
-                                        {event?.huesped.nombre_completo}
+                                        {event?.huesped.nombres_completos}
                                     </Text>
                                 </Group>
                             )}

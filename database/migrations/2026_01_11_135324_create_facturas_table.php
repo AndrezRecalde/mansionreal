@@ -29,8 +29,7 @@ return new class extends Migration
             // ====================================================================
             $table->string('cliente_tipo_identificacion', 20);
             $table->string('cliente_identificacion', 20)->comment('DNI/RUC del cliente al momento de emisión');
-            $table->string('cliente_nombres', 150);
-            $table->string('cliente_apellidos', 150);
+            $table->string('cliente_nombres_completos', 300);
             $table->text('cliente_direccion')->nullable();
             $table->string('cliente_telefono', 15)->nullable();
             $table->string('cliente_email', 100)->nullable();

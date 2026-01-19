@@ -54,7 +54,7 @@ class EstadiaController extends Controller
                         'id'             => $reserva->id,
                         'codigo_reserva' => $reserva->codigo_reserva,
                         'huesped_id'     => $reserva->huesped_id,
-                        'huesped'        => $reserva->huesped->nombres . " " . $reserva->huesped->apellidos,
+                        'huesped'        => $reserva->huesped->nombres_completos,
                         'dni'            => $reserva->huesped->dni,
                         'fecha_checkin'  => $reserva->fecha_checkin,
                         'fecha_checkout' => $reserva->fecha_checkout,
@@ -91,8 +91,7 @@ class EstadiaController extends Controller
             // 1. Obtener o crear huésped
             if ($request->huesped['huesped_id'] == null) {
                 $huesped = Huesped::create([
-                    'nombres'       => $request->huesped['nombres'],
-                    'apellidos'     => $request->huesped['apellidos'],
+                    'nombres_completos'       => $request->huesped['nombres_completos'],
                     'dni'           => $request->huesped['dni'],
                     'telefono'      => $request->huesped['telefono'] ?? null,
                     'email'         => $request->huesped['email'] ?? null,
@@ -170,7 +169,7 @@ class EstadiaController extends Controller
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'msg' => 'Estadía registrada exitosamente',
+                'msg' => "Estadía # {$reserva->codigo_reserva} registrada exitosamente",
                 'estadia' => $reserva->load(['huesped', 'estado']),
             ], 201);
         } catch (\Throwable $th) {

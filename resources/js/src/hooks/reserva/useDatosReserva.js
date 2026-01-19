@@ -7,6 +7,8 @@ import { useMemo } from "react";
  * @returns {Object|null} Objeto con los datos de la reserva o null
  */
 export const useDatosReserva = (activarReserva, activarEstadia) => {
+    console.log(activarEstadia);
+    console.log(activarReserva);
     return useMemo(() => {
         if (activarReserva) {
             return {

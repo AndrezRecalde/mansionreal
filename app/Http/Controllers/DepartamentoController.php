@@ -383,7 +383,7 @@ class DepartamentoController extends Controller
                 'reserva'             => $reservada ? [
                     'id'             => $reserva->id,
                     'codigo_reserva' => $reserva->codigo_reserva,
-                    'huesped'        => $reserva->huesped?->nombres . ' ' . $reserva->huesped?->apellidos,
+                    'huesped'        => $reserva->huesped?->nombres_completos,
                     'huesped_dni'    => $reserva->huesped?->dni,
                     'fecha_checkin'  => $reserva->fecha_checkin,
                     'fecha_checkout' => $reserva->fecha_checkout,

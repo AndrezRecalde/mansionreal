@@ -11,10 +11,13 @@ export const useDatosReservaDisponibilidad = (
     activarDepartamento,
     activarEstadia
 ) => {
+    console.log(activarEstadia);
+    console.log(activarDepartamento);
     return useMemo(() => {
         if (activarDepartamento?.reserva) {
             return {
                 departamento_id: activarDepartamento.id,
+                tipo_departamento: activarDepartamento.tipo_departamento,
                 numero_departamento: activarDepartamento.numero_departamento,
                 codigo_reserva: activarDepartamento.reserva.codigo_reserva,
                 reserva_id: activarDepartamento.reserva.id,

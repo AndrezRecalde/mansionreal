@@ -16,7 +16,7 @@ export const ReservarDatosClienteForm = ({
     labelStyles,
 }) => {
     const { cargando } = useHuespedStore();
-    //const { provincias } = useProvinciaStore();
+
     return (
         <Transition
             mounted={showDetails || cargando}
@@ -50,24 +50,25 @@ export const ReservarDatosClienteForm = ({
                                     <TextInput
                                         withAsterisk
                                         disabled={disabledInput}
-                                        label="Nombres"
-                                        placeholder="Nombres"
-                                        key={reservaForm.key("huesped.nombres")}
+                                        label="Nombre Completo"
+                                        placeholder="Nombre completo del huésped"
+                                        key={reservaForm.key(
+                                            "huesped.nombres_completos",
+                                        )}
                                         {...reservaForm.getInputProps(
-                                            "huesped.nombres"
+                                            "huesped.nombres_completos",
                                         )}
                                         classNames={labelStyles}
                                     />
                                     <TextInput
-                                        withAsterisk
                                         disabled={disabledInput}
-                                        label="Apellidos"
-                                        placeholder="Apellidos"
+                                        label="Teléfono"
+                                        placeholder="Teléfono"
                                         key={reservaForm.key(
-                                            "huesped.apellidos"
+                                            "huesped.telefono",
                                         )}
                                         {...reservaForm.getInputProps(
-                                            "huesped.apellidos"
+                                            "huesped.telefono",
                                         )}
                                         classNames={labelStyles}
                                     />
@@ -77,21 +78,10 @@ export const ReservarDatosClienteForm = ({
                                         placeholder="Correo"
                                         key={reservaForm.key("huesped.correo")}
                                         {...reservaForm.getInputProps(
-                                            "huesped.email"
+                                            "huesped.email",
                                         )}
                                         classNames={labelStyles}
-                                    />
-                                    <TextInput
-                                        disabled={disabledInput}
-                                        label="Teléfono"
-                                        placeholder="Teléfono"
-                                        key={reservaForm.key(
-                                            "huesped.telefono"
-                                        )}
-                                        {...reservaForm.getInputProps(
-                                            "huesped.telefono"
-                                        )}
-                                        classNames={labelStyles}
+                                        style={{ gridColumn: "span 2" }}
                                     />
                                 </SimpleGrid>
                             )}

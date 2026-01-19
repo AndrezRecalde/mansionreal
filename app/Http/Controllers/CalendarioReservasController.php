@@ -23,7 +23,7 @@ class CalendarioReservasController extends Controller
         try {
             $query = Reserva::query()
                 ->with([
-                    'huesped:id,nombres,apellidos,dni,telefono,email',
+                    'huesped:id,nombres_completos,dni,telefono,email',
                     'departamento:id,numero_departamento,tipo_departamento_id',
                     'departamento.tipoDepartamento:id,nombre_tipo',
                     'estado:id,nombre_estado,color'
@@ -68,7 +68,7 @@ class CalendarioReservasController extends Controller
                         'codigo_reserva' => $reserva->codigo_reserva,
                         'huesped' => [
                             'id' => $huesped?->id,
-                            'nombre_completo' => $huesped ?  "{$huesped->nombres} {$huesped->apellidos}" : null,
+                            'nombres_completos' => $huesped ?  $huesped->nombres_completos : null,
                             'dni' => $huesped?->dni,
                             'telefono' => $huesped?->telefono,
                             'email' => $huesped?->email,

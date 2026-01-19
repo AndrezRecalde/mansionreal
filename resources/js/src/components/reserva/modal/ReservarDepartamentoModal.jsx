@@ -26,8 +26,7 @@ export const ReservarDepartamentoModal = () => {
         initialValues: {
             huesped: {
                 huesped_id: "",
-                nombres: "",
-                apellidos: "",
+                nombres_completos: "",
                 dni: "",
                 email: "",
                 telefono: "",
@@ -49,13 +48,11 @@ export const ReservarDepartamentoModal = () => {
         validate: {
             huesped: {
                 dni: (value) =>
-                    hasLength(value, { min: 8, max: 8 })
+                    hasLength(value, { min: 8, max: 20 })
                         ? null
-                        : "El DNI debe tener 8 caracteres",
-                nombres: (value) =>
-                    value ? null : "El nombre del huésped es obligatorio",
-                apellidos: (value) =>
-                    value ? null : "El apellido del huésped es obligatorio",
+                        : "El DNI debe tener entre 8 y 20 caracteres",
+                 nombres_completos: (value) =>
+                    value ?  null : "El nombre completo del huésped es obligatorio",
                 email: (value) =>
                     /^\S+@\S+$/.test(value) ? null : "Email inválido",
             },

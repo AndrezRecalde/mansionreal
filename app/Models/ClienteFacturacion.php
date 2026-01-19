@@ -14,8 +14,7 @@ class ClienteFacturacion extends Model
         'tipo_cliente',
         'tipo_identificacion',
         'identificacion',
-        'nombres',
-        'apellidos',
+        'nombres_completos',
         'direccion',
         'telefono',
         'email',
@@ -82,7 +81,7 @@ class ClienteFacturacion extends Model
      */
     public function getNombreCompletoAttribute(): string
     {
-        return trim($this->apellidos . ' ' . $this->nombres);
+        return trim($this->nombres_completos);
     }
 
     /**
@@ -137,19 +136,21 @@ class ClienteFacturacion extends Model
     /**
      * Scope:  Buscar por identificación
      */
-    public function scopeBuscarPorIdentificacion($query, string $identificacion)
+    public function scopeBuscar($query, string $termino)
     {
-        return $query->where('identificacion', $identificacion);
+        return $query->where(function ($q) use ($termino) {
+            $q->where('identificacion', 'like', "%{$termino}%")
+                ->orWhere('nombres_completos', 'like', "%{$termino}%");
+        });
     }
 
     /**
-     * Scope: Buscar por nombre (apellidos o nombres)
+     * Scope: Buscar por nombre (nombres completos)
      */
     public function scopeBuscarPorNombre($query, string $nombre)
     {
         return $query->where(function ($q) use ($nombre) {
-            $q->where('nombres', 'like', "%{$nombre}%")
-                ->orWhere('apellidos', 'like', "%{$nombre}%");
+            $q->where('nombres_completos', 'like', "%{$nombre}%");
         });
     }
 
@@ -204,5 +205,14 @@ class ClienteFacturacion extends Model
     public function contarReservas(): int
     {
         return $this->reservas()->count();
+    }
+
+    public function puedeEliminar(): bool
+    {
+        if ($this->id === self::CONSUMIDOR_FINAL_ID) {
+            return false;
+        }
+
+        return ! $this->tieneFacturas() && $this->contarReservas() === 0;
     }
 }

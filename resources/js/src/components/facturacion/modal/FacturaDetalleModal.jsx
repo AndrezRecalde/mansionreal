@@ -66,8 +66,7 @@ export const FacturaDetalleModal = ({ opened, onClose }) => {
                         {activarFactura.usuario_anulo && (
                             <Text size="sm">
                                 <strong>Anulada por:</strong>{" "}
-                                {activarFactura.usuario_anulo.nombres}{" "}
-                                {activarFactura.usuario_anulo.apellidos}
+                                {activarFactura.usuario_anulo.nombres_completos}
                             </Text>
                         )}
                     </Alert>
@@ -145,11 +144,10 @@ export const FacturaDetalleModal = ({ opened, onClose }) => {
                     <Stack gap="xs">
                         <Group justify="space-between">
                             <Text size="sm" c="dimmed">
-                                Nombre:
+                                Nombres Completos:
                             </Text>
                             <Text size="sm" fw={500}>
-                                {activarFactura.cliente_apellidos}{" "}
-                                {activarFactura.cliente_nombres}
+                                {activarFactura.cliente_nombres_completos}
                             </Text>
                         </Group>
                         <Group justify="space-between">

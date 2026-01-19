@@ -37,8 +37,8 @@
         @endif
         <div class="cliente-data">
             <div class="cliente-row">
-                <span class="cliente-label">Nombre:</span>
-                <span class="cliente-value">{{ $factura->cliente_apellidos }} {{ $factura->cliente_nombres }}</span>
+                <span class="cliente-label">Razón Social:</span>
+                <span class="cliente-value">{{ $factura->cliente_nombres_completos }}</span>
             </div>
             <div class="cliente-row">
                 <span class="cliente-label">{{ $factura->cliente_tipo_identificacion }}:</span>
@@ -76,8 +76,7 @@
                 </div>
                 <div class="cliente-row">
                     <span class="cliente-label">Huésped:</span>
-                    <span class="cliente-value">{{ $factura->reserva->huesped->nombres }}
-                        {{ $factura->reserva->huesped->apellidos }}</span>
+                    <span class="cliente-value">{{ $factura->reserva->huesped->nombres_completos }}</span>
                 </div>
                 @if ($factura->reserva->departamento)
                     <div class="cliente-row">

@@ -50,13 +50,11 @@ const ESTADOS_GESTION_CONSUMOS = [ESTADOS.OCUPADO, ESTADOS.RESERVADO];
 // Subcomponente para la información del departamento
 const DepartamentoInfo = ({ departamento }) => (
     <>
-        <Group justify="space-between" mt="md">
-            <Text fw={500}>
-                Departamento - {departamento.numero_departamento}
-            </Text>
-            <Badge variant="outline">{departamento.tipo_departamento}</Badge>
-        </Group>
-        <Group gap={8} mb={-8} mt={5}>
+        <Group justify="center">
+            <Badge radius="sm" variant="light">
+                {departamento.tipo_departamento} -{" "}
+                {departamento.numero_departamento}
+            </Badge>
             <Center>
                 <IconBuilding size={16} className={classes.icon} stroke={1.5} />
                 <Text size="xs">
@@ -83,7 +81,7 @@ const ReservaSection = ({
             <Text size="sm">
                 {reserva
                     ? `${formatFechaModal(
-                          reserva.fecha_checkin
+                          reserva.fecha_checkin,
                       )} - ${formatFechaModal(reserva.fecha_checkout)}`
                     : "Sin Reserva"}
             </Text>
@@ -112,7 +110,7 @@ const ReservaSection = ({
                     >
                         <Badge
                             size="lg"
-                            radius="xl"
+                            radius="sm"
                             variant="outline"
                             style={{ cursor: "pointer" }}
                         >
@@ -121,7 +119,7 @@ const ReservaSection = ({
                     </UnstyledButton>
                 </Tooltip>
             ) : (
-                <Badge size="lg" radius="xl" variant="outline">
+                <Badge size="lg" radius="sm" variant="outline">
                     {reserva?.codigo_reserva || "Sin Código"}
                 </Badge>
             )}
@@ -157,7 +155,7 @@ const AccionesFooter = ({
     onLimpiar,
 }) => {
     const estaOcupadoOReservado = ESTADOS_GESTION_CONSUMOS.includes(
-        departamento.estado?.nombre_estado
+        departamento.estado?.nombre_estado,
     );
 
     const esLimpiezaOMantenimiento = [
@@ -227,7 +225,7 @@ const DepartamentoCard = ({
 
     // Verificar si se pueden gestionar consumos
     const puedeGestionarConsumos = ESTADOS_GESTION_CONSUMOS.includes(
-        departamento.estado?.nombre_estado
+        departamento.estado?.nombre_estado,
     );
 
     const handleClickCodigoReserva = useCallback(() => {
@@ -249,13 +247,14 @@ const DepartamentoCard = ({
                     src={imageSrc}
                     alt={`departamento-${departamento.numero_departamento}`}
                     fallbackSrc="https://placehold.co/600x400? text=Placeholder"
-                    fit="contain"
+                    fit="cover"
                     w="100%"
                     h={{ base: 90, sm: 90, md: 120 }}
                 />
+
+                <DepartamentoInfo departamento={departamento} />
             </Card.Section>
 
-            <DepartamentoInfo departamento={departamento} />
             <ReservaSection
                 reserva={departamento.reserva}
                 onClickCodigoReserva={handleClickCodigoReserva}
@@ -323,7 +322,7 @@ export const DepartamentosDisponiblesCards = ({ usuario }) => {
     const handleAbrirConsumos = useCallback(
         (departamento) => {
             const puedeGestionarConsumos = ESTADOS_GESTION_CONSUMOS.includes(
-                departamento.estado?.nombre_estado
+                departamento.estado?.nombre_estado,
             );
 
             if (!puedeGestionarConsumos) {
@@ -339,7 +338,7 @@ export const DepartamentosDisponiblesCards = ({ usuario }) => {
             fnAsignarDepartamento(departamento);
             fnAbrirDrawerConsumosDepartamento(true);
         },
-        [fnAsignarDepartamento, fnAbrirDrawerConsumosDepartamento]
+        [fnAsignarDepartamento, fnAbrirDrawerConsumosDepartamento],
     );
 
     // Manejador para habilitar departamento
@@ -363,7 +362,7 @@ export const DepartamentosDisponiblesCards = ({ usuario }) => {
                 }
             });
         },
-        [fnCambiarEstadoDepartamento]
+        [fnCambiarEstadoDepartamento],
     );
 
     // Manejador para mantenimiento
@@ -387,7 +386,7 @@ export const DepartamentosDisponiblesCards = ({ usuario }) => {
                 }
             });
         },
-        [fnCambiarEstadoDepartamento]
+        [fnCambiarEstadoDepartamento],
     );
 
     // Manejador para limpiar
@@ -396,7 +395,7 @@ export const DepartamentosDisponiblesCards = ({ usuario }) => {
             fnAsignarDepartamento(departamento);
             fnAbrirModalLimpieza(true);
         },
-        [fnAsignarDepartamento, fnAbrirModalLimpieza]
+        [fnAsignarDepartamento, fnAbrirModalLimpieza],
     );
 
     return (

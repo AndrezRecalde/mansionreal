@@ -261,11 +261,11 @@ const EventCard = ({ evento, onSelect }) => {
                 </Group>
 
                 {/* Huésped */}
-                {evento?.huesped?.nombre_completo && (
+                {evento?.huesped?.nombres_completos && (
                     <Group gap="xs">
                         <IconUser size={14} stroke={1.5} opacity={0.6} />
                         <Text size="xs" c="dimmed" lineClamp={1}>
-                            {evento?.huesped.nombre_completo}
+                            {evento?.huesped.nombres_completos}
                         </Text>
                     </Group>
                 )}

@@ -129,7 +129,7 @@ export const ReservaConfirmacionStep = ({
                                         Cliente:
                                     </Text>
                                     <Text size="sm" fw={500}>
-                                        {datosFacturacion.cliente_nombre}
+                                        {datosFacturacion.cliente_nombres_completos}
                                     </Text>
                                 </Group>
 

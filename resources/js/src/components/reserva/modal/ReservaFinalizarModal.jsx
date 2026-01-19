@@ -12,7 +12,7 @@ import {
 export const ReservaFinalizarModal = ({ datos_reserva }) => {
     const { abrirModalReservaFinalizar, fnAbrirModalReservaFinalizar } =
         useUiReservaDepartamento();
-    const { fnCargarTotalesPorReserva, fnLimpiarPago } = usePagoStore();
+    const { fnCargarTotalesPorReserva } = usePagoStore();
     const { fnLimpiarFacturas } = useFacturaStore();
     const { fnLimpiarCliente } = useClienteFacturacionStore();
 
@@ -22,7 +22,7 @@ export const ReservaFinalizarModal = ({ datos_reserva }) => {
         }
 
         return () => {
-            fnLimpiarPago();
+            //fnLimpiarPago();
             fnLimpiarFacturas();
             fnLimpiarCliente();
         };

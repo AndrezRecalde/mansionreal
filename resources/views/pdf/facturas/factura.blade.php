@@ -138,7 +138,7 @@
                             <tr>
                                 <td class="text-center">{{ number_format($consumo->cantidad, 2) }}</td>
                                 <td>{{ $consumo->inventario->nombre_producto }}</td>
-                                <td class="text-right">${{ number_format($consumo->precio_unitario, 2) }}</td>
+                                <td class="text-right">${{ number_format($consumo->inventario->precio_unitario, 2) }}</td>
                                 @if ($factura->solicita_factura_detallada)
                                     <td class="text-right">${{ number_format($consumo->subtotal, 2) }}</td>
                                     <td class="text-center">{{ $consumo->tasa_iva > 0 ? $consumo->tasa_iva . '%' : '0%' }}

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\Facturacion\Exceptions\FacturacionException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -23,10 +24,10 @@ class Factura extends Model
         'cliente_telefono',
         'cliente_email',
         'subtotal_sin_iva',
-        'subtotal_con_iva',
         'total_iva',
         'total_factura',
         'descuento',
+        'total_con_descuento',
         'estado',
         'observaciones',
         'motivo_anulacion',
@@ -39,9 +40,9 @@ class Factura extends Model
         'fecha_emision' => 'date',
         'fecha_anulacion' => 'datetime',
         'subtotal_sin_iva' => 'decimal:2',
-        'subtotal_con_iva' => 'decimal:2',
         'total_iva' => 'decimal:2',
         'total_factura' => 'decimal:2',
+        'total_con_descuento' => 'decimal:2',
         'descuento' => 'decimal:2',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
@@ -231,21 +232,22 @@ class Factura extends Model
     {
         $consumos = $this->consumos;
 
-        // ================================================================
-        // ACTUALIZADO:  Usar tasa_iva en lugar de aplica_iva
-        // ================================================================
+        // Base imponible (suma de subtotales de consumos)
+        $this->subtotal_sin_iva = $consumos->sum('subtotal');
 
-        // Consumos SIN IVA (tasa_iva = 0)
-        $this->subtotal_sin_iva = $consumos->where('tasa_iva', 0)->sum('subtotal');
-
-        // Consumos CON IVA (tasa_iva > 0)
-        $this->subtotal_con_iva = $consumos->where('tasa_iva', '>', 0)->sum('subtotal');
-
-        // Total IVA
+        // IVA (suma del iva de consumos)
         $this->total_iva = $consumos->sum('iva');
 
-        // Total factura
-        $this->total_factura = $this->subtotal_sin_iva + $this->subtotal_con_iva + $this->total_iva - $this->descuento;
+        // Total bruto de la factura (sin descuento)
+        $this->total_factura = $this->subtotal_sin_iva + $this->total_iva;
+
+        // Validar descuento
+        if ($this->descuento > $this->total_factura) {
+            throw FacturacionException::descuentoInvalido($this->descuento, $this->total_factura);
+        }
+
+        // Total neto con descuento
+        $this->total_con_descuento = $this->total_factura - $this->descuento;
     }
 
     /**

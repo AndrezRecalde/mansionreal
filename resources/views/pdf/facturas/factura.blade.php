@@ -185,10 +185,6 @@
                     <span class="totales-value">${{ number_format($factura->subtotal_sin_iva, 2) }}</span>
                 </div>
                 <div class="totales-row">
-                    <span class="totales-label">Subtotal con IVA:</span>
-                    <span class="totales-value">${{ number_format($factura->subtotal_con_iva, 2) }}</span>
-                </div>
-                <div class="totales-row">
                     <span class="totales-label">IVA {{ $factura->consumos->first()?->tasa_iva ?? 15 }}%:</span>
                     <span class="totales-value">${{ number_format($factura->total_iva, 2) }}</span>
                 </div>

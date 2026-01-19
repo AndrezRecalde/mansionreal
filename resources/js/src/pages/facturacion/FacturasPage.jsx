@@ -12,10 +12,11 @@ import {
     FacturasMontosSection,
     FacturasDetalleSection,
 } from "../../components";
-import { useFacturaStore, useNotificaciones, useUiFactura } from "../../hooks";
+import { useFacturaStore, useNotificaciones, useTitleHook, useUiFactura } from "../../hooks";
 import Swal from "sweetalert2";
 
 const FacturasPage = () => {
+    useTitleHook("Gestión de Facturas - Mansión Real");
     useNotificaciones();
 
     const {

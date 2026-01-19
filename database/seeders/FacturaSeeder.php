@@ -56,6 +56,7 @@ class FacturaSeeder extends Seeder
 
             $descuento = ($index === 1) ? 10.00 : 0.00; // Una factura con descuento
             $totalFactura = $subtotalSinIva + $subtotalConIva + $totalIva - $descuento;
+            $totalFacturaConDescuento = $totalFactura - $descuento;
 
             // Determinar estado (una factura anulada para pruebas)
             $estado = ($index === 2) ? 'ANULADA' : 'EMITIDA';
@@ -79,10 +80,10 @@ class FacturaSeeder extends Seeder
 
                 // Totales
                 'subtotal_sin_iva' => $subtotalSinIva,
-                'subtotal_con_iva' => $subtotalConIva,
                 'total_iva' => $totalIva,
                 'descuento' => $descuento,
                 'total_factura' => $totalFactura,
+                'total_con_descuento' => $totalFacturaConDescuento,
 
                 // Estado
                 'estado' => $estado,

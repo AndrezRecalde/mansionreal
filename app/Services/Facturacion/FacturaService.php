@@ -273,34 +273,34 @@ class FacturaService
      */
     private function calcularTotales($consumos, float $descuento = 0): array
     {
-        $subtotalSinIva = 0;
-        $subtotalConIva = 0;
-        $totalIva = 0;
+        $subtotal = 0;
+        $total_iva = 0;
 
         foreach ($consumos as $consumo) {
-            if ($consumo->tasa_iva > 0) {
-                $subtotalConIva += $consumo->subtotal;
-                $totalIva += $consumo->iva;
-            } else {
-                $subtotalSinIva += $consumo->subtotal;
-            }
+            // Traspaso de datos desde consumos:
+            // subtotal_sin_iva = suma de subtotal de los consumos
+            // iva = suma de iva de los consumos
+            $subtotal += $consumo->subtotal;
+            $total_iva += $consumo->iva;
         }
 
-        $subtotalTotal = $subtotalSinIva + $subtotalConIva;
-        $totalAntesDescuento = $subtotalTotal + $totalIva;
-        $totalFactura = $totalAntesDescuento - $descuento;
+        // total_factura = subtotal_sin_iva + iva (sin descuento)
+        $totalFactura = $subtotal + $total_iva;
 
         // Validar descuento
-        if ($descuento > $totalAntesDescuento) {
-            throw FacturacionException::descuentoInvalido($descuento, $totalAntesDescuento);
+        if ($descuento > $totalFactura) {
+            throw FacturacionException::descuentoInvalido($descuento, $totalFactura);
         }
 
+        // total_con_descuento = total_factura - descuento
+        $totalConDescuento = $totalFactura - $descuento;
+
         return [
-            'subtotal_sin_iva' => $subtotalSinIva,
-            'subtotal_con_iva' => $subtotalConIva,
-            'total_iva' => $totalIva,
-            'descuento' => $descuento,
-            'total_factura' => $totalFactura,
+            'subtotal_sin_iva'     => $subtotal,
+            'total_iva'            => $total_iva,
+            'total_factura'        => $totalFactura,
+            'descuento'            => $descuento,
+            'total_con_descuento'  => $totalConDescuento,
         ];
     }
 
@@ -328,10 +328,10 @@ class FacturaService
 
         // Asignar totales
         $factura->subtotal_sin_iva = $totales['subtotal_sin_iva'];
-        $factura->subtotal_con_iva = $totales['subtotal_con_iva'];
         $factura->total_iva = $totales['total_iva'];
         $factura->descuento = $totales['descuento'];
         $factura->total_factura = $totales['total_factura'];
+        $factura->total_con_descuento = $totales['total_con_descuento'];
 
         $factura->save();
 

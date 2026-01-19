@@ -38,12 +38,14 @@ return new class extends Migration
             // TOTALES DE LA FACTURA (calculados desde consumos)
             // ====================================================================
             $table->decimal('subtotal_sin_iva', 10, 2)->default(0)->comment('Base 0% - Productos sin IVA');
-            $table->decimal('subtotal_con_iva', 10, 2)->default(0)->comment('Base gravada - Productos con IVA');
+            //$table->decimal('subtotal_con_iva', 10, 2)->default(0)->comment('Base gravada - Productos con IVA');
             $table->decimal('total_iva', 10, 2)->default(0)->comment('Total IVA calculado');
             $table->decimal('total_factura', 10, 2)->default(0)->comment('Total final a pagar');
 
             // Descuentos (opcional para futuras promociones)
             $table->decimal('descuento', 10, 2)->default(0);
+            $table->decimal('total_con_descuento', 10, 2)->default(0)->comment('Total final con descuento aplicado');
+
 
             // ====================================================================
             // ESTADO Y CONTROL

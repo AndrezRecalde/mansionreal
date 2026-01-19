@@ -393,7 +393,6 @@ class FacturaController extends Controller
                     'total_facturado' => (float)round($facturasEmitidas->sum('total_factura'), 2),
                     'total_iva' => (float)round($facturasEmitidas->sum('total_iva'), 2),
                     'total_sin_iva' => (float)round($facturasEmitidas->sum('subtotal_sin_iva'), 2),
-                    'total_con_iva' => (float)round($facturasEmitidas->sum('subtotal_con_iva'), 2),
                     'total_descuentos' => (float)round($facturasEmitidas->sum('descuento'), 2),
                     'promedio_factura' => $facturasEmitidas->count() > 0
                         ? (float)round($facturasEmitidas->avg('total_factura'), 2)
@@ -503,7 +502,6 @@ class FacturaController extends Controller
                     'anio' => $anio,
                     'mes_nombre' => Carbon::create($anio, $mes, 1)->locale('es')->isoFormat('MMMM'),
                 ],
-                'ventas_gravadas' => round($facturas->sum('subtotal_con_iva'), 2),
                 'ventas_exentas' => round($facturas->sum('subtotal_sin_iva'), 2),
                 'iva_cobrado' => round($facturas->sum('total_iva'), 2),
                 'total_ventas' => round($facturas->sum('total_factura'), 2),

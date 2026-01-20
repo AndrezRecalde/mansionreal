@@ -30,8 +30,8 @@ export const useConsumoStore = () => {
     const fnCargarConsumos = async ({ reserva_id }) => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.post("/general/consumo-reserva", {
-                reserva_id,
+            const { data } = await apiAxios.get("/general/consumo-reserva", {
+                params: { reserva_id },
             });
             const { consumos } = data;
             dispatch(rtkCargarConsumos(consumos));

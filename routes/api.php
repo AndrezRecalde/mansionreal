@@ -168,7 +168,7 @@ Route::group(['prefix' => 'general', 'middleware' => ['auth:sanctum', CheckRole:
     Route::post('/departamentos-disponibilidad', [DepartamentoController::class, 'consultarDisponibilidadDepartamentosPorFecha']); //INFO: Verificar si se usa
 
     /* Consumos */
-    Route::post('/consumo-reserva', [ConsumosController::class, 'buscarConsumosPorReserva']);
+    Route::get('/consumo-reserva', [ConsumosController::class, 'buscarConsumosPorReserva']);
     Route::post('/consumo', [ConsumosController::class, 'registrarConsumos']);
     Route::put('/consumo/{id}', [ConsumosController::class, 'update']);
     Route::delete('/consumo/{id}', [ConsumosController::class, 'delete']);

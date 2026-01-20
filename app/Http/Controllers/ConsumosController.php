@@ -40,6 +40,7 @@ class ConsumosController extends Controller
                     'id'              => $c->id,
                     'inventario_id'   => $c->inventario->id,
                     'nombre_producto' => $c->inventario->nombre_producto,
+                    'precio_unitario' => $c->inventario->precio_unitario,
                     'reserva_id'      => $c->reserva_id,
                     'huesped'         => $c->reserva->huesped->nombres_completos,
                     'cantidad'        => $c->cantidad,

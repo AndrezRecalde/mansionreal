@@ -74,7 +74,7 @@ export const ConsumosDrawer = ({ datos_reserva, fnAsignarElemento }) => {
     return (
         <Drawer
             position="right"
-            size={920}
+            size={1000}
             offset={8}
             radius="md"
             opened={abrirDrawerConsumosDepartamento}

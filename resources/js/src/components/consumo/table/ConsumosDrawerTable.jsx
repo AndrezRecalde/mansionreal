@@ -25,11 +25,25 @@ export const ConsumosDrawerTable = ({ estado }) => {
         () => [
             {
                 header: "Producto",
-                accessorKey: "nombre_producto",
+                accessorFn: (row) => row.nombre_producto + " - " + row.precio_unitario.toLocaleString("es-EC", {
+                    style: "currency",
+                    currency: "USD",
+                    minimumFractionDigits: 2,
+                }),
             },
             {
                 header: "Cantidad",
                 accessorKey: "cantidad",
+                size: 80
+            },
+            {
+                header: "Subtotal",
+                accessorKey: "subtotal",
+                size: 80
+            },
+            {
+                header: "Total Iva",
+                accessorKey: "iva",
                 size: 80
             },
             {

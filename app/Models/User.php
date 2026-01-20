@@ -62,6 +62,11 @@ class User extends Authenticatable
         }
     }
 
+    public function getNombresCompletosAttribute(): string
+    {
+        return "{$this->nombres} {$this->apellidos}";
+    }
+
     public static function create(array $attributes = [])
     {
         $attributes['password'] = Hash::make($attributes['dni']);

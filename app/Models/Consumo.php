@@ -17,6 +17,8 @@ class Consumo extends Model
         'tasa_iva',
         'iva',
         'total',
+        'creado_por_usuario_id',
+        'actualizado_por_usuario_id',
     ];
 
     public function reserva()
@@ -52,6 +54,18 @@ class Consumo extends Model
     public function getPendienteFacturarAttribute(): bool
     {
         return $this->factura_id === null;
+    }
+
+    public function getUsuarioCreadorAttribute(): string
+    {
+        $usuario = User::find($this->creado_por_usuario_id);
+        return $usuario ? $usuario->nombres_completos : 'Desconocido';
+    }
+
+    public function getUsuarioActualizadorAttribute(): string
+    {
+        $usuario = User::find($this->actualizado_por_usuario_id);
+        return $usuario ? $usuario->nombres_completos : 'Desconocido';
     }
 
     // ====================================================================

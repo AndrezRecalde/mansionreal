@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Enums\HTTPStatus;
-use App\Http\Requests\ConsumoRequest;
 use App\Http\Requests\RegistrarConsumosRequest;
 use App\Models\Consumo;
 use Illuminate\Http\JsonResponse;
@@ -11,13 +10,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\ConfiguracionIva;
 use App\Models\Estado;
-use App\Models\Huesped;
 use App\Models\Inventario;
 use App\Models\Reserva;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
-use Svg\Tag\Rect;
 
 class ConsumosController extends Controller
 {

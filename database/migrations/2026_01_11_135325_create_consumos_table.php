@@ -22,16 +22,21 @@ return new class extends Migration
             $table->decimal('tasa_iva', 5, 2)->default(15.00);
             $table->decimal('iva', 10, 2)->default(0);
             $table->decimal('total', 10, 2)->default(0);
+            $table->unsignedBigInteger('creado_por_usuario_id')->nullable();
+            $table->unsignedBigInteger('actualizado_por_usuario_id')->nullable();
             $table->timestamps();
 
             $table->foreign('reserva_id')->references('id')->on('reservas')->onDelete('cascade');
             $table->foreign('factura_id')->references('id')->on('facturas')->onDelete('set null');
             $table->foreign('inventario_id')->references('id')->on('inventarios')->onDelete('restrict');
-
+            $table->foreign('creado_por_usuario_id')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('actualizado_por_usuario_id')->references('id')->on('users')->onDelete('set null');
             $table->index('reserva_id');
             $table->index('factura_id');
             $table->index(['reserva_id', 'factura_id']);
             $table->index('inventario_id');
+            $table->index('creado_por_usuario_id');
+            $table->index('actualizado_por_usuario_id');
         });
     }
 

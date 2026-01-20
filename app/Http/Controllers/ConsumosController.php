@@ -95,6 +95,7 @@ class ConsumosController extends Controller
                     'tasa_iva'        => $tasa_iva,
                     'iva'             => $iva,
                     'total'           => $total,
+                    'creado_por_usuario_id' => Auth::id(),
                 ]);
 
                 $consumosProcesados[] = $consumo;
@@ -216,6 +217,7 @@ class ConsumosController extends Controller
             $consumo->tasa_iva = $tasa_iva;
             $consumo->iva = $consumo->subtotal * ($tasa_iva / 100);
             $consumo->total = $consumo->iva + $consumo->subtotal;
+            $consumo->actualizado_por_usuario_id = Auth::id();
             $consumo->save();
 
             DB::commit();

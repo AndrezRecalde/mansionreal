@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
 import { useMantineReactTable } from "mantine-react-table";
+import { MRT_Localization_ES } from "mantine-react-table/locales/es/index.cjs";
 import { ContenidoTable, MenuTable_EA, TextSection } from "../../../components";
 import { useGastoStore, useUiGasto } from "../../../hooks";
 import { IconListDetails } from "@tabler/icons-react";
@@ -82,6 +83,7 @@ export const GastoDrawerTable = ({ estado }) => {
         columns,
         data: gastos, //must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
         state: { showProgressBars: cargando },
+        localization: MRT_Localization_ES,
         enableFacetedValues: false,
         enableDensityToggle: false,
         enableColumnFilterModes: false,

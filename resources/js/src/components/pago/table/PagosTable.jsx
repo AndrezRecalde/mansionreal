@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
 import { useMantineReactTable } from "mantine-react-table";
+import { MRT_Localization_ES } from "mantine-react-table/locales/es/index.cjs";
 import { usePagoStore, useUiPago } from "../../../hooks";
 import { ContenidoTable, MenuTable_EE, TextSection } from "../../../components";
 import { Estados } from "../../../helpers/getPrefix";
@@ -89,6 +90,7 @@ export const PagosTable = ({ estado }) => {
         columns,
         data: pagos,
         state: { showProgressBars: cargando },
+        localization: MRT_Localization_ES,
         enableFacetedValues: false,
         enableDensityToggle: false,
         enableColumnFilterModes: false,

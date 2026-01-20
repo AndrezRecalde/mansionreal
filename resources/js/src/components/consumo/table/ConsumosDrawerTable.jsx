@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
 import { useMantineReactTable } from "mantine-react-table";
+import { MRT_Localization_ES } from "mantine-react-table/locales/es/index.cjs";
 import { ContenidoTable, MenuTable_EE, TextSection } from "../../../components";
 import { IconShoppingCartPlus } from "@tabler/icons-react";
 import { useConsumoStore, useUiConsumo } from "../../../hooks";
@@ -25,11 +26,11 @@ export const ConsumosDrawerTable = ({ estado }) => {
             {
                 header: "Producto",
                 accessorKey: "nombre_producto",
-                size: 80,
             },
             {
                 header: "Cantidad",
                 accessorKey: "cantidad",
+                size: 80
             },
             {
                 header: "Total",
@@ -81,6 +82,7 @@ export const ConsumosDrawerTable = ({ estado }) => {
         columns,
         data: consumos,
         state: { showProgressBars: cargando },
+        localization: MRT_Localization_ES,
         enableFacetedValues: false,
         enableDensityToggle: false,
         enableColumnFilterModes: false,

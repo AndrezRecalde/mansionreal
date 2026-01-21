@@ -46,7 +46,6 @@ class Factura extends Model
         'subtotal_sin_iva' => 'decimal:2',
         'total_iva' => 'decimal:2',
         'total_factura' => 'decimal:2',
-        'descuento' => 'decimal:2',
         'porcentaje_descuento' => 'decimal:2',
         'total_con_descuento' => 'decimal:2',
         'descuento' => 'decimal:2',

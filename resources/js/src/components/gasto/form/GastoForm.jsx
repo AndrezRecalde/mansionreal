@@ -11,10 +11,11 @@ export const GastoForm = ({ form }) => {
     useEffect(() => {
         if (activarGasto !== null) {
             form.setValues({
+                id: activarGasto.id || "",
                 descripcion: activarGasto.descripcion || "",
                 monto: activarGasto.monto || "",
-                tipo_dano_id: activarGasto.tipoDano
-                    ? activarGasto.tipoDano.id.toString()
+                tipo_dano_id: activarGasto.tipo_dano_id
+                    ? activarGasto.tipo_dano_id.toString()
                     : "",
             });
         }

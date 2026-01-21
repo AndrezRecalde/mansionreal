@@ -10,12 +10,17 @@ import {
     IconTrash,
 } from "@tabler/icons-react";
 
-export const MenuTable_EA = ({ row, titulo, handleAction }) => {
+export const MenuTable_EA = ({
+    row,
+    titulo,
+    handleAction,
+    Icon = IconEdit,
+}) => {
     return (
         <>
             <Menu.Item
                 leftSection={
-                    <IconEdit style={{ width: rem(15), height: rem(15) }} />
+                    <Icon style={{ width: rem(15), height: rem(15) }} />
                 }
                 onClick={() => handleAction(row.original)}
             >
@@ -108,7 +113,7 @@ export const MenuTable_RESERVA = ({
     );
 };
 
-export const MenuTable_EE = ({ row, titulo, handleEditar, handleEliminar }) => {
+export const MenuTable_EE = ({ row, handleEditar, handleEliminar }) => {
     return (
         <>
             <Menu.Item

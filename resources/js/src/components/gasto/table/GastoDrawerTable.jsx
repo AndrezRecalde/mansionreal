@@ -2,7 +2,7 @@ import { useCallback, useMemo } from "react";
 import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
 import { useMantineReactTable } from "mantine-react-table";
 import { MRT_Localization_ES } from "mantine-react-table/locales/es/index.cjs";
-import { ContenidoTable, MenuTable_EA, TextSection } from "../../../components";
+import { ContenidoTable, MenuTable_EE, TextSection } from "../../../components";
 import { useGastoStore, useUiGasto } from "../../../hooks";
 import { IconListDetails } from "@tabler/icons-react";
 import { Estados } from "../../../helpers/getPrefix";
@@ -120,10 +120,10 @@ export const GastoDrawerTable = ({ estado }) => {
             </Group>
         ),
         renderRowActionMenuItems: ({ row }) => (
-            <MenuTable_EA
+            <MenuTable_EE
                 row={row}
-                titulo="Eliminar"
-                handleAction={handleEliminarGasto}
+                handleEditar={handleAbrirGasto}
+                handleEliminar={handleEliminarGasto}
             />
         ),
         mantineTableProps: {

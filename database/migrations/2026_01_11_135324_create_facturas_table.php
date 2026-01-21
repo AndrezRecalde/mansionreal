@@ -44,6 +44,15 @@ return new class extends Migration
 
             // Descuentos (opcional para futuras promociones)
             $table->decimal('descuento', 10, 2)->default(0);
+            // Tipo de descuento (monto fijo o porcentaje)
+            $table->enum('tipo_descuento', ['MONTO_FIJO', 'PORCENTAJE'])->after('descuento')->nullable()->comment('Tipo de descuento aplicado');
+            // Porcentaje de descuento (si aplica)
+            $table->decimal('porcentaje_descuento', 5, 2)->after('tipo_descuento')->nullable()->comment('Porcentaje si el descuento es por %');
+            // Motivo del descuento (justificación obligatoria)
+            $table->text('motivo_descuento')->after('porcentaje_descuento')->nullable()->comment('Justificación del descuento aplicado');
+            // Usuario que aplicó el descuento
+            $table->unsignedBigInteger('usuario_registro_descuento_id')->after('motivo_descuento')->nullable()->comment('Usuario que autorizó/aplicó el descuento');
+
             $table->decimal('total_con_descuento', 10, 2)->default(0)->comment('Total final con descuento aplicado');
 
 
@@ -72,7 +81,7 @@ return new class extends Migration
             $table->foreign('cliente_facturacion_id')->references('id')->on('clientes_facturacion')->onDelete('restrict');
             $table->foreign('usuario_genero_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('usuario_anulo_id')->references('id')->on('users')->onDelete('set null');
-
+            $table->foreign('usuario_registro_descuento_id', 'fk_facturas_usuario_descuento')->references('id')->on('users')->onDelete('set null');
             // ====================================================================
             // ÍNDICES PARA OPTIMIZACIÓN
             // ====================================================================
@@ -83,6 +92,9 @@ return new class extends Migration
             $table->index('estado');
             $table->index('cliente_identificacion');
             $table->index(['fecha_emision', 'estado']); // Para reportes
+            $table->index('usuario_registro_descuento_id', 'idx_facturas_usuario_descuento');
+            $table->index(['descuento', 'tipo_descuento'], 'idx_facturas_descuento_tipo');
+            $table->index('tipo_descuento', 'idx_facturas_tipo_descuento');
         });
     }
 

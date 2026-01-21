@@ -27,6 +27,10 @@ class Factura extends Model
         'total_iva',
         'total_factura',
         'descuento',
+        'tipo_descuento',
+        'porcentaje_descuento',
+        'motivo_descuento',
+        'usuario_registro_descuento_id',
         'total_con_descuento',
         'estado',
         'observaciones',
@@ -42,6 +46,8 @@ class Factura extends Model
         'subtotal_sin_iva' => 'decimal:2',
         'total_iva' => 'decimal:2',
         'total_factura' => 'decimal:2',
+        'descuento' => 'decimal:2',
+        'porcentaje_descuento' => 'decimal:2',
         'total_con_descuento' => 'decimal:2',
         'descuento' => 'decimal:2',
         'created_at' => 'datetime',
@@ -53,6 +59,9 @@ class Factura extends Model
     // ====================================================================
     const ESTADO_EMITIDA = 'EMITIDA';
     const ESTADO_ANULADA = 'ANULADA';
+
+    const TIPO_DESCUENTO_MONTO_FIJO = 'MONTO_FIJO';
+    const TIPO_DESCUENTO_PORCENTAJE = 'PORCENTAJE';
 
     // ====================================================================
     // RELACIONES
@@ -98,6 +107,14 @@ class Factura extends Model
         return $this->belongsTo(User::class, 'usuario_anulo_id');
     }
 
+    /**
+     * Usuario que aplicó el descuento
+     */
+    public function usuarioRegistroDescuento(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'usuario_registro_descuento_id');
+    }
+
     // ====================================================================
     // ACCESSORS
     // ====================================================================
@@ -140,11 +157,38 @@ class Factura extends Model
     }
 
     /**
+     * Verificar si tiene descuento
+     */
+    public function getTieneDescuentoAttribute(): bool
+    {
+        return $this->descuento > 0;
+    }
+
+    /**
+     * Obtener porcentaje real de descuento (calculado)
+     */
+    public function getPorcentajeDescuentoRealAttribute(): float
+    {
+        if ($this->total_factura == 0) {
+            return 0;
+        }
+        return round(($this->descuento / $this->total_factura) * 100, 2);
+    }
+
+    /**
+     * Verificar si el descuento es significativo (>50%)
+     */
+    public function getEsDescuentoSignificativoAttribute(): bool
+    {
+        return $this->porcentaje_descuento_real > 50;
+    }
+
+    /**
      * Obtener subtotal total (con IVA + sin IVA)
      */
     public function getSubtotalTotalAttribute(): float
     {
-        return $this->subtotal_sin_iva + $this->subtotal_con_iva;
+        return $this->subtotal_sin_iva;
     }
 
     /**
@@ -173,6 +217,22 @@ class Factura extends Model
     public function scopeAnuladas($query)
     {
         return $query->where('estado', self::ESTADO_ANULADA);
+    }
+
+    /**
+     * Scope: Facturas con descuento
+     */
+    public function scopeConDescuento($query)
+    {
+        return $query->where('descuento', '>', 0);
+    }
+
+    /**
+     * Scope:  Facturas sin descuento
+     */
+    public function scopeSinDescuento($query)
+    {
+        return $query->where('descuento', 0);
     }
 
     /**
@@ -251,6 +311,92 @@ class Factura extends Model
     }
 
     /**
+     * Aplicar descuento a la factura
+     *
+     * @param float $descuento Monto del descuento
+     * @param string $tipoDescuento 'MONTO_FIJO' o 'PORCENTAJE'
+     * @param float|null $porcentaje Porcentaje si tipo es PORCENTAJE
+     * @param string|null $motivo Justificación del descuento
+     * @param int|null $usuarioId Usuario que aplica el descuento
+     * @return bool
+     * @throws FacturacionException
+     */
+    public function aplicarDescuento(
+        float $descuento,
+        string $tipoDescuento = self::TIPO_DESCUENTO_MONTO_FIJO,
+        ?float $porcentaje = null,
+        ?string $motivo = null,
+        ?int $usuarioId = null
+    ): bool {
+        // Validar que no esté anulada
+        if ($this->esta_anulada) {
+            throw new FacturacionException('No se puede aplicar descuento a una factura anulada');
+        }
+
+        // Validar que el descuento no sea negativo
+        if ($descuento < 0) {
+            throw new FacturacionException('El descuento no puede ser negativo');
+        }
+
+        // Validar que el descuento no supere el total
+        if ($descuento > $this->total_factura) {
+            throw new FacturacionException(
+                'El descuento ($' . number_format($descuento, 2) .
+                    ') no puede ser mayor al total de la factura ($' . number_format($this->total_factura, 2) . ')'
+            );
+        }
+
+        // Calcular porcentaje real
+        $porcentajeReal = $this->total_factura > 0
+            ? ($descuento / $this->total_factura) * 100
+            : 0;
+
+        // Validaciones según porcentaje
+        if ($porcentajeReal >= 100) {
+            throw new FacturacionException('No se puede aplicar descuento del 100% en facturas');
+        }
+
+        if ($porcentajeReal > 50 && empty($motivo)) {
+            throw new FacturacionException('Los descuentos mayores al 50% requieren justificación obligatoria');
+        }
+
+        // Aplicar descuento
+        $this->descuento = $descuento;
+        $this->tipo_descuento = $tipoDescuento;
+        $this->porcentaje_descuento = $tipoDescuento === self::TIPO_DESCUENTO_PORCENTAJE ? $porcentaje : null;
+        $this->motivo_descuento = $motivo;
+        $this->usuario_registro_descuento_id = $usuarioId;
+
+        // Recalcular total con descuento
+        $this->total_con_descuento = $this->total_factura - $this->descuento;
+
+        return $this->save();
+    }
+
+    /**
+     * Eliminar descuento
+     *
+     * @return bool
+     * @throws FacturacionException
+     */
+    public function eliminarDescuento(): bool
+    {
+        // Validar que no esté anulada
+        if ($this->esta_anulada) {
+            throw new FacturacionException('No se puede modificar una factura anulada');
+        }
+
+        $this->descuento = 0;
+        $this->tipo_descuento = null;
+        $this->porcentaje_descuento = null;
+        $this->motivo_descuento = null;
+        $this->usuario_registro_descuento_id = null;
+        $this->total_con_descuento = $this->total_factura;
+
+        return $this->save();
+    }
+
+    /**
      * Anular factura
      */
     public function anular(string $motivo, int $usuarioId): bool
@@ -266,6 +412,15 @@ class Factura extends Model
 
         return $this->save();
     }
+
+    /**
+     * Obtener total final (considera descuento si existe)
+     */
+    public function getTotalFinalAttribute(): float
+    {
+        return $this->tiene_descuento ? $this->total_con_descuento :  $this->total_factura;
+    }
+
 
     /**
      * Verificar si se puede anular

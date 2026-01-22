@@ -36,7 +36,11 @@ import {
     useUiFactura,
 } from "../../../hooks";
 import Swal from "sweetalert2";
-import { formatearMonto, formatearPorcentaje, normalizarNumero } from "../../../helpers/fnHelper";
+import {
+    formatearMonto,
+    formatearPorcentaje,
+    normalizarNumero,
+} from "../../../helpers/fnHelper";
 
 /**
  * Modal completo para re-generar factura después de anulación
@@ -60,7 +64,7 @@ export const ReGenerarFacturaModal = () => {
         useUiFactura();
 
     // Estados del formulario de cliente
-    const [usarConsumidorFinal, setUsarConsumidorFinal] = useState(true);
+    const [generarFactura, setGenerarFactura] = useState(false);
     const [dniBusqueda, setDniBusqueda] = useState("");
     const [busquedaRealizada, setBusquedaRealizada] = useState(false);
     const [mostrarFormulario, setMostrarFormulario] = useState(false);
@@ -83,16 +87,18 @@ export const ReGenerarFacturaModal = () => {
 
     // Auto-seleccionar consumidor final si el switch está en ON
     useEffect(() => {
-        if (usarConsumidorFinal && consumidorFinal && !clienteSeleccionado) {
+        if (!generarFactura && consumidorFinal && !clienteSeleccionado) {
+            // Si NO genera factura → Consumidor Final
             setClienteSeleccionado({
                 id: consumidorFinal.id,
                 nombres_completos: "CONSUMIDOR FINAL",
                 identificacion: consumidorFinal.identificacion,
             });
-        } else if (!usarConsumidorFinal) {
+        } else if (generarFactura) {
+            // Si genera factura → Limpiar
             setClienteSeleccionado(null);
         }
-    }, [usarConsumidorFinal, consumidorFinal]);
+    }, [generarFactura, consumidorFinal]);
 
     const handleBuscarCliente = async () => {
         if (!dniBusqueda.trim()) {
@@ -389,15 +395,16 @@ export const ReGenerarFacturaModal = () => {
                 <Paper p="md" withBorder style={{ background: "#f8f9fa" }}>
                     <Switch
                         size="md"
-                        label="¿Usar CONSUMIDOR FINAL?"
+                        label="Generar factura con datos de cliente registrado"
                         description={
-                            usarConsumidorFinal
-                                ? "Se generará factura genérica"
-                                : "Se generará factura con datos del cliente"
+                            generarFactura
+                                ? "Se generará factura con datos del cliente registrado"
+                                : "Se generará factura a nombre de CONSUMIDOR FINAL"
                         }
-                        checked={usarConsumidorFinal}
-                        onChange={(e) => {
-                            setUsarConsumidorFinal(e.currentTarget.checked);
+                        checked={generarFactura}
+                        onChange={(event) => {
+                            const checked = event.currentTarget.checked;
+                            setGenerarFactura(checked);
                             handleLimpiar();
                         }}
                         styles={{
@@ -407,7 +414,7 @@ export const ReGenerarFacturaModal = () => {
                 </Paper>
 
                 {/* OPCIÓN 1: Consumidor Final */}
-                {usarConsumidorFinal && consumidorFinal && (
+                {!generarFactura && consumidorFinal && (
                     <Alert
                         color="blue"
                         variant="light"
@@ -427,7 +434,7 @@ export const ReGenerarFacturaModal = () => {
                 )}
 
                 {/* OPCIÓN 2: Cliente Registrado */}
-                {!usarConsumidorFinal && (
+                {generarFactura && (
                     <>
                         <Divider
                             label="Buscar o Crear Cliente"

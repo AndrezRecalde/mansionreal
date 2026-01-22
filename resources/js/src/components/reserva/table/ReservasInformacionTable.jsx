@@ -15,7 +15,7 @@ import {
 } from "../../../hooks";
 import dayjs from "dayjs";
 
-export const ReservasInformacionTable = ({ cargando, PAGE_TITLE }) => {
+export const ReservasInformacionTable = ({ cargando, handlePrevisualizarFactura, PAGE_TITLE }) => {
     const { reservas, fnAsignarReserva } = useReservaDepartamentoStore();
     const { fnAbrirModalReGenerarFactura } = useUiFactura();
     const { fnAbrirDrawerConsumosDepartamento } = useUiConsumo();
@@ -147,10 +147,6 @@ export const ReservasInformacionTable = ({ cargando, PAGE_TITLE }) => {
         fnAbrirModalReGenerarFactura(true);
     };
 
-    const handleVerFactura = (reserva) => {
-        // Implementar navegación a factura o modal
-        console.log("Ver factura:", reserva.factura);
-    };
 
     const handleVerDetalles = (reserva) => {
         fnAsignarReserva(reserva);
@@ -191,7 +187,7 @@ export const ReservasInformacionTable = ({ cargando, PAGE_TITLE }) => {
                     {reserva.tiene_factura && (
                         <Menu.Item
                             leftSection={<IconFileText size={16} />}
-                            onClick={() => handleVerFactura(reserva)}
+                            onClick={handlePrevisualizarFactura}
                         >
                             {
                                 PAGE_TITLE.VER_FACTURA

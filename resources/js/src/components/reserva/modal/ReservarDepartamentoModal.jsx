@@ -22,76 +22,84 @@ export const ReservarDepartamentoModal = () => {
     const { fnAsignarHuesped } = useHuespedStore();
 
     const reservaForm = useForm({
-        mode: "controlled",
-        initialValues: {
-            huesped: {
-                huesped_id: "",
-                nombres_completos: "",
-                dni: "",
-                email: "",
-                telefono: "",
-            },
-            tipo_reserva: "",
-            departamento_id: "",
-            fecha_checkin: dayjs()
-                .set("hour", 10)
-                .set("minute", 0)
-                .set("second", 0)
-                .toDate(),
-            fecha_checkout: "",
-            total_noches: 0,
-            total_pago: 0,
-            total_adultos: 1,
-            total_ninos: 0,
-            total_mascotas: 0,
+    mode: "controlled",
+    initialValues: {
+        huesped: {
+            huesped_id: "",
+            nombres_completos: "",
+            dni: "",
+            email: "",
+            telefono: "",
         },
-        validate: {
-            huesped: {
-                dni: (value) =>
-                    hasLength(value, { min: 8, max: 20 })
-                        ? null
-                        : "El DNI debe tener entre 8 y 20 caracteres",
-                 nombres_completos: (value) =>
-                    value ?  null : "El nombre completo del huésped es obligatorio",
-                email: (value) =>
-                    /^\S+@\S+$/.test(value) ? null : "Email inválido",
-            },
-            fecha_checkin: (value) =>
-                value ? null : "La fecha de check-in es obligatoria",
-            fecha_checkout: (value) =>
-                value ? null : "La fecha de check-out es obligatoria",
+        tipo_reserva: "",
+        departamento_id: "",
+        fecha_checkin: dayjs()
+            .set("hour", 10)
+            .set("minute", 0)
+            .set("second", 0)
+            .toDate(),
+        fecha_checkout: "",
+        total_noches: 0,
+        total_pago: 0,
+        total_adultos: 1,
+        total_ninos:  0,
+        total_mascotas: 0,
+    },
+    validate: {
+        huesped: {
+            dni: (value) =>
+                hasLength(value, { min: 8, max: 20 })
+                    ? null
+                    : "El DNI debe tener entre 8 y 20 caracteres",
+            nombres_completos: (value) =>
+                value ?  null : "El nombre completo del huésped es obligatorio",
+            email: (value) =>
+                /^\S+@\S+$/.test(value) ? null : "Email inválido",
         },
-        transformValues: (values) => ({
-            ...values,
-            huesped: {
-                ...values.huesped,
-                huesped_id: values.huesped.huesped_id
-                    ? parseInt(values.huesped.huesped_id)
-                    : null,
-            },
-            tipo_reserva: activarTipoReserva,
-            departamento_id: values.departamento_id
-                ? parseInt(values.departamento_id)
+        departamento_id: (value) => {
+            // Si el tipo de reserva es HOSPEDAJE, departamento_id es obligatorio
+            if (activarTipoReserva === "HOSPEDAJE") {
+                return value ? null : "El departamento es obligatorio para reservas de hospedaje";
+            }
+            // Si no es HOSPEDAJE, el campo no es obligatorio
+            return null;
+        },
+        fecha_checkin: (value) =>
+            value ? null : "La fecha de check-in es obligatoria",
+        fecha_checkout: (value) =>
+            value ? null :  "La fecha de check-out es obligatoria",
+    },
+    transformValues: (values) => ({
+        ...values,
+        huesped: {
+            ... values.huesped,
+            huesped_id: values. huesped.huesped_id
+                ? parseInt(values. huesped.huesped_id)
                 : null,
-            fecha_checkin: dayjs(values.fecha_checkin).isValid()
-                ? dayjs(values.fecha_checkin).format("YYYY-MM-DD HH:mm:ss")
-                : null,
-            fecha_checkout: dayjs(values.fecha_checkout).isValid()
-                ? dayjs(values.fecha_checkout).format("YYYY-MM-DD HH:mm:ss")
-                : null,
-            total_noches: values.total_noches
-                ? parseInt(values.total_noches)
-                : 0,
-            total_pago: values.total_pago ? parseFloat(values.total_pago) : 0,
-            total_adultos: values.total_adultos
-                ? parseInt(values.total_adultos)
-                : 1,
-            total_ninos: values.total_ninos ? parseInt(values.total_ninos) : 0,
-            total_mascotas: values.total_mascotas
-                ? parseInt(values.total_mascotas)
-                : 0,
-        }),
-    });
+        },
+        tipo_reserva: activarTipoReserva,
+        departamento_id: values.departamento_id
+            ? parseInt(values.departamento_id)
+            : null,
+        fecha_checkin: dayjs(values.fecha_checkin).isValid()
+            ? dayjs(values.fecha_checkin).format("YYYY-MM-DD HH:mm:ss")
+            : null,
+        fecha_checkout: dayjs(values. fecha_checkout).isValid()
+            ? dayjs(values.fecha_checkout).format("YYYY-MM-DD HH:mm:ss")
+            : null,
+        total_noches: values. total_noches
+            ? parseInt(values.total_noches)
+            : 0,
+        total_pago: values.total_pago ? parseFloat(values.total_pago) : 0,
+        total_adultos: values.total_adultos
+            ? parseInt(values.total_adultos)
+            : 1,
+        total_ninos:  values.total_ninos ? parseInt(values.total_ninos) : 0,
+        total_mascotas: values.total_mascotas
+            ? parseInt(values.total_mascotas)
+            : 0,
+    }),
+});
 
     const { fecha_checkin, fecha_checkout } = reservaForm.values;
 

@@ -65,7 +65,7 @@ export const ReservarDatosReservaSection = ({
             // Solo establecer si es positivo (checkout debe ser después de checkin)
             reservaForm.setFieldValue(
                 "total_noches",
-                diffDays > 0 ? diffDays : 0
+                diffDays > 0 ? diffDays : 0,
             );
         } else {
             reservaForm.setFieldValue("total_noches", 0);
@@ -77,7 +77,7 @@ export const ReservarDatosReservaSection = ({
         if (activarTipoReserva === "HOSPEDAJE") {
             calcularNoches(
                 reservaForm.values.fecha_checkin,
-                reservaForm.values.fecha_checkout
+                reservaForm.values.fecha_checkout,
             );
         }
     }, [
@@ -115,7 +115,7 @@ export const ReservarDatosReservaSection = ({
             <Box
                 component="form"
                 onSubmit={reservaForm.onSubmit((_, e) =>
-                    handleSubmitReserva(e)
+                    handleSubmitReserva(e),
                 )}
             >
                 <Stack>
@@ -159,32 +159,33 @@ export const ReservarDatosReservaSection = ({
                                     (departamento) => ({
                                         value: departamento.id.toString(),
                                         label: `${departamento.numero_departamento} ${departamento.nombre_tipo} - $${departamento.precio_noche} por noche`,
-                                    })
+                                    }),
                                 )}
                                 key={reservaForm.key("departamento_id")}
                                 onChange={(value) => {
                                     // Busca usando el nuevo valor (value) en lugar de reservaForm.values.departamento_id
                                     const departamentoSeleccionado =
                                         departamentos_disponibles.find(
-                                            (dep) => dep.id.toString() === value
+                                            (dep) =>
+                                                dep.id.toString() === value,
                                         );
-
-                                    //console.log(departamentoSeleccionado);
 
                                     // Primero actualiza el formulario
                                     reservaForm.setFieldValue(
                                         "departamento_id",
-                                        value
+                                        value,
                                     );
 
                                     // Luego asigna el departamento
                                     if (departamentoSeleccionado) {
                                         fnAsignarDepartamento(
-                                            departamentoSeleccionado
+                                            departamentoSeleccionado,
                                         );
                                     }
                                 }}
                                 value={reservaForm.values.departamento_id || ""}
+                                error={reservaForm.errors.departamento_id}
+                                required={activarTipoReserva === "HOSPEDAJE"}
                                 classNames={labelStyles}
                             />
                             <SimpleGrid
@@ -196,7 +197,7 @@ export const ReservarDatosReservaSection = ({
                                     placeholder="Se calcula el total de noches"
                                     key={reservaForm.key("total_noches")}
                                     {...reservaForm.getInputProps(
-                                        "total_noches"
+                                        "total_noches",
                                     )}
                                     classNames={labelStyles}
                                 />
@@ -230,7 +231,8 @@ export const ReservarDatosReservaSection = ({
                                 <ActionIcon
                                     onClick={() =>
                                         changeAdults(
-                                            reservaForm.values.total_adultos - 1
+                                            reservaForm.values.total_adultos -
+                                                1,
                                         )
                                     }
                                     className={classes.circleBtn}
@@ -244,7 +246,8 @@ export const ReservarDatosReservaSection = ({
                                 <ActionIcon
                                     onClick={() =>
                                         changeAdults(
-                                            reservaForm.values.total_adultos + 1
+                                            reservaForm.values.total_adultos +
+                                                1,
                                         )
                                     }
                                     className={classes.circleBtn}
@@ -267,7 +270,7 @@ export const ReservarDatosReservaSection = ({
                                 <ActionIcon
                                     onClick={() =>
                                         changeChildren(
-                                            reservaForm.values.total_ninos - 1
+                                            reservaForm.values.total_ninos - 1,
                                         )
                                     }
                                     className={classes.circleBtn}
@@ -281,7 +284,7 @@ export const ReservarDatosReservaSection = ({
                                 <ActionIcon
                                     onClick={() =>
                                         changeChildren(
-                                            reservaForm.values.total_ninos + 1
+                                            reservaForm.values.total_ninos + 1,
                                         )
                                     }
                                     className={classes.circleBtn}
@@ -305,7 +308,7 @@ export const ReservarDatosReservaSection = ({
                                     onClick={() =>
                                         changePets(
                                             reservaForm.values.total_mascotas -
-                                                1
+                                                1,
                                         )
                                     }
                                     className={classes.circleBtn}
@@ -320,7 +323,7 @@ export const ReservarDatosReservaSection = ({
                                     onClick={() =>
                                         changePets(
                                             reservaForm.values.total_mascotas +
-                                                1
+                                                1,
                                         )
                                     }
                                     className={classes.circleBtn}

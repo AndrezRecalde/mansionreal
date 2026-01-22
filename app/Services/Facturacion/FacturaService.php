@@ -97,14 +97,16 @@ class FacturaService
             $this->asociarConsumos($reserva->consumos, $factura->id);
 
             // 9. LOG
-            Log::info("Factura generada:   {$factura->numero_factura}", [
+            Log::info("Factura generada:  {$factura->numero_factura}", [
                 'factura_id' => $factura->id,
                 'numero_factura' => $factura->numero_factura,
                 'reserva_id' => $reservaId,
                 'cliente_id' => $cliente->id,
-                'total' => $factura->total_final,
+                'subtotal_sin_iva' => $factura->subtotal_sin_iva,
                 'descuento' => $factura->descuento,
-                'tipo_descuento' => $factura->tipo_descuento,
+                'base_imponible' => $totales['base_imponible'],
+                'total_iva' => $factura->total_iva,
+                'total_factura' => $factura->total_factura, // ✅ Total final (con descuento)
                 'usuario_id' => $usuarioId,
             ]);
 
@@ -164,6 +166,7 @@ class FacturaService
                 'descuento' => $descuento,
                 'tipo' => $tipoDescuento,
                 'porcentaje' => $porcentaje,
+                'total_factura' => $factura->total_factura,
                 'usuario_id' => $usuarioId,
             ]);
 
@@ -189,6 +192,7 @@ class FacturaService
             Log::info('Descuento eliminado de factura', [
                 'factura_id' => $factura->id,
                 'numero_factura' => $factura->numero_factura,
+                'total_factura' => $factura->total_factura,
                 'usuario_id' => $usuarioId,
             ]);
 
@@ -310,7 +314,10 @@ class FacturaService
             $factura->calcularTotales();
             $factura->save();
 
-            Log::info("Totales recalculados para factura:  {$factura->numero_factura}");
+            Log::info("Totales recalculados para factura: {$factura->numero_factura}", [
+                'factura_id' => $factura->id,
+                'total_factura' => $factura->total_factura,
+            ]);
 
             return $factura->fresh();
         });
@@ -405,19 +412,15 @@ class FacturaService
         // PASO 4: Calcular IVA sobre la base imponible (DESPUÉS del descuento)
         $total_iva = $base_imponible * ($tasa_iva_aplicable / 100);
 
-        // PASO 5: Total bruto SIN descuento (para registro contable)
-        $total_factura = $subtotal_sin_iva + ($subtotal_sin_iva * ($tasa_iva_aplicable / 100));
-
-        // PASO 6: Total neto CON descuento (lo que realmente paga el cliente)
-        $total_con_descuento = $base_imponible + $total_iva;
+        // PASO 5: ✅ Total final CON descuento (lo que realmente paga el cliente)
+        $total_factura = $base_imponible + $total_iva;
 
         return [
             'subtotal_sin_iva'     => round($subtotal_sin_iva, 2),     // Subtotal ANTES de descuento
             'descuento'            => round($descuento, 2),              // Monto descontado
             'base_imponible'       => round($base_imponible, 2),        // Subtotal DESPUÉS de descuento
             'total_iva'            => round($total_iva, 2),              // IVA sobre base imponible
-            'total_factura'        => round($total_factura, 2),          // Total SIN descuento (registro)
-            'total_con_descuento'  => round($total_con_descuento, 2),  // Total CON descuento (paga cliente)
+            'total_factura'        => round($total_factura, 2),          // ✅ Total final (CON descuento)
         ];
     }
 
@@ -451,7 +454,6 @@ class FacturaService
         $factura->total_iva = $totales['total_iva'];
         $factura->total_factura = $totales['total_factura'];
         $factura->descuento = $totales['descuento'];
-        $factura->total_con_descuento = $totales['total_con_descuento'];
 
         // ✅ NUEVO: Asignar datos de descuento
         if ($totales['descuento'] > 0) {

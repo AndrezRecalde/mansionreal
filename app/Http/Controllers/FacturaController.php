@@ -148,8 +148,6 @@ class FacturaController extends Controller
             'cliente_facturacion_id' => 'required|exists:clientes_facturacion,id',
             'solicita_factura_detallada' => 'required|boolean',
             'observaciones' => 'nullable|string|max:500',
-
-            // ✅ NUEVOS:  Validaciones de descuento
             'descuento' => 'nullable|numeric|min:0',
             'tipo_descuento' => 'nullable|in:MONTO_FIJO,PORCENTAJE',
             'porcentaje_descuento' => 'nullable|numeric|min:0|max: 100',
@@ -445,43 +443,52 @@ class FacturaController extends Controller
             $facturasAnuladasQuery = Factura::anuladas();
 
             if ($fechaInicio && $fechaFin) {
-                // Si hay rango de fechas, usarlo
                 $facturasEmitidasQuery->entreFechas($fechaInicio, $fechaFin);
                 $facturasAnuladasQuery->entreFechas($fechaInicio, $fechaFin);
             } elseif ($anio) {
-                // Si solo hay año, filtrar por año
                 $facturasEmitidasQuery->porAnio($anio);
                 $facturasAnuladasQuery->porAnio($anio);
             }
 
-            // Obtener colecciones
+             // Obtener colecciones
             $facturasEmitidas = $facturasEmitidasQuery->get();
-            $facturasAnuladas = $facturasAnuladasQuery->get();
+            $totalEmitidas = $facturasEmitidas->count();
+            $totalAnuladas = $facturasAnuladasQuery->count();
 
-            // ✅ NUEVO: Estadísticas de descuentos
-            $facturasConDescuento = $facturasEmitidasQuery->conDescuento()->count();
+            // ✅ ACTUALIZADO: Usar total_factura (que ahora incluye descuento)
+            $totalFacturado = $facturasEmitidas->sum('total_factura'); // ✅ Total real cobrado
+            $totalDescuentos = $facturasEmitidas->sum('descuento');
+            $totalIva = $facturasEmitidas->sum('total_iva');
+            $totalSinIva = $facturasEmitidas->sum('subtotal_sin_iva');
+
+            // ✅ OPCIONAL: Calcular total bruto (sin descuento) para comparación
+            $totalBruto = $facturasEmitidas->sum(function ($factura) {
+                return $factura->total_sin_descuento; // Usa el accessor
+            });
+
+            $facturasConDescuento = $facturasEmitidas->where('descuento', '>', 0)->count();
 
             $stats = [
                 'periodo' => [
                     'fecha_inicio' => $fechaInicio,
                     'fecha_fin' => $fechaFin,
-                    'anio' => $anio ?  (int)$anio : null,
+                    'anio' => $anio ? (int)$anio : null,
                     'es_rango' => ($fechaInicio && $fechaFin) ? true : false,
                     'es_anio' => (! $fechaInicio && !$fechaFin && $anio) ? true : false,
                 ],
                 'facturas' => [
-                    'total_emitidas' => (int)$facturasEmitidas->count(),
-                    'total_anuladas' => (int)$facturasAnuladas->count(),
+                    'total_emitidas' => (int)$totalEmitidas,
+                    'total_anuladas' => (int)$totalAnuladas,
                     'total_con_descuento' => $facturasConDescuento,
-                    'total_general' => (int)($facturasEmitidas->count() + $facturasAnuladas->count()),
+                    'total_general' => (int)($totalEmitidas + $totalAnuladas),
                 ],
                 'montos' => [
-                    'total_facturado' => (float)round($facturasEmitidas->sum('total_factura'), 2),
-                    'total_iva' => (float)round($facturasEmitidas->sum('total_iva'), 2),
-                    'total_sin_iva' => (float)round($facturasEmitidas->sum('subtotal_sin_iva'), 2),
-                    'total_descuentos' => (float)round($facturasEmitidas->sum('descuento'), 2),
-                    'promedio_factura' => $facturasEmitidas->count() > 0
-                        ? (float)round($facturasEmitidas->avg('total_factura'), 2)
+                    'total_facturado' => (float)round($totalFacturado, 2),
+                    'total_iva' => (float)round($totalIva, 2),
+                    'total_sin_iva' => (float)round($totalSinIva, 2),
+                    'total_descuentos' => (float)round($totalDescuentos, 2),
+                    'promedio_factura' => $totalEmitidas > 0
+                        ? (float)round($totalFacturado / $totalEmitidas, 2)
                         : 0.0,
                     'ticket_maximo' => (float)($facturasEmitidas->max('total_factura') ?? 0),
                     'ticket_minimo' => (float)($facturasEmitidas->min('total_factura') ?? 0),
@@ -537,6 +544,7 @@ class FacturaController extends Controller
                 'cantidad_facturas' => $facturas->count(),
                 'total_facturado' => round($facturas->sum('total_factura'), 2),
                 'total_iva' => round($facturas->sum('total_iva'), 2),
+                'total_descuentos' => round($facturas->sum('descuento'), 2),
                 'promedio_factura' => round($facturas->avg('total_factura'), 2),
             ];
 

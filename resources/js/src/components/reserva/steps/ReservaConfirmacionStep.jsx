@@ -73,8 +73,7 @@ export const ReservaConfirmacionStep = ({
                                 Huésped:
                             </Text>
                             <Text size="sm" fw={500}>
-                                {datos_reserva.nombres_huesped}{" "}
-                                {datos_reserva.apellidos_huesped}
+                                {datos_reserva.huesped}
                             </Text>
                         </Group>
                         {datos_reserva.tipo_reserva === "HOSPEDAJE" && (

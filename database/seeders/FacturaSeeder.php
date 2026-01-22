@@ -16,20 +16,19 @@ class FacturaSeeder extends Seeder
      */
     public function run(): void
     {
-        // Obtener algunas reservas existentes (asume que ya hay reservas creadas)
-        $reservas = Reserva::with('consumos')->limit(5)->get();
+        $this->command->info('🔄 Generando facturas de prueba...');
+
+        // Obtener reservas con consumos
+        $reservas = Reserva::with('consumos')
+            ->has('consumos')
+            ->whereDoesntHave('factura')
+            ->take(5)
+            ->get();
 
         if ($reservas->isEmpty()) {
-            $this->command->warn('No hay reservas en la base de datos.  Ejecuta primero ReservaSeeder.');
+            $this->command->warn('⚠️  No hay reservas disponibles para facturar');
             return;
         }
-
-        // Obtener clientes
-        $consumidorFinal = ClienteFacturacion::find(1);
-        $clientesRegistrados = ClienteFacturacion::where('id', '!=', 1)
-            ->where('activo', true)
-            ->take(3)
-            ->get();
 
         $facturas = [];
         $facturaId = 1;
@@ -37,26 +36,30 @@ class FacturaSeeder extends Seeder
         foreach ($reservas as $index => $reserva) {
             // Alternar entre consumidor final y clientes registrados
             $cliente = ($index % 2 === 0)
-                ? $consumidorFinal
-                : $clientesRegistrados->random();
+                ? ClienteFacturacion::consumidorFinal()
+                : ClienteFacturacion::registrados()->inRandomOrder()->first();
 
-            // Calcular totales desde consumos
-            $subtotalSinIva = 0;
-            $subtotalConIva = 0;
-            $totalIva = 0;
-
-            foreach ($reserva->consumos as $consumo) {
-                if ($consumo->tasa_iva > 0) {
-                    $subtotalConIva += $consumo->subtotal;
-                    $totalIva += $consumo->iva;
-                } else {
-                    $subtotalSinIva += $consumo->subtotal;
-                }
+            if (!$cliente) {
+                continue;
             }
 
-            $descuento = ($index === 1) ? 10.00 : 0.00; // Una factura con descuento
-            $totalFactura = $subtotalSinIva + $subtotalConIva + $totalIva - $descuento;
-            $totalFacturaConDescuento = $totalFactura - $descuento;
+            // ✅ ACTUALIZADO: Calcular totales según SRI
+            $subtotalSinIva = 0;
+            $tasa_iva = 15.00;
+
+            foreach ($reserva->consumos as $consumo) {
+                $subtotalSinIva += $consumo->subtotal;
+            }
+
+            // Aplicar descuento solo a algunas facturas
+            $descuento = ($index === 1) ? 20.00 : 0.00;
+            $tipoDescuento = ($index === 1) ? 'MONTO_FIJO' : null;
+            $motivoDescuento = ($index === 1) ? 'Descuento por cliente frecuente' : null;
+
+            // ✅ Calcular según normativa SRI
+            $baseImponible = $subtotalSinIva - $descuento;
+            $totalIva = $baseImponible * ($tasa_iva / 100);
+            $totalFactura = $baseImponible + $totalIva; // ✅ Total final (CON descuento)
 
             // Determinar estado (una factura anulada para pruebas)
             $estado = ($index === 2) ? 'ANULADA' : 'EMITIDA';
@@ -78,12 +81,14 @@ class FacturaSeeder extends Seeder
                 'cliente_telefono' => $cliente->telefono,
                 'cliente_email' => $cliente->email,
 
-                // Totales
+                // ✅ ACTUALIZADO: Totales
                 'subtotal_sin_iva' => $subtotalSinIva,
                 'total_iva' => $totalIva,
                 'descuento' => $descuento,
-                'total_factura' => $totalFactura,
-                'total_con_descuento' => $totalFacturaConDescuento,
+                'tipo_descuento' => $tipoDescuento,
+                'motivo_descuento' => $motivoDescuento,
+                'total_factura' => $totalFactura, // ✅ Total final (CON descuento)
+                // 'total_con_descuento' => ...   // ❌ ELIMINADO
 
                 // Estado
                 'estado' => $estado,
@@ -111,5 +116,8 @@ class FacturaSeeder extends Seeder
         DB::table('facturas')->insert($facturas);
 
         $this->command->info('✅ Facturas de prueba creadas correctamente');
+        $this->command->info("   - Total facturas: " . count($facturas));
+        $this->command->info("   - Con descuento: " . collect($facturas)->where('descuento', '>', 0)->count());
+        $this->command->info("   - Anuladas: " . collect($facturas)->where('estado', 'ANULADA')->count());
     }
 }

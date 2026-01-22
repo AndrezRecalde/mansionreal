@@ -270,6 +270,7 @@ class EstadiaController extends Controller
                     'tasa_iva'        => $tasa_iva,
                     'iva'             => $iva,
                     'total'           => $subtotal + $iva,
+                    'usuario_creador_id' => Auth::id(),
                 ]);
             }
 

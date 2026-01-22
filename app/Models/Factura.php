@@ -25,13 +25,12 @@ class Factura extends Model
         'cliente_email',
         'subtotal_sin_iva',
         'total_iva',
-        'total_factura',
+        'total_factura', // ✅ Ahora es el total FINAL (con descuento si aplica)
         'descuento',
         'tipo_descuento',
         'porcentaje_descuento',
         'motivo_descuento',
         'usuario_registro_descuento_id',
-        'total_con_descuento',
         'estado',
         'observaciones',
         'motivo_anulacion',
@@ -45,9 +44,8 @@ class Factura extends Model
         'fecha_anulacion' => 'datetime',
         'subtotal_sin_iva' => 'decimal:2',
         'total_iva' => 'decimal:2',
-        'total_factura' => 'decimal:2',
+        'total_factura' => 'decimal:2', // ✅ Total final (con descuento)
         'porcentaje_descuento' => 'decimal:2',
-        'total_con_descuento' => 'decimal:2',
         'descuento' => 'decimal:2',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
@@ -164,14 +162,27 @@ class Factura extends Model
     }
 
     /**
+     * ✅ NUEVO: Calcular total SIN descuento (para auditoría/reportes)
+     */
+    public function getTotalSinDescuentoAttribute(): float
+    {
+        // Reconstruir el total antes del descuento
+        // total_sin_descuento = subtotal_sin_iva + (subtotal_sin_iva * 0.15)
+        return $this->subtotal_sin_iva + ($this->subtotal_sin_iva * 0.15);
+    }
+
+    /**
      * Obtener porcentaje real de descuento (calculado)
      */
     public function getPorcentajeDescuentoRealAttribute(): float
     {
-        if ($this->total_factura == 0) {
+        $totalSinDescuento = $this->total_sin_descuento;
+
+        if ($totalSinDescuento == 0) {
             return 0;
         }
-        return round(($this->descuento / $this->total_factura) * 100, 2);
+
+        return round(($this->descuento / $totalSinDescuento) * 100, 2);
     }
 
     /**
@@ -219,7 +230,7 @@ class Factura extends Model
     }
 
     /**
-     * Scope: Facturas con descuento
+     * Scope:  Facturas con descuento
      */
     public function scopeConDescuento($query)
     {
@@ -235,15 +246,15 @@ class Factura extends Model
     }
 
     /**
-     * Scope:  Facturas por rango de fechas
+     * Scope: Facturas entre fechas
      */
-    public function scopeEntreFechas($query, $fechaInicio, $fechaFin)
+    public function scopeEntreFechas($query, string $fechaInicio, string $fechaFin)
     {
         return $query->whereBetween('fecha_emision', [$fechaInicio, $fechaFin]);
     }
 
     /**
-     * Scope:  Facturas de un cliente específico
+     * Scope: Facturas del cliente
      */
     public function scopeDelCliente($query, int $clienteId)
     {
@@ -285,7 +296,7 @@ class Factura extends Model
     // ====================================================================
 
     /**
-     * Calcular totales desde los consumos (ACTUALIZADO SIN aplica_iva)
+     * ✅ ACTUALIZADO: Calcular totales desde los consumos SEGÚN NORMATIVA SRI ECUADOR
      */
     public function calcularTotales(): void
     {
@@ -297,37 +308,26 @@ class Factura extends Model
         // PASO 2: Obtener tasa de IVA aplicable
         $tasa_iva = $consumos->first()->tasa_iva ?? 15.00;
 
-        // PASO 3: Aplicar descuento
+        // PASO 3: Aplicar descuento a la base
         $base_imponible = $subtotal_sin_iva - $this->descuento;
 
         // PASO 4: Calcular IVA sobre la base imponible (DESPUÉS del descuento)
         $this->total_iva = $base_imponible * ($tasa_iva / 100);
-
-        // PASO 5: Total bruto (SIN descuento, para registro contable)
-        $this->total_factura = $subtotal_sin_iva + ($subtotal_sin_iva * ($tasa_iva / 100));
 
         // Validar descuento
         if ($this->descuento > $subtotal_sin_iva) {
             throw FacturacionException::descuentoInvalido($this->descuento, $subtotal_sin_iva);
         }
 
-        // PASO 6: Total neto CON descuento (lo que paga el cliente)
-        $this->total_con_descuento = $base_imponible + $this->total_iva;
+        // PASO 5: ✅ Total final CON descuento (lo que paga el cliente)
+        $this->total_factura = $base_imponible + $this->total_iva;
 
         // Actualizar subtotal_sin_iva
         $this->subtotal_sin_iva = $subtotal_sin_iva;
     }
 
     /**
-     * Aplicar descuento a la factura
-     *
-     * @param float $descuento Monto del descuento
-     * @param string $tipoDescuento 'MONTO_FIJO' o 'PORCENTAJE'
-     * @param float|null $porcentaje Porcentaje si tipo es PORCENTAJE
-     * @param string|null $motivo Justificación del descuento
-     * @param int|null $usuarioId Usuario que aplica el descuento
-     * @return bool
-     * @throws FacturacionException
+     * ✅ ACTUALIZADO: Aplicar descuento y recalcular IVA
      */
     public function aplicarDescuento(
         float $descuento,
@@ -380,10 +380,7 @@ class Factura extends Model
     }
 
     /**
-     * Eliminar descuento
-     *
-     * @return bool
-     * @throws FacturacionException
+     * ✅ ACTUALIZADO: Eliminar descuento
      */
     public function eliminarDescuento(): bool
     {
@@ -397,7 +394,9 @@ class Factura extends Model
         $this->porcentaje_descuento = null;
         $this->motivo_descuento = null;
         $this->usuario_registro_descuento_id = null;
-        $this->total_con_descuento = $this->total_factura;
+
+        // ✅ Recalcular total_factura sin descuento
+        $this->calcularTotales();
 
         return $this->save();
     }
@@ -418,15 +417,6 @@ class Factura extends Model
 
         return $this->save();
     }
-
-    /**
-     * Obtener total final (considera descuento si existe)
-     */
-    public function getTotalFinalAttribute(): float
-    {
-        return $this->tiene_descuento ? $this->total_con_descuento :  $this->total_factura;
-    }
-
 
     /**
      * Verificar si se puede anular

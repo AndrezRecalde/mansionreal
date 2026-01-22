@@ -106,6 +106,7 @@ class ReservasController extends Controller
                 'tasa_iva'        => $tasa_iva,
                 'iva'             => $iva,
                 'total'           => $total,
+                'usuario_creador_id' => Auth::id(),
             ]);
 
             DB::commit();

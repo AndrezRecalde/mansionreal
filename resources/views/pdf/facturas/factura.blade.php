@@ -120,10 +120,10 @@
                         <th style="width: 8%;">Cant.</th>
                         <th style="width: 42%;">Descripción</th>
                         <th class="text-right" style="width: 15%;">P. Unit.</th>
-                        @if ($factura->solicita_factura_detallada)
+                       {{--  @if ($factura->solicita_factura_detallada)
                             <th class="text-right" style="width: 15%;">Subtotal</th>
                             <th class="text-center" style="width: 8%;">IVA%</th>
-                        @endif
+                        @endif --}}
                         <th class="text-right" style="width: 12%;">Total</th>
                     </tr>
                 </thead>
@@ -139,12 +139,12 @@
                                 <td class="text-center">{{ number_format($consumo->cantidad, 2) }}</td>
                                 <td>{{ $consumo->inventario->nombre_producto }}</td>
                                 <td class="text-right">${{ number_format($consumo->inventario->precio_unitario, 2) }}</td>
-                                @if ($factura->solicita_factura_detallada)
+                                {{-- @if ($factura->solicita_factura_detallada)
                                     <td class="text-right">${{ number_format($consumo->subtotal, 2) }}</td>
                                     <td class="text-center">{{ $consumo->tasa_iva > 0 ? $consumo->tasa_iva . '%' : '0%' }}
                                     </td>
-                                @endif
-                                <td class="text-right"><strong>${{ number_format($consumo->total, 2) }}</strong></td>
+                                @endif --}}
+                                <td class="text-right"><strong>${{ number_format($consumo->subtotal, 2) }}</strong></td>
                             </tr>
                         @endforeach
                     @endforeach
@@ -199,7 +199,7 @@
 
             <div class="totales-row total-final">
                 <span class="totales-label">TOTAL A PAGAR:</span>
-                <span class="totales-value">${{ number_format($factura->total_con_descuento, 2) }}</span>
+                <span class="totales-value">${{ number_format($factura->total_factura, 2) }}</span>
             </div>
         </div>
     </div>

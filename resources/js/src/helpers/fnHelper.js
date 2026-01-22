@@ -61,3 +61,19 @@ export const formatFechaNormal = (fecha) =>
         .locale("es")
         .format("DD-MMMM")
         .replace(/-./, (s) => s.toUpperCase());
+
+export const normalizarNumero = (valor) => {
+    if (valor === null || valor === undefined || valor === "") {
+        return 0;
+    }
+    const numero = Number(valor);
+    return isNaN(numero) ? 0 : numero;
+};
+
+export const formatearMonto = (valor) => {
+    return normalizarNumero(valor).toFixed(2);
+};
+
+export const formatearPorcentaje = (valor) => {
+    return normalizarNumero(valor).toFixed(2);
+};

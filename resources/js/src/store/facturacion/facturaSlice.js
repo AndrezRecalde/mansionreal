@@ -84,6 +84,16 @@ export const facturaSlice = createSlice({
         rtkLimpiarFacturas: (state) => {
             state.facturas = [];
             state.factura = null;
+            state.paginacion = {};
+            state.ultimosFiltros = {
+                estado: null,
+                cliente_id: null,
+                p_fecha_inicio: null,
+                p_fecha_fin: null,
+                p_anio: null,
+                page: 1,
+                per_page: 20,
+            };
             state.facturaActual = null;
             state.pdfUrl = null;
             state.activarFactura = null;

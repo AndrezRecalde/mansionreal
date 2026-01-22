@@ -6,20 +6,28 @@ import {
     Checkbox,
     Divider,
     Group,
+    NumberInput,
     Paper,
+    SegmentedControl,
     Stack,
     Switch,
     Text,
+    Textarea,
     TextInput,
 } from "@mantine/core";
 import {
     IconArrowLeft,
-    IconCheck,
+    IconArrowRight,
     IconSearch,
     IconUserPlus,
+    IconDiscount,
+    IconPercentage,
+    IconCurrencyDollar,
 } from "@tabler/icons-react";
 import { ClienteFacturacionForm } from "../../../components";
 import { useClienteFacturacionStore } from "../../../hooks";
+import Swal from "sweetalert2";
+import { formatearMonto, formatearPorcentaje, normalizarNumero } from "../../../helpers/fnHelper";
 
 export const ReservaFacturacionStep = ({
     datos_reserva,
@@ -35,6 +43,13 @@ export const ReservaFacturacionStep = ({
     const [busquedaRealizada, setBusquedaRealizada] = useState(false);
     const [mostrarFormulario, setMostrarFormulario] = useState(false);
     const [solicitaDetallada, setSolicitaDetallada] = useState(false);
+
+    // ✅ NUEVOS:  Estados para descuento
+    const [aplicarDescuento, setAplicarDescuento] = useState(false);
+    const [descuento, setDescuento] = useState(0);
+    const [tipoDescuento, setTipoDescuento] = useState("MONTO_FIJO");
+    const [porcentajeDescuento, setPorcentajeDescuento] = useState(0);
+    const [motivoDescuento, setMotivoDescuento] = useState("");
 
     const {
         cargando,
@@ -85,7 +100,6 @@ export const ReservaFacturacionStep = ({
             });
         } else {
             setDatosFacturacion(null);
-            //setMostrarFormulario(true);
         }
     };
 
@@ -95,7 +109,6 @@ export const ReservaFacturacionStep = ({
         );
 
         if (resultado.existe && resultado.cliente_existente) {
-            // Cliente ya existe
             setDniBusqueda(resultado.cliente_existente.identificacion);
             setDatosFacturacion({
                 cliente_id: resultado.cliente_existente.id,
@@ -107,7 +120,6 @@ export const ReservaFacturacionStep = ({
             });
             setBusquedaRealizada(true);
         } else {
-            // No existe, mostrar formulario prellenado
             setMostrarFormulario(true);
             setBusquedaRealizada(true);
         }
@@ -124,39 +136,93 @@ export const ReservaFacturacionStep = ({
     };
 
     const handleLimpiar = () => {
-        fnLimpiarCliente();
         setDniBusqueda("");
         setBusquedaRealizada(false);
         setMostrarFormulario(false);
+        setDatosFacturacion(null);
+        setSolicitaDetallada(false);
 
-        // Volver a consumidor final si está OFF
-        if (!generarFactura && consumidorFinal) {
-            setDatosFacturacion({
-                cliente_id: consumidorFinal.id,
-                cliente_nombre: "CONSUMIDOR FINAL",
-                cliente_identificacion: consumidorFinal.identificacion,
-                solicita_detallada: false,
-            });
-        } else {
-            setDatosFacturacion(null);
-        }
+        // Limpiar descuento
+        setAplicarDescuento(false);
+        setDescuento(0);
+        setPorcentajeDescuento(0);
+        setMotivoDescuento("");
+
+        fnLimpiarCliente();
     };
 
-    // ================================================================
-    // VALIDACIÓN: Siempre debe haber un cliente seleccionado
-    // ================================================================
-    const puedeAvanzar = datosFacturacion && datosFacturacion.cliente_id;
+    // ✅ NUEVO: Validar y continuar al siguiente paso
+    const handleContinuar = () => {
+        if (!datosFacturacion || !datosFacturacion.cliente_id) {
+            Swal.fire({
+                icon: "warning",
+                title: "Seleccione un cliente",
+                text: "Debe seleccionar o crear un cliente para continuar",
+            });
+            return;
+        }
+
+        // Validar descuento si está activado
+        if (aplicarDescuento) {
+            if (tipoDescuento === "MONTO_FIJO") {
+                if (descuento <= 0) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Descuento inválido",
+                        text: "El monto del descuento debe ser mayor a $0",
+                    });
+                    return;
+                }
+            } else if (tipoDescuento === "PORCENTAJE") {
+                if (porcentajeDescuento <= 0 || porcentajeDescuento > 100) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Porcentaje inválido",
+                        text: "El porcentaje debe estar entre 1% y 100%",
+                    });
+                    return;
+                }
+            }
+
+            // Validar motivo para descuentos grandes
+            if (porcentajeDescuento > 50 && !motivoDescuento.trim()) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Motivo requerido",
+                    text: "Los descuentos mayores al 50% requieren justificación obligatoria",
+                });
+                return;
+            }
+        }
+
+        // Actualizar datosFacturacion con descuento
+        setDatosFacturacion({
+            ...datosFacturacion,
+            solicita_detallada: solicitaDetallada,
+            descuento: aplicarDescuento
+                ? tipoDescuento === "MONTO_FIJO"
+                    ? descuento
+                    : 0
+                : 0,
+            tipo_descuento: aplicarDescuento ? tipoDescuento : null,
+            porcentaje_descuento:
+                aplicarDescuento && tipoDescuento === "PORCENTAJE"
+                    ? porcentajeDescuento
+                    : null,
+            motivo_descuento: aplicarDescuento ? motivoDescuento : null,
+        });
+
+        onNext();
+    };
 
     return (
         <Box mt="xl">
             <Stack gap="lg">
-                {/* ========================================= */}
-                {/* Switch para elegir tipo de factura */}
-                {/* ========================================= */}
+                {/* Switch para decidir tipo de facturación */}
                 <Paper p="md" withBorder>
                     <Switch
                         size="md"
-                        label="¿Generar factura con datos específicos del cliente?"
+                        label="Generar factura con datos de cliente registrado"
                         description={
                             generarFactura
                                 ? "Se generará factura con datos del cliente registrado"
@@ -187,8 +253,7 @@ export const ReservaFacturacionStep = ({
                             Identificación: {consumidorFinal.identificacion}
                         </Text>
                         <Text size="xs" mt="sm" c="dimmed">
-                            Esta opción es ideal para clientes que no requieren
-                            datos específicos en la factura.
+                            💡 Puede aplicar un descuento más abajo si lo desea
                         </Text>
                     </Alert>
                 )}
@@ -198,98 +263,98 @@ export const ReservaFacturacionStep = ({
                 {/* ========================================= */}
                 {generarFactura && (
                     <>
-                        <Divider
-                            label="Buscar o Crear Cliente"
-                            labelPosition="center"
-                        />
+                        <Divider label="Buscar o Crear Cliente" />
 
-                        {/* Buscar por identificación */}
-                        <Group grow align="flex-end">
-                            <TextInput
-                                label="Identificación del Cliente"
-                                placeholder="Ej: 1712345678"
-                                value={dniBusqueda}
-                                onChange={(e) => setDniBusqueda(e.target.value)}
-                                leftSection={<IconSearch size={16} />}
-                                onKeyDown={(e) => {
-                                    if (e.key === "Enter") {
-                                        handleBuscarCliente();
-                                    }
-                                }}
-                            />
-                            <Button
-                                onClick={handleBuscarCliente}
-                                leftSection={<IconSearch size={16} />}
-                                loading={cargando}
-                            >
-                                Buscar
-                            </Button>
-                        </Group>
-
-                        {/* Botón prellenar desde huésped */}
-                        <Button
-                            variant="light"
-                            onClick={handlePrellenarDesdeHuesped}
-                            leftSection={<IconUserPlus size={16} />}
-                            loading={cargando}
-                        >
-                            Prellenar desde huésped de la reserva
-                        </Button>
-
-                        {/* Cliente encontrado */}
-                        {busquedaRealizada && clienteExistente && (
-                            <Alert color="green" title="Cliente Encontrado">
-                                <Text size="sm" fw={600}>
-                                    {clienteExistente.nombres_completos}
+                        {/* Búsqueda por DNI */}
+                        <Paper p="md" withBorder>
+                            <Stack gap="md">
+                                <Text size="sm" fw={500}>
+                                    Buscar cliente existente por identificación
                                 </Text>
-                                <Text size="sm" c="dimmed">
-                                    {clienteExistente.tipo_identificacion}:{" "}
-                                    {clienteExistente.identificacion}
-                                </Text>
-                                <Group mt="md">
-                                    <Button
-                                        size="xs"
-                                        variant="light"
-                                        onClick={() => {
-                                            setDatosFacturacion({
-                                                cliente_id: clienteExistente.id,
-                                                cliente_nombres_completos:
-                                                    clienteExistente.nombres_completos,
-                                                cliente_identificacion:
-                                                    clienteExistente.identificacion,
-                                                solicita_detallada:
-                                                    solicitaDetallada,
-                                            });
+                                <Group>
+                                    <TextInput
+                                        placeholder="Ingrese cédula, RUC o pasaporte"
+                                        value={dniBusqueda}
+                                        onChange={(e) =>
+                                            setDniBusqueda(e.target.value)
+                                        }
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                                handleBuscarCliente();
+                                            }
                                         }}
-                                        leftSection={<IconCheck size={14} />}
-                                    >
-                                        Usar este cliente
-                                    </Button>
+                                        style={{ flex: 1 }}
+                                        leftSection={<IconSearch size={16} />}
+                                    />
                                     <Button
-                                        size="xs"
-                                        variant="subtle"
-                                        onClick={handleLimpiar}
+                                        onClick={handleBuscarCliente}
+                                        loading={cargando}
+                                        leftSection={<IconSearch size={16} />}
                                     >
-                                        Buscar otro
+                                        Buscar
                                     </Button>
                                 </Group>
-                            </Alert>
-                        )}
 
-                        {/* Cliente NO encontrado */}
+                                <Button
+                                    variant="light"
+                                    onClick={handlePrellenarDesdeHuesped}
+                                    leftSection={<IconUserPlus size={16} />}
+                                >
+                                    Usar datos del huésped de esta reserva
+                                </Button>
+                            </Stack>
+                        </Paper>
+
+                        {/* Resultado de búsqueda:  Cliente encontrado */}
+                        {busquedaRealizada &&
+                            clienteExistente &&
+                            !mostrarFormulario && (
+                                <Alert
+                                    color="teal"
+                                    title="✅ Cliente Encontrado"
+                                >
+                                    <Stack gap="xs">
+                                        <Text size="sm">
+                                            <strong>Nombre: </strong>{" "}
+                                            {clienteExistente.nombres_completos}
+                                        </Text>
+                                        <Text size="sm">
+                                            <strong>Identificación:</strong>{" "}
+                                            {clienteExistente.identificacion}
+                                        </Text>
+                                        <Checkbox
+                                            label="Solicita factura detallada (con desglose tributario)"
+                                            checked={solicitaDetallada}
+                                            onChange={(e) =>
+                                                setSolicitaDetallada(
+                                                    e.currentTarget.checked,
+                                                )
+                                            }
+                                        />
+                                        <Button
+                                            size="xs"
+                                            variant="subtle"
+                                            onClick={handleLimpiar}
+                                        >
+                                            Buscar otro cliente
+                                        </Button>
+                                    </Stack>
+                                </Alert>
+                            )}
+
+                        {/* Resultado de búsqueda: Cliente NO encontrado */}
                         {busquedaRealizada &&
                             !clienteExistente &&
                             !mostrarFormulario && (
                                 <Alert
                                     color="yellow"
-                                    title="Cliente No Encontrado"
+                                    title="Cliente no encontrado"
                                 >
-                                    <Text size="sm">
-                                        No se encontró un cliente con la
-                                        identificación{" "}
-                                        <strong>{dniBusqueda}</strong>
+                                    <Text size="sm" mb="sm">
+                                        No se encontró ningún cliente con esa
+                                        identificación.
                                     </Text>
-                                    <Group mt="md">
+                                    <Group>
                                         <Button
                                             size="sm"
                                             onClick={() =>
@@ -312,10 +377,10 @@ export const ReservaFacturacionStep = ({
                                 </Alert>
                             )}
 
-                        {/* Formulario para crear nuevo cliente */}
+                        {/* Formulario de creación de cliente */}
                         {mostrarFormulario && (
                             <Paper p="md" withBorder>
-                                <Text size="sm" fw={600} mb="md">
+                                <Text size="sm" fw={500} mb="md">
                                     Crear nuevo cliente
                                 </Text>
                                 <ClienteFacturacionForm
@@ -324,53 +389,185 @@ export const ReservaFacturacionStep = ({
                                     onClienteCreado={handleClienteCreado}
                                     onCancelar={() => {
                                         setMostrarFormulario(false);
-                                        handleLimpiar();
+                                        setBusquedaRealizada(false);
                                     }}
                                 />
                             </Paper>
-                        )}
-
-                        {/* Checkbox:  Factura detallada */}
-                        {datosFacturacion?.cliente_id &&
-                            datosFacturacion.cliente_id !==
-                                consumidorFinal?.id && (
-                                <Checkbox
-                                    label="Solicita factura con datos completos (para deducción de impuestos)"
-                                    description="Marque esta opción si el cliente requiere factura con todos sus datos para fines tributarios"
-                                    checked={solicitaDetallada}
-                                    onChange={(e) => {
-                                        const checked = e.currentTarget.checked;
-                                        setSolicitaDetallada(checked);
-                                        setDatosFacturacion({
-                                            ...datosFacturacion,
-                                            solicita_detallada: checked,
-                                        });
-                                    }}
-                                />
-                            )}
-
-                        {/* Resumen del cliente seleccionado */}
-                        {datosFacturacion?.cliente_id && (
-                            <Alert color="teal" title="Cliente Seleccionado">
-                                <Text size="sm" fw={600}>
-                                    {datosFacturacion.cliente_nombres_completos}
-                                </Text>
-                                {datosFacturacion.cliente_identificacion && (
-                                    <Text size="sm" c="dimmed">
-                                        Identificación:{" "}
-                                        {
-                                            datosFacturacion.cliente_identificacion
-                                        }
-                                    </Text>
-                                )}
-                            </Alert>
                         )}
                     </>
                 )}
 
                 {/* ========================================= */}
-                {/* Botones de navegación */}
+                {/* ✅ SECCIÓN DE DESCUENTO (OPCIONAL) */}
                 {/* ========================================= */}
+                {datosFacturacion && datosFacturacion.cliente_id && (
+                    <>
+                        <Divider
+                            my="md"
+                            label={
+                                <Group gap="xs">
+                                    <IconDiscount size={18} />
+                                    <Text>Descuento (Opcional)</Text>
+                                </Group>
+                            }
+                            labelPosition="center"
+                        />
+
+                        <Paper p="md" withBorder>
+                            <Stack gap="md">
+                                <Switch
+                                    size="md"
+                                    label="Aplicar descuento a esta factura"
+                                    description="Agregue un descuento al total de la factura"
+                                    checked={aplicarDescuento}
+                                    onChange={(event) => {
+                                        setAplicarDescuento(
+                                            event.currentTarget.checked,
+                                        );
+                                        if (!event.currentTarget.checked) {
+                                            setDescuento(0);
+                                            setPorcentajeDescuento(0);
+                                            setMotivoDescuento("");
+                                        }
+                                    }}
+                                />
+
+                                {aplicarDescuento && (
+                                    <Stack gap="md">
+                                        {/* Selector de tipo de descuento */}
+                                        <SegmentedControl
+                                            value={tipoDescuento}
+                                            onChange={setTipoDescuento}
+                                            data={[
+                                                {
+                                                    label: "Monto Fijo ($)",
+                                                    value: "MONTO_FIJO",
+                                                },
+                                                {
+                                                    label: "Porcentaje (%)",
+                                                    value: "PORCENTAJE",
+                                                },
+                                            ]}
+                                            fullWidth
+                                        />
+
+                                        {/* Input según tipo de descuento */}
+                                        {tipoDescuento === "MONTO_FIJO" ? (
+                                            <NumberInput
+                                                label="Monto del descuento"
+                                                placeholder="Ej: 50.00"
+                                                description="Ingrese el monto exacto a descontar"
+                                                prefix="$"
+                                                min={0}
+                                                decimalScale={2}
+                                                fixedDecimalScale
+                                                value={descuento}
+                                                onChange={(val) =>
+                                                    setDescuento(
+                                                        normalizarNumero(val),
+                                                    )
+                                                }
+                                                leftSection={
+                                                    <IconCurrencyDollar
+                                                        size={16}
+                                                    />
+                                                }
+                                                required
+                                            />
+                                        ) : (
+                                            <NumberInput
+                                                label="Porcentaje de descuento"
+                                                placeholder="Ej: 15"
+                                                description="Ingrese el porcentaje a descontar (1-100)"
+                                                suffix="%"
+                                                min={0}
+                                                max={100}
+                                                decimalScale={2}
+                                                value={porcentajeDescuento}
+                                                onChange={(val) =>
+                                                    setPorcentajeDescuento(
+                                                        normalizarNumero(val),
+                                                    )
+                                                }
+                                                leftSection={
+                                                    <IconPercentage size={16} />
+                                                }
+                                                required
+                                            />
+                                        )}
+
+                                        {/* Motivo del descuento */}
+                                        <Textarea
+                                            label="Motivo del descuento"
+                                            placeholder="Ej: Promoción de temporada, Cliente VIP, Cortesía..."
+                                            description={
+                                                porcentajeDescuento > 50
+                                                    ? "⚠️ Requerido para descuentos mayores al 50%"
+                                                    : "Opcional - Ayuda para auditoría"
+                                            }
+                                            value={motivoDescuento}
+                                            onChange={(e) =>
+                                                setMotivoDescuento(
+                                                    e.target.value,
+                                                )
+                                            }
+                                            minRows={2}
+                                            maxRows={4}
+                                            error={
+                                                porcentajeDescuento > 50 &&
+                                                !motivoDescuento.trim()
+                                                    ? "Motivo obligatorio para descuentos mayores al 50%"
+                                                    : null
+                                            }
+                                        />
+
+                                        {/* Vista previa del descuento */}
+                                        {(descuento > 0 ||
+                                            porcentajeDescuento > 0) && (
+                                            <Alert
+                                                title="Vista previa"
+                                            >
+                                                <Stack gap="xs">
+                                                    {tipoDescuento ===
+                                                    "MONTO_FIJO" ? (
+                                                        <Text size="sm">
+                                                            Se descontará:{" "}
+                                                            <strong>
+                                                                $
+                                                                {formatearMonto(
+                                                                    descuento,
+                                                                )}
+                                                            </strong>{" "}
+                                                            {/* ✅ USAR HELPER */}
+                                                        </Text>
+                                                    ) : (
+                                                        <Text size="sm">
+                                                            Se descontará:{" "}
+                                                            <strong>
+                                                                {formatearPorcentaje(
+                                                                    porcentajeDescuento,
+                                                                )}
+                                                                %
+                                                            </strong>{" "}
+                                                            {/* ✅ USAR HELPER */}
+                                                        </Text>
+                                                    )}
+                                                    <Text size="xs" c="dimmed">
+                                                        El descuento se aplicará
+                                                        al total de la factura
+                                                        antes de impuestos
+                                                    </Text>
+                                                </Stack>
+                                            </Alert>
+                                        )}
+                                    </Stack>
+                                )}
+                            </Stack>
+                        </Paper>
+                    </>
+                )}
+
+                {/* Botones de navegación */}
                 <Group justify="space-between" mt="xl">
                     <Button
                         variant="default"
@@ -380,11 +577,13 @@ export const ReservaFacturacionStep = ({
                         Volver
                     </Button>
                     <Button
-                        onClick={onNext}
-                        disabled={!puedeAvanzar}
-                        rightSection={<IconCheck size={16} />}
+                        onClick={handleContinuar}
+                        rightSection={<IconArrowRight size={16} />}
+                        disabled={
+                            !datosFacturacion || !datosFacturacion.cliente_id
+                        }
                     >
-                        Siguiente: Confirmación
+                        Continuar a Confirmación
                     </Button>
                 </Group>
             </Stack>

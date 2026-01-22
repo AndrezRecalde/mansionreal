@@ -265,7 +265,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/generar', [FacturaController::class, 'generarFactura']);
         Route::post('/{id}/anular', [FacturaController::class, 'anularFactura']);
 
+        // ✅ NUEVAS: Gestión de descuentos
+        Route::post('/{id}/aplicar-descuento', [FacturaController::class, 'aplicarDescuento']);
+        Route::delete('/{id}/eliminar-descuento', [FacturaController::class, 'eliminarDescuento']);
+
         // Consultas específicas
+        Route::post('/{id}/recalcular-totales', [FacturaController::class, 'recalcularTotales']);
         Route::get('/reserva/{reserva_id}', [FacturaController::class, 'getFacturaPorReserva']);
         Route::get('/verificar-reserva/{reserva_id}', [FacturaController::class, 'verificarPuedeFacturar']);
 

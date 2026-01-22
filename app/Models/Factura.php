@@ -291,22 +291,31 @@ class Factura extends Model
     {
         $consumos = $this->consumos;
 
-        // Base imponible (suma de subtotales de consumos)
-        $this->subtotal_sin_iva = $consumos->sum('subtotal');
+        // PASO 1: Sumar subtotales de consumos (SIN descuento)
+        $subtotal_sin_iva = $consumos->sum('subtotal');
 
-        // IVA (suma del iva de consumos)
-        $this->total_iva = $consumos->sum('iva');
+        // PASO 2: Obtener tasa de IVA aplicable
+        $tasa_iva = $consumos->first()->tasa_iva ?? 15.00;
 
-        // Total bruto de la factura (sin descuento)
-        $this->total_factura = $this->subtotal_sin_iva + $this->total_iva;
+        // PASO 3: Aplicar descuento
+        $base_imponible = $subtotal_sin_iva - $this->descuento;
+
+        // PASO 4: Calcular IVA sobre la base imponible (DESPUÉS del descuento)
+        $this->total_iva = $base_imponible * ($tasa_iva / 100);
+
+        // PASO 5: Total bruto (SIN descuento, para registro contable)
+        $this->total_factura = $subtotal_sin_iva + ($subtotal_sin_iva * ($tasa_iva / 100));
 
         // Validar descuento
-        if ($this->descuento > $this->total_factura) {
-            throw FacturacionException::descuentoInvalido($this->descuento, $this->total_factura);
+        if ($this->descuento > $subtotal_sin_iva) {
+            throw FacturacionException::descuentoInvalido($this->descuento, $subtotal_sin_iva);
         }
 
-        // Total neto con descuento
-        $this->total_con_descuento = $this->total_factura - $this->descuento;
+        // PASO 6: Total neto CON descuento (lo que paga el cliente)
+        $this->total_con_descuento = $base_imponible + $this->total_iva;
+
+        // Actualizar subtotal_sin_iva
+        $this->subtotal_sin_iva = $subtotal_sin_iva;
     }
 
     /**
@@ -327,30 +336,28 @@ class Factura extends Model
         ?string $motivo = null,
         ?int $usuarioId = null
     ): bool {
-        // Validar que no esté anulada
         if ($this->esta_anulada) {
             throw new FacturacionException('No se puede aplicar descuento a una factura anulada');
         }
 
-        // Validar que el descuento no sea negativo
         if ($descuento < 0) {
             throw new FacturacionException('El descuento no puede ser negativo');
         }
 
-        // Validar que el descuento no supere el total
-        if ($descuento > $this->total_factura) {
+        // Calcular monto si es porcentaje
+        if ($tipoDescuento === self::TIPO_DESCUENTO_PORCENTAJE && $porcentaje > 0) {
+            $descuento = $this->subtotal_sin_iva * ($porcentaje / 100);
+        }
+
+        if ($descuento > $this->subtotal_sin_iva) {
             throw new FacturacionException(
                 'El descuento ($' . number_format($descuento, 2) .
-                    ') no puede ser mayor al total de la factura ($' . number_format($this->total_factura, 2) . ')'
+                    ') no puede ser mayor al subtotal ($' . number_format($this->subtotal_sin_iva, 2) . ')'
             );
         }
 
-        // Calcular porcentaje real
-        $porcentajeReal = $this->total_factura > 0
-            ? ($descuento / $this->total_factura) * 100
-            : 0;
+        $porcentajeReal = $this->subtotal_sin_iva > 0 ? ($descuento / $this->subtotal_sin_iva) * 100 : 0;
 
-        // Validaciones según porcentaje
         if ($porcentajeReal >= 100) {
             throw new FacturacionException('No se puede aplicar descuento del 100% en facturas');
         }
@@ -366,8 +373,8 @@ class Factura extends Model
         $this->motivo_descuento = $motivo;
         $this->usuario_registro_descuento_id = $usuarioId;
 
-        // Recalcular total con descuento
-        $this->total_con_descuento = $this->total_factura - $this->descuento;
+        // ✅ RECALCULAR IVA Y TOTALES
+        $this->calcularTotales();
 
         return $this->save();
     }

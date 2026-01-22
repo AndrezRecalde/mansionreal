@@ -21,13 +21,13 @@ import dayjs from "dayjs";
 
 export const FacturaDetalleModal = ({ opened, onClose }) => {
     const { activarFactura, fnDescargarFacturaPDF } = useFacturaStore();
-    const { fnAbrirModalAnular } = useUiFactura();
+    const { fnAbrirModalAnularFactura } = useUiFactura();
 
     if (!activarFactura) return null;
 
     const handleAnular = () => {
         onClose();
-        fnAbrirModalAnular(true);
+        fnAbrirModalAnularFactura(true);
     };
 
     return (

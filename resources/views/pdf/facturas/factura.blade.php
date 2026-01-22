@@ -184,21 +184,22 @@
                     <span class="totales-label">Subtotal sin IVA:</span>
                     <span class="totales-value">${{ number_format($factura->subtotal_sin_iva, 2) }}</span>
                 </div>
+                @if ($factura->descuento > 0)
+                    <div class="totales-row">
+                        <span class="totales-label">Descuento:</span>
+                        <span class="totales-value"
+                            style="color: #e74c3c;">-${{ number_format($factura->descuento, 2) }}</span>
+                    </div>
+                @endif
                 <div class="totales-row">
                     <span class="totales-label">IVA {{ $factura->consumos->first()?->tasa_iva ?? 15 }}%:</span>
                     <span class="totales-value">${{ number_format($factura->total_iva, 2) }}</span>
                 </div>
             @endif
-            @if ($factura->descuento > 0)
-                <div class="totales-row">
-                    <span class="totales-label">Descuento:</span>
-                    <span class="totales-value"
-                        style="color: #e74c3c;">-${{ number_format($factura->descuento, 2) }}</span>
-                </div>
-            @endif
+
             <div class="totales-row total-final">
                 <span class="totales-label">TOTAL A PAGAR:</span>
-                <span class="totales-value">${{ number_format($factura->total_factura, 2) }}</span>
+                <span class="totales-value">${{ number_format($factura->total_con_descuento, 2) }}</span>
             </div>
         </div>
     </div>
@@ -208,6 +209,12 @@
         <div class="observaciones-section">
             <div class="observaciones-title">OBSERVACIONES: </div>
             <div class="observaciones-text">{{ $factura->observaciones }}</div>
+        </div>
+    @endif
+    @if ($factura->motivo_descuento)
+        <div class="observaciones-section">
+            <div class="observaciones-title">MOTIVO DESCUENTO: </div>
+            <div class="observaciones-text">{{ $factura->motivo_descuento }}</div>
         </div>
     @endif
 

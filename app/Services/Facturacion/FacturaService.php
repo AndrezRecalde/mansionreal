@@ -30,7 +30,13 @@ class FacturaService
      * @param int $clienteFacturacionId
      * @param bool $solicitaFacturaDetallada
      * @param int $usuarioId
-     * @param array $opciones [observaciones, descuento]
+     *  @param array $opciones [
+     *      'observaciones' => string,
+     *      'descuento' => float,
+     *      'tipo_descuento' => string,
+     *      'porcentaje_descuento' => float,
+     *      'motivo_descuento' => string
+     * ]
      * @return Factura
      * @throws FacturacionException
      */
@@ -60,35 +66,133 @@ class FacturaService
             // 4. GENERAR NÚMERO DE FACTURA
             $numeroFactura = $this->secuenciaService->generarNumero();
 
-            // 5. CALCULAR TOTALES
-            $totales = $this->calcularTotales($reserva->consumos, $opciones['descuento'] ?? 0);
+            // 5. EXTRAER DATOS DE DESCUENTO
+            $descuento = $opciones['descuento'] ?? 0;
+            $tipoDescuento = $opciones['tipo_descuento'] ??  Factura::TIPO_DESCUENTO_MONTO_FIJO;
+            $porcentajeDescuento = $opciones['porcentaje_descuento'] ?? null;
+            $motivoDescuento = $opciones['motivo_descuento'] ?? null;
 
-            // 6. CREAR FACTURA
+            // 6. CALCULAR TOTALES
+            $totales = $this->calcularTotales(
+                $reserva->consumos,
+                $descuento,
+                $tipoDescuento,
+                $porcentajeDescuento
+            );
+
+            // 7. CREAR FACTURA
             $factura = $this->crearFactura(
                 $numeroFactura,
                 $reserva,
                 $cliente,
                 $totales,
                 $usuarioId,
-                $opciones
+                $opciones,
+                $tipoDescuento,
+                $porcentajeDescuento,
+                $motivoDescuento
             );
 
-            // 7. ASOCIAR CONSUMOS A LA FACTURA
+            // 8. ASOCIAR CONSUMOS A LA FACTURA
             $this->asociarConsumos($reserva->consumos, $factura->id);
 
-            // 8. LOG
-            Log::info("Factura generada:  {$factura->numero_factura}", [
+            // 9. LOG
+            Log::info("Factura generada:   {$factura->numero_factura}", [
                 'factura_id' => $factura->id,
+                'numero_factura' => $factura->numero_factura,
                 'reserva_id' => $reservaId,
+                'cliente_id' => $cliente->id,
+                'total' => $factura->total_final,
+                'descuento' => $factura->descuento,
+                'tipo_descuento' => $factura->tipo_descuento,
                 'usuario_id' => $usuarioId,
             ]);
 
-            return $factura->load([
+            return $factura->fresh([
                 'reserva.huesped',
                 'reserva.departamento',
                 'consumos.inventario',
-                'clienteFacturacion'
+                'clienteFacturacion',
+                'usuarioGenero',
+                'usuarioRegistroDescuento'
             ]);
+        });
+    }
+
+    /**
+     * ✅ NUEVO: Aplicar descuento a una factura existente
+     *
+     * @param int $facturaId
+     * @param float $descuento
+     * @param string $tipoDescuento
+     * @param float|null $porcentaje
+     * @param string|null $motivo
+     * @param int $usuarioId
+     * @return Factura
+     * @throws FacturacionException
+     */
+    public function aplicarDescuentoFactura(
+        int $facturaId,
+        float $descuento,
+        string $tipoDescuento = Factura::TIPO_DESCUENTO_MONTO_FIJO,
+        ?float $porcentaje = null,
+        ?string $motivo = null,
+        int $usuarioId
+    ): Factura {
+        return DB::transaction(function () use (
+            $facturaId,
+            $descuento,
+            $tipoDescuento,
+            $porcentaje,
+            $motivo,
+            $usuarioId
+        ) {
+            $factura = Factura::findOrFail($facturaId);
+
+            // Aplicar descuento usando el método del modelo
+            $factura->aplicarDescuento(
+                $descuento,
+                $tipoDescuento,
+                $porcentaje,
+                $motivo,
+                $usuarioId
+            );
+
+            Log::info('Descuento aplicado a factura', [
+                'factura_id' => $factura->id,
+                'numero_factura' => $factura->numero_factura,
+                'descuento' => $descuento,
+                'tipo' => $tipoDescuento,
+                'porcentaje' => $porcentaje,
+                'usuario_id' => $usuarioId,
+            ]);
+
+            return $factura->fresh();
+        });
+    }
+
+    /**
+     * ✅ NUEVO: Eliminar descuento de una factura
+     *
+     * @param int $facturaId
+     * @param int $usuarioId
+     * @return Factura
+     * @throws FacturacionException
+     */
+    public function eliminarDescuentoFactura(int $facturaId, int $usuarioId): Factura
+    {
+        return DB::transaction(function () use ($facturaId, $usuarioId) {
+            $factura = Factura::findOrFail($facturaId);
+
+            $factura->eliminarDescuento();
+
+            Log::info('Descuento eliminado de factura', [
+                'factura_id' => $factura->id,
+                'numero_factura' => $factura->numero_factura,
+                'usuario_id' => $usuarioId,
+            ]);
+
+            return $factura->fresh();
         });
     }
 
@@ -104,13 +208,10 @@ class FacturaService
     public function anularFactura(int $facturaId, string $motivo, int $usuarioId): Factura
     {
         return DB::transaction(function () use ($facturaId, $motivo, $usuarioId) {
-            $factura = Factura::find($facturaId);
+            $factura = Factura::with('consumos')->findOrFail($facturaId);
 
-            if (!$factura) {
-                throw FacturacionException::facturaNoEncontrada($facturaId);
-            }
 
-            if (! $factura->puedeAnularse()) {
+            if (!$factura->puedeAnularse()) {
                 throw FacturacionException::facturaNoAnulable($facturaId);
             }
 
@@ -118,8 +219,7 @@ class FacturaService
             $factura->anular($motivo, $usuarioId);
 
             // Desasignar consumos (permitir re-facturación)
-            Consumo::where('factura_id', $facturaId)
-                ->update(['factura_id' => null]);
+            $factura->consumos()->update(['factura_id' => null]);
 
             // LOG
             Log::warning("Factura anulada: {$factura->numero_factura}", [
@@ -128,7 +228,7 @@ class FacturaService
                 'usuario_id' => $usuarioId,
             ]);
 
-            return $factura->fresh(['usuarioAnulo', 'consumos', 'reserva.huesped']);
+            return $factura->fresh(['usuarioAnulo', 'reserva.huesped']);
         });
     }
 
@@ -145,31 +245,28 @@ class FacturaService
         if (!$reserva) {
             return [
                 'puede_facturar' => false,
-                'motivos' => ['Reserva no encontrada'],
+                'motivo' => 'Reserva no encontrada',
             ];
         }
 
-        $motivos = [];
-
         if ($reserva->tiene_factura_emitida) {
-            $motivos[] = 'Ya tiene factura generada';
+            return [
+                'puede_facturar' => false,
+                'motivo' => 'La reserva ya tiene una factura emitida',
+                'factura_existente' => $reserva->factura->numero_factura,
+            ];
         }
 
         if ($reserva->consumos->isEmpty()) {
-            $motivos[] = 'No tiene consumos registrados';
-        }
-
-        $consumosFacturados = $reserva->consumos->where('factura_id', '!=', null);
-        if ($consumosFacturados->isNotEmpty()) {
-            $motivos[] = 'Algunos consumos ya están facturados';
+            return [
+                'puede_facturar' => false,
+                'motivo' => 'La reserva no tiene consumos registrados',
+            ];
         }
 
         return [
-            'puede_facturar' => empty($motivos),
-            'motivos' => $motivos,
-            'tiene_factura' => $reserva->tiene_factura_emitida,
-            'factura_existente' => $reserva->factura,
-            'total_consumos' => $reserva->consumos->sum('total'),
+            'puede_facturar' => true,
+            'motivo' => null,
             'cantidad_consumos' => $reserva->consumos->count(),
         ];
     }
@@ -185,7 +282,8 @@ class FacturaService
         return Factura::with([
             'consumos.inventario',
             'clienteFacturacion',
-            'usuarioGenero'
+            'usuarioGenero',
+            'usuarioRegistroDescuento'
         ])->where('reserva_id', $reservaId)->first();
     }
 
@@ -261,46 +359,65 @@ class FacturaService
         bool $solicitaDetallada,
         int $usuarioId
     ): void {
-        $reserva->asignarClienteFacturacion(
-            $clienteId,
-            $solicitaDetallada,
-            $usuarioId
-        );
+        $reserva->clientesFacturacion()->syncWithoutDetaching([
+            $clienteId => [
+                'solicita_factura_detallada' => $solicitaDetallada,
+                'usuario_asigno_id' => $usuarioId,
+            ]
+        ]);
     }
 
     /**
      * Calcular totales desde consumos
      */
-    private function calcularTotales($consumos, float $descuento = 0): array
-    {
-        $subtotal = 0;
-        $total_iva = 0;
+    private function calcularTotales(
+        $consumos,
+        float $descuento = 0,
+        string $tipoDescuento = Factura::TIPO_DESCUENTO_MONTO_FIJO,
+        ?float $porcentajeDescuento = null
+    ): array {
+        // PASO 1: Sumar subtotales de consumos (SIN IVA)
+        $subtotal_sin_iva = 0;
+        $tasa_iva_aplicable = 0;
 
         foreach ($consumos as $consumo) {
-            // Traspaso de datos desde consumos:
-            // subtotal_sin_iva = suma de subtotal de los consumos
-            // iva = suma de iva de los consumos
-            $subtotal += $consumo->subtotal;
-            $total_iva += $consumo->iva;
+            $subtotal_sin_iva += $consumo->subtotal;
+
+            // Obtener tasa de IVA (asumimos misma tasa para todos)
+            if ($consumo->tasa_iva > 0 && $tasa_iva_aplicable == 0) {
+                $tasa_iva_aplicable = $consumo->tasa_iva;
+            }
         }
 
-        // total_factura = subtotal_sin_iva + iva (sin descuento)
-        $totalFactura = $subtotal + $total_iva;
-
-        // Validar descuento
-        if ($descuento > $totalFactura) {
-            throw FacturacionException::descuentoInvalido($descuento, $totalFactura);
+        // PASO 2: Calcular monto del descuento
+        if ($tipoDescuento === Factura::TIPO_DESCUENTO_PORCENTAJE && $porcentajeDescuento > 0) {
+            $descuento = $subtotal_sin_iva * ($porcentajeDescuento / 100);
         }
 
-        // total_con_descuento = total_factura - descuento
-        $totalConDescuento = $totalFactura - $descuento;
+        // Validar que el descuento no supere el subtotal
+        if ($descuento > $subtotal_sin_iva) {
+            throw FacturacionException::descuentoInvalido($descuento, $subtotal_sin_iva);
+        }
+
+        // PASO 3: Calcular BASE IMPONIBLE (subtotal - descuento)
+        $base_imponible = $subtotal_sin_iva - $descuento;
+
+        // PASO 4: Calcular IVA sobre la base imponible (DESPUÉS del descuento)
+        $total_iva = $base_imponible * ($tasa_iva_aplicable / 100);
+
+        // PASO 5: Total bruto SIN descuento (para registro contable)
+        $total_factura = $subtotal_sin_iva + ($subtotal_sin_iva * ($tasa_iva_aplicable / 100));
+
+        // PASO 6: Total neto CON descuento (lo que realmente paga el cliente)
+        $total_con_descuento = $base_imponible + $total_iva;
 
         return [
-            'subtotal_sin_iva'     => $subtotal,
-            'total_iva'            => $total_iva,
-            'total_factura'        => $totalFactura,
-            'descuento'            => $descuento,
-            'total_con_descuento'  => $totalConDescuento,
+            'subtotal_sin_iva'     => round($subtotal_sin_iva, 2),     // Subtotal ANTES de descuento
+            'descuento'            => round($descuento, 2),              // Monto descontado
+            'base_imponible'       => round($base_imponible, 2),        // Subtotal DESPUÉS de descuento
+            'total_iva'            => round($total_iva, 2),              // IVA sobre base imponible
+            'total_factura'        => round($total_factura, 2),          // Total SIN descuento (registro)
+            'total_con_descuento'  => round($total_con_descuento, 2),  // Total CON descuento (paga cliente)
         ];
     }
 
@@ -313,7 +430,10 @@ class FacturaService
         ClienteFacturacion $cliente,
         array $totales,
         int $usuarioId,
-        array $opciones
+        array $opciones,
+        string $tipoDescuento,
+        ?float $porcentajeDescuento,
+        ?string $motivoDescuento
     ): Factura {
         $factura = new Factura();
         $factura->numero_factura = $numeroFactura;
@@ -329,9 +449,17 @@ class FacturaService
         // Asignar totales
         $factura->subtotal_sin_iva = $totales['subtotal_sin_iva'];
         $factura->total_iva = $totales['total_iva'];
-        $factura->descuento = $totales['descuento'];
         $factura->total_factura = $totales['total_factura'];
+        $factura->descuento = $totales['descuento'];
         $factura->total_con_descuento = $totales['total_con_descuento'];
+
+        // ✅ NUEVO: Asignar datos de descuento
+        if ($totales['descuento'] > 0) {
+            $factura->tipo_descuento = $tipoDescuento;
+            $factura->porcentaje_descuento = $porcentajeDescuento;
+            $factura->motivo_descuento = $motivoDescuento;
+            $factura->usuario_registro_descuento_id = $usuarioId;
+        }
 
         $factura->save();
 

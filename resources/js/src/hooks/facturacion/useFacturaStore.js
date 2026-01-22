@@ -73,7 +73,7 @@ export const useFacturaStore = () => {
                 "/facturas/estadisticas/generales",
                 {
                     params: filtros,
-                }
+                },
             );
             dispatch(rtkCargarEstadisticas(data.estadisticas || data));
         } catch (error) {
@@ -109,7 +109,7 @@ export const useFacturaStore = () => {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.post(
                 "/facturas/generar",
-                datosFactura
+                datosFactura,
             );
 
             dispatch(rtkAgregarFactura(data.factura));
@@ -129,6 +129,59 @@ export const useFacturaStore = () => {
     };
 
     /**
+     * ✅ NUEVO: Aplicar descuento a una factura existente
+     */
+    const fnAplicarDescuento = async (facturaId, datosDescuento) => {
+        try {
+            dispatch(rtkCargando(true));
+            const { data } = await apiAxios.post(
+                `/facturas/${facturaId}/aplicar-descuento`,
+                datosDescuento,
+            );
+
+            dispatch(rtkActualizarFactura(data.factura));
+            dispatch(rtkCargarMensaje(data));
+
+            setTimeout(() => {
+                dispatch(rtkCargarMensaje(undefined));
+            }, 3000);
+
+            return data.factura;
+        } catch (error) {
+            ExceptionMessageError(error);
+            return null;
+        } finally {
+            dispatch(rtkCargando(false));
+        }
+    };
+
+    /**
+     * ✅ NUEVO: Eliminar descuento de una factura
+     */
+    const fnEliminarDescuento = async (facturaId) => {
+        try {
+            dispatch(rtkCargando(true));
+            const { data } = await apiAxios.delete(
+                `/facturas/${facturaId}/eliminar-descuento`,
+            );
+
+            dispatch(rtkActualizarFactura(data.factura));
+            dispatch(rtkCargarMensaje(data));
+
+            setTimeout(() => {
+                dispatch(rtkCargarMensaje(undefined));
+            }, 3000);
+
+            return data.factura;
+        } catch (error) {
+            ExceptionMessageError(error);
+            return null;
+        } finally {
+            dispatch(rtkCargando(false));
+        }
+    };
+
+    /**
      * Anular factura
      */
     const fnAnularFactura = async (facturaId, motivo) => {
@@ -136,7 +189,7 @@ export const useFacturaStore = () => {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.post(
                 `/facturas/${facturaId}/anular`,
-                { motivo_anulacion: motivo }
+                { motivo_anulacion: motivo },
             );
 
             dispatch(rtkActualizarFactura(data.factura));
@@ -162,7 +215,7 @@ export const useFacturaStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.get(
-                `/facturas/verificar-reserva/${reservaId}`
+                `/facturas/verificar-reserva/${reservaId}`,
             );
             return data;
         } catch (error) {
@@ -180,7 +233,7 @@ export const useFacturaStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.get(
-                `/facturas/reserva/${reservaId}`
+                `/facturas/reserva/${reservaId}`,
             );
 
             if (data.factura) {
@@ -203,7 +256,7 @@ export const useFacturaStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.post(
-                `/facturas/${facturaId}/recalcular-totales`
+                `/facturas/${facturaId}/recalcular-totales`,
             );
 
             dispatch(rtkActualizarFactura(data.factura));
@@ -331,7 +384,7 @@ export const useFacturaStore = () => {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.get(
                 `/facturas/cliente/${clienteId}/reporte`,
-                { params: filtros }
+                { params: filtros },
             );
             return data;
         } catch (error) {
@@ -378,6 +431,8 @@ export const useFacturaStore = () => {
         fnCargarEstadisticasFacturacion,
         fnCargarFactura,
         fnGenerarFactura,
+        fnAplicarDescuento,
+        fnEliminarDescuento,
         fnAnularFactura,
         fnVerificarPuedeFacturar,
         fnCargarFacturaPorReserva,

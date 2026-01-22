@@ -58,7 +58,7 @@ export const ReservaFinalizarStepper = ({ datos_reserva }) => {
             const { reserva_id } = datos_reserva;
 
             // ============================================================
-            // VALIDACIÓN:  Verificar que tenemos datos de facturación
+            // VALIDACIÓN:   Verificar que tenemos datos de facturación
             // ============================================================
             if (!datosFacturacion || !datosFacturacion.cliente_id) {
                 console.error("Error: No se puede generar factura sin cliente");
@@ -77,11 +77,11 @@ export const ReservaFinalizarStepper = ({ datos_reserva }) => {
                           carga_pagina:
                               storageFields.carga_pagina || "DEPARTAMENTOS",
                       }
-                    : { id: reserva_id, nombre_estado: "PAGADO" }
+                    : { id: reserva_id, nombre_estado: "PAGADO" },
             );
 
             // ============================================================
-            // PASO 2: GENERAR FACTURA Y OBTENER SU ID
+            // PASO 2: GENERAR FACTURA CON DESCUENTO
             // ============================================================
             const facturaGenerada = await fnGenerarFactura({
                 reserva_id: reserva_id,
@@ -89,7 +89,13 @@ export const ReservaFinalizarStepper = ({ datos_reserva }) => {
                 solicita_factura_detallada:
                     datosFacturacion.solicita_detallada || false,
                 observaciones: datosFacturacion.observaciones || null,
+
+                // ✅ NUEVO: Enviar datos de descuento
                 descuento: datosFacturacion.descuento || 0,
+                tipo_descuento: datosFacturacion.tipo_descuento || "MONTO_FIJO",
+                porcentaje_descuento:
+                    datosFacturacion.porcentaje_descuento || null,
+                motivo_descuento: datosFacturacion.motivo_descuento || null,
             });
 
             // ============================================================
@@ -130,10 +136,10 @@ export const ReservaFinalizarStepper = ({ datos_reserva }) => {
                     />
                 </Stepper.Step>
 
-                {/* PASO 2: FACTURACIÓN */}
+                {/* PASO 2: FACTURACIÓN CON DESCUENTO */}
                 <Stepper.Step
                     label="Facturación"
-                    description="Datos del cliente"
+                    description="Cliente y descuento"
                     icon={<IconFileText size={18} />}
                     loading={cargando}
                 >

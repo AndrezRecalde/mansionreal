@@ -11,8 +11,6 @@ export const useDatosReservaDisponibilidad = (
     activarDepartamento,
     activarEstadia
 ) => {
-    console.log(activarEstadia);
-    console.log(activarDepartamento);
     return useMemo(() => {
         if (activarDepartamento?.reserva) {
             return {

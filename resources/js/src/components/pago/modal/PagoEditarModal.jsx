@@ -19,16 +19,22 @@ export const PagoEditarModal = ({ reservaId }) => {
             observaciones: "",
         },
         validate: {
-            codigo_voucher: (value) =>
-                value.length === 0
+            // Codigo voucher obligatorio si el metodo de pago no es EFECTIVO
+            codigo_voucher: (value, values) =>
+                values.metodo_pago !== "EFECTIVO" &&
+                (!value || value.trim().length === 0)
                     ? "El codigo del voucher es requerido"
-                    : "",
+                    : null,
             monto: (value) =>
-                value <= 0 ? "El monto debe ser mayor a cero" : 0,
+                value <= 0 ? "El monto debe ser mayor a cero" : null,
             concepto_pago_id: (value) =>
-                value <= 0 ? "El concepto de pago es requerido" : "",
+                !value || value <= 0
+                    ? "El concepto de pago es requerido"
+                    : null,
             metodo_pago: (value) =>
-                value.length === 0 ? "El metodo de pago es requerido" : "",
+                !value || value.trim().length === 0
+                    ? "El metodo de pago es requerido"
+                    : null,
         },
         transformValues: (values) => ({
             ...values,
@@ -58,9 +64,7 @@ export const PagoEditarModal = ({ reservaId }) => {
             onClose={handleCerrarModal}
             title={
                 <Group>
-                    <TitlePage order={4}>
-                        Editar Pago
-                    </TitlePage>
+                    <TitlePage order={4}>Editar Pago</TitlePage>
                 </Group>
             }
             size="lg"

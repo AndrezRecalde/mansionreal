@@ -31,7 +31,7 @@ export const ConsumosDrawerTable = ({ estado }) => {
         fnAbrirModalConsumo,
         fnAbrirModalEditarConsumo,
         fnAbrirModalEliminarConsumo,
-        fnAbrirModalAplicarDescuento, // ✅ NUEVO
+        fnAbrirModalAplicarDescuento,
     } = useUiConsumo();
 
     // Calcula la suma de todos los totales
@@ -42,7 +42,6 @@ export const ConsumosDrawerTable = ({ estado }) => {
         );
     }, [consumos]);
 
-    // ✅ NUEVO: Total de descuentos
     const totalDescuentos = useMemo(() => {
         return consumos.reduce(
             (acc, consumo) => acc + parseFloat(consumo.descuento || 0),
@@ -95,7 +94,6 @@ export const ConsumosDrawerTable = ({ estado }) => {
                     </Text>
                 ),
             },
-            // ✅ NUEVA COLUMNA: Descuento
             {
                 accessorKey: "descuento",
                 header: "Descuento",
@@ -156,7 +154,6 @@ export const ConsumosDrawerTable = ({ estado }) => {
 
                     return (
                         <Stack gap={2}>
-                            {/* ✅ Mostrar total original tachado si hay descuento */}
                             {consumo.tiene_descuento && (
                                 <Text
                                     size="xs"
@@ -186,7 +183,6 @@ export const ConsumosDrawerTable = ({ estado }) => {
                         </Stack>
                     );
                 },
-                // ✅ Footer actualizado con descuentos
                 Footer: () => (
                     <Stack gap="xs">
                         {totalDescuentos > 0 && (
@@ -243,7 +239,6 @@ export const ConsumosDrawerTable = ({ estado }) => {
         [fnAsignarConsumo, fnAbrirModalEliminarConsumo],
     );
 
-    // ✅ NUEVAS FUNCIONES para descuentos
     const handleAplicarDescuento = useCallback(
         (selected) => {
             fnAsignarConsumo(selected);
@@ -312,7 +307,6 @@ export const ConsumosDrawerTable = ({ estado }) => {
                 </Tooltip>
             </Group>
         ),
-        // ✅ MENÚ DE ACCIONES actualizado
         renderRowActions: ({ row }) => {
             const consumo = row.original;
             const estaFacturado = consumo.esta_facturado;
@@ -340,7 +334,6 @@ export const ConsumosDrawerTable = ({ estado }) => {
                             Editar cantidad
                         </Menu.Item>
 
-                        {/* ✅ NUEVA ACCIÓN: Aplicar o quitar descuento */}
                         {tieneDescuento ? (
                             <Menu.Item
                                 leftSection={<IconDiscountOff size={16} />}

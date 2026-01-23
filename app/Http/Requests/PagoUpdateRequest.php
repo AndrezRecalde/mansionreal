@@ -24,7 +24,7 @@ class PagoUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'codigo_voucher'   => 'required|string|max:50',
+            'codigo_voucher'   => 'nullable|string|max:100',
             'concepto_pago_id' => 'required|exists:conceptos_pagos,id',
             'monto'            => 'required|numeric|min:0',
             'metodo_pago'      => 'required|in:EFECTIVO,TRANSFERENCIA,TARJETA,OTRO',
@@ -35,7 +35,6 @@ class PagoUpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'codigo_voucher.required'   => 'El código de voucher es obligatorio.',
             'concepto_pago_id.exists'   => 'El concepto de pago no existe.',
             'monto.numeric'             => 'El monto debe ser un valor numérico válido.',
             'metodo_pago.in'            => 'El método de pago no es válido.',

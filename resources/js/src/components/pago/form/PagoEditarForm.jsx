@@ -19,10 +19,10 @@ export const PagoEditarForm = ({ form, handleCerrarModal }) => {
         if (activarPago !== null) {
             form.setValues({
                 id: activarPago.id,
-                codigo_voucher: activarPago.codigo_voucher,
-                concepto_pago_id: activarPago.concepto_pago_id.toString(),
-                monto: activarPago.monto,
-                metodo_pago: activarPago.metodo_pago,
+                codigo_voucher: activarPago.codigo_voucher || "",
+                concepto_pago_id: activarPago.concepto_pago_id.toString() || "",
+                monto: activarPago.monto || 0,
+                metodo_pago: activarPago.metodo_pago || "",
                 observaciones: activarPago.observaciones || "",
             });
             return;
@@ -71,8 +71,13 @@ export const PagoEditarForm = ({ form, handleCerrarModal }) => {
                     <TextInput
                         label="Código Voucher"
                         placeholder="Ej: VCH-001"
-                        withAsterisk
                         {...form.getInputProps("codigo_voucher")}
+                        withAsterisk={
+                            form.values.metodo_pago !== "EFECTIVO"
+                        }
+                        disabled={
+                            form.values.metodo_pago === "EFECTIVO"
+                        }
                     />
                     <NumberInput
                         label="Monto"
@@ -91,7 +96,6 @@ export const PagoEditarForm = ({ form, handleCerrarModal }) => {
                         withAsterisk
                         {...form.getInputProps("concepto_pago_id")}
                     />
-
                 </SimpleGrid>
                 <Textarea
                     label="Observaciones"

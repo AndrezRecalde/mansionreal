@@ -50,6 +50,24 @@ export const PagoEditarForm = ({ form, handleCerrarModal }) => {
                 }}
             >
                 <SimpleGrid cols={{ base: 1, sm: 2, md: 2, lg: 2 }}>
+                    <Select
+                        label="Método de pago"
+                        placeholder="Seleccionar método"
+                        data={[
+                            {
+                                value: "EFECTIVO",
+                                label: "EFECTIVO",
+                            },
+                            {
+                                value: "TRANSFERENCIA",
+                                label: "TRANSFERENCIA",
+                            },
+                            { value: "TARJETA", label: "TARJETA" },
+                            { value: "OTRO", label: "OTRO" },
+                        ]}
+                        withAsterisk
+                        {...form.getInputProps("metodo_pago")}
+                    />
                     <TextInput
                         label="Código Voucher"
                         placeholder="Ej: VCH-001"
@@ -73,24 +91,7 @@ export const PagoEditarForm = ({ form, handleCerrarModal }) => {
                         withAsterisk
                         {...form.getInputProps("concepto_pago_id")}
                     />
-                    <Select
-                        label="Método de pago"
-                        placeholder="Seleccionar método"
-                        data={[
-                            {
-                                value: "EFECTIVO",
-                                label: "EFECTIVO",
-                            },
-                            {
-                                value: "TRANSFERENCIA",
-                                label: "TRANSFERENCIA",
-                            },
-                            { value: "TARJETA", label: "TARJETA" },
-                            { value: "OTRO", label: "OTRO" },
-                        ]}
-                        withAsterisk
-                        {...form.getInputProps("metodo_pago")}
-                    />
+
                 </SimpleGrid>
                 <Textarea
                     label="Observaciones"

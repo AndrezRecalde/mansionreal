@@ -114,9 +114,6 @@ export const GastoDrawerTable = ({ estado }) => {
                         />
                     </ActionIcon>
                 </Tooltip>
-                <TextSection tt="" fw={500} fz={16}>
-                    Registro de Daños
-                </TextSection>
             </Group>
         ),
         renderRowActionMenuItems: ({ row }) => (

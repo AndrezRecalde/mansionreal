@@ -1,9 +1,8 @@
 import { useEffect } from "react";
-import { Group, Modal, Title } from "@mantine/core";
+import { Group, Modal } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useConceptoPagoStore, useUiPago } from "../../../hooks";
-import { PagoEditarForm } from "../../../components";
-import { IconEdit } from "@tabler/icons-react";
+import { PagoEditarForm, TitlePage } from "../../../components";
 
 export const PagoEditarModal = ({ reservaId }) => {
     const { abrirModalEditarRegistroPago, fnAbrirModalEditarRegistroPago } =
@@ -23,13 +22,13 @@ export const PagoEditarModal = ({ reservaId }) => {
             codigo_voucher: (value) =>
                 value.length === 0
                     ? "El codigo del voucher es requerido"
-                    : null,
+                    : "",
             monto: (value) =>
-                value <= 0 ? "El monto debe ser mayor a cero" : null,
+                value <= 0 ? "El monto debe ser mayor a cero" : 0,
             concepto_pago_id: (value) =>
-                value <= 0 ? "El concepto de pago es requerido" : null,
+                value <= 0 ? "El concepto de pago es requerido" : "",
             metodo_pago: (value) =>
-                value.length === 0 ? "El metodo de pago es requerido" : null,
+                value.length === 0 ? "El metodo de pago es requerido" : "",
         },
         transformValues: (values) => ({
             ...values,
@@ -59,10 +58,9 @@ export const PagoEditarModal = ({ reservaId }) => {
             onClose={handleCerrarModal}
             title={
                 <Group>
-                    <IconEdit size={25} />
-                    <Title order={4} fw={700}>
+                    <TitlePage order={4}>
                         Editar Pago
-                    </Title>
+                    </TitlePage>
                 </Group>
             }
             size="lg"

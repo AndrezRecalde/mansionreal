@@ -122,9 +122,6 @@ export const PagosTable = ({ estado }) => {
                         />
                     </ActionIcon>
                 </Tooltip>
-                <TextSection tt="" fw={500} fz={16}>
-                    Registro de Pagos
-                </TextSection>
             </Group>
         ),
         renderRowActionMenuItems: ({ row }) => (

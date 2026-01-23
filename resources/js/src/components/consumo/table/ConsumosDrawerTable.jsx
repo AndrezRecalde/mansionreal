@@ -299,12 +299,15 @@ export const ConsumosDrawerTable = ({ estado }) => {
                 <Tooltip label="Agregar Consumo">
                     <ActionIcon
                         variant="default"
-                        size="lg"
+                        size="xl"
                         aria-label="Agregar consumo"
                         onClick={handleAbrirConsumo}
                         disabled={estado !== Estados.HOSPEDADO}
                     >
-                        <IconShoppingCartPlus size={18} />
+                        <IconShoppingCartPlus
+                            style={{ width: "80%", height: "80%" }}
+                            stroke={1.5}
+                        />
                     </ActionIcon>
                 </Tooltip>
             </Group>
@@ -368,6 +371,21 @@ export const ConsumosDrawerTable = ({ estado }) => {
                     </Menu.Dropdown>
                 </Menu>
             );
+        },
+        mantineTableProps: {
+            withColumnBorders: true,
+            withTableBorder: true,
+            sx: {
+                "thead > tr": {
+                    backgroundColor: "inherit",
+                },
+                "thead > tr > th": {
+                    backgroundColor: "inherit",
+                },
+                "tbody > tr > td": {
+                    backgroundColor: "inherit",
+                },
+            },
         },
     });
 

@@ -434,12 +434,14 @@ class FacturaService
 
         foreach ($consumos as $consumo) {
             $subtotal_sin_iva += $consumo->subtotal; // Subtotal antes de descuento
+            $total_descuento += $consumo->descuento; // Total descuentos
             $total_iva += $consumo->iva;              // IVA ya calculado con descuento
             $total_factura += $consumo->total;        // Total con descuento aplicado
         }
 
         return [
             'subtotal_sin_iva' => round($subtotal_sin_iva, 2),
+            'total_descuento' => round($total_descuento, 2),
             'total_iva' => round($total_iva, 2),
             'total_factura' => round($total_factura, 2),
         ];
@@ -469,6 +471,7 @@ class FacturaService
 
         // Asignar totales (calculados desde consumos)
         $factura->subtotal_sin_iva = $totales['subtotal_sin_iva'];
+        $factura->total_descuento = $totales['total_descuento'];
         $factura->total_iva = $totales['total_iva'];
         $factura->total_factura = $totales['total_factura'];
 

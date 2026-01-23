@@ -139,6 +139,7 @@ export const FacturasTable = () => {
     );
 
     const handleVerDetalle = (factura) => {
+        //TODO: UTILIZAR EL METODO SHOW DE FACTURACONTROLLER PARA ACTIVAR LA FACTURA COMPLETA
         fnActivarFactura(factura);
         fnAbrirModalDetalleFactura(true);
     };

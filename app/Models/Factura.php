@@ -24,6 +24,7 @@ class Factura extends Model
         'cliente_telefono',
         'cliente_email',
         'subtotal_sin_iva',
+        'total_descuento',
         'total_iva',
         'total_factura', // ✅ Total final (suma de consumos.total)
         // ❌ REMOVIDOS: Campos de descuento (ahora están en consumos)
@@ -39,6 +40,7 @@ class Factura extends Model
         'fecha_emision' => 'date',
         'fecha_anulacion' => 'datetime',
         'subtotal_sin_iva' => 'decimal:2',
+        'total_descuento' => 'decimal:2',
         'total_iva' => 'decimal:2',
         'total_factura' => 'decimal:2',
         'created_at' => 'datetime',
@@ -153,14 +155,6 @@ class Factura extends Model
     }
 
     /**
-     * ✅ NUEVO: Verificar si la factura tiene descuentos
-     */
-    public function getTieneDescuentosAttribute(): bool
-    {
-        return $this->consumos()->where('descuento', '>', 0)->exists();
-    }
-
-    /**
      * ✅ NUEVO: Calcular subtotal antes de descuentos
      */
     public function getSubtotalAntesDescuentosAttribute(): float
@@ -212,6 +206,31 @@ class Factura extends Model
         return "{$this->cliente_nombres_completos} - {$this->cliente_tipo_identificacion}: {$this->cliente_identificacion}";
     }
 
+    public function getTieneDescuentosAttribute(): bool
+    {
+        return $this->total_descuento > 0;
+    }
+
+    /**
+     * ✅ NUEVO: Obtener porcentaje de descuento sobre el subtotal
+     */
+    public function getPorcentajeDescuentoAttribute(): float
+    {
+        if ($this->subtotal_sin_iva <= 0) {
+            return 0;
+        }
+
+        return ($this->total_descuento / $this->subtotal_sin_iva) * 100;
+    }
+
+    /**
+     * ✅ NUEVO: Obtener subtotal antes de descuentos
+     */
+    public function getSubtotalAntesDescuentoAttribute(): float
+    {
+        return $this->subtotal_sin_iva + $this->total_descuento;
+    }
+
     // ====================================================================
     // SCOPES
     // ====================================================================
@@ -246,6 +265,11 @@ class Factura extends Model
     public function scopeEntreFechas($query, Carbon $inicio, Carbon $fin)
     {
         return $query->whereBetween('fecha_emision', [$inicio, $fin]);
+    }
+
+    public function scopePorAnio($query, int $anio)
+    {
+        return $query->whereYear('fecha_emision', $anio);
     }
 
     /**
@@ -352,5 +376,15 @@ class Factura extends Model
             'consumos_con_descuento' => $this->consumos_con_descuento,
             'consumos_totales' => $this->cantidad_consumos,
         ];
+    }
+
+    public function copiarDatosCliente(ClienteFacturacion $cliente): void
+    {
+        $this->cliente_tipo_identificacion = $cliente->tipo_identificacion;
+        $this->cliente_identificacion = $cliente->identificacion;
+        $this->cliente_nombres_completos = $cliente->nombres_completos;
+        $this->cliente_direccion = $cliente->direccion;
+        $this->cliente_telefono = $cliente->telefono;
+        $this->cliente_email = $cliente->email;
     }
 }

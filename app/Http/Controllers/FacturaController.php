@@ -449,6 +449,7 @@ class FacturaController extends Controller
 
             // Query base para facturas emitidas
             $facturasEmitidasQuery = Factura::emitidas();
+            $queryClone = clone $facturasEmitidasQuery;
 
             if ($fechaInicio && $fechaFin) {
                 $facturasEmitidasQuery->entreFechas($fechaInicio, $fechaFin);
@@ -498,23 +499,23 @@ class FacturaController extends Controller
                 'facturas' => [
                     'total_emitidas' => (int)$totalEmitidas,
                     'total_anuladas' => (int)$totalAnuladas,
-                    'total_con_descuento' => $facturasConDescuento, // ✅ NUEVO
+                    'total_con_descuento' => $facturasConDescuento,
                     'total_general' => (int)($totalEmitidas + $totalAnuladas),
                 ],
                 'montos' => [
                     'total_facturado' => (float)round($totalFacturado, 2),
                     'total_iva' => (float)round($totalIva, 2),
                     'total_sin_iva' => (float)round($totalSinIva, 2),
-                    'total_descuentos' => (float)round($totalDescuentos, 2), // ✅ ACTUALIZADO
+                    'total_descuentos' => (float)round($totalDescuentos, 2),
                     'ticket_maximo' => (float)round(
                         $totalEmitidas > 0
-                            ? $facturasEmitidasQuery->max('total_factura')
+                            ? $queryClone->max('total_factura')
                             : 0,
                         2
                     ),
                     'ticket_minimo' => (float)round(
                         $totalEmitidas > 0
-                            ? $facturasEmitidasQuery->min('total_factura')
+                            ? $queryClone->min('total_factura')
                             : 0,
                         2
                     ),
@@ -526,6 +527,7 @@ class FacturaController extends Controller
                     'total_clientes' => $clientesFacturados,
                     'consumidores_finales' => $consumidoresFinales,
                     'clientes_registrados' => $clientesRegistrados,
+                    'clientes_unicos'      => $clientesFacturados - $consumidoresFinales,
                 ]
             ], 200);
         } catch (\Throwable $th) {

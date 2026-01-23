@@ -143,9 +143,11 @@ import { ConsumosDetalleTable } from "./consumo/table/ConsumosDetalleTable";
 import { ConsumosTotalTable } from "./consumo/table/ConsumosTotalTable";
 import { ConsumoEditarModal } from "./consumo/modal/ConsumoEditarModal";
 import { ConsumoEliminarModal } from "./consumo/modal/ConsumoEliminarModal";
+import { ConsumoAplicarDescuentoModal } from "./consumo/modal/ConsumoAplicarDescuentoModal";
 import { ConsumoEditarForm } from "./consumo/form/ConsumoEditarForm";
 import { ConsumoEliminarForm } from "./consumo/form/ConsumoEliminarForm";
 import { ConsumoForm } from "./consumo/form/ConsumoForm";
+import { ConsumoDescuentoForm } from "./consumo/form/ConsumoDescuentoForm";
 import { ConsumoCard } from "./consumo/section/ConsumoCard";
 
 /* Gastos de Danos */
@@ -330,10 +332,12 @@ export {
     ConsumosDetalleTable,
     ConsumosTotalTable,
     ConsumoEditarModal,
+    ConsumoAplicarDescuentoModal,
     ConsumoEliminarModal,
     ConsumoEditarForm,
     ConsumoEliminarForm,
     ConsumoForm,
+    ConsumoDescuentoForm,
     ConsumoCard,
 
     /* Gastos */

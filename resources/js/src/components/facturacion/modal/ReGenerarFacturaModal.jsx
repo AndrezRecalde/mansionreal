@@ -14,9 +14,6 @@ import {
     Box,
     Switch,
     LoadingOverlay,
-    NumberInput,
-    SegmentedControl,
-    Textarea,
 } from "@mantine/core";
 import {
     IconAlertCircle,
@@ -24,9 +21,6 @@ import {
     IconSearch,
     IconUserPlus,
     IconX,
-    IconDiscount,
-    IconPercentage,
-    IconCurrencyDollar,
 } from "@tabler/icons-react";
 import { ClienteFacturacionForm } from "../../../components";
 import {
@@ -36,16 +30,8 @@ import {
     useUiFactura,
 } from "../../../hooks";
 import Swal from "sweetalert2";
-import {
-    formatearMonto,
-    formatearPorcentaje,
-    normalizarNumero,
-} from "../../../helpers/fnHelper";
 
-/**
- * Modal completo para re-generar factura después de anulación
- * ✅ CON SOPORTE PARA DESCUENTOS
- */
+
 export const ReGenerarFacturaModal = () => {
     const { activarReserva, fnBuscarReservas, fnAsignarReserva } =
         useReservaDepartamentoStore();
@@ -71,32 +57,23 @@ export const ReGenerarFacturaModal = () => {
     const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
     const [solicitaDetallada, setSolicitaDetallada] = useState(false);
 
-    // ✅ NUEVOS: Estados para descuento
-    const [aplicarDescuento, setAplicarDescuento] = useState(false);
-    const [descuento, setDescuento] = useState(0);
-    const [tipoDescuento, setTipoDescuento] = useState("MONTO_FIJO");
-    const [porcentajeDescuento, setPorcentajeDescuento] = useState(0);
-    const [motivoDescuento, setMotivoDescuento] = useState("");
+    // ❌ REMOVIDO: Estados para descuento
 
     // Cargar consumidor final al montar
     useEffect(() => {
         if (abrirModalReGenerarFactura) {
             fnCargarConsumidorFinal();
         }
+
+        return () => {
+            handleLimpiar();
+        };
     }, [abrirModalReGenerarFactura]);
 
-    // Auto-seleccionar consumidor final si el switch está en ON
+    // Setear consumidor final automáticamente cuando se desmarca el switch
     useEffect(() => {
-        if (!generarFactura && consumidorFinal && !clienteSeleccionado) {
-            // Si NO genera factura → Consumidor Final
-            setClienteSeleccionado({
-                id: consumidorFinal.id,
-                nombres_completos: "CONSUMIDOR FINAL",
-                identificacion: consumidorFinal.identificacion,
-            });
-        } else if (generarFactura) {
-            // Si genera factura → Limpiar
-            setClienteSeleccionado(null);
+        if (!generarFactura && consumidorFinal) {
+            setClienteSeleccionado(consumidorFinal);
         }
     }, [generarFactura, consumidorFinal]);
 
@@ -115,74 +92,50 @@ export const ReGenerarFacturaModal = () => {
 
         const resultado = await fnBuscarPorIdentificacion(dniBusqueda);
 
-        if (resultado?.existe && resultado?.cliente) {
-            setClienteSeleccionado({
-                id: resultado.cliente.id,
-                nombres_completos: resultado.cliente.nombres_completos,
-                identificacion: resultado.cliente.identificacion,
-                tipo_identificacion: resultado.cliente.tipo_identificacion,
-            });
+        if (resultado.existe && resultado.cliente) {
+            setClienteSeleccionado(resultado.cliente);
         } else {
             setClienteSeleccionado(null);
         }
     };
 
     const handlePrellenarDesdeHuesped = async () => {
-        if (!activarReserva?.huesped_id) {
+        if (!activarReserva || !activarReserva.reserva_id) {
             Swal.fire({
                 icon: "error",
                 title: "Error",
-                text: "No se encontró información del huésped",
+                text: "No se pudo obtener información de la reserva",
             });
             return;
         }
 
-        const resultado = await fnPrellenarDesdeHuesped(
-            activarReserva.huesped_id,
+        const huesped = await fnPrellenarDesdeHuesped(
+            activarReserva.reserva_id,
         );
 
-        if (resultado?.existe && resultado?.cliente_existente) {
-            setDniBusqueda(resultado.cliente_existente.identificacion);
-            setClienteSeleccionado({
-                id: resultado.cliente_existente.id,
-                nombres_completos:
-                    resultado.cliente_existente.nombres_completos,
-                identificacion: resultado.cliente_existente.identificacion,
-                tipo_identificacion:
-                    resultado.cliente_existente.tipo_identificacion,
-            });
-            setBusquedaRealizada(true);
-            setMostrarFormulario(false);
-        } else {
+        if (huesped) {
+            setDniBusqueda(huesped.identificacion || "");
             setMostrarFormulario(true);
             setBusquedaRealizada(false);
         }
     };
 
     const handleClienteCreado = (nuevoCliente) => {
-        setClienteSeleccionado({
-            id: nuevoCliente.id,
-            nombres_completos: nuevoCliente.nombres_completos,
-            identificacion: nuevoCliente.identificacion,
-            tipo_identificacion: nuevoCliente.tipo_identificacion,
-        });
+        setClienteSeleccionado(nuevoCliente);
         setMostrarFormulario(false);
         setBusquedaRealizada(false);
+        setDniBusqueda("");
     };
 
     const handleLimpiar = () => {
-        fnLimpiarCliente();
+        setGenerarFactura(false);
         setDniBusqueda("");
         setBusquedaRealizada(false);
         setMostrarFormulario(false);
         setClienteSeleccionado(null);
         setSolicitaDetallada(false);
-
-        // Limpiar descuento
-        setAplicarDescuento(false);
-        setDescuento(0);
-        setPorcentajeDescuento(0);
-        setMotivoDescuento("");
+        fnLimpiarCliente();
+        // ❌ REMOVIDO: Limpiar estados de descuento
     };
 
     const handleGenerar = async () => {
@@ -195,40 +148,7 @@ export const ReGenerarFacturaModal = () => {
             return;
         }
 
-        // ✅ Validar descuento si está activado
-        if (aplicarDescuento) {
-            const montoDescuento = normalizarNumero(descuento);
-            const porcentaje = normalizarNumero(porcentajeDescuento);
-
-            if (tipoDescuento === "MONTO_FIJO") {
-                if (montoDescuento <= 0) {
-                    Swal.fire({
-                        icon: "warning",
-                        title: "Descuento inválido",
-                        text: "El monto del descuento debe ser mayor a $0",
-                    });
-                    return;
-                }
-            } else if (tipoDescuento === "PORCENTAJE") {
-                if (porcentaje <= 0 || porcentaje > 100) {
-                    Swal.fire({
-                        icon: "warning",
-                        title: "Porcentaje inválido",
-                        text: "El porcentaje debe estar entre 1% y 100%",
-                    });
-                    return;
-                }
-            }
-
-            if (porcentaje > 50 && !motivoDescuento.trim()) {
-                Swal.fire({
-                    icon: "warning",
-                    title: "Motivo requerido",
-                    text: "Los descuentos mayores al 50% requieren justificación obligatoria",
-                });
-                return;
-            }
-        }
+        // ❌ REMOVIDO: Validación de descuentos
 
         const result = await Swal.fire({
             icon: "question",
@@ -237,17 +157,6 @@ export const ReGenerarFacturaModal = () => {
                 <div style="text-align: left;">
                     <p><strong>Reserva:</strong> ${activarReserva.codigo_reserva}</p>
                     <p><strong>Cliente:</strong> ${clienteSeleccionado.nombres_completos}</p>
-                    ${
-                        aplicarDescuento
-                            ? `<p><strong>Descuento:</strong> ${
-                                  tipoDescuento === "MONTO_FIJO"
-                                      ? "$" + formatearMonto(descuento)
-                                      : formatearPorcentaje(
-                                            porcentajeDescuento,
-                                        ) + "%"
-                              }</p>`
-                            : ""
-                    }
                     <p style="color: #ea580c; font-weight: bold;">Esta es una RE-FACTURACIÓN</p>
                 </div>
             `,
@@ -263,19 +172,7 @@ export const ReGenerarFacturaModal = () => {
                     reserva_id: activarReserva.reserva_id,
                     cliente_facturacion_id: clienteSeleccionado.id,
                     solicita_factura_detallada: solicitaDetallada,
-
-                    // ✅ NUEVO: Enviar datos de descuento
-                    descuento: aplicarDescuento
-                        ? tipoDescuento === "MONTO_FIJO"
-                            ? normalizarNumero(descuento)
-                            : 0
-                        : 0,
-                    tipo_descuento: aplicarDescuento ? tipoDescuento : null,
-                    porcentaje_descuento:
-                        aplicarDescuento && tipoDescuento === "PORCENTAJE"
-                            ? normalizarNumero(porcentajeDescuento)
-                            : null,
-                    motivo_descuento: aplicarDescuento ? motivoDescuento : null,
+                    // ❌ REMOVIDO: Campos de descuento
                 });
 
                 if (facturaGenerada) {
@@ -283,31 +180,33 @@ export const ReGenerarFacturaModal = () => {
                         icon: "success",
                         title: "Factura Re-Generada",
                         text: `Factura ${facturaGenerada.numero_factura} generada exitosamente`,
-                        timer: 3000,
-                        showConfirmButton: true,
                     });
 
-                    await fnBuscarReservas({
-                        codigo_reserva: activarReserva.codigo_reserva,
-                    });
                     handleClose();
-                    fnAsignarReserva(null);
+
+                    // Actualizar listado de reservas si es necesario
+                    if (fnBuscarReservas) {
+                        fnBuscarReservas();
+                    }
                 }
             } catch (error) {
-                console.error("Error al re-generar factura:", error);
+                console.error("Error al generar factura:", error);
             }
         }
     };
 
     const handleClose = () => {
-        handleLimpiar();
-        fnAsignarReserva(null);
         fnAbrirModalReGenerarFactura(false);
+        fnAsignarReserva(null);
+        handleLimpiar();
     };
 
-    if (!activarReserva) return null;
+    const puedeGenerar = Boolean(
+        clienteSeleccionado && clienteSeleccionado.id,
+        // ❌ REMOVIDO: Validación de descuentos
+    );
 
-    const puedeGenerar = clienteSeleccionado !== null;
+    if (!activarReserva) return null;
 
     return (
         <Modal
@@ -316,20 +215,12 @@ export const ReGenerarFacturaModal = () => {
             title={
                 <Group>
                     <IconRefresh size={24} color="#ea580c" />
-                    <Text fw={700} size="lg">
-                        Volver a Generar Factura
+                    <Text size="lg" fw={700}>
+                        Re-Generar Factura
                     </Text>
                 </Group>
             }
-            size="xl"
-            padding="xl"
-            styles={{
-                header: {
-                    borderBottom: "1px solid #e9ecef",
-                    paddingBottom: 16,
-                    marginBottom: 16,
-                },
-            }}
+            size="lg"
             closeOnClickOutside={false}
             closeOnEscape={false}
         >
@@ -338,60 +229,57 @@ export const ReGenerarFacturaModal = () => {
                 overlayProps={{ blur: 2 }}
             />
 
-            <Stack gap="lg">
-                {/* Información de la reserva */}
+            <Stack gap="md">
+                {/* ADVERTENCIA */}
                 <Alert
-                    icon={<IconAlertCircle size={20} />}
-                    title="Información de la Reserva"
                     color="orange"
+                    variant="light"
+                    icon={<IconAlertCircle />}
+                    title="Re-Facturación"
                 >
-                    <Stack gap="xs">
-                        <Group justify="space-between">
-                            <Text size="sm" fw={500}>
-                                Código de Reserva:
-                            </Text>
-                            <Badge color="orange" size="lg">
-                                {activarReserva.codigo_reserva}
-                            </Badge>
-                        </Group>
-                        <Group justify="space-between">
-                            <Text size="sm" fw={500}>
-                                Huésped:
-                            </Text>
-                            <Text size="sm">
-                                {activarReserva.nombres_huesped}{" "}
-                                {activarReserva.apellidos_huesped}
-                            </Text>
-                        </Group>
-                        {activarReserva.factura && (
-                            <>
-                                <Group justify="space-between">
-                                    <Text size="sm" fw={500}>
-                                        Factura Anulada:
-                                    </Text>
-                                    <Text size="sm" c="red" fw={600}>
-                                        {activarReserva.factura.numero_factura}
-                                    </Text>
-                                </Group>
-                                {activarReserva.factura.motivo_anulacion && (
-                                    <Box>
-                                        <Text size="xs" c="dimmed">
-                                            <strong>Motivo:</strong>{" "}
-                                            {
-                                                activarReserva.factura
-                                                    .motivo_anulacion
-                                            }
-                                        </Text>
-                                    </Box>
-                                )}
-                            </>
-                        )}
-                    </Stack>
+                    <Text size="sm">
+                        Esta reserva ya tuvo una factura que fue anulada. Se
+                        generará una <strong>nueva factura</strong> con los
+                        mismos consumos.
+                    </Text>
                 </Alert>
+
+                {/* INFORMACIÓN DE LA RESERVA */}
+                <Paper p="md" withBorder style={{ background: "#fafafa" }}>
+                    <Text size="sm" fw={600} mb="xs">
+                        Información de la Reserva
+                    </Text>
+                    <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                            Código:
+                        </Text>
+                        <Badge size="lg" variant="light">
+                            {activarReserva.codigo_reserva}
+                        </Badge>
+                    </Group>
+                    <Group justify="space-between" mt="xs">
+                        <Text size="sm" c="dimmed">
+                            Huésped:
+                        </Text>
+                        <Text size="sm" fw={500}>
+                            {activarReserva.huesped}
+                        </Text>
+                    </Group>
+                    {activarReserva.departamento && (
+                        <Group justify="space-between" mt="xs">
+                            <Text size="sm" c="dimmed">
+                                Departamento:
+                            </Text>
+                            <Text size="sm" fw={500}>
+                                {activarReserva.tipo_departamento} - {activarReserva.numero_departamento}
+                            </Text>
+                        </Group>
+                    )}
+                </Paper>
 
                 <Divider label="DATOS DE FACTURACIÓN" labelPosition="center" />
 
-                {/* SWITCH:  Consumidor Final vs Cliente Registrado */}
+                {/* SWITCH: Consumidor Final vs Cliente Registrado */}
                 <Paper p="md" withBorder style={{ background: "#f8f9fa" }}>
                     <Switch
                         size="md"
@@ -427,9 +315,6 @@ export const ReGenerarFacturaModal = () => {
                         <Text size="sm" mt="xs" c="dimmed">
                             Identificación: {consumidorFinal.identificacion}
                         </Text>
-                        <Text size="xs" mt="sm" c="dimmed">
-                            💡 Puede aplicar un descuento más abajo si lo desea
-                        </Text>
                     </Alert>
                 )}
 
@@ -453,11 +338,9 @@ export const ReGenerarFacturaModal = () => {
                                         handleBuscarCliente();
                                     }
                                 }}
-                                disabled={cargandoCliente}
                             />
                             <Button
                                 onClick={handleBuscarCliente}
-                                leftSection={<IconSearch size={16} />}
                                 loading={cargandoCliente}
                             >
                                 Buscar
@@ -466,22 +349,28 @@ export const ReGenerarFacturaModal = () => {
 
                         <Button
                             variant="light"
-                            onClick={handlePrellenarDesdeHuesped}
                             leftSection={<IconUserPlus size={16} />}
+                            onClick={handlePrellenarDesdeHuesped}
                             fullWidth
                         >
                             Prellenar con datos del huésped
                         </Button>
 
+                        {/* Resultados de búsqueda */}
                         {busquedaRealizada &&
-                            clienteExistente &&
-                            !mostrarFormulario && (
-                                <Alert color="green" title="Cliente Encontrado">
-                                    <Text size="sm" fw={600}>
+                            !mostrarFormulario &&
+                            clienteExistente && (
+                                <Alert
+                                    color="green"
+                                    variant="light"
+                                    title="Cliente Encontrado"
+                                >
+                                    <Text size="sm">
+                                        <strong>Nombre:</strong>{" "}
                                         {clienteExistente.nombres_completos}
                                     </Text>
-                                    <Text size="sm" c="dimmed">
-                                        {clienteExistente.tipo_identificacion}:{" "}
+                                    <Text size="sm">
+                                        <strong>Identificación:</strong>{" "}
                                         {clienteExistente.identificacion}
                                     </Text>
                                     <Group mt="md">
@@ -493,6 +382,30 @@ export const ReGenerarFacturaModal = () => {
                                             Buscar otro
                                         </Button>
                                     </Group>
+                                </Alert>
+                            )}
+
+                        {busquedaRealizada &&
+                            !mostrarFormulario &&
+                            !clienteExistente && (
+                                <Alert
+                                    color="orange"
+                                    variant="light"
+                                    title="Cliente No Encontrado"
+                                >
+                                    <Text size="sm" mb="sm">
+                                        No existe un cliente con la
+                                        identificación ingresada.
+                                    </Text>
+                                    <Button
+                                        size="sm"
+                                        leftSection={<IconUserPlus size={16} />}
+                                        onClick={() =>
+                                            setMostrarFormulario(true)
+                                        }
+                                    >
+                                        Registrar nuevo cliente
+                                    </Button>
                                 </Alert>
                             )}
 
@@ -529,177 +442,9 @@ export const ReGenerarFacturaModal = () => {
                     </>
                 )}
 
-                {/* ✅ SECCIÓN DE DESCUENTO (OPCIONAL) */}
-                {clienteSeleccionado && (
-                    <>
-                        <Divider
-                            my="md"
-                            label={
-                                <Group gap="xs">
-                                    <IconDiscount size={18} />
-                                    <Text>Descuento (Opcional)</Text>
-                                </Group>
-                            }
-                            labelPosition="center"
-                        />
+                {/* ❌ REMOVIDO: Sección completa de descuentos */}
 
-                        <Paper p="md" withBorder>
-                            <Stack gap="md">
-                                <Switch
-                                    size="md"
-                                    label="Aplicar descuento a esta factura"
-                                    description="Agregue un descuento al total de la factura"
-                                    checked={aplicarDescuento}
-                                    onChange={(event) => {
-                                        setAplicarDescuento(
-                                            event.currentTarget.checked,
-                                        );
-                                        if (!event.currentTarget.checked) {
-                                            setDescuento(0);
-                                            setPorcentajeDescuento(0);
-                                            setMotivoDescuento("");
-                                        }
-                                    }}
-                                />
-
-                                {aplicarDescuento && (
-                                    <Stack gap="md">
-                                        <SegmentedControl
-                                            value={tipoDescuento}
-                                            onChange={setTipoDescuento}
-                                            data={[
-                                                {
-                                                    label: "Monto Fijo ($)",
-                                                    value: "MONTO_FIJO",
-                                                },
-                                                {
-                                                    label: "Porcentaje (%)",
-                                                    value: "PORCENTAJE",
-                                                },
-                                            ]}
-                                            fullWidth
-                                        />
-
-                                        {tipoDescuento === "MONTO_FIJO" ? (
-                                            <NumberInput
-                                                label="Monto del descuento"
-                                                placeholder="Ej: 50. 00"
-                                                description="Ingrese el monto exacto a descontar"
-                                                prefix="$"
-                                                min={0}
-                                                decimalScale={2}
-                                                fixedDecimalScale
-                                                value={descuento}
-                                                onChange={(val) =>
-                                                    setDescuento(
-                                                        normalizarNumero(val),
-                                                    )
-                                                }
-                                                leftSection={
-                                                    <IconCurrencyDollar
-                                                        size={16}
-                                                    />
-                                                }
-                                                required
-                                            />
-                                        ) : (
-                                            <NumberInput
-                                                label="Porcentaje de descuento"
-                                                placeholder="Ej: 15"
-                                                description="Ingrese el porcentaje a descontar (1-100)"
-                                                suffix="%"
-                                                min={0}
-                                                max={100}
-                                                decimalScale={2}
-                                                value={porcentajeDescuento}
-                                                onChange={(val) =>
-                                                    setPorcentajeDescuento(
-                                                        normalizarNumero(val),
-                                                    )
-                                                }
-                                                leftSection={
-                                                    <IconPercentage size={16} />
-                                                }
-                                                required
-                                            />
-                                        )}
-
-                                        <Textarea
-                                            label="Motivo del descuento"
-                                            placeholder="Ej:  Promoción de temporada, Cliente VIP, Cortesía..."
-                                            description={
-                                                normalizarNumero(
-                                                    porcentajeDescuento,
-                                                ) > 50
-                                                    ? "⚠️ Requerido para descuentos mayores al 50%"
-                                                    : "Opcional - Ayuda para auditoría"
-                                            }
-                                            value={motivoDescuento}
-                                            onChange={(e) =>
-                                                setMotivoDescuento(
-                                                    e.target.value,
-                                                )
-                                            }
-                                            minRows={2}
-                                            maxRows={4}
-                                            error={
-                                                normalizarNumero(
-                                                    porcentajeDescuento,
-                                                ) > 50 &&
-                                                !motivoDescuento.trim()
-                                                    ? "Motivo obligatorio para descuentos mayores al 50%"
-                                                    : null
-                                            }
-                                        />
-
-                                        {(normalizarNumero(descuento) > 0 ||
-                                            normalizarNumero(
-                                                porcentajeDescuento,
-                                            ) > 0) && (
-                                            <Alert
-                                                color="blue"
-                                                title="Vista previa"
-                                            >
-                                                <Stack gap="xs">
-                                                    {tipoDescuento ===
-                                                    "MONTO_FIJO" ? (
-                                                        <Text size="sm">
-                                                            Se descontará:{" "}
-                                                            <strong>
-                                                                $
-                                                                {formatearMonto(
-                                                                    descuento,
-                                                                )}
-                                                            </strong>
-                                                        </Text>
-                                                    ) : (
-                                                        <Text size="sm">
-                                                            Se descontará:{" "}
-                                                            <strong>
-                                                                {formatearPorcentaje(
-                                                                    porcentajeDescuento,
-                                                                )}
-                                                                %
-                                                            </strong>{" "}
-                                                            del total
-                                                        </Text>
-                                                    )}
-                                                    <Text size="xs" c="dimmed">
-                                                        El descuento se aplicará
-                                                        al total de la factura
-                                                        antes de impuestos
-                                                    </Text>
-                                                </Stack>
-                                            </Alert>
-                                        )}
-                                    </Stack>
-                                )}
-                            </Stack>
-                        </Paper>
-                    </>
-                )}
-
-                {/* RESUMEN:  Cliente Seleccionado */}
+                {/* RESUMEN: Cliente Seleccionado */}
                 {clienteSeleccionado && (
                     <Alert
                         color="teal"

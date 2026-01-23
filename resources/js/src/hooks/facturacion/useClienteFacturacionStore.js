@@ -61,7 +61,7 @@ export const useClienteFacturacionStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.get(
-                "/clientes-facturacion/listado-simple"
+                "/clientes-facturacion/listado-simple",
             );
             dispatch(rtkCargarClientesSimple(data.clientes));
         } catch (error) {
@@ -78,7 +78,7 @@ export const useClienteFacturacionStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.get(
-                `/clientes-facturacion/${clienteId}`
+                `/clientes-facturacion/${clienteId}`,
             );
             dispatch(rtkCargarCliente(data.cliente));
             if (data.estadisticas) {
@@ -98,7 +98,7 @@ export const useClienteFacturacionStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.get(
-                "/clientes-facturacion/consumidor-final"
+                "/clientes-facturacion/consumidor-final",
             );
             dispatch(rtkCargarConsumidorFinal(data.cliente));
             return data.cliente;
@@ -118,7 +118,7 @@ export const useClienteFacturacionStore = () => {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.post(
                 "/clientes-facturacion/buscar-identificacion",
-                { identificacion }
+                { identificacion },
             );
 
             if (data.cliente) {
@@ -143,7 +143,7 @@ export const useClienteFacturacionStore = () => {
         try {
             const { data } = await apiAxios.post(
                 "/clientes-facturacion/buscar-nombre",
-                { nombre }
+                { nombre },
             );
             return data.clientes;
         } catch (error) {
@@ -159,7 +159,7 @@ export const useClienteFacturacionStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.get(
-                `/clientes-facturacion/prellenar-huesped/${huespedId}`
+                `/clientes-facturacion/prellenar-huesped/${huespedId}`,
             );
 
             dispatch(rtkCargarDatosPrellenados(data.datos));
@@ -186,7 +186,7 @@ export const useClienteFacturacionStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.get(
-                `/clientes-facturacion/prellenar-reserva/${reservaId}`
+                `/clientes-facturacion/prellenar-reserva/${reservaId}`,
             );
 
             dispatch(rtkCargarDatosPrellenados(data.datos));
@@ -212,7 +212,7 @@ export const useClienteFacturacionStore = () => {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.post(
                 "/clientes-facturacion",
-                datosCliente
+                datosCliente,
             );
 
             dispatch(rtkAgregarCliente(data.cliente));
@@ -239,7 +239,7 @@ export const useClienteFacturacionStore = () => {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.put(
                 `/clientes-facturacion/${clienteId}`,
-                datosCliente
+                datosCliente,
             );
 
             dispatch(rtkActualizarCliente(data.cliente));
@@ -265,7 +265,7 @@ export const useClienteFacturacionStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.patch(
-                `/clientes-facturacion/${clienteId}/toggle-estado`
+                `/clientes-facturacion/${clienteId}/toggle-estado`,
             );
 
             dispatch(rtkActualizarCliente(data.cliente));
@@ -290,7 +290,7 @@ export const useClienteFacturacionStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.get(
-                `/clientes-facturacion/${clienteId}/estadisticas`
+                `/clientes-facturacion/${clienteId}/estadisticas`,
             );
             dispatch(rtkCargarEstadisticas(data.estadisticas));
             return data.estadisticas;

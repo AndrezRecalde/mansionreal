@@ -25,12 +25,8 @@ class Factura extends Model
         'cliente_email',
         'subtotal_sin_iva',
         'total_iva',
-        'total_factura', // ✅ Ahora es el total FINAL (con descuento si aplica)
-        'descuento',
-        'tipo_descuento',
-        'porcentaje_descuento',
-        'motivo_descuento',
-        'usuario_registro_descuento_id',
+        'total_factura', // ✅ Total final (suma de consumos.total)
+        // ❌ REMOVIDOS: Campos de descuento (ahora están en consumos)
         'estado',
         'observaciones',
         'motivo_anulacion',
@@ -44,9 +40,7 @@ class Factura extends Model
         'fecha_anulacion' => 'datetime',
         'subtotal_sin_iva' => 'decimal:2',
         'total_iva' => 'decimal:2',
-        'total_factura' => 'decimal:2', // ✅ Total final (con descuento)
-        'porcentaje_descuento' => 'decimal:2',
-        'descuento' => 'decimal:2',
+        'total_factura' => 'decimal:2',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -56,9 +50,6 @@ class Factura extends Model
     // ====================================================================
     const ESTADO_EMITIDA = 'EMITIDA';
     const ESTADO_ANULADA = 'ANULADA';
-
-    const TIPO_DESCUENTO_MONTO_FIJO = 'MONTO_FIJO';
-    const TIPO_DESCUENTO_PORCENTAJE = 'PORCENTAJE';
 
     // ====================================================================
     // RELACIONES
@@ -104,14 +95,6 @@ class Factura extends Model
         return $this->belongsTo(User::class, 'usuario_anulo_id');
     }
 
-    /**
-     * Usuario que aplicó el descuento
-     */
-    public function usuarioRegistroDescuento(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'usuario_registro_descuento_id');
-    }
-
     // ====================================================================
     // ACCESSORS
     // ====================================================================
@@ -154,51 +137,63 @@ class Factura extends Model
     }
 
     /**
-     * Verificar si tiene descuento
+     * Obtener cantidad de consumos
      */
-    public function getTieneDescuentoAttribute(): bool
+    public function getCantidadConsumosAttribute(): int
     {
-        return $this->descuento > 0;
+        return $this->consumos()->count();
     }
 
     /**
-     * ✅ NUEVO: Calcular total SIN descuento (para auditoría/reportes)
+     * ✅ NUEVO: Calcular total de descuentos aplicados (suma de descuentos de consumos)
      */
-    public function getTotalSinDescuentoAttribute(): float
+    public function getTotalDescuentosAttribute(): float
     {
-        // Reconstruir el total antes del descuento
-        // total_sin_descuento = subtotal_sin_iva + (subtotal_sin_iva * 0.15)
-        return $this->subtotal_sin_iva + ($this->subtotal_sin_iva * 0.15);
+        return $this->consumos()->sum('descuento');
     }
 
     /**
-     * Obtener porcentaje real de descuento (calculado)
+     * ✅ NUEVO: Verificar si la factura tiene descuentos
      */
-    public function getPorcentajeDescuentoRealAttribute(): float
+    public function getTieneDescuentosAttribute(): bool
     {
-        $totalSinDescuento = $this->total_sin_descuento;
+        return $this->consumos()->where('descuento', '>', 0)->exists();
+    }
 
-        if ($totalSinDescuento == 0) {
+    /**
+     * ✅ NUEVO: Calcular subtotal antes de descuentos
+     */
+    public function getSubtotalAntesDescuentosAttribute(): float
+    {
+        return $this->consumos()->sum('subtotal');
+    }
+
+    /**
+     * ✅ NUEVO: Calcular subtotal después de descuentos (base imponible)
+     */
+    public function getBaseImponibleAttribute(): float
+    {
+        return $this->subtotal_antes_descuentos - $this->total_descuentos;
+    }
+
+    /**
+     * ✅ NUEVO: Obtener porcentaje promedio de descuento
+     */
+    public function getPorcentajeDescuentoPromedioAttribute(): float
+    {
+        if ($this->subtotal_antes_descuentos == 0) {
             return 0;
         }
 
-        return round(($this->descuento / $totalSinDescuento) * 100, 2);
+        return round(($this->total_descuentos / $this->subtotal_antes_descuentos) * 100, 2);
     }
 
     /**
-     * Verificar si el descuento es significativo (>50%)
+     * ✅ NUEVO: Obtener cantidad de consumos con descuento
      */
-    public function getEsDescuentoSignificativoAttribute(): bool
+    public function getConsumosConDescuentoAttribute(): int
     {
-        return $this->porcentaje_descuento_real > 50;
-    }
-
-    /**
-     * Obtener subtotal total (con IVA + sin IVA)
-     */
-    public function getSubtotalTotalAttribute(): float
-    {
-        return $this->subtotal_sin_iva;
+        return $this->consumos()->where('descuento', '>', 0)->count();
     }
 
     /**
@@ -209,12 +204,20 @@ class Factura extends Model
         return $this->numero_factura;
     }
 
+    /**
+     * Obtener información del cliente formateada
+     */
+    public function getClienteInfoAttribute(): string
+    {
+        return "{$this->cliente_nombres_completos} - {$this->cliente_tipo_identificacion}: {$this->cliente_identificacion}";
+    }
+
     // ====================================================================
     // SCOPES
     // ====================================================================
 
     /**
-     * Scope:   Solo facturas emitidas
+     * Scope: Solo facturas emitidas
      */
     public function scopeEmitidas($query)
     {
@@ -222,7 +225,7 @@ class Factura extends Model
     }
 
     /**
-     * Scope:  Solo facturas anuladas
+     * Scope: Solo facturas anuladas
      */
     public function scopeAnuladas($query)
     {
@@ -230,48 +233,19 @@ class Factura extends Model
     }
 
     /**
-     * Scope:  Facturas con descuento
+     * Scope: Facturas de un cliente específico
      */
-    public function scopeConDescuento($query)
-    {
-        return $query->where('descuento', '>', 0);
-    }
-
-    /**
-     * Scope:  Facturas sin descuento
-     */
-    public function scopeSinDescuento($query)
-    {
-        return $query->where('descuento', 0);
-    }
-
-    /**
-     * Scope: Facturas entre fechas
-     */
-    public function scopeEntreFechas($query, string $fechaInicio, string $fechaFin)
-    {
-        return $query->whereBetween('fecha_emision', [$fechaInicio, $fechaFin]);
-    }
-
-    /**
-     * Scope: Facturas del cliente
-     */
-    public function scopeDelCliente($query, int $clienteId)
+    public function scopeDeCliente($query, int $clienteId)
     {
         return $query->where('cliente_facturacion_id', $clienteId);
     }
 
-    public function scopePorAnio($query, $anio)
-    {
-        return $query->whereYear('fecha_emision', $anio);
-    }
-
     /**
-     * Scope: Facturas del año actual
+     * Scope: Facturas en un rango de fechas
      */
-    public function scopeDelAnioActual($query)
+    public function scopeEntreFechas($query, Carbon $inicio, Carbon $fin)
     {
-        return $query->whereYear('fecha_emision', Carbon::now()->year);
+        return $query->whereBetween('fecha_emision', [$inicio, $fin]);
     }
 
     /**
@@ -284,122 +258,28 @@ class Factura extends Model
     }
 
     /**
-     * Scope: Ordenar por número de factura
+     * ✅ NUEVO: Scope - Facturas con descuentos
      */
-    public function scopeOrdenarPorNumero($query, string $direccion = 'asc')
+    public function scopeConDescuentos($query)
     {
-        return $query->orderBy('numero_factura', $direccion);
+        return $query->whereHas('consumos', function ($q) {
+            $q->where('descuento', '>', 0);
+        });
+    }
+
+    /**
+     * ✅ NUEVO: Scope - Facturas con descuento significativo (>30% en promedio)
+     */
+    public function scopeConDescuentoSignificativo($query, float $porcentaje = 30)
+    {
+        return $query->whereHas('consumos', function ($q) use ($porcentaje) {
+            $q->whereRaw('(descuento / NULLIF(subtotal, 0)) * 100 > ?', [$porcentaje]);
+        });
     }
 
     // ====================================================================
     // MÉTODOS DE INSTANCIA
     // ====================================================================
-
-    /**
-     * ✅ ACTUALIZADO: Calcular totales desde los consumos SEGÚN NORMATIVA SRI ECUADOR
-     */
-    public function calcularTotales(): void
-    {
-        $consumos = $this->consumos;
-
-        // PASO 1: Sumar subtotales de consumos (SIN descuento)
-        $subtotal_sin_iva = $consumos->sum('subtotal');
-
-        // PASO 2: Obtener tasa de IVA aplicable
-        $tasa_iva = $consumos->first()->tasa_iva ?? 15.00;
-
-        // PASO 3: Aplicar descuento a la base
-        $base_imponible = $subtotal_sin_iva - $this->descuento;
-
-        // PASO 4: Calcular IVA sobre la base imponible (DESPUÉS del descuento)
-        $this->total_iva = $base_imponible * ($tasa_iva / 100);
-
-        // Validar descuento
-        if ($this->descuento > $subtotal_sin_iva) {
-            throw FacturacionException::descuentoInvalido($this->descuento, $subtotal_sin_iva);
-        }
-
-        // PASO 5: ✅ Total final CON descuento (lo que paga el cliente)
-        $this->total_factura = $base_imponible + $this->total_iva;
-
-        // Actualizar subtotal_sin_iva
-        $this->subtotal_sin_iva = $subtotal_sin_iva;
-    }
-
-    /**
-     * ✅ ACTUALIZADO: Aplicar descuento y recalcular IVA
-     */
-    public function aplicarDescuento(
-        float $descuento,
-        string $tipoDescuento = self::TIPO_DESCUENTO_MONTO_FIJO,
-        ?float $porcentaje = null,
-        ?string $motivo = null,
-        ?int $usuarioId = null
-    ): bool {
-        if ($this->esta_anulada) {
-            throw new FacturacionException('No se puede aplicar descuento a una factura anulada');
-        }
-
-        if ($descuento < 0) {
-            throw new FacturacionException('El descuento no puede ser negativo');
-        }
-
-        // Calcular monto si es porcentaje
-        if ($tipoDescuento === self::TIPO_DESCUENTO_PORCENTAJE && $porcentaje > 0) {
-            $descuento = $this->subtotal_sin_iva * ($porcentaje / 100);
-        }
-
-        if ($descuento > $this->subtotal_sin_iva) {
-            throw new FacturacionException(
-                'El descuento ($' . number_format($descuento, 2) .
-                    ') no puede ser mayor al subtotal ($' . number_format($this->subtotal_sin_iva, 2) . ')'
-            );
-        }
-
-        $porcentajeReal = $this->subtotal_sin_iva > 0 ? ($descuento / $this->subtotal_sin_iva) * 100 : 0;
-
-        if ($porcentajeReal >= 100) {
-            throw new FacturacionException('No se puede aplicar descuento del 100% en facturas');
-        }
-
-        if ($porcentajeReal > 50 && empty($motivo)) {
-            throw new FacturacionException('Los descuentos mayores al 50% requieren justificación obligatoria');
-        }
-
-        // Aplicar descuento
-        $this->descuento = $descuento;
-        $this->tipo_descuento = $tipoDescuento;
-        $this->porcentaje_descuento = $tipoDescuento === self::TIPO_DESCUENTO_PORCENTAJE ? $porcentaje : null;
-        $this->motivo_descuento = $motivo;
-        $this->usuario_registro_descuento_id = $usuarioId;
-
-        // ✅ RECALCULAR IVA Y TOTALES
-        $this->calcularTotales();
-
-        return $this->save();
-    }
-
-    /**
-     * ✅ ACTUALIZADO: Eliminar descuento
-     */
-    public function eliminarDescuento(): bool
-    {
-        // Validar que no esté anulada
-        if ($this->esta_anulada) {
-            throw new FacturacionException('No se puede modificar una factura anulada');
-        }
-
-        $this->descuento = 0;
-        $this->tipo_descuento = null;
-        $this->porcentaje_descuento = null;
-        $this->motivo_descuento = null;
-        $this->usuario_registro_descuento_id = null;
-
-        // ✅ Recalcular total_factura sin descuento
-        $this->calcularTotales();
-
-        return $this->save();
-    }
 
     /**
      * Anular factura
@@ -415,7 +295,14 @@ class Factura extends Model
         $this->fecha_anulacion = now();
         $this->usuario_anulo_id = $usuarioId;
 
-        return $this->save();
+        $saved = $this->save();
+
+        // Desasignar factura de los consumos
+        if ($saved) {
+            $this->consumos()->update(['factura_id' => null]);
+        }
+
+        return $saved;
     }
 
     /**
@@ -427,47 +314,43 @@ class Factura extends Model
     }
 
     /**
-     * Copiar datos del cliente (inmutabilidad)
+     * ✅ NUEVO: Recalcular totales desde consumos
+     *
+     * Útil después de modificar consumos o aplicar descuentos
      */
-    public function copiarDatosCliente(ClienteFacturacion $cliente): void
+    public function recalcularTotales(): bool
     {
-        $this->cliente_tipo_identificacion = $cliente->tipo_identificacion;
-        $this->cliente_identificacion = $cliente->identificacion;
-        $this->cliente_nombres_completos = $cliente->nombres_completos;
-        $this->cliente_direccion = $cliente->direccion;
-        $this->cliente_telefono = $cliente->telefono;
-        $this->cliente_email = $cliente->email;
+        if ($this->esta_anulada) {
+            return false;
+        }
+
+        // Obtener totales desde consumos
+        $consumos = $this->consumos;
+
+        $subtotalSinIva = $consumos->sum('subtotal');
+        $totalIva = $consumos->sum('iva');
+        $totalFactura = $consumos->sum('total');
+
+        $this->subtotal_sin_iva = round($subtotalSinIva, 2);
+        $this->total_iva = round($totalIva, 2);
+        $this->total_factura = round($totalFactura, 2);
+
+        return $this->save();
     }
 
     /**
-     * Obtener cantidad de consumos
+     * ✅ NUEVO: Obtener resumen de descuentos
      */
-    public function cantidadConsumos(): int
+    public function getResumenDescuentos(): array
     {
-        return $this->consumos()->count();
-    }
-
-    /**
-     * Verificar si tiene consumos
-     */
-    public function tieneConsumos(): bool
-    {
-        return $this->consumos()->exists();
-    }
-
-    /**
-     * Obtener consumos con IVA
-     */
-    public function consumosConIva()
-    {
-        return $this->consumos()->where('tasa_iva', '>', 0)->get();
-    }
-
-    /**
-     * Obtener consumos sin IVA
-     */
-    public function consumosSinIva()
-    {
-        return $this->consumos()->where('tasa_iva', 0)->get();
+        return [
+            'tiene_descuentos' => $this->tiene_descuentos,
+            'total_descuentos' => $this->total_descuentos,
+            'subtotal_antes_descuentos' => $this->subtotal_antes_descuentos,
+            'base_imponible' => $this->base_imponible,
+            'porcentaje_descuento_promedio' => $this->porcentaje_descuento_promedio,
+            'consumos_con_descuento' => $this->consumos_con_descuento,
+            'consumos_totales' => $this->cantidad_consumos,
+        ];
     }
 }

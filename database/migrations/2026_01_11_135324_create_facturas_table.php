@@ -38,23 +38,8 @@ return new class extends Migration
             // TOTALES DE LA FACTURA (calculados desde consumos)
             // ====================================================================
             $table->decimal('subtotal_sin_iva', 10, 2)->default(0)->comment('Base 0% - Productos sin IVA');
-            // CAMPOS DE DESCUENTO
-            $table->decimal('descuento', 10, 2)->default(0);
-            // Tipo de descuento (monto fijo o porcentaje)
-            $table->enum('tipo_descuento', ['MONTO_FIJO', 'PORCENTAJE'])->nullable()->comment('Tipo de descuento aplicado');
-            // Porcentaje de descuento (si aplica)
-            $table->decimal('porcentaje_descuento', 5, 2)->nullable()->comment('Porcentaje si el descuento es por %');
-            // Motivo del descuento (justificación obligatoria)
-            $table->text('motivo_descuento')->nullable()->comment('Justificación del descuento aplicado');
             $table->decimal('total_iva', 10, 2)->default(0)->comment('Total IVA calculado');
-
             $table->decimal('total_factura', 10, 2)->default(0)->comment('Total final a pagar');
-
-            // Descuentos (opcional para futuras promociones)
-
-            // Usuario que aplicó el descuento
-            $table->unsignedBigInteger('usuario_registro_descuento_id')->nullable()->comment('Usuario que autorizó/aplicó el descuento');
-
 
             // ====================================================================
             // ESTADO Y CONTROL
@@ -81,7 +66,6 @@ return new class extends Migration
             $table->foreign('cliente_facturacion_id')->references('id')->on('clientes_facturacion')->onDelete('restrict');
             $table->foreign('usuario_genero_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('usuario_anulo_id')->references('id')->on('users')->onDelete('set null');
-            $table->foreign('usuario_registro_descuento_id', 'fk_facturas_usuario_descuento')->references('id')->on('users')->onDelete('set null');
             // ====================================================================
             // ÍNDICES PARA OPTIMIZACIÓN
             // ====================================================================
@@ -92,9 +76,6 @@ return new class extends Migration
             $table->index('estado');
             $table->index('cliente_identificacion');
             $table->index(['fecha_emision', 'estado']); // Para reportes
-            $table->index('usuario_registro_descuento_id', 'idx_facturas_usuario_descuento');
-            $table->index(['descuento', 'tipo_descuento'], 'idx_facturas_descuento_tipo');
-            $table->index('tipo_descuento', 'idx_facturas_tipo_descuento');
         });
     }
 

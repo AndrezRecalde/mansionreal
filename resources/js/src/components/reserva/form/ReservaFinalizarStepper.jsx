@@ -22,28 +22,21 @@ export const ReservaFinalizarStepper = ({ datos_reserva }) => {
 
     const { cargando, fnCambiarEstadoReserva } = useReservaDepartamentoStore();
     const { fnGenerarFactura, fnDescargarFacturaPDF } = useFacturaStore();
-    const { consumidorFinal, fnCargarConsumidorFinal } =
-        useClienteFacturacionStore();
+    const { fnCargarConsumidorFinal } = useClienteFacturacionStore();
     const { fnAbrirModalReservaFinalizar } = useUiReservaDepartamento();
     const { fnAbrirDrawerConsumosDepartamento } = useUiConsumo();
     const { storageFields } = useStorageField();
 
-    // Cargar consumidor final al montar el componente
-    useEffect(() => {
-        fnCargarConsumidorFinal();
-    }, []);
+    const [consumidorFinal, setConsumidorFinal] = useState(null);
 
-    // Si no genera factura personalizada, usar consumidor final
     useEffect(() => {
-        if (!generarFactura && consumidorFinal) {
-            setDatosFacturacion({
-                cliente_id: consumidorFinal.id,
-                cliente_nombre: "CONSUMIDOR FINAL",
-                cliente_identificacion: consumidorFinal.identificacion,
-                solicita_detallada: false,
-            });
-        }
-    }, [generarFactura, consumidorFinal]);
+        const cargarConsumidorFinal = async () => {
+            const cf = await fnCargarConsumidorFinal();
+            setConsumidorFinal(cf);
+        };
+
+        cargarConsumidorFinal();
+    }, []);
 
     const nextStep = () => {
         setActive((current) => (current < 2 ? current + 1 : current));
@@ -58,7 +51,7 @@ export const ReservaFinalizarStepper = ({ datos_reserva }) => {
             const { reserva_id } = datos_reserva;
 
             // ============================================================
-            // VALIDACIÓN:   Verificar que tenemos datos de facturación
+            // VALIDACIÓN: Verificar que tenemos datos de facturación
             // ============================================================
             if (!datosFacturacion || !datosFacturacion.cliente_id) {
                 console.error("Error: No se puede generar factura sin cliente");
@@ -81,7 +74,7 @@ export const ReservaFinalizarStepper = ({ datos_reserva }) => {
             );
 
             // ============================================================
-            // PASO 2: GENERAR FACTURA CON DESCUENTO
+            // PASO 2: GENERAR FACTURA (sin descuentos a nivel de factura)
             // ============================================================
             const facturaGenerada = await fnGenerarFactura({
                 reserva_id: reserva_id,
@@ -89,13 +82,8 @@ export const ReservaFinalizarStepper = ({ datos_reserva }) => {
                 solicita_factura_detallada:
                     datosFacturacion.solicita_detallada || false,
                 observaciones: datosFacturacion.observaciones || null,
-
-                // ✅ NUEVO: Enviar datos de descuento
-                descuento: datosFacturacion.descuento || 0,
-                tipo_descuento: datosFacturacion.tipo_descuento || "MONTO_FIJO",
-                porcentaje_descuento:
-                    datosFacturacion.porcentaje_descuento || null,
-                motivo_descuento: datosFacturacion.motivo_descuento || null,
+                // ❌ REMOVIDO: Ya no enviamos descuentos a nivel de factura
+                // Los descuentos están a nivel de consumos individuales
             });
 
             // ============================================================
@@ -136,10 +124,10 @@ export const ReservaFinalizarStepper = ({ datos_reserva }) => {
                     />
                 </Stepper.Step>
 
-                {/* PASO 2: FACTURACIÓN CON DESCUENTO */}
+                {/* PASO 2: FACTURACIÓN (sin descuentos) */}
                 <Stepper.Step
                     label="Facturación"
-                    description="Cliente y descuento"
+                    description="Seleccionar cliente"
                     icon={<IconFileText size={18} />}
                     loading={cargando}
                 >

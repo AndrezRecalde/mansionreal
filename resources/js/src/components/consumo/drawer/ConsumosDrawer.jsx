@@ -1,23 +1,26 @@
-import { useEffect, useMemo, useCallback } from "react";
+import { useEffect } from "react";
 import { Card, Drawer, Stack } from "@mantine/core";
-import { ConsumosDrawerTable } from "../table/ConsumosDrawerTable";
 import {
-    useConsumoStore,
-    useGastoStore,
-    usePagoStore,
-    useUiConsumo,
-} from "../../../hooks";
-import {
+    ConsumosDrawerTable,
+    ConsumoModal,
+    ConsumoEditarModal,
+    ConsumoEliminarModal,
+    ConsumoAplicarDescuentoModal, // ✅ NUEVO
     GastoDrawerTable,
     PagosTable,
     ReservaAccionesTable,
     ReservaInfoHuespedTable,
     TextSection,
 } from "../../../components";
+import {
+    useConsumoStore,
+    useGastoStore,
+    usePagoStore,
+    useUiConsumo,
+} from "../../../hooks";
 import { Roles } from "../../../helpers/getPrefix";
 
 export const ConsumosDrawer = ({ datos_reserva, fnAsignarElemento }) => {
-    // Memoizar el usuario para evitar re-parseos innecesarios
     const usuario = JSON.parse(localStorage.getItem("service_user") || "{}");
 
     const {
@@ -29,88 +32,87 @@ export const ConsumosDrawer = ({ datos_reserva, fnAsignarElemento }) => {
     const { fnCargarGastos, fnLimpiarGastos } = useGastoStore();
     const { fnCargarPagos, fnLimpiarPago } = usePagoStore();
 
-    // Memoizar la verificación de rol
-    const esRolAdministrativo = useMemo(
-        () =>
-            usuario?.role === Roles.GERENCIA ||
-            usuario?.role === Roles.ADMINISTRADOR,
-        [usuario?.role]
-    );
-
-    // Extraer el ID de reserva para evitar repetición
-    const reservaId = datos_reserva?.reserva_id;
-
-    // Cargar datos cuando se abre el drawer
     useEffect(() => {
-        if (!abrirDrawerConsumosDepartamento || !reservaId) return;
+        if (abrirDrawerConsumosDepartamento && datos_reserva) {
+            fnCargarConsumos({ reserva_id: datos_reserva.reserva_id });
 
-        fnCargarConsumos({ reserva_id: reservaId });
-        fnCargarPagos({ reserva_id: reservaId });
+            if (usuario.nombre_rol === Roles.GERENTE) {
+                fnCargarGastos({ reserva_id: datos_reserva.reserva_id });
+            }
 
-        if (esRolAdministrativo) {
-            fnCargarGastos({ reserva_id: reservaId });
+            fnCargarPagos({ reserva_id: datos_reserva.reserva_id });
         }
-        //console.log("aki");
 
-        // Cleanup al cerrar o desmontar
         return () => {
             fnLimpiarConsumos();
-            if (esRolAdministrativo) {
-                fnLimpiarGastos();
-                fnLimpiarPago();
-            }
+            fnLimpiarGastos();
+            fnLimpiarPago();
         };
-    }, [abrirDrawerConsumosDepartamento]);
+    }, [abrirDrawerConsumosDepartamento, datos_reserva]);
 
-    // Memoizar el handler de cierre
-    const handleCerrarDrawer = useCallback(() => {
-        fnAsignarElemento(null);
+    const handleCerrarDrawer = () => {
         fnAbrirDrawerConsumosDepartamento(false);
-    }, [fnAsignarElemento, fnAbrirDrawerConsumosDepartamento]);
-
-    // Guard clause para evitar renderizar si no hay datos
-    if (!datos_reserva) return null;
+        fnAsignarElemento(null);
+    };
 
     return (
-        <Drawer
-            position="right"
-            size={1000}
-            offset={8}
-            radius="md"
-            opened={abrirDrawerConsumosDepartamento}
-            onClose={handleCerrarDrawer}
-            title={
-                <TextSection tt="" fz={18} fw={700}>
-                    Historial Consumos
-                </TextSection>
-            }
-            // Mejoras adicionales opcionales:
-            overlayProps={{ opacity: 0.5, blur: 4 }}
-            transitionProps={{ transition: "slide-left", duration: 200 }}
-            closeOnClickOutside={false}
-        >
-            <Stack gap="md">
-                <Card
-                    withBorder
-                    shadow="md"
-                    radius="md"
-                    padding="md"
-                    //bg="gray. 3"
-                >
-                    <ReservaAccionesTable datos={datos_reserva} />
-                </Card>
+        <>
+            <Drawer
+                opened={abrirDrawerConsumosDepartamento}
+                onClose={handleCerrarDrawer}
+                position="right"
+                size="80%"
+                title={
+                    <TextSection tt="" fz={20} fw={500}>
+                        Gestión de Consumos, Gastos y Pagos
+                    </TextSection>
+                }
+                overlayProps={{ backgroundOpacity: 0.5, blur: 4 }}
+            >
+                <Stack gap="lg">
+                    {/* Acciones de Reserva */}
+                    <Card shadow="sm" p="md" withBorder>
+                        <ReservaAccionesTable datos={datos_reserva} />
+                    </Card>
+                    {/* Información del huésped */}
+                    <Card shadow="sm" p="md" withBorder>
+                        <ReservaInfoHuespedTable datos={datos_reserva} />
+                    </Card>
 
-                <ReservaInfoHuespedTable datos={datos_reserva} />
+                    {/* Tabla de Consumos */}
+                    <Card shadow="sm" p="md" withBorder>
+                        <TextSection tt="" fz={16} fw={600} mb="md">
+                            Consumos
+                        </TextSection>
+                        <ConsumosDrawerTable estado={datos_reserva.estado_id} />
+                    </Card>
 
-                <ConsumosDrawerTable estado={datos_reserva.estado} />
-                <PagosTable estado={datos_reserva.estado} />
+                    {/* Tabla de Pagos */}
+                    <Card shadow="sm" p="md" withBorder>
+                        <TextSection tt="" fz={16} fw={600} mb="md">
+                            Pagos Realizados
+                        </TextSection>
+                        <PagosTable estado={datos_reserva.estado_id} />
+                    </Card>
 
-                {esRolAdministrativo && (
-                    <>
-                        <GastoDrawerTable estado={datos_reserva.estado} />
-                    </>
-                )}
-            </Stack>
-        </Drawer>
+                    {/* Tabla de Gastos (solo GERENTE) */}
+                    {usuario.nombre_rol === Roles.GERENTE && (
+                        <Card shadow="sm" p="md" withBorder>
+                            <TextSection tt="" fz={16} fw={600} mb="md">
+                                Gastos
+                            </TextSection>
+                            <GastoDrawerTable
+                                estado={datos_reserva.estado_id}
+                            />
+                        </Card>
+                    )}
+                </Stack>
+            </Drawer>
+            {/* Modales */}
+            <ConsumoModal reserva_id={datos_reserva?.reserva_id} />
+            <ConsumoEditarModal />
+            <ConsumoEliminarModal />
+            <ConsumoAplicarDescuentoModal /> {/* ✅ NUEVO */}
+        </>
     );
 };

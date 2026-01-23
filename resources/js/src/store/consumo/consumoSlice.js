@@ -34,8 +34,16 @@ export const consumoSlice = createSlice({
         },
         rtkActualizarConsumo: (state, { payload }) => {
             state.consumos = state.consumos.map((consumo) =>
-                consumo.id === payload.id ? payload : consumo
+                consumo.id === payload.id ? payload : consumo,
             );
+            state.cargando = false;
+        },
+        // ✅ NUEVO: Actualizar múltiples consumos (útil para aplicar descuentos masivos)
+        rtkActualizarConsumos: (state, { payload }) => {
+            state.consumos = state.consumos.map((consumo) => {
+                const actualizado = payload.find((c) => c.id === consumo.id);
+                return actualizado || consumo;
+            });
             state.cargando = false;
         },
         rtkActivarConsumo: (state, { payload }) => {
@@ -43,6 +51,13 @@ export const consumoSlice = createSlice({
             state.cargando = false;
             state.errores = undefined;
             state.mensaje = undefined;
+        },
+        // ✅ NUEVO: Eliminar consumo de la lista
+        rtkEliminarConsumo: (state, { payload }) => {
+            state.consumos = state.consumos.filter(
+                (consumo) => consumo.id !== payload,
+            );
+            state.cargando = false;
         },
         rtkLimpiarConsumos: (state) => {
             state.consumos = [];
@@ -69,7 +84,9 @@ export const {
     rtkCargarReporteConsumosCategoria,
     rtkAgregarConsumo,
     rtkActualizarConsumo,
+    rtkActualizarConsumos, // ✅ NUEVO
     rtkActivarConsumo,
+    rtkEliminarConsumo, // ✅ NUEVO
     rtkLimpiarConsumos,
     rtkCargarMensaje,
     rtkCargarErrores,

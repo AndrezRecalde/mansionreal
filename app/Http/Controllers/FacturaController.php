@@ -7,6 +7,7 @@ use App\Services\Facturacion\FacturaService;
 use App\Services\Facturacion\ClienteFacturacionService;
 use App\Services\Facturacion\Exceptions\FacturacionException;
 use App\Models\Factura;
+use App\Models\Consumo;
 use App\Models\ClienteFacturacion;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -93,7 +94,7 @@ class FacturaController extends Controller
     }
 
     /**
-     * Obtener detalle completo de una factura
+     * ✅ ACTUALIZADO: Obtener detalle completo de una factura
      */
     public function show(int $id): JsonResponse
     {
@@ -103,32 +104,18 @@ class FacturaController extends Controller
                 'reserva.departamento.tipoDepartamento',
                 'clienteFacturacion',
                 'consumos.inventario.categoria',
-                'usuarioGenero:id,nombres,apellidos',
-                'usuarioAnulo:id,nombres,apellidos',
-                'usuarioRegistroDescuento:id,nombres,apellidos',
+                'consumos.usuarioRegistroDescuento', // ✅ NUEVO
+                'usuarioGenero',
+                'usuarioAnulo'
             ])->findOrFail($id);
 
-            $consumosAgrupados = $factura->consumos->groupBy(function ($consumo) {
-                return $consumo->inventario->categoria->nombre_categoria ??  'Sin categoría';
-            })->map(function ($grupo) {
-                return $grupo->map(function ($consumo) {
-                    return [
-                        'id' => $consumo->id,
-                        'producto' => $consumo->inventario->nombre_producto,
-                        'cantidad' => $consumo->cantidad,
-                        'precio_unitario' => $consumo->inventario->precio_unitario,
-                        'subtotal' => $consumo->subtotal,
-                        'tasa_iva' => $consumo->tasa_iva,
-                        'iva' => $consumo->iva,
-                        'total' => $consumo->total,
-                    ];
-                });
-            });
+            // ✅ NUEVO: Agregar información de descuentos desde consumos
+            $resumenDescuentos = $factura->getResumenDescuentos();
 
             return response()->json([
                 'status' => HTTPStatus::Success,
                 'factura' => $factura,
-                'consumos_agrupados' => $consumosAgrupados,
+                'resumen_descuentos' => $resumenDescuentos, // ✅ NUEVO
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
@@ -139,34 +126,36 @@ class FacturaController extends Controller
     }
 
     /**
-     * Generar factura para una reserva (USANDO SERVICIO)
+     * ✅ ACTUALIZADO: Generar factura (con descuentos en consumos)
      */
     public function generarFactura(Request $request): JsonResponse
     {
         $request->validate([
-            'reserva_id' => 'required|exists:reservas,id',
-            'cliente_facturacion_id' => 'required|exists:clientes_facturacion,id',
+            'reserva_id' => 'required|integer|exists:reservas,id',
+            'cliente_facturacion_id' => 'required|integer|exists:clientes_facturacion,id',
             'solicita_factura_detallada' => 'required|boolean',
             'observaciones' => 'nullable|string|max:500',
-            'descuento' => 'nullable|numeric|min:0',
-            'tipo_descuento' => 'nullable|in:MONTO_FIJO,PORCENTAJE',
-            'porcentaje_descuento' => 'nullable|numeric|min:0|max: 100',
-            'motivo_descuento' => 'nullable|string|max:200',
+            // ✅ NUEVO: Validación para descuentos en consumos
+            'descuentos_consumos' => 'nullable|array',
+            'descuentos_consumos.*.consumo_id' => 'required|integer|exists:consumos,id',
+            'descuentos_consumos.*.descuento' => 'required|numeric|min:0',
+            'descuentos_consumos.*.tipo_descuento' => 'required|in:MONTO_FIJO,PORCENTAJE,SIN_DESCUENTO',
+            'descuentos_consumos.*.porcentaje_descuento' => 'nullable|numeric|min:0|max:100',
+            'descuentos_consumos.*.motivo_descuento' => 'required|string|min:10|max:200',
         ]);
 
         try {
-            // Validar lógica de descuento
-            $descuento = $request->descuento ?? 0;
-            $tipoDescuento = $request->tipo_descuento ??  Factura::TIPO_DESCUENTO_MONTO_FIJO;
-            $porcentajeDescuento = $request->porcentaje_descuento;
-            $motivoDescuento = $request->motivo_descuento;
-
-            // Si hay descuento mayor a 50%, exigir motivo
-            if ($tipoDescuento === Factura::TIPO_DESCUENTO_PORCENTAJE && $porcentajeDescuento > 50 && empty($motivoDescuento)) {
-                return response()->json([
-                    'status' => HTTPStatus::Error,
-                    'msg' => 'Los descuentos mayores al 50% requieren justificación obligatoria'
-                ], 400);
+            // ✅ NUEVO: Transformar descuentos_consumos a formato esperado por el servicio
+            $descuentosConsumos = [];
+            if ($request->has('descuentos_consumos')) {
+                foreach ($request->descuentos_consumos as $desc) {
+                    $descuentosConsumos[$desc['consumo_id']] = [
+                        'descuento' => $desc['descuento'],
+                        'tipo_descuento' => $desc['tipo_descuento'],
+                        'porcentaje_descuento' => $desc['porcentaje_descuento'] ?? null,
+                        'motivo_descuento' => $desc['motivo_descuento'],
+                    ];
+                }
             }
 
             $factura = $this->facturaService->generarFactura(
@@ -176,10 +165,7 @@ class FacturaController extends Controller
                 usuarioId: Auth::id(),
                 opciones: [
                     'observaciones' => $request->observaciones,
-                    'descuento' => $descuento,
-                    'tipo_descuento' => $tipoDescuento,
-                    'porcentaje_descuento' => $porcentajeDescuento,
-                    'motivo_descuento' => $motivoDescuento,
+                    'descuentos_consumos' => $descuentosConsumos, // ✅ NUEVO
                 ]
             );
 
@@ -197,15 +183,15 @@ class FacturaController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg' => 'Error al generar factura:   ' . $e->getMessage()
+                'msg' => 'Error al generar factura: ' . $e->getMessage()
             ], 500);
         }
     }
 
     /**
-     * ✅ NUEVO: Aplicar descuento a una factura existente
+     * ✅ NUEVO: Aplicar descuento a un consumo específico
      */
-    public function aplicarDescuento(Request $request, int $id): JsonResponse
+    public function aplicarDescuentoConsumo(Request $request, int $consumoId): JsonResponse
     {
         $request->validate([
             'descuento' => 'required|numeric|min:0',
@@ -215,19 +201,19 @@ class FacturaController extends Controller
         ]);
 
         try {
-            $factura = $this->facturaService->aplicarDescuentoFactura(
-                facturaId: $id,
+            $consumo = $this->facturaService->aplicarDescuentoConsumo(
+                consumoId: $consumoId,
                 descuento: $request->descuento,
                 tipoDescuento: $request->tipo_descuento,
-                porcentaje: $request->porcentaje_descuento,
+                porcentajeDescuento: $request->porcentaje_descuento,
                 motivo: $request->motivo_descuento,
                 usuarioId: Auth::id()
             );
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'msg' => 'Descuento aplicado correctamente',
-                'factura' => $factura,
+                'msg' => 'Descuento aplicado correctamente al consumo',
+                'consumo' => $consumo,
             ], 200);
         } catch (FacturacionException $e) {
             return response()->json([
@@ -237,26 +223,26 @@ class FacturaController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg' => 'Error al aplicar descuento:  ' . $e->getMessage()
+                'msg' => 'Error al aplicar descuento: ' . $e->getMessage()
             ], 500);
         }
     }
 
     /**
-     * ✅ NUEVO: Eliminar descuento de una factura
+     * ✅ NUEVO: Eliminar descuento de un consumo
      */
-    public function eliminarDescuento(int $id): JsonResponse
+    public function eliminarDescuentoConsumo(int $consumoId): JsonResponse
     {
         try {
-            $factura = $this->facturaService->eliminarDescuentoFactura(
-                facturaId: $id,
+            $consumo = $this->facturaService->eliminarDescuentoConsumo(
+                consumoId: $consumoId,
                 usuarioId: Auth::id()
             );
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'msg' => 'Descuento eliminado correctamente',
-                'factura' => $factura,
+                'msg' => 'Descuento eliminado correctamente del consumo',
+                'consumo' => $consumo,
             ], 200);
         } catch (FacturacionException $e) {
             return response()->json([
@@ -266,7 +252,7 @@ class FacturaController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg' => 'Error al eliminar descuento:  ' . $e->getMessage()
+                'msg' => 'Error al eliminar descuento: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -296,18 +282,17 @@ class FacturaController extends Controller
             return response()->json([
                 'status' => HTTPStatus::Error,
                 'msg' => $e->getMessage(),
-                'code' => $e->getCode(),
             ], 400);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg' => $e->getMessage()
+                'msg' => 'Error al anular factura: ' . $e->getMessage()
             ], 500);
         }
     }
 
     /**
-     * Verificar si puede facturar (USANDO SERVICIO) - CORREGIDO
+     * Verificar si puede facturar (USANDO SERVICIO)
      */
     public function verificarPuedeFacturar(int $reservaId): JsonResponse
     {
@@ -360,7 +345,7 @@ class FacturaController extends Controller
     }
 
     /**
-     * Recalcular totales de una factura
+     * ✅ ACTUALIZADO: Recalcular totales de una factura (desde consumos)
      */
     public function recalcularTotales(int $id): JsonResponse
     {
@@ -369,7 +354,7 @@ class FacturaController extends Controller
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'msg' => 'Totales recalculados correctamente',
+                'msg' => 'Totales recalculados correctamente desde consumos',
                 'factura' => $factura,
             ], 200);
         } catch (FacturacionException $e) {
@@ -380,7 +365,7 @@ class FacturaController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg' => $e->getMessage()
+                'msg' => 'Error al recalcular totales: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -388,27 +373,34 @@ class FacturaController extends Controller
     /**
      * Exportar factura a PDF
      */
-    public function exportarPDF(int $id)
+    public function exportarPDF(int $id): mixed
     {
         try {
             $factura = Factura::with([
                 'reserva.huesped',
-                'reserva.departamento.tipoDepartamento',
+                'reserva.departamento',
                 'consumos.inventario.categoria',
-                'usuarioGenero'
+                'clienteFacturacion',
+                'usuarioGenero',
+                'usuarioAnulo'
             ])->findOrFail($id);
 
-            $consumosAgrupados = $factura->consumos->groupBy(function ($consumo) {
-                return $consumo->inventario->categoria->nombre_categoria ?? 'Sin categoría';
-            });
+            // Determinar si solicita factura detallada
+            $solicitaDetallada = $factura->reserva->clientesFacturacion()
+                ->wherePivot('cliente_facturacion_id', $factura->cliente_facturacion_id)
+                ->first()
+                ?->pivot
+                ?->solicita_factura_detallada ?? false;
+
+            $factura->solicita_factura_detallada = $solicitaDetallada;
 
             $data = [
                 'factura' => $factura,
-                'consumos_agrupados' => $consumosAgrupados,
-                'hotel_nombre' => 'Hotel Mansión Real',
-                'hotel_direccion' => 'Dirección del hotel',
-                'hotel_telefono' => 'Teléfono del hotel',
-                'hotel_email' => 'info@mansionreal.com',
+                'hotel_nombre' => config('app.hotel_nombre', 'Hotel Mansión Real'),
+                'hotel_ruc' => config('app.hotel_ruc', '1234567890001'),
+                'hotel_direccion' => config('app.hotel_direccion', 'Dirección'),
+                'hotel_telefono' => config('app.hotel_telefono', 'Teléfono'),
+                'hotel_email' => config('app.hotel_email', 'email@hotel.com'),
             ];
 
             if ($factura->esta_anulada) {
@@ -429,7 +421,7 @@ class FacturaController extends Controller
     }
 
     /**
-     * Obtener estadísticas generales de facturación
+     * ✅ ACTUALIZADO: Obtener estadísticas generales de facturación
      */
     public function estadisticas(Request $request): JsonResponse
     {
@@ -440,76 +432,72 @@ class FacturaController extends Controller
 
             // Query base para facturas emitidas
             $facturasEmitidasQuery = Factura::emitidas();
-            $facturasAnuladasQuery = Factura::anuladas();
 
             if ($fechaInicio && $fechaFin) {
                 $facturasEmitidasQuery->entreFechas($fechaInicio, $fechaFin);
-                $facturasAnuladasQuery->entreFechas($fechaInicio, $fechaFin);
             } elseif ($anio) {
                 $facturasEmitidasQuery->porAnio($anio);
-                $facturasAnuladasQuery->porAnio($anio);
             }
 
-             // Obtener colecciones
-            $facturasEmitidas = $facturasEmitidasQuery->get();
-            $totalEmitidas = $facturasEmitidas->count();
+            $totalEmitidas = $facturasEmitidasQuery->count();
+            $totalFacturado = $facturasEmitidasQuery->sum('total_factura');
+            $totalIva = $facturasEmitidasQuery->sum('total_iva');
+            $totalSinIva = $facturasEmitidasQuery->sum('subtotal_sin_iva');
+
+            // ✅ ACTUALIZADO: Total de descuentos desde consumos
+            $totalDescuentos = $facturasEmitidasQuery->get()
+                ->sum(function ($factura) {
+                    return $factura->total_descuentos;
+                });
+
+            // ✅ NUEVO: Facturas con descuentos
+            $facturasConDescuento = $facturasEmitidasQuery->conDescuentos()->count();
+
+            // Facturas anuladas
+            $facturasAnuladasQuery = Factura::anuladas();
+            if ($fechaInicio && $fechaFin) {
+                $facturasAnuladasQuery->entreFechas($fechaInicio, $fechaFin);
+            } elseif ($anio) {
+                $facturasAnuladasQuery->porAnio($anio);
+            }
             $totalAnuladas = $facturasAnuladasQuery->count();
 
-            // ✅ ACTUALIZADO: Usar total_factura (que ahora incluye descuento)
-            $totalFacturado = $facturasEmitidas->sum('total_factura'); // ✅ Total real cobrado
-            $totalDescuentos = $facturasEmitidas->sum('descuento');
-            $totalIva = $facturasEmitidas->sum('total_iva');
-            $totalSinIva = $facturasEmitidas->sum('subtotal_sin_iva');
+            // Clientes
+            $clientesFacturados = $facturasEmitidasQuery->distinct('cliente_facturacion_id')->count();
+            $consumidoresFinales = $facturasEmitidasQuery
+                ->where('cliente_facturacion_id', ClienteFacturacion::CONSUMIDOR_FINAL_ID)
+                ->count();
+            $clientesRegistrados = $totalEmitidas - $consumidoresFinales;
 
-            // ✅ OPCIONAL: Calcular total bruto (sin descuento) para comparación
-            $totalBruto = $facturasEmitidas->sum(function ($factura) {
-                return $factura->total_sin_descuento; // Usa el accessor
-            });
-
-            $facturasConDescuento = $facturasEmitidas->where('descuento', '>', 0)->count();
-
-            $stats = [
+            return response()->json([
+                'status' => HTTPStatus::Success,
                 'periodo' => [
                     'fecha_inicio' => $fechaInicio,
                     'fecha_fin' => $fechaFin,
-                    'anio' => $anio ? (int)$anio : null,
+                    'anio' => $anio,
                     'es_rango' => ($fechaInicio && $fechaFin) ? true : false,
-                    'es_anio' => (! $fechaInicio && !$fechaFin && $anio) ? true : false,
+                    'es_anio' => (!$fechaInicio && !$fechaFin && $anio) ? true : false,
                 ],
                 'facturas' => [
                     'total_emitidas' => (int)$totalEmitidas,
                     'total_anuladas' => (int)$totalAnuladas,
-                    'total_con_descuento' => $facturasConDescuento,
+                    'total_con_descuento' => $facturasConDescuento, // ✅ NUEVO
                     'total_general' => (int)($totalEmitidas + $totalAnuladas),
                 ],
                 'montos' => [
                     'total_facturado' => (float)round($totalFacturado, 2),
                     'total_iva' => (float)round($totalIva, 2),
                     'total_sin_iva' => (float)round($totalSinIva, 2),
-                    'total_descuentos' => (float)round($totalDescuentos, 2),
+                    'total_descuentos' => (float)round($totalDescuentos, 2), // ✅ ACTUALIZADO
                     'promedio_factura' => $totalEmitidas > 0
                         ? (float)round($totalFacturado / $totalEmitidas, 2)
-                        : 0.0,
-                    'ticket_maximo' => (float)($facturasEmitidas->max('total_factura') ?? 0),
-                    'ticket_minimo' => (float)($facturasEmitidas->min('total_factura') ?? 0),
+                        : 0,
                 ],
                 'clientes' => [
-                    'consumidores_finales' => (int)$facturasEmitidas
-                        ->where('cliente_identificacion', ClienteFacturacion::CONSUMIDOR_FINAL_IDENTIFICACION)
-                        ->count(),
-                    'clientes_registrados' => (int)$facturasEmitidas
-                        ->where('cliente_identificacion', '!=', ClienteFacturacion::CONSUMIDOR_FINAL_IDENTIFICACION)
-                        ->count(),
-                    'clientes_unicos' => (int)$facturasEmitidas
-                        ->where('cliente_identificacion', '!=', ClienteFacturacion::CONSUMIDOR_FINAL_IDENTIFICACION)
-                        ->unique('cliente_facturacion_id')
-                        ->count(),
-                ],
-            ];
-
-            return response()->json([
-                'status' => HTTPStatus::Success,
-                'estadisticas' => $stats,
+                    'total_clientes' => $clientesFacturados,
+                    'consumidores_finales' => $consumidoresFinales,
+                    'clientes_registrados' => $clientesRegistrados,
+                ]
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
@@ -522,16 +510,14 @@ class FacturaController extends Controller
     /**
      * Reporte de facturas por cliente
      */
-    public function reportePorCliente(int $clienteId, Request $request): JsonResponse
+    public function reportePorCliente(int $cliente_id, Request $request): JsonResponse
     {
         try {
-            $fechaInicio = $request->fecha_inicio;
-            $fechaFin = $request->fecha_fin;
+            $fechaInicio = $request->p_fecha_inicio;
+            $fechaFin = $request->p_fecha_fin;
 
-            $cliente = $this->clienteService->validarCliente($clienteId);
-
-            $query = Factura::with(['reserva.huesped', 'reserva.departamento'])
-                ->delCliente($clienteId)
+            $query = Factura::with('reserva')
+                ->where('cliente_facturacion_id', $cliente_id)
                 ->emitidas();
 
             if ($fechaInicio && $fechaFin) {
@@ -540,72 +526,24 @@ class FacturaController extends Controller
 
             $facturas = $query->orderBy('fecha_emision', 'desc')->get();
 
-            $resumen = [
-                'cantidad_facturas' => $facturas->count(),
-                'total_facturado' => round($facturas->sum('total_factura'), 2),
-                'total_iva' => round($facturas->sum('total_iva'), 2),
-                'total_descuentos' => round($facturas->sum('descuento'), 2),
-                'promedio_factura' => round($facturas->avg('total_factura'), 2),
-            ];
+            $totalFacturado = $facturas->sum('total_factura');
+            $cantidadFacturas = $facturas->count();
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'cliente' => $cliente,
-                'facturas' => $facturas,
-                'resumen' => $resumen,
+                'cliente_id' => $cliente_id,
                 'periodo' => [
                     'fecha_inicio' => $fechaInicio,
                     'fecha_fin' => $fechaFin,
                 ],
-            ], 200);
-        } catch (FacturacionException $e) {
-            return response()->json([
-                'status' => HTTPStatus::Error,
-                'msg' => $e->getMessage()
-            ], 400);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => HTTPStatus::Error,
-                'msg' => $th->getMessage()
-            ], 500);
-        }
-    }
-
-    /**
-     * Reporte consolidado de IVA para SRI
-     */
-    public function reporteIVA(Request $request): JsonResponse
-    {
-        $request->validate([
-            'mes' => 'required|integer|min:1|max:12',
-            'anio' => 'required|integer|min:2020|max:' . (date('Y') + 1),
-        ]);
-
-        try {
-            $mes = $request->mes;
-            $anio = $request->anio;
-
-            $facturas = Factura::emitidas()
-                ->whereMonth('fecha_emision', $mes)
-                ->whereYear('fecha_emision', $anio)
-                ->get();
-
-            $reporte = [
-                'periodo' => [
-                    'mes' => $mes,
-                    'anio' => $anio,
-                    'mes_nombre' => Carbon::create($anio, $mes, 1)->locale('es')->isoFormat('MMMM'),
-                ],
-                'ventas_exentas' => round($facturas->sum('subtotal_sin_iva'), 2),
-                'iva_cobrado' => round($facturas->sum('total_iva'), 2),
-                'total_ventas' => round($facturas->sum('total_factura'), 2),
-                'cantidad_facturas' => $facturas->count(),
-            ];
-
-            return response()->json([
-                'status' => HTTPStatus::Success,
-                'reporte' => $reporte,
                 'facturas' => $facturas,
+                'resumen' => [
+                    'cantidad_facturas' => $cantidadFacturas,
+                    'total_facturado' => $totalFacturado,
+                    'promedio_factura' => $cantidadFacturas > 0
+                        ? round($totalFacturado / $cantidadFacturas, 2)
+                        : 0
+                ]
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([

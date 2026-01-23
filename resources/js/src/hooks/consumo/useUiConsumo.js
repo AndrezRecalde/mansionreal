@@ -4,6 +4,8 @@ import {
     rtkAbrirModalConsumo,
     rtkAbrirModalEditarConsumo,
     rtkAbrirModalEliminarConsumo,
+    rtkAbrirModalAplicarDescuento, // ✅ NUEVO
+    rtkAbrirModalDescuentoMasivo, // ✅ NUEVO
 } from "../../store/consumo/uiConsumoSlice";
 
 export const useUiConsumo = () => {
@@ -12,7 +14,10 @@ export const useUiConsumo = () => {
         abrirDrawerConsumosDepartamento,
         abrirModalEditarConsumo,
         abrirModalEliminarConsumo,
+        abrirModalAplicarDescuento, // ✅ NUEVO
+        abrirModalDescuentoMasivo, // ✅ NUEVO
     } = useSelector((state) => state.uiConsumo);
+
     const dispatch = useDispatch();
 
     const fnAbrirModalConsumo = (abrir) => {
@@ -25,21 +30,34 @@ export const useUiConsumo = () => {
 
     const fnAbrirModalEditarConsumo = (abrir) => {
         dispatch(rtkAbrirModalEditarConsumo(abrir));
-    }
+    };
 
     const fnAbrirModalEliminarConsumo = (abrir) => {
         dispatch(rtkAbrirModalEliminarConsumo(abrir));
-    }
+    };
+
+    // ✅ NUEVAS funciones para descuentos
+    const fnAbrirModalAplicarDescuento = (abrir) => {
+        dispatch(rtkAbrirModalAplicarDescuento(abrir));
+    };
+
+    const fnAbrirModalDescuentoMasivo = (abrir) => {
+        dispatch(rtkAbrirModalDescuentoMasivo(abrir));
+    };
 
     return {
         abrirModalConsumo,
         abrirDrawerConsumosDepartamento,
         abrirModalEditarConsumo,
         abrirModalEliminarConsumo,
+        abrirModalAplicarDescuento, // ✅ NUEVO
+        abrirModalDescuentoMasivo, // ✅ NUEVO
 
         fnAbrirModalConsumo,
         fnAbrirDrawerConsumosDepartamento,
         fnAbrirModalEditarConsumo,
-        fnAbrirModalEliminarConsumo
+        fnAbrirModalEliminarConsumo,
+        fnAbrirModalAplicarDescuento, // ✅ NUEVO
+        fnAbrirModalDescuentoMasivo, // ✅ NUEVO
     };
 };

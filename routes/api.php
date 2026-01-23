@@ -172,6 +172,10 @@ Route::group(['prefix' => 'general', 'middleware' => ['auth:sanctum', CheckRole:
     Route::post('/consumo', [ConsumosController::class, 'registrarConsumos']);
     Route::put('/consumo/{id}', [ConsumosController::class, 'update']);
     Route::delete('/consumo/{id}', [ConsumosController::class, 'delete']);
+
+    Route::post('/consumo/{id}/aplicar-descuento', [ConsumosController::class, 'aplicarDescuento']);
+    Route::delete('/consumo/{id}/eliminar-descuento', [ConsumosController::class, 'eliminarDescuento']);
+
     Route::post('/reporte-consumos', [ConsumosController::class, 'reporteConsumosPorCategoria']);
     Route::post('/consumos/categoria/pdf', [ConsumosController::class, 'exportarReporteConsumosPDF']);
 
@@ -256,7 +260,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // FACTURAS
     // ========================================================================
     Route::prefix('facturas')->group(function () {
-
         // Listar y búsqueda
         Route::get('/', [FacturaController::class, 'index']);
         Route::get('/{id}', [FacturaController::class, 'show']);
@@ -265,9 +268,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/generar', [FacturaController::class, 'generarFactura']);
         Route::post('/{id}/anular', [FacturaController::class, 'anularFactura']);
 
-        // ✅ NUEVAS: Gestión de descuentos
-        Route::post('/{id}/aplicar-descuento', [FacturaController::class, 'aplicarDescuento']);
-        Route::delete('/{id}/eliminar-descuento', [FacturaController::class, 'eliminarDescuento']);
+        // ACTUALIZADO: Gestión de descuentos en CONSUMOS
+        Route::post('/consumos/{consumoId}/aplicar-descuento', [FacturaController::class, 'aplicarDescuentoConsumo']);
+        Route::delete('/consumos/{consumoId}/eliminar-descuento', [FacturaController::class, 'eliminarDescuentoConsumo']);
 
         // Consultas específicas
         Route::post('/{id}/recalcular-totales', [FacturaController::class, 'recalcularTotales']);
@@ -280,7 +283,6 @@ Route::middleware('auth:sanctum')->group(function () {
         // Reportes y estadísticas
         Route::get('/estadisticas/generales', [FacturaController::class, 'estadisticas']);
         Route::get('/reportes/cliente/{cliente_id}', [FacturaController::class, 'reportePorCliente']);
-        Route::post('/reportes/iva', [FacturaController::class, 'reporteIVA']);
     });
 
     // ========================================================================

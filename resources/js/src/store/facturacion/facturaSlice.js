@@ -21,6 +21,8 @@ export const facturaSlice = createSlice({
         pdfUrl: null,
         activarFactura: null,
         consumosAgrupados: {},
+        // ✅ NUEVO: Estado para resumen de descuentos
+        resumenDescuentos: null,
         estadisticas: null,
         reporteIVA: null,
         mensaje: undefined,
@@ -50,6 +52,10 @@ export const facturaSlice = createSlice({
         rtkCargarConsumosAgrupados: (state, { payload }) => {
             state.consumosAgrupados = payload;
         },
+        // ✅ NUEVO: Cargar resumen de descuentos de la factura
+        rtkCargarResumenDescuentos: (state, { payload }) => {
+            state.resumenDescuentos = payload;
+        },
         rtkAgregarFactura: (state, { payload }) => {
             state.facturas.unshift(payload);
             state.factura = payload;
@@ -57,7 +63,7 @@ export const facturaSlice = createSlice({
         },
         rtkActualizarFactura: (state, { payload }) => {
             state.facturas = state.facturas.map((factura) =>
-                factura.id === payload.id ? payload : factura
+                factura.id === payload.id ? payload : factura,
             );
             state.factura = payload;
             state.cargando = false;
@@ -98,10 +104,17 @@ export const facturaSlice = createSlice({
             state.pdfUrl = null;
             state.activarFactura = null;
             state.consumosAgrupados = {};
+            state.resumenDescuentos = null; // ✅ NUEVO
             state.estadisticas = null;
             state.reporteIVA = null;
+            state.cargando = false;
+            state.cargandoPDF = false;
             state.mensaje = undefined;
             state.errores = undefined;
+        },
+        // ✅ NUEVO: Limpiar solo el resumen de descuentos
+        rtkLimpiarResumenDescuentos: (state) => {
+            state.resumenDescuentos = null;
         },
         rtkCargarMensaje: (state, { payload }) => {
             state.mensaje = payload;
@@ -120,6 +133,7 @@ export const {
     rtkGuardarUltimosFiltros,
     rtkCargarFactura,
     rtkCargarConsumosAgrupados,
+    rtkCargarResumenDescuentos, // ✅ NUEVO
     rtkAgregarFactura,
     rtkActualizarFactura,
     rtkActivarFactura,
@@ -128,6 +142,7 @@ export const {
     rtkSetPdfUrl,
     rtkSetFacturaActual,
     rtkLimpiarFacturas,
+    rtkLimpiarResumenDescuentos, // ✅ NUEVO
     rtkCargarMensaje,
     rtkCargarErrores,
 } = facturaSlice.actions;

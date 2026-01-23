@@ -7,7 +7,7 @@ const initialState = {
     abrirModalAnularFactura: false,
     abrirDrawerFacturacion: false,
 
-    // ✅ NUEVOS:  Modales para la página de gestión de facturas
+    // ✅ NUEVOS: Modales para la página de gestión de facturas
     abrirModalDetalleFactura: false,
     abrirModalPdfFactura: false,
     abrirModalReGenerarFactura: false,
@@ -54,5 +54,5 @@ export const {
     // ✅ NUEVOS: Exports para gestión de facturas
     rtkAbrirModalDetalleFactura,
     rtkAbrirModalPdfFactura,
-    rtkAbrirModalReGenerarFactura
+    rtkAbrirModalReGenerarFactura,
 } = uiFacturaSlice.actions;

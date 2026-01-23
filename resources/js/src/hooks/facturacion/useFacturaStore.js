@@ -12,12 +12,14 @@ import {
     rtkCargarFactura,
     rtkCargarFacturas,
     rtkCargarMensaje,
-    rtkCargarReporteIVA,
-    rtkLimpiarFacturas,
-    rtkSetPdfUrl,
-    rtkSetFacturaActual,
     rtkCargarPaginacion,
+    rtkCargarReporteIVA,
+    rtkCargarResumenDescuentos, // ✅ NUEVO
     rtkGuardarUltimosFiltros,
+    rtkLimpiarFacturas,
+    rtkLimpiarResumenDescuentos, // ✅ NUEVO
+    rtkSetFacturaActual,
+    rtkSetPdfUrl,
 } from "../../store/facturacion/facturaSlice";
 import apiAxios from "../../api/apiAxios";
 
@@ -33,6 +35,7 @@ export const useFacturaStore = () => {
         pdfUrl,
         activarFactura,
         consumosAgrupados,
+        resumenDescuentos, // ✅ NUEVO
         estadisticas,
         reporteIVA,
         mensaje,
@@ -66,6 +69,9 @@ export const useFacturaStore = () => {
         }
     };
 
+    /**
+     * Cargar estadísticas de facturación
+     */
     const fnCargarEstadisticasFacturacion = async (filtros = {}) => {
         try {
             dispatch(rtkCargando(true));
@@ -75,7 +81,7 @@ export const useFacturaStore = () => {
                     params: filtros,
                 },
             );
-            dispatch(rtkCargarEstadisticas(data.estadisticas || data));
+            dispatch(rtkCargarEstadisticas(data));
         } catch (error) {
             ExceptionMessageError(error);
         } finally {
@@ -84,15 +90,22 @@ export const useFacturaStore = () => {
     };
 
     /**
-     * Obtener detalle completo de una factura
+     * ✅ ACTUALIZADO: Obtener detalle completo de una factura (con resumen de descuentos)
      */
     const fnCargarFactura = async (facturaId) => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.get(`/facturas/${facturaId}`);
+
             dispatch(rtkCargarFactura(data.factura));
+
             if (data.consumos_agrupados) {
                 dispatch(rtkCargarConsumosAgrupados(data.consumos_agrupados));
+            }
+
+            // ✅ NUEVO: Cargar resumen de descuentos
+            if (data.resumen_descuentos) {
+                dispatch(rtkCargarResumenDescuentos(data.resumen_descuentos));
             }
         } catch (error) {
             ExceptionMessageError(error);
@@ -102,7 +115,7 @@ export const useFacturaStore = () => {
     };
 
     /**
-     * Generar factura para una reserva
+     * ✅ ACTUALIZADO: Generar factura (con descuentos en consumos)
      */
     const fnGenerarFactura = async (datosFactura) => {
         try {
@@ -129,59 +142,6 @@ export const useFacturaStore = () => {
     };
 
     /**
-     * ✅ NUEVO: Aplicar descuento a una factura existente
-     */
-    const fnAplicarDescuento = async (facturaId, datosDescuento) => {
-        try {
-            dispatch(rtkCargando(true));
-            const { data } = await apiAxios.post(
-                `/facturas/${facturaId}/aplicar-descuento`,
-                datosDescuento,
-            );
-
-            dispatch(rtkActualizarFactura(data.factura));
-            dispatch(rtkCargarMensaje(data));
-
-            setTimeout(() => {
-                dispatch(rtkCargarMensaje(undefined));
-            }, 3000);
-
-            return data.factura;
-        } catch (error) {
-            ExceptionMessageError(error);
-            return null;
-        } finally {
-            dispatch(rtkCargando(false));
-        }
-    };
-
-    /**
-     * ✅ NUEVO: Eliminar descuento de una factura
-     */
-    const fnEliminarDescuento = async (facturaId) => {
-        try {
-            dispatch(rtkCargando(true));
-            const { data } = await apiAxios.delete(
-                `/facturas/${facturaId}/eliminar-descuento`,
-            );
-
-            dispatch(rtkActualizarFactura(data.factura));
-            dispatch(rtkCargarMensaje(data));
-
-            setTimeout(() => {
-                dispatch(rtkCargarMensaje(undefined));
-            }, 3000);
-
-            return data.factura;
-        } catch (error) {
-            ExceptionMessageError(error);
-            return null;
-        } finally {
-            dispatch(rtkCargando(false));
-        }
-    };
-
-    /**
      * Anular factura
      */
     const fnAnularFactura = async (facturaId, motivo) => {
@@ -202,14 +162,14 @@ export const useFacturaStore = () => {
             return data.factura;
         } catch (error) {
             ExceptionMessageError(error);
-            throw error;
+            return null;
         } finally {
             dispatch(rtkCargando(false));
         }
     };
 
     /**
-     * Verificar si una reserva puede generar factura
+     * Verificar si una reserva puede facturar
      */
     const fnVerificarPuedeFacturar = async (reservaId) => {
         try {
@@ -220,14 +180,14 @@ export const useFacturaStore = () => {
             return data;
         } catch (error) {
             ExceptionMessageError(error);
-            return { puede_facturar: false, motivos: ["Error al verificar"] };
+            return null;
         } finally {
             dispatch(rtkCargando(false));
         }
     };
 
     /**
-     * Obtener factura de una reserva
+     * Obtener factura por reserva
      */
     const fnCargarFacturaPorReserva = async (reservaId) => {
         try {
@@ -235,11 +195,7 @@ export const useFacturaStore = () => {
             const { data } = await apiAxios.get(
                 `/facturas/reserva/${reservaId}`,
             );
-
-            if (data.factura) {
-                dispatch(rtkCargarFactura(data.factura));
-            }
-
+            dispatch(rtkCargarFactura(data.factura));
             return data.factura;
         } catch (error) {
             ExceptionMessageError(error);
@@ -250,7 +206,7 @@ export const useFacturaStore = () => {
     };
 
     /**
-     * Recalcular totales de una factura
+     * ✅ ACTUALIZADO: Recalcular totales desde consumos
      */
     const fnRecalcularTotales = async (facturaId) => {
         try {
@@ -269,35 +225,30 @@ export const useFacturaStore = () => {
             return data.factura;
         } catch (error) {
             ExceptionMessageError(error);
+            return null;
         } finally {
             dispatch(rtkCargando(false));
         }
     };
 
     /**
-     * Descargar factura en PDF
+     * Previsualizar factura en PDF
      */
     const fnPrevisualizarFacturaPDF = async (facturaId) => {
         try {
             dispatch(rtkCargandoPDF(true));
-
-            // Obtener datos de la factura
-            const { data } = await apiAxios.get(`/facturas/${facturaId}`);
-            dispatch(rtkSetFacturaActual(data.factura));
-
-            // Obtener PDF
             const response = await apiAxios.get(`/facturas/${facturaId}/pdf`, {
                 responseType: "blob",
             });
 
-            // Crear URL del blob
-            const blob = new Blob([response.data], { type: "application/pdf" });
-            const url = window.URL.createObjectURL(blob);
+            const pdfBlob = new Blob([response.data], {
+                type: "application/pdf",
+            });
+            const url = window.URL.createObjectURL(pdfBlob);
 
-            // Guardar URL en el estado
             dispatch(rtkSetPdfUrl(url));
+            return url;
         } catch (error) {
-            console.log(error);
             ExceptionMessageError(error);
             return null;
         } finally {
@@ -325,14 +276,27 @@ export const useFacturaStore = () => {
                 responseType: "blob",
             });
 
-            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const pdfBlob = new Blob([response.data], {
+                type: "application/pdf",
+            });
+            const url = window.URL.createObjectURL(pdfBlob);
             const link = document.createElement("a");
             link.href = url;
-            link.setAttribute("download", `factura_${facturaId}.pdf`);
+            link.download = `factura_${facturaId}.pdf`;
             document.body.appendChild(link);
             link.click();
-            link.remove();
+            document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
+
+            dispatch(
+                rtkCargarMensaje({
+                    status: "success",
+                    msg: "PDF descargado exitosamente",
+                }),
+            );
+            setTimeout(() => {
+                dispatch(rtkCargarMensaje(undefined));
+            }, 2000);
         } catch (error) {
             ExceptionMessageError(error);
         } finally {
@@ -341,15 +305,18 @@ export const useFacturaStore = () => {
     };
 
     /**
-     * Obtener estadísticas de facturación
+     * Cargar estadísticas generales
      */
     const fnCargarEstadisticas = async (filtros = {}) => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.get("/facturas/estadisticas", {
-                params: filtros,
-            });
-            dispatch(rtkCargarEstadisticas(data.estadisticas));
+            const { data } = await apiAxios.get(
+                "/facturas/estadisticas/generales",
+                {
+                    params: filtros,
+                },
+            );
+            dispatch(rtkCargarEstadisticas(data));
         } catch (error) {
             ExceptionMessageError(error);
         } finally {
@@ -358,17 +325,15 @@ export const useFacturaStore = () => {
     };
 
     /**
-     * Reporte de IVA para SRI
+     * Cargar reporte de IVA
      */
-    const fnCargarReporteIVA = async (mes, anio) => {
+    const fnCargarReporteIVA = async (filtros = {}) => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.post("/facturas/reporte-iva", {
-                mes,
-                anio,
+            const { data } = await apiAxios.get("/facturas/reporte-iva", {
+                params: filtros,
             });
-            dispatch(rtkCargarReporteIVA(data.reporte));
-            return data.reporte;
+            dispatch(rtkCargarReporteIVA(data));
         } catch (error) {
             ExceptionMessageError(error);
         } finally {
@@ -377,14 +342,16 @@ export const useFacturaStore = () => {
     };
 
     /**
-     * Reporte de facturas por cliente
+     * Cargar reporte por cliente
      */
     const fnCargarReportePorCliente = async (clienteId, filtros = {}) => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.get(
-                `/facturas/cliente/${clienteId}/reporte`,
-                { params: filtros },
+                `/facturas/reportes/cliente/${clienteId}`,
+                {
+                    params: filtros,
+                },
             );
             return data;
         } catch (error) {
@@ -396,17 +363,24 @@ export const useFacturaStore = () => {
     };
 
     /**
-     * Activar factura (seleccionarla)
+     * Activar/seleccionar factura
      */
     const fnActivarFactura = (factura) => {
         dispatch(rtkActivarFactura(factura));
     };
 
     /**
-     * Limpiar estado
+     * Limpiar facturas del estado
      */
     const fnLimpiarFacturas = () => {
         dispatch(rtkLimpiarFacturas());
+    };
+
+    /**
+     * ✅ NUEVO: Limpiar solo el resumen de descuentos
+     */
+    const fnLimpiarResumenDescuentos = () => {
+        dispatch(rtkLimpiarResumenDescuentos());
     };
 
     return {
@@ -421,6 +395,7 @@ export const useFacturaStore = () => {
         pdfUrl,
         activarFactura,
         consumosAgrupados,
+        resumenDescuentos, // ✅ NUEVO
         estadisticas,
         reporteIVA,
         mensaje,
@@ -431,8 +406,6 @@ export const useFacturaStore = () => {
         fnCargarEstadisticasFacturacion,
         fnCargarFactura,
         fnGenerarFactura,
-        fnAplicarDescuento,
-        fnEliminarDescuento,
         fnAnularFactura,
         fnVerificarPuedeFacturar,
         fnCargarFacturaPorReserva,
@@ -445,5 +418,6 @@ export const useFacturaStore = () => {
         fnCargarReportePorCliente,
         fnActivarFactura,
         fnLimpiarFacturas,
+        fnLimpiarResumenDescuentos, // ✅ NUEVO
     };
 };

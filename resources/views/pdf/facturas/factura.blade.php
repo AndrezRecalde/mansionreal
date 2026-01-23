@@ -205,14 +205,14 @@
             <div class="section-title">
                 Detalle Completo de Consumos
                 @if ($tieneDescuentos)
-                    <span class="descuento-icon">● Incluye Descuentos</span>
+                    <span class="descuento-icon">Incluye Descuentos</span>
                 @endif
             </div>
         @else
             <div class="section-title">
                 Detalle de Consumos
                 @if ($tieneDescuentos)
-                    <span class="descuento-icon">● Incluye Descuentos</span>
+                    <span class="descuento-icon">Incluye Descuentos</span>
                 @endif
             </div>
         @endif

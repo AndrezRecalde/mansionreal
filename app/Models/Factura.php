@@ -27,7 +27,6 @@ class Factura extends Model
         'total_descuento',
         'total_iva',
         'total_factura', // ✅ Total final (suma de consumos.total)
-        // ❌ REMOVIDOS: Campos de descuento (ahora están en consumos)
         'estado',
         'observaciones',
         'motivo_anulacion',

@@ -506,6 +506,18 @@ class FacturaController extends Controller
                     'total_iva' => (float)round($totalIva, 2),
                     'total_sin_iva' => (float)round($totalSinIva, 2),
                     'total_descuentos' => (float)round($totalDescuentos, 2), // ✅ ACTUALIZADO
+                    'ticket_maximo' => (float)round(
+                        $totalEmitidas > 0
+                            ? $facturasEmitidasQuery->max('total_factura')
+                            : 0,
+                        2
+                    ),
+                    'ticket_minimo' => (float)round(
+                        $totalEmitidas > 0
+                            ? $facturasEmitidasQuery->min('total_factura')
+                            : 0,
+                        2
+                    ),
                     'promedio_factura' => $totalEmitidas > 0
                         ? (float)round($totalFacturado / $totalEmitidas, 2)
                         : 0,

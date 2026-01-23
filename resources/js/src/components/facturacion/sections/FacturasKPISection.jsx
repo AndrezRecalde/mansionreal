@@ -32,8 +32,8 @@ export const FacturasKPISection = ({ facturas, clientes }) => {
         },
         {
             icon: IconUsers,
-            value: clientes?.clientes_unicos || 0,
-            label: "Clientes Únicos",
+            value: clientes?.clientes_registrados || 0,
+            label: "Clientes Registrados",
             color: "#0284c7",
         },
     ];

@@ -5,6 +5,7 @@ export const facturaSlice = createSlice({
     initialState: {
         cargando: false,
         cargandoPDF: false,
+        cargandoDetalle: false,
         facturas: [],
         paginacion: {},
         ultimosFiltros: {
@@ -35,6 +36,9 @@ export const facturaSlice = createSlice({
         rtkCargandoPDF: (state, { payload }) => {
             state.cargandoPDF = payload;
         },
+        rtkCargandoDetalle: (state, { payload }) => {
+            state.cargandoDetalle = payload;
+        },
         rtkCargarFacturas: (state, { payload }) => {
             state.facturas = payload;
             state.cargando = false;
@@ -51,6 +55,7 @@ export const facturaSlice = createSlice({
         },
         rtkCargarConsumosAgrupados: (state, { payload }) => {
             state.consumosAgrupados = payload;
+            state.cargandoDetalle = false;
         },
         // ✅ NUEVO: Cargar resumen de descuentos de la factura
         rtkCargarResumenDescuentos: (state, { payload }) => {
@@ -109,6 +114,7 @@ export const facturaSlice = createSlice({
             state.reporteIVA = null;
             state.cargando = false;
             state.cargandoPDF = false;
+            state.cargandoDetalle = false;
             state.mensaje = undefined;
             state.errores = undefined;
         },
@@ -128,6 +134,7 @@ export const facturaSlice = createSlice({
 export const {
     rtkCargando,
     rtkCargandoPDF,
+    rtkCargandoDetalle,
     rtkCargarFacturas,
     rtkCargarPaginacion,
     rtkGuardarUltimosFiltros,

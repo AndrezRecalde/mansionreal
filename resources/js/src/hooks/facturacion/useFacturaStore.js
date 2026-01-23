@@ -20,6 +20,7 @@ import {
     rtkLimpiarResumenDescuentos, // ✅ NUEVO
     rtkSetFacturaActual,
     rtkSetPdfUrl,
+    rtkCargandoDetalle,
 } from "../../store/facturacion/facturaSlice";
 import apiAxios from "../../api/apiAxios";
 
@@ -94,7 +95,7 @@ export const useFacturaStore = () => {
      */
     const fnCargarFactura = async (facturaId) => {
         try {
-            dispatch(rtkCargando(true));
+            dispatch(rtkCargandoDetalle(true));
             const { data } = await apiAxios.get(`/facturas/${facturaId}`);
 
             dispatch(rtkCargarFactura(data.factura));
@@ -110,7 +111,7 @@ export const useFacturaStore = () => {
         } catch (error) {
             ExceptionMessageError(error);
         } finally {
-            dispatch(rtkCargando(false));
+            dispatch(rtkCargandoDetalle(false));
         }
     };
 

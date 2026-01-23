@@ -378,8 +378,9 @@ class FacturaController extends Controller
         try {
             $factura = Factura::with([
                 'reserva.huesped',
-                'reserva.departamento',
+                'reserva.departamento.tipoDepartamento',
                 'consumos.inventario.categoria',
+                'consumos.usuarioRegistroDescuento',
                 'clienteFacturacion',
                 'usuarioGenero',
                 'usuarioAnulo'
@@ -394,8 +395,24 @@ class FacturaController extends Controller
 
             $factura->solicita_factura_detallada = $solicitaDetallada;
 
+            // Agrupar consumos por categoría
+            $consumosAgrupados = [];
+            foreach ($factura->consumos as $consumo) {
+                $categoriaNombre = $consumo->inventario->categoria->nombre_categoria ?? 'Sin Categoría';
+
+                if (!isset($consumosAgrupados[$categoriaNombre])) {
+                    $consumosAgrupados[$categoriaNombre] = [];
+                }
+
+                $consumosAgrupados[$categoriaNombre][] = $consumo;
+            }
+
+            // Ordenar categorías alfabéticamente
+            ksort($consumosAgrupados);
+
             $data = [
                 'factura' => $factura,
+                'consumos_agrupados' => $consumosAgrupados,
                 'hotel_nombre' => config('app.hotel_nombre', 'Hotel Mansión Real'),
                 'hotel_ruc' => config('app.hotel_ruc', '1234567890001'),
                 'hotel_direccion' => config('app.hotel_direccion', 'Dirección'),

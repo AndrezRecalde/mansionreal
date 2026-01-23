@@ -9,23 +9,43 @@ import {
     Paper,
     Alert,
     Button,
+    Tooltip,
 } from "@mantine/core";
 import {
     IconAlertCircle,
     IconFileText,
     IconDownload,
     IconTrash,
+    IconDiscount,
+    IconInfoCircle,
 } from "@tabler/icons-react";
 import { useFacturaStore, useUiFactura } from "../../../hooks";
 import dayjs from "dayjs";
 
 export const FacturaDetalleModal = ({ opened, onClose }) => {
-    const { activarFactura, fnDescargarFacturaPDF } = useFacturaStore();
+    const { factura, fnDescargarFacturaPDF, fnActivarFactura } =
+        useFacturaStore();
     const { fnAbrirModalAnularFactura } = useUiFactura();
 
-    if (!activarFactura) return null;
+    if (!factura) return null;
+
+    // Calcular si tiene descuentos
+    const tieneDescuentos =
+        factura.consumos?.some((c) => parseFloat(c.descuento) > 0) || false;
+
+    // Calcular totales de descuentos
+    const totalDescuentos = factura.consumos?.reduce(
+        (sum, c) => sum + parseFloat(c.descuento || 0),
+        0,
+    );
+
+    const subtotalAntesDescuentos = factura.consumos?.reduce(
+        (sum, c) => sum + parseFloat(c.subtotal || 0),
+        0,
+    );
 
     const handleAnular = () => {
+        fnActivarFactura(factura);
         onClose();
         fnAbrirModalAnularFactura(true);
     };
@@ -40,33 +60,41 @@ export const FacturaDetalleModal = ({ opened, onClose }) => {
                     <Text fw={700} size="lg">
                         Detalle de Factura
                     </Text>
+                    {tieneDescuentos && (
+                        <Badge
+                            leftSection={<IconDiscount size={14} />}
+                            color="orange"
+                            variant="light"
+                        >
+                            Con Descuentos
+                        </Badge>
+                    )}
                 </Group>
             }
-            size="xl"
+            size={1100}
             padding="lg"
         >
             <Stack gap="md">
                 {/* Estado de Factura */}
-                {activarFactura.estado === "ANULADA" && (
+                {factura.estado === "ANULADA" && (
                     <Alert
                         icon={<IconAlertCircle size={16} />}
                         title="Factura Anulada"
                         color="red"
                     >
                         <Text size="sm">
-                            <strong>Motivo:</strong>{" "}
-                            {activarFactura.motivo_anulacion}
+                            <strong>Motivo:</strong> {factura.motivo_anulacion}
                         </Text>
                         <Text size="sm">
                             <strong>Fecha de Anulación:</strong>{" "}
-                            {dayjs(activarFactura.fecha_anulacion).format(
-                                "DD/MM/YYYY HH:mm"
+                            {dayjs(factura.fecha_anulacion).format(
+                                "DD/MM/YYYY HH:mm",
                             )}
                         </Text>
-                        {activarFactura.usuario_anulo && (
+                        {factura.usuario_anulo && (
                             <Text size="sm">
                                 <strong>Anulada por:</strong>{" "}
-                                {activarFactura.usuario_anulo.nombres_completos}
+                                {factura.usuario_anulo.nombres_completos}
                             </Text>
                         )}
                     </Alert>
@@ -79,14 +107,13 @@ export const FacturaDetalleModal = ({ opened, onClose }) => {
                             Información General
                         </Text>
                         <Badge
+                            variant="light"
                             color={
-                                activarFactura.estado === "EMITIDA"
-                                    ? "green"
-                                    : "red"
+                                factura.estado === "EMITIDA" ? "green" : "red"
                             }
-                            size="lg"
+                            size="md"
                         >
-                            {activarFactura.estado}
+                            {factura.estado}
                         </Badge>
                     </Group>
                     <Stack gap="xs">
@@ -95,7 +122,7 @@ export const FacturaDetalleModal = ({ opened, onClose }) => {
                                 Número de Factura:
                             </Text>
                             <Text size="sm" fw={600}>
-                                {activarFactura.numero_factura}
+                                {factura.numero_factura}
                             </Text>
                         </Group>
                         <Group justify="space-between">
@@ -103,8 +130,8 @@ export const FacturaDetalleModal = ({ opened, onClose }) => {
                                 Fecha de Emisión:
                             </Text>
                             <Text size="sm" fw={600}>
-                                {dayjs(activarFactura.fecha_emision).format(
-                                    "DD/MM/YYYY"
+                                {dayjs(factura.fecha_emision).format(
+                                    "DD/MM/YYYY",
                                 )}
                             </Text>
                         </Group>
@@ -113,7 +140,7 @@ export const FacturaDetalleModal = ({ opened, onClose }) => {
                                 Código de Reserva:
                             </Text>
                             <Badge variant="light" color="blue">
-                                {activarFactura.reserva?.codigo_reserva}
+                                {factura.reserva?.codigo_reserva}
                             </Badge>
                         </Group>
                         <Group justify="space-between">
@@ -122,13 +149,13 @@ export const FacturaDetalleModal = ({ opened, onClose }) => {
                             </Text>
                             <Badge
                                 color={
-                                    activarFactura.solicita_factura_detallada
+                                    factura.solicita_factura_detallada
                                         ? "teal"
                                         : "gray"
                                 }
                                 variant="light"
                             >
-                                {activarFactura.solicita_factura_detallada
+                                {factura.solicita_factura_detallada
                                     ? "Detallada"
                                     : "Simple"}
                             </Badge>
@@ -147,44 +174,44 @@ export const FacturaDetalleModal = ({ opened, onClose }) => {
                                 Nombres Completos:
                             </Text>
                             <Text size="sm" fw={500}>
-                                {activarFactura.cliente_nombres_completos}
+                                {factura.cliente_nombres_completos}
                             </Text>
                         </Group>
                         <Group justify="space-between">
                             <Text size="sm" c="dimmed">
-                                {activarFactura.cliente_tipo_identificacion}:
+                                {factura.cliente_tipo_identificacion}:
                             </Text>
                             <Text size="sm" fw={500}>
-                                {activarFactura.cliente_identificacion}
+                                {factura.cliente_identificacion}
                             </Text>
                         </Group>
-                        {activarFactura.cliente_direccion && (
+                        {factura.cliente_direccion && (
                             <Group justify="space-between">
                                 <Text size="sm" c="dimmed">
                                     Dirección:
                                 </Text>
                                 <Text size="sm" fw={500}>
-                                    {activarFactura.cliente_direccion}
+                                    {factura.cliente_direccion}
                                 </Text>
                             </Group>
                         )}
-                        {activarFactura.cliente_telefono && (
+                        {factura.cliente_telefono && (
                             <Group justify="space-between">
                                 <Text size="sm" c="dimmed">
                                     Teléfono:
                                 </Text>
                                 <Text size="sm" fw={500}>
-                                    {activarFactura.cliente_telefono}
+                                    {factura.cliente_telefono}
                                 </Text>
                             </Group>
                         )}
-                        {activarFactura.cliente_email && (
+                        {factura.cliente_email && (
                             <Group justify="space-between">
                                 <Text size="sm" c="dimmed">
                                     Email:
                                 </Text>
                                 <Text size="sm" fw={500}>
-                                    {activarFactura.cliente_email}
+                                    {factura.cliente_email}
                                 </Text>
                             </Group>
                         )}
@@ -193,9 +220,20 @@ export const FacturaDetalleModal = ({ opened, onClose }) => {
 
                 {/* Detalle de Consumos */}
                 <Paper p="md" withBorder>
-                    <Text fw={600} size="md" mb="md">
-                        Detalle de Consumos
-                    </Text>
+                    <Group justify="space-between" mb="md">
+                        <Text fw={600} size="md">
+                            Detalle de Consumos
+                        </Text>
+                        {tieneDescuentos && (
+                            <Badge
+                                leftSection={<IconDiscount size={14} />}
+                                color="orange"
+                                variant="light"
+                            >
+                                Incluye descuentos
+                            </Badge>
+                        )}
+                    </Group>
                     <Table striped highlightOnHover withTableBorder>
                         <Table.Thead>
                             <Table.Tr>
@@ -209,6 +247,11 @@ export const FacturaDetalleModal = ({ opened, onClose }) => {
                                 <Table.Th style={{ textAlign: "right" }}>
                                     Subtotal
                                 </Table.Th>
+                                {tieneDescuentos && (
+                                    <Table.Th style={{ textAlign: "right" }}>
+                                        Descuento
+                                    </Table.Th>
+                                )}
                                 <Table.Th style={{ textAlign: "center" }}>
                                     IVA
                                 </Table.Th>
@@ -218,43 +261,215 @@ export const FacturaDetalleModal = ({ opened, onClose }) => {
                             </Table.Tr>
                         </Table.Thead>
                         <Table.Tbody>
-                            {activarFactura.consumos?.map((consumo) => (
-                                <Table.Tr key={consumo.id}>
-                                    <Table.Td>
-                                        {consumo.inventario?.nombre_producto}
-                                    </Table.Td>
-                                    <Table.Td style={{ textAlign: "center" }}>
-                                        {parseFloat(consumo.cantidad).toFixed(
-                                            2
-                                        )}
-                                    </Table.Td>
-                                    <Table.Td style={{ textAlign: "right" }}>
-                                        $
-                                        {parseFloat(
-                                            consumo.precio_unitario
-                                        ).toFixed(2)}
-                                    </Table.Td>
-                                    <Table.Td style={{ textAlign: "right" }}>
-                                        $
-                                        {parseFloat(consumo.subtotal).toFixed(
-                                            2
-                                        )}
-                                    </Table.Td>
-                                    <Table.Td style={{ textAlign: "center" }}>
-                                        {consumo.tasa_iva}%
-                                    </Table.Td>
-                                    <Table.Td style={{ textAlign: "right" }}>
-                                        <Text fw={600}>
+                            {factura.consumos?.map((consumo) => {
+                                const tieneDescuento =
+                                    parseFloat(consumo.descuento || 0) > 0;
+                                const subtotalOriginal = parseFloat(
+                                    consumo.subtotal || 0,
+                                );
+                                const descuentoMonto = parseFloat(
+                                    consumo.descuento || 0,
+                                );
+
+                                return (
+                                    <Table.Tr
+                                        key={consumo.id}
+                                        style={
+                                            tieneDescuento
+                                                ? {
+                                                      backgroundColor:
+                                                          "#fff4e6",
+                                                  }
+                                                : {}
+                                        }
+                                    >
+                                        <Table.Td>
+                                            <Group gap="xs">
+                                                <Text size="sm">
+                                                    {
+                                                        consumo.inventario
+                                                            ?.nombre_producto
+                                                    }
+                                                </Text>
+                                                {tieneDescuento && (
+                                                    <Tooltip
+                                                        label={
+                                                            consumo.motivo_descuento ||
+                                                            "Descuento aplicado"
+                                                        }
+                                                        position="top"
+                                                        withArrow
+                                                    >
+                                                        <IconDiscount
+                                                            size={16}
+                                                            color="#fd7e14"
+                                                        />
+                                                    </Tooltip>
+                                                )}
+                                            </Group>
+                                        </Table.Td>
+                                        <Table.Td
+                                            style={{ textAlign: "center" }}
+                                        >
+                                            {parseFloat(
+                                                consumo.cantidad,
+                                            ).toFixed(2)}
+                                        </Table.Td>
+                                        <Table.Td
+                                            style={{ textAlign: "right" }}
+                                        >
                                             $
-                                            {parseFloat(consumo.total).toFixed(
-                                                2
+                                            {parseFloat(
+                                                consumo.inventario
+                                                    .precio_unitario,
+                                            ).toFixed(2)}
+                                        </Table.Td>
+                                        <Table.Td
+                                            style={{ textAlign: "right" }}
+                                        >
+                                            {tieneDescuento ? (
+                                                <Text
+                                                    size="sm"
+                                                    td="line-through"
+                                                    c="dimmed"
+                                                >
+                                                    $
+                                                    {subtotalOriginal.toFixed(
+                                                        2,
+                                                    )}
+                                                </Text>
+                                            ) : (
+                                                <Text size="sm">
+                                                    $
+                                                    {subtotalOriginal.toFixed(
+                                                        2,
+                                                    )}
+                                                </Text>
                                             )}
-                                        </Text>
-                                    </Table.Td>
-                                </Table.Tr>
-                            ))}
+                                        </Table.Td>
+                                        {tieneDescuentos && (
+                                            <Table.Td
+                                                style={{ textAlign: "right" }}
+                                            >
+                                                {tieneDescuento ? (
+                                                    <Group
+                                                        gap={4}
+                                                        justify="flex-end"
+                                                    >
+                                                        <Text
+                                                            size="sm"
+                                                            c="red"
+                                                            fw={500}
+                                                        >
+                                                            -$
+                                                            {descuentoMonto.toFixed(
+                                                                2,
+                                                            )}
+                                                        </Text>
+                                                        {consumo.tipo_descuento ===
+                                                            "PORCENTAJE" && (
+                                                            <Badge
+                                                                size="xs"
+                                                                color="orange"
+                                                            >
+                                                                {parseFloat(
+                                                                    consumo.porcentaje_descuento ||
+                                                                        0,
+                                                                ).toFixed(1)}
+                                                                %
+                                                            </Badge>
+                                                        )}
+                                                    </Group>
+                                                ) : (
+                                                    <Text size="sm" c="dimmed">
+                                                        -
+                                                    </Text>
+                                                )}
+                                            </Table.Td>
+                                        )}
+                                        <Table.Td
+                                            style={{ textAlign: "center" }}
+                                        >
+                                            {consumo.tasa_iva}%
+                                        </Table.Td>
+                                        <Table.Td
+                                            style={{ textAlign: "right" }}
+                                        >
+                                            <Text fw={600} size="sm">
+                                                $
+                                                {parseFloat(
+                                                    consumo.total,
+                                                ).toFixed(2)}
+                                            </Text>
+                                        </Table.Td>
+                                    </Table.Tr>
+                                );
+                            })}
                         </Table.Tbody>
                     </Table>
+
+                    {/* Mostrar consumos con descuento y sus motivos */}
+                    {tieneDescuentos && (
+                        <Paper
+                            p="sm"
+                            mt="md"
+                            withBorder
+                            style={{ backgroundColor: "#fff9db" }}
+                        >
+                            <Group gap="xs" mb="xs">
+                                <IconInfoCircle size={16} color="#fab005" />
+                                <Text size="sm" fw={600} c="orange">
+                                    Motivos de Descuentos Aplicados
+                                </Text>
+                            </Group>
+                            <Stack gap="xs">
+                                {factura.consumos
+                                    ?.filter(
+                                        (c) => parseFloat(c.descuento || 0) > 0,
+                                    )
+                                    .map((consumo) => (
+                                        <Group
+                                            key={consumo.id}
+                                            justify="space-between"
+                                            gap="xs"
+                                        >
+                                            <Text size="xs" c="dimmed" flex={1}>
+                                                •{" "}
+                                                {
+                                                    consumo.inventario
+                                                        ?.nombre_producto
+                                                }
+                                                :
+                                            </Text>
+                                            <Text size="xs" flex={2}>
+                                                {consumo.motivo_descuento ||
+                                                    "Sin motivo especificado"}
+                                            </Text>
+                                            {consumo.usuario_registro_descuento && (
+                                                <Text
+                                                    size="xs"
+                                                    c="dimmed"
+                                                    fs="italic"
+                                                >
+                                                    (
+                                                    {
+                                                        consumo
+                                                            .usuario_registro_descuento
+                                                            .nombres
+                                                    }{" "}
+                                                    {
+                                                        consumo
+                                                            .usuario_registro_descuento
+                                                            .apellidos
+                                                    }
+                                                    )
+                                                </Text>
+                                            )}
+                                        </Group>
+                                    ))}
+                            </Stack>
+                        </Paper>
+                    )}
                 </Paper>
 
                 {/* Totales */}
@@ -263,26 +478,50 @@ export const FacturaDetalleModal = ({ opened, onClose }) => {
                         Resumen de Totales
                     </Text>
                     <Stack gap="xs">
+                        {tieneDescuentos && (
+                            <>
+                                <Group justify="space-between">
+                                    <Text size="sm" c="dimmed">
+                                        Subtotal antes de descuentos:
+                                    </Text>
+                                    <Text size="sm" c="dimmed">
+                                        $
+                                        {subtotalAntesDescuentos?.toFixed(2) ||
+                                            "0.00"}
+                                    </Text>
+                                </Group>
+                                <Group justify="space-between">
+                                    <Text size="sm" fw={500} c="orange">
+                                        Total descuentos aplicados:
+                                    </Text>
+                                    <Text size="sm" fw={600} c="orange">
+                                        -$
+                                        {totalDescuentos?.toFixed(2) || "0.00"}
+                                    </Text>
+                                </Group>
+                                <Divider />
+                            </>
+                        )}
                         <Group justify="space-between">
                             <Text size="sm" fw={500}>
                                 Subtotal sin IVA:
                             </Text>
                             <Text size="sm">
                                 $
-                                {parseFloat(
-                                    activarFactura.subtotal_sin_iva
-                                ).toFixed(2)}
+                                {parseFloat(factura.subtotal_sin_iva).toFixed(
+                                    2,
+                                )}
                             </Text>
                         </Group>
                         <Group justify="space-between">
                             <Text size="sm" fw={500}>
-                                Subtotal con IVA:
+                                Total de Descuento(s):
                             </Text>
                             <Text size="sm">
                                 $
-                                {parseFloat(
-                                    activarFactura.subtotal_con_iva
-                                ).toFixed(2)}
+                                {parseFloat(factura.total_descuento).toFixed(
+                                    2,
+                                ) || "0.00"}
                             </Text>
                         </Group>
                         <Group justify="space-between">
@@ -290,42 +529,30 @@ export const FacturaDetalleModal = ({ opened, onClose }) => {
                                 IVA:
                             </Text>
                             <Text size="sm">
-                                $
-                                {parseFloat(activarFactura.total_iva).toFixed(
-                                    2
-                                )}
+                                ${parseFloat(factura.total_iva).toFixed(2)}
                             </Text>
                         </Group>
-                        {activarFactura.descuento > 0 && (
-                            <Group justify="space-between">
-                                <Text size="sm" fw={500} c="red">
-                                    Descuento:
-                                </Text>
-                                <Text size="sm" c="red">
-                                    -$
-                                    {parseFloat(
-                                        activarFactura.descuento
-                                    ).toFixed(2)}
-                                </Text>
-                            </Group>
-                        )}
+
                         <Divider my="xs" />
                         <Group justify="space-between">
                             <Text size="lg" fw={700}>
-                                TOTAL:
+                                TOTAL A PAGAR:
                             </Text>
                             <Text size="lg" fw={700} c="teal">
-                                $
-                                {parseFloat(
-                                    activarFactura.total_factura
-                                ).toFixed(2)}
+                                ${parseFloat(factura.total_factura).toFixed(2)}
                             </Text>
                         </Group>
+                        {tieneDescuentos && (
+                            <Text size="xs" c="dimmed" ta="right">
+                                Ahorro total: $
+                                {totalDescuentos?.toFixed(2) || "0.00"}
+                            </Text>
+                        )}
                     </Stack>
                 </Paper>
 
                 {/* Observaciones */}
-                {activarFactura.observaciones && (
+                {factura.observaciones && (
                     <Paper
                         p="md"
                         withBorder
@@ -334,7 +561,7 @@ export const FacturaDetalleModal = ({ opened, onClose }) => {
                         <Text fw={600} size="sm" mb="xs">
                             Observaciones:
                         </Text>
-                        <Text size="sm">{activarFactura.observaciones}</Text>
+                        <Text size="sm">{factura.observaciones}</Text>
                     </Paper>
                 )}
 
@@ -344,13 +571,13 @@ export const FacturaDetalleModal = ({ opened, onClose }) => {
                         Información de Auditoría
                     </Text>
                     <Text size="xs" c="dimmed">
-                        Generado por: {activarFactura.usuario_genero?.nombres}{" "}
-                        {activarFactura.usuario_genero?.apellidos}
+                        Generado por: {factura.usuario_genero?.nombres}{" "}
+                        {factura.usuario_genero?.apellidos}
                     </Text>
                     <Text size="xs" c="dimmed">
                         Fecha de creación:{" "}
-                        {dayjs(activarFactura.created_at).format(
-                            "DD/MM/YYYY HH:mm: ss"
+                        {dayjs(factura.created_at).format(
+                            "DD/MM/YYYY HH:mm:ss",
                         )}
                     </Text>
                 </Paper>
@@ -359,14 +586,14 @@ export const FacturaDetalleModal = ({ opened, onClose }) => {
                 <Group justify="space-between" mt="md">
                     <Button
                         leftSection={<IconDownload size={16} />}
-                        onClick={() => fnDescargarFacturaPDF(activarFactura.id)}
+                        onClick={() => fnDescargarFacturaPDF(factura.id)}
                         color="teal"
                     >
                         Descargar PDF
                     </Button>
 
                     <Group>
-                        {activarFactura.estado === "EMITIDA" && (
+                        {factura.estado === "EMITIDA" && (
                             <Button
                                 leftSection={<IconTrash size={16} />}
                                 onClick={handleAnular}

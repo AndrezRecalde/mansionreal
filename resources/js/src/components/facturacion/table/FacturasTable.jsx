@@ -13,6 +13,7 @@ export const FacturasTable = () => {
         fnCargarFacturas,
         facturas,
         paginacion,
+        fnCargarFactura,
         fnActivarFactura,
         fnPrevisualizarFacturaPDF,
         fnDescargarFacturaPDF,
@@ -135,13 +136,20 @@ export const FacturasTable = () => {
                 filterVariant: "checkbox",
             },
         ],
-        []
+        [],
     );
 
-    const handleVerDetalle = (factura) => {
-        //TODO: UTILIZAR EL METODO SHOW DE FACTURACONTROLLER PARA ACTIVAR LA FACTURA COMPLETA
-        fnActivarFactura(factura);
-        fnAbrirModalDetalleFactura(true);
+    const handleVerDetalle = async (factura) => {
+        try {
+            await fnCargarFactura(factura.id);
+            fnAbrirModalDetalleFactura(true);
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "No se pudo cargar el detalle de la factura",
+            });
+        }
     };
 
     const handleVerPDF = async (factura) => {

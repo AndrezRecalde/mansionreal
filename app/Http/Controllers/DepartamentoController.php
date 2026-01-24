@@ -85,7 +85,7 @@ class DepartamentoController extends Controller
                         ->where('r.fecha_checkin', '<=', $fin->toDateTimeString())
                         ->where('r.fecha_checkout', '>=', $inicio->toDateTimeString());
                 })
-                ->orderBy('d.numero_departamento')
+                ->orderByRaw('CAST(d.numero_departamento AS UNSIGNED)')
                 ->select([
                     'd.id',
                     'd.numero_departamento',

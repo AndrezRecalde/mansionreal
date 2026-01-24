@@ -75,7 +75,7 @@ const CalendarioReservasPage = () => {
     useEffect(() => {
         if (erroresGastos !== undefined) {
             Swal.fire({
-                icon: erroresGastos.status,
+                icon: "error",
                 text: erroresGastos,
                 showConfirmButton: true,
             });
@@ -95,7 +95,7 @@ const CalendarioReservasPage = () => {
     useEffect(() => {
         if (erroresConsumos !== undefined) {
             Swal.fire({
-                icon: erroresConsumos.status,
+                icon: "error",
                 text: erroresConsumos,
                 showConfirmButton: true,
             });
@@ -115,7 +115,7 @@ const CalendarioReservasPage = () => {
     useEffect(() => {
         if (erroresPagos !== undefined) {
             Swal.fire({
-                icon: erroresPagos.status,
+                icon: "error",
                 text: erroresPagos,
                 showConfirmButton: true,
             });

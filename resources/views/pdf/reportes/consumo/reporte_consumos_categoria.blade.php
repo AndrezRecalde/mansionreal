@@ -204,6 +204,7 @@
                         <th style="width: 10%;" class="text-center">Cantidad</th>
                         <th style="width: 12%;" class="text-right">P. Unitario</th>
                         <th style="width: 12%;" class="text-right">Subtotal</th>
+                        <th style="width: 10%;" class="text-right">Descuento</th>
                         <th style="width:  12%;" class="text-right">IVA</th>
                         <th style="width: 14%;" class="text-right">Total</th>
                     </tr>
@@ -216,6 +217,13 @@
                             <td class="text-center">{{ $producto['cantidad_total'] }}</td>
                             <td class="text-right">${{ number_format($producto['precio_unitario'], 2) }}</td>
                             <td class="text-right">${{ number_format($producto['subtotal'], 2) }}</td>
+                            <td class="text-right">
+                                @if ($producto['descuento'] > 0)
+                                    <span style="color: red;">-${{ number_format($producto['descuento'], 2) }}</span>
+                                @else
+                                    $0.00
+                                @endif
+                            </td>
                             <td class="text-right">${{ number_format($producto['iva'], 2) }}</td>
                             <td class="text-right">${{ number_format($producto['total'], 2) }}</td>
                         </tr>
@@ -228,6 +236,14 @@
                         <td class="text-center">{{ $categoria['totales_categoria']['cantidad_total'] }}</td>
                         <td></td>
                         <td class="text-right">${{ number_format($categoria['totales_categoria']['subtotal'], 2) }}
+                        </td>
+                        <td class="text-right">
+                            @if ($categoria['totales_categoria']['descuento'] > 0)
+                                <span
+                                    style="color: red;">-${{ number_format($categoria['totales_categoria']['descuento'], 2) }}</span>
+                            @else
+                                $0.00
+                            @endif
                         </td>
                         <td class="text-right">${{ number_format($categoria['totales_categoria']['iva'], 2) }}</td>
                         <td class="text-right">${{ number_format($categoria['totales_categoria']['total'], 2) }}</td>
@@ -257,6 +273,17 @@
                 <tr>
                     <td>SUBTOTAL GENERAL:</td>
                     <td class="text-right">${{ number_format($totales_generales['subtotal_general'], 2) }}</td>
+                </tr>
+                <tr>
+                    <td>DESCUENTO GENERAL:</td>
+                    <td class="text-right">
+                        @if ($totales_generales['descuento_general'] > 0)
+                            <span
+                                style="color: red;">-${{ number_format($totales_generales['descuento_general'], 2) }}</span>
+                        @else
+                            $0.00
+                        @endif
+                    </td>
                 </tr>
                 <tr>
                     <td>IVA GENERAL:</td>

@@ -57,7 +57,7 @@ const ReporteConsumosPage = () => {
             <FiltrarPorFechasForm
                 titulo="Filtrar por fechas"
                 cargando={cargando}
-                fnHandleAction={handleBuscar}
+                fnHandleAction={(values) => handleBuscar(values)}
             />
 
             {/* Mensajes de error */}

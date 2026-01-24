@@ -47,7 +47,7 @@ export const GastoDrawerTable = ({ estado }) => {
                 Footer: () => (
                     <Stack>
                         Total Gastos:
-                        <TextSection tt="" fw={500} fz={16}>
+                        <TextSection tt="" fw={700} fz={16} c="red">
                             {totalGastos.toLocaleString("es-EC", {
                                 style: "currency",
                                 currency: "USD",
@@ -116,8 +116,8 @@ export const GastoDrawerTable = ({ estado }) => {
                         radius="xs"
                         onClick={handleAbrirGasto}
                         disabled={
-                            estado?.nombre_estado === Estados.CANCELADO ||
-                            estado?.nombre_estado === Estados.PAGADO
+                            estado === Estados.CANCELADO ||
+                            estado === Estados.PAGADO
                         }
                     >
                         <IconListDetails
@@ -126,6 +126,9 @@ export const GastoDrawerTable = ({ estado }) => {
                         />
                     </ActionIcon>
                 </Tooltip>
+                <TextSection tt="" fz={16} fw={600}>
+                    Registro de Daños
+                </TextSection>
             </Group>
         ),
         renderRowActions: ({ row }) => (
@@ -137,16 +140,16 @@ export const GastoDrawerTable = ({ estado }) => {
                         icon: IconEdit,
                         onClick: handleAbrirGasto,
                         disabled:
-                            estado?.nombre_estado === Estados.CANCELADO ||
-                            estado?.nombre_estado === Estados.PAGADO,
+                            estado === Estados.CANCELADO ||
+                            estado === Estados.PAGADO,
                     },
                     {
                         label: "Eliminar",
                         icon: IconTrash,
                         onClick: handleEliminarGasto,
                         disabled:
-                            estado?.nombre_estado === Estados.CANCELADO ||
-                            estado?.nombre_estado === Estados.PAGADO,
+                            estado === Estados.CANCELADO ||
+                            estado === Estados.PAGADO,
                     },
                 ]}
             />

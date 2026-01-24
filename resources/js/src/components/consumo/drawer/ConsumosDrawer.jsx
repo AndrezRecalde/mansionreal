@@ -75,36 +75,19 @@ export const ConsumosDrawer = ({ datos_reserva, fnAsignarElemento }) => {
                         <ReservaAccionesTable datos={datos_reserva} />
                     </Card>
                     {/* Información del huésped */}
-                    <Card shadow="sm" p="md" withBorder>
-                        <ReservaInfoHuespedTable datos={datos_reserva} />
-                    </Card>
+                    <ReservaInfoHuespedTable datos={datos_reserva} />
 
                     {/* Tabla de Consumos */}
-                    <Card shadow="sm" p="md" withBorder>
-                        <TextSection tt="" fz={16} fw={600} mb="md">
-                            Consumos
-                        </TextSection>
-                        <ConsumosDrawerTable estado={datos_reserva.estado.nombre_estado} />
-                    </Card>
-
+                    <ConsumosDrawerTable
+                        estado={datos_reserva.estado.nombre_estado}
+                    />
                     {/* Tabla de Pagos */}
-                    <Card shadow="sm" p="md" withBorder>
-                        <TextSection tt="" fz={16} fw={600} mb="md">
-                            Pagos Realizados
-                        </TextSection>
-                        <PagosTable estado={datos_reserva.estado.nombre_estado} />
-                    </Card>
-
+                    <PagosTable estado={datos_reserva.estado.nombre_estado} />
                     {/* Tabla de Gastos (solo GERENTE) */}
                     {usuario.nombre_rol === Roles.GERENTE && (
-                        <Card shadow="sm" p="md" withBorder>
-                            <TextSection tt="" fz={16} fw={600} mb="md">
-                                Gastos
-                            </TextSection>
-                            <GastoDrawerTable
-                                estado={datos_reserva.estado.nombre_estado}
-                            />
-                        </Card>
+                        <GastoDrawerTable
+                            estado={datos_reserva.estado.nombre_estado}
+                        />
                     )}
                 </Stack>
             </Drawer>

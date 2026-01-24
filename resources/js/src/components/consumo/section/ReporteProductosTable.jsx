@@ -1,18 +1,12 @@
 import { useMemo } from "react";
 import { MantineReactTable, useMantineReactTable } from "mantine-react-table";
-import {
-    Badge,
-    Box,
-    Paper,
-    Stack,
-} from "@mantine/core";
+import { Badge, Box, Paper, Stack } from "@mantine/core";
 import { MRT_Localization_ES } from "mantine-react-table/locales/es/index.cjs";
 import { TextSection } from "../../../components";
 import { PAGE_TITLE } from "../../../helpers/getPrefix";
 
 export const ReporteProductosTable = ({ categoria, colorScheme, theme }) => {
     const { nombre_categoria, productos, totales_categoria } = categoria;
-
 
     const columns = useMemo(
         () => [
@@ -46,7 +40,8 @@ export const ReporteProductosTable = ({ categoria, colorScheme, theme }) => {
             },
             {
                 accessorKey: "precio_unitario",
-                header: PAGE_TITLE.REPORTE_CONSUMOS.CAMPOS_TABLA.PRECIO_UNITARIO,
+                header: PAGE_TITLE.REPORTE_CONSUMOS.CAMPOS_TABLA
+                    .PRECIO_UNITARIO,
                 size: 120,
                 Cell: ({ cell }) => (
                     <TextSection ta="right">
@@ -63,6 +58,40 @@ export const ReporteProductosTable = ({ categoria, colorScheme, theme }) => {
                         ${cell.getValue().toFixed(2)}
                     </TextSection>
                 ),
+            },
+            {
+                accessorKey: "descuento",
+                header: "Descuento",
+                size: 120,
+                Cell: ({ cell }) => {
+                    const descuento = cell.getValue();
+                    return descuento > 0 ? (
+                        <TextSection size="sm" ta="right" c="red">
+                            -${descuento?.toFixed(2)}
+                        </TextSection>
+                    ) : (
+                        <TextSection size="sm" ta="right" c="dimmed">
+                            $0.00
+                        </TextSection>
+                    );
+                },
+                Footer: ({ table }) => {
+                    const totalDescuento = table
+                        .getFilteredRowModel()
+                        .rows.reduce(
+                            (sum, row) => sum + (row.original.descuento || 0),
+                            0,
+                        );
+                    return totalDescuento > 0 ? (
+                        <TextSection fw={700} ta="right" c="red" size="md">
+                            -${totalDescuento.toFixed(2)}
+                        </TextSection>
+                    ) : (
+                        <TextSection fw={700} ta="right" c="dimmed" size="md">
+                            $0.00
+                        </TextSection>
+                    );
+                },
             },
             {
                 accessorKey: "iva",
@@ -85,7 +114,7 @@ export const ReporteProductosTable = ({ categoria, colorScheme, theme }) => {
                 ),
             },
         ],
-        []
+        [],
     );
 
     const table = useMantineReactTable({
@@ -121,12 +150,7 @@ export const ReporteProductosTable = ({ categoria, colorScheme, theme }) => {
     return (
         <Paper shadow="xs" p="md" withBorder mb="lg">
             <Stack gap="md">
-                <Badge
-                    radius="sm"
-                    autoContrast
-                    size="md"
-                    variant="filled"
-                >
+                <Badge radius="sm" autoContrast size="md" variant="filled">
                     {nombre_categoria}
                 </Badge>
 

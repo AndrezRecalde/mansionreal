@@ -13,12 +13,12 @@ import { MRT_Localization_ES } from "mantine-react-table/locales/es/index.cjs";
 import { ContenidoTable, TextSection } from "../../../components";
 import {
     IconShoppingCartPlus,
-    IconDotsVertical,
     IconEdit,
     IconTrash,
     IconDiscount,
     IconDiscountOff,
     IconInfoCircle,
+    IconDots,
 } from "@tabler/icons-react";
 import { useConsumoStore, useUiConsumo } from "../../../hooks";
 import { Estados } from "../../../helpers/getPrefix";
@@ -103,9 +103,9 @@ export const ConsumosDrawerTable = ({ estado }) => {
                     if (consumo.tiene_descuento) {
                         return (
                             <Group gap="xs" wrap="nowrap">
-                                <Badge color="green" size="sm" variant="light">
+                                <Badge color="teal" size="sm" variant="light">
                                     {consumo.tipo_descuento === "PORCENTAJE"
-                                        ? `${consumo.porcentaje_descuento}%`
+                                        ? `${consumo.porcentaje_descuento}% - $${parseFloat(consumo.descuento).toFixed(2)}`
                                         : `$${parseFloat(consumo.descuento).toFixed(2)}`}
                                 </Badge>
                                 {consumo.motivo_descuento && (
@@ -320,6 +320,9 @@ export const ConsumosDrawerTable = ({ estado }) => {
                         />
                     </ActionIcon>
                 </Tooltip>
+                <TextSection tt="" fz={16} fw={600}>
+                    Lista de Consumos
+                </TextSection>
             </Group>
         ),
         renderRowActions: ({ row }) => {
@@ -335,7 +338,7 @@ export const ConsumosDrawerTable = ({ estado }) => {
                             color="gray"
                             disabled={estaFacturado}
                         >
-                            <IconDotsVertical size={16} />
+                            <IconDots size={16} />
                         </ActionIcon>
                     </Menu.Target>
 

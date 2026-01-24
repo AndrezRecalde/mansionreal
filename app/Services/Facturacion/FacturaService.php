@@ -101,7 +101,7 @@ class FacturaService
                 'reserva_id' => $reservaId,
                 'cliente_id' => $cliente->id,
                 'subtotal_sin_iva' => $factura->subtotal_sin_iva,
-                'total_descuentos' => $factura->total_descuentos, // ✅ Calculado desde consumos
+                'total_descuentos' => $factura->total_descuento, // ✅ Calculado desde consumos
                 'total_iva' => $factura->total_iva,
                 'total_factura' => $factura->total_factura,
                 'usuario_id' => $usuarioId,
@@ -429,6 +429,7 @@ class FacturaService
     private function calcularTotalesDesdeConsumos($consumos): array
     {
         $subtotal_sin_iva = 0;
+        $total_descuento = 0;
         $total_iva = 0;
         $total_factura = 0;
 

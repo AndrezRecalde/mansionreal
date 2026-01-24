@@ -94,7 +94,8 @@ export const FacturaDetalleModal = ({ opened, onClose }) => {
                         {factura.usuario_anulo && (
                             <Text size="sm">
                                 <strong>Anulada por:</strong>{" "}
-                                {factura.usuario_anulo.nombres_completos}
+                                {factura.usuario_anulo.nombres}{" "}
+                                {factura.usuario_anulo.apellidos}
                             </Text>
                         )}
                     </Alert>
@@ -219,258 +220,275 @@ export const FacturaDetalleModal = ({ opened, onClose }) => {
                 </Paper>
 
                 {/* Detalle de Consumos */}
-                <Paper p="md" withBorder>
-                    <Group justify="space-between" mb="md">
-                        <Text fw={600} size="md">
-                            Detalle de Consumos
-                        </Text>
-                        {tieneDescuentos && (
-                            <Badge
-                                leftSection={<IconDiscount size={14} />}
-                                color="orange"
-                                variant="light"
-                            >
-                                Incluye descuentos
-                            </Badge>
-                        )}
-                    </Group>
-                    <Table striped highlightOnHover withTableBorder>
-                        <Table.Thead>
-                            <Table.Tr>
-                                <Table.Th>Descripción</Table.Th>
-                                <Table.Th style={{ textAlign: "center" }}>
-                                    Cant.
-                                </Table.Th>
-                                <Table.Th style={{ textAlign: "right" }}>
-                                    P. Unit.
-                                </Table.Th>
-                                <Table.Th style={{ textAlign: "right" }}>
-                                    Subtotal
-                                </Table.Th>
-                                {tieneDescuentos && (
-                                    <Table.Th style={{ textAlign: "right" }}>
-                                        Descuento
+                {factura.estado !== "ANULADA" ? (
+                    <Paper p="md" withBorder>
+                        <Group justify="space-between" mb="md">
+                            <Text fw={600} size="md">
+                                Detalle de Consumos
+                            </Text>
+                            {tieneDescuentos && (
+                                <Badge
+                                    leftSection={<IconDiscount size={14} />}
+                                    color="orange"
+                                    variant="light"
+                                >
+                                    Incluye descuentos
+                                </Badge>
+                            )}
+                        </Group>
+                        <Table striped highlightOnHover withTableBorder>
+                            <Table.Thead>
+                                <Table.Tr>
+                                    <Table.Th>Descripción</Table.Th>
+                                    <Table.Th style={{ textAlign: "center" }}>
+                                        Cant.
                                     </Table.Th>
-                                )}
-                                <Table.Th style={{ textAlign: "center" }}>
-                                    IVA
-                                </Table.Th>
-                                <Table.Th style={{ textAlign: "right" }}>
-                                    Total
-                                </Table.Th>
-                            </Table.Tr>
-                        </Table.Thead>
-                        <Table.Tbody>
-                            {factura.consumos?.map((consumo) => {
-                                const tieneDescuento =
-                                    parseFloat(consumo.descuento || 0) > 0;
-                                const subtotalOriginal = parseFloat(
-                                    consumo.subtotal || 0,
-                                );
-                                const descuentoMonto = parseFloat(
-                                    consumo.descuento || 0,
-                                );
+                                    <Table.Th style={{ textAlign: "right" }}>
+                                        P. Unit.
+                                    </Table.Th>
+                                    <Table.Th style={{ textAlign: "right" }}>
+                                        Subtotal
+                                    </Table.Th>
+                                    {tieneDescuentos && (
+                                        <Table.Th
+                                            style={{ textAlign: "right" }}
+                                        >
+                                            Descuento
+                                        </Table.Th>
+                                    )}
+                                    <Table.Th style={{ textAlign: "center" }}>
+                                        IVA
+                                    </Table.Th>
+                                    <Table.Th style={{ textAlign: "right" }}>
+                                        Total
+                                    </Table.Th>
+                                </Table.Tr>
+                            </Table.Thead>
+                            <Table.Tbody>
+                                {factura.consumos?.map((consumo) => {
+                                    const tieneDescuento =
+                                        parseFloat(consumo.descuento || 0) > 0;
+                                    const subtotalOriginal = parseFloat(
+                                        consumo.subtotal || 0,
+                                    );
+                                    const descuentoMonto = parseFloat(
+                                        consumo.descuento || 0,
+                                    );
 
-                                return (
-                                    <Table.Tr
-                                        key={consumo.id}
-                                        style={
-                                            tieneDescuento
-                                                ? {
-                                                      backgroundColor:
-                                                          "#fff4e6",
-                                                  }
-                                                : {}
-                                        }
-                                    >
-                                        <Table.Td>
-                                            <Group gap="xs">
-                                                <Text size="sm">
-                                                    {
-                                                        consumo.inventario
-                                                            ?.nombre_producto
-                                                    }
-                                                </Text>
-                                                {tieneDescuento && (
-                                                    <Tooltip
-                                                        label={
-                                                            consumo.motivo_descuento ||
-                                                            "Descuento aplicado"
+                                    return (
+                                        <Table.Tr
+                                            key={consumo.id}
+                                            style={
+                                                tieneDescuento
+                                                    ? {
+                                                          backgroundColor:
+                                                              "#fff4e6",
+                                                      }
+                                                    : {}
+                                            }
+                                        >
+                                            <Table.Td>
+                                                <Group gap="xs">
+                                                    <Text size="sm">
+                                                        {
+                                                            consumo.inventario
+                                                                ?.nombre_producto
                                                         }
-                                                        position="top"
-                                                        withArrow
-                                                    >
-                                                        <IconDiscount
-                                                            size={16}
-                                                            color="#fd7e14"
-                                                        />
-                                                    </Tooltip>
-                                                )}
-                                            </Group>
-                                        </Table.Td>
-                                        <Table.Td
-                                            style={{ textAlign: "center" }}
-                                        >
-                                            {parseFloat(
-                                                consumo.cantidad,
-                                            ).toFixed(2)}
-                                        </Table.Td>
-                                        <Table.Td
-                                            style={{ textAlign: "right" }}
-                                        >
-                                            $
-                                            {parseFloat(
-                                                consumo.inventario
-                                                    .precio_unitario,
-                                            ).toFixed(2)}
-                                        </Table.Td>
-                                        <Table.Td
-                                            style={{ textAlign: "right" }}
-                                        >
-                                            {tieneDescuento ? (
-                                                <Text
-                                                    size="sm"
-                                                    td="line-through"
-                                                    c="dimmed"
-                                                >
-                                                    $
-                                                    {subtotalOriginal.toFixed(
-                                                        2,
+                                                    </Text>
+                                                    {tieneDescuento && (
+                                                        <Tooltip
+                                                            label={
+                                                                consumo.motivo_descuento ||
+                                                                "Descuento aplicado"
+                                                            }
+                                                            position="top"
+                                                            withArrow
+                                                        >
+                                                            <IconDiscount
+                                                                size={16}
+                                                                color="#fd7e14"
+                                                            />
+                                                        </Tooltip>
                                                     )}
-                                                </Text>
-                                            ) : (
-                                                <Text size="sm">
-                                                    $
-                                                    {subtotalOriginal.toFixed(
-                                                        2,
-                                                    )}
-                                                </Text>
-                                            )}
-                                        </Table.Td>
-                                        {tieneDescuentos && (
+                                                </Group>
+                                            </Table.Td>
+                                            <Table.Td
+                                                style={{ textAlign: "center" }}
+                                            >
+                                                {parseFloat(
+                                                    consumo.cantidad,
+                                                ).toFixed(2)}
+                                            </Table.Td>
+                                            <Table.Td
+                                                style={{ textAlign: "right" }}
+                                            >
+                                                $
+                                                {parseFloat(
+                                                    consumo.inventario
+                                                        .precio_unitario,
+                                                ).toFixed(2)}
+                                            </Table.Td>
                                             <Table.Td
                                                 style={{ textAlign: "right" }}
                                             >
                                                 {tieneDescuento ? (
-                                                    <Group
-                                                        gap={4}
-                                                        justify="flex-end"
+                                                    <Text
+                                                        size="sm"
+                                                        td="line-through"
+                                                        c="dimmed"
                                                     >
-                                                        <Text
-                                                            size="sm"
-                                                            c="red"
-                                                            fw={500}
-                                                        >
-                                                            -$
-                                                            {descuentoMonto.toFixed(
-                                                                2,
-                                                            )}
-                                                        </Text>
-                                                        {consumo.tipo_descuento ===
-                                                            "PORCENTAJE" && (
-                                                            <Badge
-                                                                size="xs"
-                                                                color="orange"
-                                                            >
-                                                                {parseFloat(
-                                                                    consumo.porcentaje_descuento ||
-                                                                        0,
-                                                                ).toFixed(1)}
-                                                                %
-                                                            </Badge>
+                                                        $
+                                                        {subtotalOriginal.toFixed(
+                                                            2,
                                                         )}
-                                                    </Group>
+                                                    </Text>
                                                 ) : (
-                                                    <Text size="sm" c="dimmed">
-                                                        -
+                                                    <Text size="sm">
+                                                        $
+                                                        {subtotalOriginal.toFixed(
+                                                            2,
+                                                        )}
                                                     </Text>
                                                 )}
                                             </Table.Td>
-                                        )}
-                                        <Table.Td
-                                            style={{ textAlign: "center" }}
-                                        >
-                                            {consumo.tasa_iva}%
-                                        </Table.Td>
-                                        <Table.Td
-                                            style={{ textAlign: "right" }}
-                                        >
-                                            <Text fw={600} size="sm">
-                                                $
-                                                {parseFloat(
-                                                    consumo.total,
-                                                ).toFixed(2)}
-                                            </Text>
-                                        </Table.Td>
-                                    </Table.Tr>
-                                );
-                            })}
-                        </Table.Tbody>
-                    </Table>
+                                            {tieneDescuentos && (
+                                                <Table.Td
+                                                    style={{
+                                                        textAlign: "right",
+                                                    }}
+                                                >
+                                                    {tieneDescuento ? (
+                                                        <Group
+                                                            gap={4}
+                                                            justify="flex-end"
+                                                        >
+                                                            <Text
+                                                                size="sm"
+                                                                c="red"
+                                                                fw={500}
+                                                            >
+                                                                -$
+                                                                {descuentoMonto.toFixed(
+                                                                    2,
+                                                                )}
+                                                            </Text>
+                                                            {consumo.tipo_descuento ===
+                                                                "PORCENTAJE" && (
+                                                                <Badge
+                                                                    size="xs"
+                                                                    color="orange"
+                                                                >
+                                                                    {parseFloat(
+                                                                        consumo.porcentaje_descuento ||
+                                                                            0,
+                                                                    ).toFixed(
+                                                                        1,
+                                                                    )}
+                                                                    %
+                                                                </Badge>
+                                                            )}
+                                                        </Group>
+                                                    ) : (
+                                                        <Text
+                                                            size="sm"
+                                                            c="dimmed"
+                                                        >
+                                                            -
+                                                        </Text>
+                                                    )}
+                                                </Table.Td>
+                                            )}
+                                            <Table.Td
+                                                style={{ textAlign: "center" }}
+                                            >
+                                                {consumo.tasa_iva}%
+                                            </Table.Td>
+                                            <Table.Td
+                                                style={{ textAlign: "right" }}
+                                            >
+                                                <Text fw={600} size="sm">
+                                                    $
+                                                    {parseFloat(
+                                                        consumo.total,
+                                                    ).toFixed(2)}
+                                                </Text>
+                                            </Table.Td>
+                                        </Table.Tr>
+                                    );
+                                })}
+                            </Table.Tbody>
+                        </Table>
 
-                    {/* Mostrar consumos con descuento y sus motivos */}
-                    {tieneDescuentos && (
-                        <Paper
-                            p="sm"
-                            mt="md"
-                            withBorder
-                            style={{ backgroundColor: "#fff9db" }}
-                        >
-                            <Group gap="xs" mb="xs">
-                                <IconInfoCircle size={16} color="#fab005" />
-                                <Text size="sm" fw={600} c="orange">
-                                    Motivos de Descuentos Aplicados
-                                </Text>
-                            </Group>
-                            <Stack gap="xs">
-                                {factura.consumos
-                                    ?.filter(
-                                        (c) => parseFloat(c.descuento || 0) > 0,
-                                    )
-                                    .map((consumo) => (
-                                        <Group
-                                            key={consumo.id}
-                                            justify="space-between"
-                                            gap="xs"
-                                        >
-                                            <Text size="xs" c="dimmed" flex={1}>
-                                                •{" "}
-                                                {
-                                                    consumo.inventario
-                                                        ?.nombre_producto
-                                                }
-                                                :
-                                            </Text>
-                                            <Text size="xs" flex={2}>
-                                                {consumo.motivo_descuento ||
-                                                    "Sin motivo especificado"}
-                                            </Text>
-                                            {consumo.usuario_registro_descuento && (
+                        {/* Mostrar consumos con descuento y sus motivos */}
+                        {tieneDescuentos && (
+                            <Paper
+                                p="sm"
+                                mt="md"
+                                withBorder
+                                style={{ backgroundColor: "#fff9db" }}
+                            >
+                                <Group gap="xs" mb="xs">
+                                    <IconInfoCircle size={16} color="#fab005" />
+                                    <Text size="sm" fw={600} c="orange">
+                                        Motivos de Descuentos Aplicados
+                                    </Text>
+                                </Group>
+                                <Stack gap="xs">
+                                    {factura.consumos
+                                        ?.filter(
+                                            (c) =>
+                                                parseFloat(c.descuento || 0) >
+                                                0,
+                                        )
+                                        .map((consumo) => (
+                                            <Group
+                                                key={consumo.id}
+                                                justify="space-between"
+                                                gap="xs"
+                                            >
                                                 <Text
                                                     size="xs"
                                                     c="dimmed"
-                                                    fs="italic"
+                                                    flex={1}
                                                 >
-                                                    (
+                                                    •{" "}
                                                     {
-                                                        consumo
-                                                            .usuario_registro_descuento
-                                                            .nombres
-                                                    }{" "}
-                                                    {
-                                                        consumo
-                                                            .usuario_registro_descuento
-                                                            .apellidos
+                                                        consumo.inventario
+                                                            ?.nombre_producto
                                                     }
-                                                    )
+                                                    :
                                                 </Text>
-                                            )}
-                                        </Group>
-                                    ))}
-                            </Stack>
-                        </Paper>
-                    )}
-                </Paper>
+                                                <Text size="xs" flex={2}>
+                                                    {consumo.motivo_descuento ||
+                                                        "Sin motivo especificado"}
+                                                </Text>
+                                                {consumo.usuario_registro_descuento && (
+                                                    <Text
+                                                        size="xs"
+                                                        c="dimmed"
+                                                        fs="italic"
+                                                    >
+                                                        (
+                                                        {
+                                                            consumo
+                                                                .usuario_registro_descuento
+                                                                .nombres
+                                                        }{" "}
+                                                        {
+                                                            consumo
+                                                                .usuario_registro_descuento
+                                                                .apellidos
+                                                        }
+                                                        )
+                                                    </Text>
+                                                )}
+                                            </Group>
+                                        ))}
+                                </Stack>
+                            </Paper>
+                        )}
+                    </Paper>
+                ) : null}
 
                 {/* Totales */}
                 <Paper p="md" withBorder style={{ backgroundColor: "#f8f9fa" }}>

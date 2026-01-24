@@ -23,6 +23,12 @@ export const TotalesGeneralesSection = ({ totales, colorScheme, theme }) => {
             color: PAGE_TITLE.REPORTE_CONSUMOS.TOTALES_GENERALES.SUBTOTAL_GENERAL.COLOR,
         },
         {
+            label: "Descuento General",
+            value: totales.descuento_general > 0 ? `-$${totales.descuento_general.toFixed(2)}` : `$0.00`,
+            icon: IconCoin,
+            color: totales.descuento_general > 0 ? "red" : "gray",
+        },
+        {
             label: PAGE_TITLE.REPORTE_CONSUMOS.TOTALES_GENERALES.IVA_GENERAL.TITLE,
             value: `$${totales.iva_general.toFixed(2)}`,
             icon: IconCoin,

@@ -104,9 +104,9 @@ class FacturaController extends Controller
                 'reserva.departamento.tipoDepartamento',
                 'clienteFacturacion',
                 'consumos.inventario.categoria',
-                'consumos.usuarioRegistroDescuento', // ✅ NUEVO
-                'usuarioGenero',
-                'usuarioAnulo'
+                'consumos.usuarioRegistroDescuento',
+                'usuarioGenero:id,nombres,apellidos',
+                'usuarioAnulo:id,nombres,apellidos'
             ])->findOrFail($id);
 
             // ✅ NUEVO: Agregar información de descuentos desde consumos
@@ -115,7 +115,7 @@ class FacturaController extends Controller
             return response()->json([
                 'status' => HTTPStatus::Success,
                 'factura' => $factura,
-                'resumen_descuentos' => $resumenDescuentos, // ✅ NUEVO
+                'resumen_descuentos' => $resumenDescuentos,
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([

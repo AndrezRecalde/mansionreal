@@ -11,11 +11,15 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\ConfiguracionIva;
+use App\Models\Estado;
 use App\Models\Inventario;
 use App\Models\Reserva;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+
 
 class ConsumosController extends Controller
 {
@@ -146,6 +150,52 @@ class ConsumosController extends Controller
             $inventario = Inventario::findOrFail($request->inventario_id);
             $cambioInventario = $consumo->inventario_id !== $request->inventario_id;
 
+            // ====================================================================
+            // ✅ NUEVO: Validar traslape de fechas si es categoría HOSPEDAJE
+            // ====================================================================
+            $categoria = $inventario->categoria;
+
+            if ($categoria && strtoupper($categoria->nombre_categoria) === 'HOSPEDAJE' && $diferencia != 0) {
+                $reserva = Reserva::findOrFail($consumo->reserva_id);
+
+                // Calcular la nueva fecha_checkout propuesta
+                $nuevaFechaCheckout = Carbon::parse($reserva->fecha_checkout)->addDays($diferencia);
+
+                // Obtener estados activos de reserva (RESERVADO, CONFIRMADO)
+                $estadoReservaIds = Estado::where('activo', 1)
+                    ->where('tipo_estado', 'RESERVA')
+                    ->whereIn('nombre_estado', ['RESERVADO', 'CONFIRMADO'])
+                    ->pluck('id')
+                    ->toArray();
+
+                // Verificar si hay traslape con otras reservas del mismo departamento
+                $reservaConflictiva = Reserva::where('departamento_id', $reserva->departamento_id)
+                    ->where('id', '!=', $reserva->id) // Excluir la reserva actual
+                    ->whereIn('estado_id', $estadoReservaIds)
+                    ->where(function ($query) use ($reserva, $nuevaFechaCheckout) {
+                        $query->whereBetween('fecha_checkin', [$reserva->fecha_checkin, $nuevaFechaCheckout])
+                            ->orWhereBetween('fecha_checkout', [$reserva->fecha_checkin, $nuevaFechaCheckout])
+                            ->orWhere(function ($subQuery) use ($reserva, $nuevaFechaCheckout) {
+                                $subQuery->where('fecha_checkin', '<=', $reserva->fecha_checkin)
+                                    ->where('fecha_checkout', '>=', $nuevaFechaCheckout);
+                            });
+                    })
+                    ->first();
+
+                if ($reservaConflictiva) {
+                    return response()->json([
+                        'status' => HTTPStatus::Error,
+                        'msg' => sprintf(
+                            'No se puede extender la reserva. El departamento %s ya tiene una reserva (Código: %s) desde %s hasta %s',
+                            $reserva->departamento->numero_departamento ?? 'N/A',
+                            $reservaConflictiva->codigo_reserva,
+                            Carbon::parse($reservaConflictiva->fecha_checkin)->format('d/m/Y H:i'),
+                            Carbon::parse($reservaConflictiva->fecha_checkout)->format('d/m/Y H:i')
+                        )
+                    ], 422);
+                }
+            }
+
             if ($cambioInventario) {
                 $inventarioAnterior = Inventario::findOrFail($consumo->inventario_id);
                 if (!$inventarioAnterior->sin_stock) {
@@ -164,48 +214,93 @@ class ConsumosController extends Controller
 
                     $inventario->registrarSalida(
                         cantidad: $cantidadNueva,
-                        motivo: 'Actualización de consumo (cambio de producto)',
+                        motivo: 'Consumo actualizado (nuevo producto)',
                         observaciones: "Consumo ID: {$consumo->id}",
-                        reservaId: $consumo->reserva_id,
-                        consumoId: $consumo->id,
                         usuarioId: Auth::id()
                     );
                 }
             } else {
-                if ($diferencia != 0 && !$inventario->sin_stock) {
+                // Mismo producto, ajustar diferencia
+                if (!$inventario->sin_stock) {
                     if ($diferencia > 0) {
+                        // Se aumentó la cantidad
                         if ($inventario->stock < $diferencia) {
-                            throw new \Exception("Stock insuficiente para {$inventario->nombre_producto}. Disponible: {$inventario->stock}, Adicional requerido: {$diferencia}");
+                            throw new \Exception("Stock insuficiente para {$inventario->nombre_producto}. Disponible: {$inventario->stock}, Requerido: {$diferencia}");
                         }
 
                         $inventario->registrarSalida(
-                            cantidad: $diferencia,
-                            motivo: 'Ajuste de consumo (incremento de cantidad)',
-                            observaciones: "Consumo ID: {$consumo->id} - Aumentó de {$cantidadAnterior} a {$cantidadNueva}",
-                            reservaId: $consumo->reserva_id,
-                            consumoId: $consumo->id,
+                            cantidad: abs($diferencia),
+                            motivo: 'Aumento de cantidad en consumo',
+                            observaciones: "Consumo ID: {$consumo->id} - Cantidad anterior: {$cantidadAnterior}, Nueva: {$cantidadNueva}",
                             usuarioId: Auth::id()
                         );
-                    } else {
+                    } elseif ($diferencia < 0) {
+                        // Se redujo la cantidad
                         $inventario->registrarEntrada(
                             cantidad: abs($diferencia),
-                            motivo: 'Ajuste de consumo (reducción de cantidad)',
-                            observaciones: "Consumo ID: {$consumo->id} - Disminuyó de {$cantidadAnterior} a {$cantidadNueva}",
+                            motivo: 'Reducción de cantidad en consumo',
+                            observaciones: "Consumo ID: {$consumo->id} - Cantidad anterior: {$cantidadAnterior}, Nueva: {$cantidadNueva}",
                             usuarioId: Auth::id()
                         );
                     }
                 }
             }
 
-            $consumo->inventario_id = $inventario->id;
-            $consumo->cantidad = $cantidadNueva;
-            $precio_unitario = $inventario->precio_unitario;
-            $consumo->subtotal = $cantidadNueva * $precio_unitario;
+            // ====================================================================
+            // ✅ Ajustar fecha_checkout de la Reserva si es HOSPEDAJE
+            // ====================================================================
+            if ($categoria && strtoupper($categoria->nombre_categoria) === 'HOSPEDAJE') {
+                $reserva = Reserva::findOrFail($consumo->reserva_id);
 
-            if ($consumo->tiene_descuento) {
-                $consumo->recalcularTotales();
+                // Calcular el ajuste de días según la diferencia de cantidad
+                if ($diferencia != 0) {
+                    // fecha_checkout se ajusta según la diferencia de noches
+                    $reserva->fecha_checkout = Carbon::parse($reserva->fecha_checkout)
+                        ->addDays($diferencia)
+                        ->format('Y-m-d H:i:s');
+
+                    // Actualizar también el total de noches
+                    $reserva->total_noches = $cantidadNueva;
+
+                    $reserva->save();
+
+                    Log::info("Fecha checkout actualizada por cambio en consumo de HOSPEDAJE", [
+                        'consumo_id' => $consumo->id,
+                        'reserva_id' => $reserva->id,
+                        'diferencia_noches' => $diferencia,
+                        'nueva_fecha_checkout' => $reserva->fecha_checkout,
+                        'total_noches' => $reserva->total_noches
+                    ]);
+                }
+            }
+
+            // Actualizar datos del consumo
+            $consumo->inventario_id = $request->inventario_id;
+            $consumo->cantidad = $cantidadNueva;
+
+            // Recalcular precio unitario y tasa IVA
+            $precio_unitario = $inventario->precio_unitario;
+            $tasa_iva = ConfiguracionIva::where('activo', true)->first()?->tasa_iva ?? 15.00;
+
+            // Recalcular totales
+            $subtotal = $cantidadNueva * $precio_unitario;
+            $consumo->subtotal = $subtotal;
+            $consumo->tasa_iva = $tasa_iva;
+
+            if ($consumo->tipo_descuento == Consumo::TIPO_DESCUENTO_SIN_DESCUENTO) {
+                $consumo->iva = $subtotal * ($tasa_iva / 100);
+                $consumo->total = $consumo->subtotal + $consumo->iva;
             } else {
-                $consumo->iva = $consumo->subtotal * ($consumo->tasa_iva / 100);
+                $consumo->aplicarDescuento(
+                    descuento: $consumo->descuento,
+                    tipo: $consumo->tipo_descuento,
+                    motivo: $consumo->motivo_descuento,
+                    usuarioId: $consumo->usuario_registro_descuento_id
+                );
+
+                // Recalcular totales después del descuento
+                $consumo->tasa_iva = $tasa_iva;
+                $consumo->iva = ($consumo->subtotal - $consumo->descuento) * ($tasa_iva / 100);
                 $consumo->total = $consumo->subtotal + $consumo->iva;
             }
 
@@ -383,10 +478,14 @@ class ConsumosController extends Controller
         try {
             $fechaInicio = $request->input('fecha_inicio');
             $fechaFin = $request->input('fecha_fin');
+            $anio = $request->input('p_anio');
 
             $query = DB::table('consumos as c')
                 ->join('inventarios as i', 'c.inventario_id', '=', 'i.id')
                 ->join('categorias as cat', 'i.categoria_id', '=', 'cat.id')
+                ->join('reservas as r', 'c.reserva_id', '=', 'r.id')
+                ->join('estados as e', 'r.estado_id', '=', 'e.id')
+                ->where('e.nombre_estado', 'PAGADO') // Solo reservas PAGADAS
                 ->select(
                     'cat.id as categoria_id',
                     'cat.nombre_categoria',
@@ -394,13 +493,17 @@ class ConsumosController extends Controller
                     'i.nombre_producto',
                     DB::raw('SUM(c.cantidad) as cantidad_total'),
                     'i.precio_unitario',
-                    DB::raw('SUM(c.subtotal) as subtotal_producto'),
-                    DB::raw('SUM(c.iva) as iva_producto'),
-                    DB::raw('SUM(c.total) as total_producto')
+                    DB::raw('SUM(c.subtotal) as subtotal'), // Subtotal SIN descuento
+                    DB::raw('SUM(c.descuento) as descuento_total'), // ✅ NUEVO: Total de descuentos
+                    DB::raw('SUM(c.iva) as iva'),
+                    DB::raw('SUM(c.total) as total')
                 );
 
+            // ✅ Aplicar filtro por rango de fechas o por año
             if ($fechaInicio && $fechaFin) {
                 $query->whereBetween('c.fecha_creacion', [$fechaInicio, $fechaFin]);
+            } elseif ($anio) {
+                $query->whereYear('c.fecha_creacion', $anio);
             }
 
             $consumosPorCategoria = $query
@@ -412,48 +515,74 @@ class ConsumosController extends Controller
             // Agrupar productos por categoría
             $categorias = [];
             $categoriasAgrupadas = $consumosPorCategoria->groupBy('categoria_id');
+            $cantidadTotalGeneral = 0;
+            $descuentoTotalGeneral = 0; // ✅ NUEVO
 
             foreach ($categoriasAgrupadas as $categoriaId => $productos) {
                 $primeraFila = $productos->first();
 
-                $productosArray = $productos->map(function ($producto) {
-                    return [
-                        'producto_id' => $producto->producto_id,
-                        'nombre_producto' => $producto->nombre_producto,
-                        'cantidad_total' => (int) $producto->cantidad_total,
-                        'precio_unitario' => (float) $producto->precio_unitario,
-                        'subtotal' => (float) $producto->subtotal_producto,
-                        'iva' => (float) $producto->iva_producto,
-                        'total' => (float) $producto->total_producto,
-                    ];
-                })->toArray();
+                // ✅ Calcular cantidad total de la categoría
+                $cantidadTotalCategoria = $productos->sum('cantidad_total');
+                $descuentoTotalCategoria = $productos->sum('descuento_total'); // ✅ NUEVO
+
+                $cantidadTotalGeneral += $cantidadTotalCategoria;
+                $descuentoTotalGeneral += $descuentoTotalCategoria; // ✅ NUEVO
 
                 $categorias[] = [
                     'categoria_id' => $categoriaId,
                     'nombre_categoria' => $primeraFila->nombre_categoria,
-                    'productos' => $productosArray,
-                    'subtotal_categoria' => (float) $productos->sum('subtotal_producto'),
-                    'iva_categoria' => (float) $productos->sum('iva_producto'),
-                    'total_categoria' => (float) $productos->sum('total_producto'),
+                    'productos' => $productos->map(function ($p) {
+                        return [
+                            'producto_id' => $p->producto_id,
+                            'nombre_producto' => $p->nombre_producto,
+                            'cantidad_total' => (int) $p->cantidad_total,
+                            'precio_unitario' => (float) $p->precio_unitario,
+                            'subtotal' => (float) $p->subtotal,
+                            'descuento' => (float) $p->descuento_total, // ✅ NUEVO
+                            'iva' => (float) $p->iva,
+                            'total' => (float) $p->total,
+                        ];
+                    })->toArray(),
+                    'totales_categoria' => [
+                        'cantidad_total' => $cantidadTotalCategoria,
+                        'subtotal' => (float) $productos->sum('subtotal'),
+                        'descuento' => (float) $descuentoTotalCategoria, // ✅ NUEVO
+                        'iva' => (float) $productos->sum('iva'),
+                        'total' => (float) $productos->sum('total'),
+                    ],
                 ];
             }
 
-            // Totales generales
-            $totales = [
-                'subtotal_general' => (float) $consumosPorCategoria->sum('subtotal_producto'),
-                'iva_general' => (float) $consumosPorCategoria->sum('iva_producto'),
-                'total_general' => (float) $consumosPorCategoria->sum('total_producto'),
+            $totales_generales = [
+                'cantidad_total_general' => $cantidadTotalGeneral,
+                'subtotal_general' => (float) $consumosPorCategoria->sum('subtotal'),
+                'descuento_general' => (float) $descuentoTotalGeneral, // ✅ NUEVO
+                'iva_general' => (float) $consumosPorCategoria->sum('iva'),
+                'total_general' => (float) $consumosPorCategoria->sum('total'),
                 'cantidad_categorias' => count($categorias),
+                'cantidad_productos' => $consumosPorCategoria->count(),
+            ];
+
+            // ✅ Estructura de metadatos esperada por el frontend
+            $metadatos = [
+                'p_fecha_inicio' => $fechaInicio,
+                'p_fecha_fin' => $fechaFin,
+                'p_anio' => $anio,
+                'fecha_generacion' => now()->format('Y-m-d H:i:s'),
+                'total_categorias' => count($categorias),
+                'total_productos' => $consumosPorCategoria->count(),
+            ];
+
+            // ✅ Estructura correcta esperada por el frontend
+            $reporteData = [
+                'metadatos' => $metadatos,
+                'categorias' => $categorias,
+                'totales_generales' => $totales_generales,
             ];
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'periodo' => [
-                    'fecha_inicio' => $fechaInicio,
-                    'fecha_fin' => $fechaFin,
-                ],
-                'categorias' => $categorias,
-                'totales' => $totales,
+                'reporteData' => $reporteData,
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
@@ -469,35 +598,65 @@ class ConsumosController extends Controller
     public function exportarReporteConsumosPDF(Request $request)
     {
         try {
-            $fechaInicio = $request->input('fecha_inicio');
-            $fechaFin = $request->input('fecha_fin');
+            $fechaInicio = $request->input('p_fecha_inicio');
+            $fechaFin = $request->input('p_fecha_fin');
+            $anio = $request->input('p_anio');
 
-            $response = $this->reporteConsumosPorCategoria($request);
+            $normalizedRequest = new Request([
+                'fecha_inicio' => $fechaInicio,
+                'fecha_fin' => $fechaFin,
+                'p_anio' => $anio,
+            ]);
+
+            // Obtener los datos del reporte
+            $response = $this->reporteConsumosPorCategoria($normalizedRequest);
             $data = json_decode($response->getContent(), true);
 
-            if ($data['status'] !== HTTPStatus::Success) {
+            if (!isset($data['status']) || $data['status'] !== 'success') {
+                $errorMsg = isset($data['msg']) ? $data['msg'] : 'Estructura de respuesta inválida';
                 return response()->json([
                     'status' => HTTPStatus::Error,
-                    'msg' => 'No se pudo generar el reporte PDF: ' . ($data['msg'] ?? 'Error desconocido')
+                    'msg' => 'Error al obtener datos del reporte: ' . $errorMsg
                 ], 500);
             }
 
+            if (!isset($data['reporteData'])) {
+                return response()->json([
+                    'status' => HTTPStatus::Error,
+                    'msg' => 'Datos del reporte no encontrados en la respuesta'
+                ], 500);
+            }
+
+            $reporteData = $data['reporteData'];
+            $metadatos = $reporteData['metadatos'] ?? [];
+            $categorias = $reporteData['categorias'] ?? [];
+            $totales_generales = $reporteData['totales_generales'] ?? [];
+
             $pdfData = [
                 'title' => 'Reporte de Consumos por Categoría',
-                'fecha_inicio' => $fechaInicio,
-                'fecha_fin' => $fechaFin,
-                'categorias' => $data['categorias'],
-                'totales' => $data['totales'],
+                'metadatos' => $metadatos,
+                'categorias' => $categorias,
+                'totales_generales' => $totales_generales,
             ];
 
             $pdf = Pdf::loadView('pdf.reportes.consumo.reporte_consumos_categoria', $pdfData);
             $pdf->setPaper('a4', 'portrait');
 
-            return $pdf->download('reporte_consumos_categoria.pdf');
+            $nombreArchivo = 'reporte_consumos_categoria';
+            if ($fechaInicio && $fechaFin) {
+                $nombreArchivo .= "_{$fechaInicio}_{$fechaFin}";
+            } elseif ($anio) {
+                $nombreArchivo .= "_{$anio}";
+            } else {
+                $nombreArchivo .= '_todos';
+            }
+            $nombreArchivo .= '.pdf';
+
+            return $pdf->download($nombreArchivo);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg' => $th->getMessage()
+                'msg' => 'Error al generar PDF: ' . $th->getMessage()
             ], 500);
         }
     }

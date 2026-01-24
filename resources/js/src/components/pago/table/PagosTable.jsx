@@ -33,6 +33,11 @@ export const PagosTable = ({ estado }) => {
                 accessorFn: (row) => row.concepto_pago.nombre_concepto,
             },
             {
+                header: "Observación",
+                accessorFn: (row) => row.observaciones || "SIN OBSERVACIÓN",
+                wrap: true,
+            },
+            {
                 header: "Monto",
                 accessorKey: "monto",
                 Cell: ({ cell }) => (
@@ -48,7 +53,7 @@ export const PagosTable = ({ estado }) => {
                 Footer: () => (
                     <Stack>
                         Total Pagos:
-                        <TextSection tt="" fw={500} fz={16}>
+                        <TextSection tt="" fw={700} fz={16} c="blue">
                             {totalPagos.toLocaleString("es-EC", {
                                 style: "currency",
                                 currency: "USD",
@@ -109,7 +114,7 @@ export const PagosTable = ({ estado }) => {
             density: "md",
             columnPinning: { left: ["mrt-row-actions"] },
         },
-       mantineTableProps: {
+        mantineTableProps: {
             striped: true,
             highlightOnHover: true,
             withColumnBorders: true,
@@ -134,6 +139,9 @@ export const PagosTable = ({ estado }) => {
                         />
                     </ActionIcon>
                 </Tooltip>
+                <TextSection tt="" fz={16} fw={600}>
+                    Registro de Pagos
+                </TextSection>
             </Group>
         ),
         renderRowActions: ({ row }) => (

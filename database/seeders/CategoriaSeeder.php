@@ -25,7 +25,7 @@ class CategoriaSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'nombre_categoria' => 'ESTADÍA',
+                'nombre_categoria' => 'ESTADIA',
                 'activo' => true,
                 'created_at' => now(),
                 'updated_at' => now(),

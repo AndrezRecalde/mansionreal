@@ -30,7 +30,7 @@ class ClienteFacturacionSeeder extends Seeder
             ],
 
             // Clientes Registrados - Ecuador
-            [
+            /* [
                 'id' => 2,
                 'tipo_cliente' => 'CLIENTE_REGISTRADO',
                 'tipo_identificacion' => 'CEDULA',
@@ -158,7 +158,7 @@ class ClienteFacturacionSeeder extends Seeder
                 'activo' => false,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
-            ],
+            ], */
         ];
 
         DB::table('clientes_facturacion')->insert($clientes);

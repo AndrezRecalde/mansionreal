@@ -13,6 +13,7 @@ export const ConsumosTotalTable = ({ departamento }) => {
                     <Table.Th>Total Huespedes</Table.Th>
                     <Table.Th>Total Reservas</Table.Th>
                     <Table.Th>Subtotal</Table.Th>
+                    <Table.Th>Descuentos</Table.Th>
                     <Table.Th>Iva Recaudado</Table.Th>
                     <Table.Th>Total Consumos</Table.Th>
                 </Table.Tr>
@@ -22,6 +23,7 @@ export const ConsumosTotalTable = ({ departamento }) => {
                     <Table.Td>{departamento.total_huespedes}</Table.Td>
                     <Table.Td>{departamento.total_reservas}</Table.Td>
                     <Table.Td>{departamento.subtotal_consumos}</Table.Td>
+                    <Table.Td>{departamento.descuentos}</Table.Td>
                     <Table.Td>{departamento.iva_recaudado}</Table.Td>
                     <Table.Td>{departamento.total_consumos}</Table.Td>
                 </Table.Tr>

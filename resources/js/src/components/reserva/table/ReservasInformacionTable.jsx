@@ -205,7 +205,9 @@ export const ReservasInformacionTable = ({
                     {reserva.tiene_factura && (
                         <Menu.Item
                             leftSection={<IconFileText size={16} />}
-                            onClick={handlePrevisualizarFactura}
+                            onClick={() =>
+                                handlePrevisualizarFactura(reserva.factura.id)
+                            }
                         >
                             {PAGE_TITLE.VER_FACTURA}
                         </Menu.Item>

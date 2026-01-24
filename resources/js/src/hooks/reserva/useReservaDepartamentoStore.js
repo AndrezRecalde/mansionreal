@@ -98,10 +98,10 @@ export const useReservaDepartamentoStore = () => {
             }, 2000);
 
             if (carga_pagina === "DEPARTAMENTOS") {
-                fnConsultarDisponibilidadDepartamentos();
-                fnCargarEstadias();
+                await fnConsultarDisponibilidadDepartamentos();
+                await fnCargarEstadias();
             } else if (carga_pagina === "RESERVAS") {
-                fnBuscarReservas(storageFields);
+                await fnBuscarReservas(storageFields);
             } else if (carga_pagina === "CALENDARIO") {
                 const inicio = subMonths(new Date(), 3);
                 const fin = addMonths(new Date(), 3);
@@ -115,7 +115,7 @@ export const useReservaDepartamentoStore = () => {
                 await fnCargarEstadias();
             }
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         }
     };

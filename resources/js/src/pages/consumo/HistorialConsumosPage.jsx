@@ -120,17 +120,16 @@ const HistorialConsumosPage = () => {
         }
     }, [erroresPagos]);
 
-    const handlePrevisualizarFactura = async () => {
+    const handlePrevisualizarFactura = async (facturaId) => {
         try {
             // 1. Obtener la factura de la reserva
-            const factura = await fnCargarFacturaPorReserva(datos_reserva.reserva_id);
 
-            if (factura && factura.id) {
+            if (facturaId) {
                 // 2. Activar la factura en el estado
-                fnActivarFactura(factura);
+                fnActivarFactura(facturaId);
 
                 // 3. Previsualizar PDF
-                await fnPrevisualizarFacturaPDF(factura.id);
+                await fnPrevisualizarFacturaPDF(facturaId);
 
                 // 4. Abrir modal del visor
                 fnAbrirModalPdfFactura(true);

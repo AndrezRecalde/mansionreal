@@ -59,22 +59,7 @@ export const ReservaFinalizarStepper = ({ datos_reserva }) => {
             }
 
             // ============================================================
-            // PASO 1: Cambiar estado de reserva a PAGADO
-            // ============================================================
-            await fnCambiarEstadoReserva(
-                storageFields
-                    ? {
-                          id: reserva_id,
-                          nombre_estado: "PAGADO",
-                          storageFields,
-                          carga_pagina:
-                              storageFields.carga_pagina || "DEPARTAMENTOS",
-                      }
-                    : { id: reserva_id, nombre_estado: "PAGADO" },
-            );
-
-            // ============================================================
-            // PASO 2: GENERAR FACTURA (sin descuentos a nivel de factura)
+            // PASO 1: GENERAR FACTURA (sin descuentos a nivel de factura)
             // ============================================================
             const facturaGenerada = await fnGenerarFactura({
                 reserva_id: reserva_id,
@@ -87,11 +72,26 @@ export const ReservaFinalizarStepper = ({ datos_reserva }) => {
             });
 
             // ============================================================
-            // PASO 3: DESCARGAR PDF DE LA FACTURA GENERADA
+            // PASO 2: DESCARGAR PDF DE LA FACTURA GENERADA
             // ============================================================
             if (facturaGenerada && facturaGenerada.id) {
                 await fnDescargarFacturaPDF(facturaGenerada.id);
             }
+
+            // ============================================================
+            // PASO 3: Cambiar estado de reserva a PAGADO
+            // ============================================================
+            await fnCambiarEstadoReserva(
+                storageFields
+                    ? {
+                          id: reserva_id,
+                          nombre_estado: "PAGADO",
+                          storageFields,
+                          carga_pagina:
+                              storageFields.carga_pagina || "DEPARTAMENTOS",
+                      }
+                    : { id: reserva_id, nombre_estado: "PAGADO" },
+            );
 
             // ============================================================
             // PASO 4: Cerrar modal y drawer

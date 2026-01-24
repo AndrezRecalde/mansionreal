@@ -46,13 +46,13 @@ export const ReservarDepartamentoForm = ({ reservaForm }) => {
                 //console.log(activarTipoReserva);
                 if (activarTipoReserva === "HOSPEDAJE") {
                     fnAgregarReserva(reservaForm.getTransformedValues());
-                    console.log(
+                    /* console.log(
                         "HOSPEDAJE:",
                         reservaForm.getTransformedValues()
-                    );
+                    ); */
                 } else {
                     fnAgregarEstadia(reservaForm.getTransformedValues());
-                    console.log("ESTADIA:", reservaForm.getTransformedValues());
+                    //console.log("ESTADIA:", reservaForm.getTransformedValues());
                 }
                 reservaForm.reset();
                 fnAsignarHuesped(null);

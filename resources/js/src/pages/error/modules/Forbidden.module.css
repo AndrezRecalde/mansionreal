@@ -10,7 +10,7 @@
     font-size: rem(220px);
     line-height: 1;
     margin-bottom: calc(var(--mantine-spacing-xl) * 1.5);
-    color: var(--mantine-color-teal-5);
+    color: var(--mantine-color-indigo-5);
 
     @media (max-width: $mantine-breakpoint-sm) {
       font-size: rem(120px);

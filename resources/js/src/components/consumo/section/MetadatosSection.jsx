@@ -11,7 +11,7 @@ export const MetadatosSection = ({ metadatos, PAGE_TITLE }) => {
     const items = [
         {
             label: PAGE_TITLE.REPORTE_CONSUMOS.META_DATOS_SECTION.PERIODO,
-            value: `${metadatos.p_fecha_inicio} al ${metadatos.p_fecha_fin}`,
+            value: `${metadatos.p_fecha_inicio ? metadatos.p_fecha_inicio + ' al ' + metadatos.p_fecha_fin : metadatos.p_anio}`,
             icon: IconCalendar,
         },
         {

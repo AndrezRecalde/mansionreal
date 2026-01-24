@@ -32,17 +32,6 @@ export const HeaderMenu = ({ usuario }) => {
                                     classes={classes}
                                 />
                             ) : null}
-                            {/* MENU DE GESTION DE CONFIGURACION DE PARAMETROS */}
-                            {/* {usuario.role === Roles.ADMINISTRADOR ||
-                            usuario.role === Roles.GERENCIA ? (
-                                <GestionMenu
-                                    title="Configuraciones"
-                                    menuData={headerConfigRoutes}
-                                    usuario={usuario}
-                                    classes={classes}
-                                    theme={theme}
-                                />
-                            ) : null} */}
                             {/* MENU DE GESTION GERENCIAL DEL HOTEL */}
                             {usuario.role === Roles.ADMINISTRADOR ||
                             usuario.role === Roles.GERENCIA ||
@@ -80,11 +69,14 @@ export const HeaderMenu = ({ usuario }) => {
                         </Group>
                     </Group>
                     <Group visibleFrom="lg">
-                        <ConfiguracionMenu
-                            menuData={menuConfiguracionRapida}
-                            classes={classes}
-                            theme={theme}
-                        />
+                        {usuario.role === Roles.ADMINISTRADOR ||
+                        usuario.role === Roles.GERENCIA ? (
+                            <ConfiguracionMenu
+                                menuData={menuConfiguracionRapida}
+                                classes={classes}
+                                theme={theme}
+                            />
+                        ) : null}
                         <UserBtnHeader usuario={usuario} />
                     </Group>
                     <Burger

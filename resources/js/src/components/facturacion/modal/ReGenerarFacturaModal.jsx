@@ -28,13 +28,14 @@ import {
     useFacturaStore,
     useClienteFacturacionStore,
     useUiFactura,
+    useStorageField,
 } from "../../../hooks";
 import Swal from "sweetalert2";
-
 
 export const ReGenerarFacturaModal = () => {
     const { activarReserva, fnBuscarReservas, fnAsignarReserva } =
         useReservaDepartamentoStore();
+    const { storageFields } = useStorageField();
     const { cargando: cargandoFactura, fnGenerarFactura } = useFacturaStore();
     const {
         cargando: cargandoCliente,
@@ -57,8 +58,6 @@ export const ReGenerarFacturaModal = () => {
     const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
     const [solicitaDetallada, setSolicitaDetallada] = useState(false);
 
-    // ❌ REMOVIDO: Estados para descuento
-
     // Cargar consumidor final al montar
     useEffect(() => {
         if (abrirModalReGenerarFactura) {
@@ -70,10 +69,12 @@ export const ReGenerarFacturaModal = () => {
         };
     }, [abrirModalReGenerarFactura]);
 
-    // Setear consumidor final automáticamente cuando se desmarca el switch
+    // ✅ CORREGIDO: Setear consumidor final automáticamente cuando switch está OFF
     useEffect(() => {
         if (!generarFactura && consumidorFinal) {
             setClienteSeleccionado(consumidorFinal);
+            setBusquedaRealizada(false);
+            setMostrarFormulario(false);
         }
     }, [generarFactura, consumidorFinal]);
 
@@ -100,21 +101,27 @@ export const ReGenerarFacturaModal = () => {
     };
 
     const handlePrellenarDesdeHuesped = async () => {
-        if (!activarReserva || !activarReserva.reserva_id) {
+        if (!activarReserva || !activarReserva.huesped_id) {
             Swal.fire({
                 icon: "error",
                 title: "Error",
-                text: "No se pudo obtener información de la reserva",
+                text: "No se pudo obtener información del huésped",
             });
             return;
         }
 
-        const huesped = await fnPrellenarDesdeHuesped(
-            activarReserva.reserva_id,
+        const resultado = await fnPrellenarDesdeHuesped(
+            activarReserva.huesped_id,
         );
 
-        if (huesped) {
-            setDniBusqueda(huesped.identificacion || "");
+        if (resultado.existe && resultado.cliente_existente) {
+            // Cliente ya existe en la base de datos
+            setDniBusqueda(resultado.cliente_existente.identificacion);
+            setClienteSeleccionado(resultado.cliente_existente);
+            setBusquedaRealizada(true);
+            setMostrarFormulario(false);
+        } else {
+            // Cliente no existe, mostrar formulario para crearlo con datos prellenados
             setMostrarFormulario(true);
             setBusquedaRealizada(false);
         }
@@ -128,14 +135,12 @@ export const ReGenerarFacturaModal = () => {
     };
 
     const handleLimpiar = () => {
-        setGenerarFactura(false);
         setDniBusqueda("");
         setBusquedaRealizada(false);
         setMostrarFormulario(false);
         setClienteSeleccionado(null);
         setSolicitaDetallada(false);
         fnLimpiarCliente();
-        // ❌ REMOVIDO: Limpiar estados de descuento
     };
 
     const handleGenerar = async () => {
@@ -147,8 +152,6 @@ export const ReGenerarFacturaModal = () => {
             });
             return;
         }
-
-        // ❌ REMOVIDO: Validación de descuentos
 
         const result = await Swal.fire({
             icon: "question",
@@ -172,7 +175,6 @@ export const ReGenerarFacturaModal = () => {
                     reserva_id: activarReserva.reserva_id,
                     cliente_facturacion_id: clienteSeleccionado.id,
                     solicita_factura_detallada: solicitaDetallada,
-                    // ❌ REMOVIDO: Campos de descuento
                 });
 
                 if (facturaGenerada) {
@@ -184,9 +186,8 @@ export const ReGenerarFacturaModal = () => {
 
                     handleClose();
 
-                    // Actualizar listado de reservas si es necesario
                     if (fnBuscarReservas) {
-                        fnBuscarReservas();
+                        fnBuscarReservas(storageFields);
                     }
                 }
             } catch (error) {
@@ -201,10 +202,7 @@ export const ReGenerarFacturaModal = () => {
         handleLimpiar();
     };
 
-    const puedeGenerar = Boolean(
-        clienteSeleccionado && clienteSeleccionado.id,
-        // ❌ REMOVIDO: Validación de descuentos
-    );
+    const puedeGenerar = Boolean(clienteSeleccionado && clienteSeleccionado.id);
 
     if (!activarReserva) return null;
 
@@ -271,7 +269,8 @@ export const ReGenerarFacturaModal = () => {
                                 Departamento:
                             </Text>
                             <Text size="sm" fw={500}>
-                                {activarReserva.tipo_departamento} - {activarReserva.numero_departamento}
+                                {activarReserva.tipo_departamento} -{" "}
+                                {activarReserva.numero_departamento}
                             </Text>
                         </Group>
                     )}
@@ -349,45 +348,34 @@ export const ReGenerarFacturaModal = () => {
 
                         <Button
                             variant="light"
-                            leftSection={<IconUserPlus size={16} />}
                             onClick={handlePrellenarDesdeHuesped}
-                            fullWidth
                         >
                             Prellenar con datos del huésped
                         </Button>
 
-                        {/* Resultados de búsqueda */}
                         {busquedaRealizada &&
-                            !mostrarFormulario &&
-                            clienteExistente && (
+                            clienteExistente &&
+                            clienteSeleccionado && (
                                 <Alert
                                     color="green"
                                     variant="light"
                                     title="Cliente Encontrado"
                                 >
                                     <Text size="sm">
-                                        <strong>Nombre:</strong>{" "}
-                                        {clienteExistente.nombres_completos}
+                                        {clienteSeleccionado.nombres_completos}
                                     </Text>
-                                    <Text size="sm">
-                                        <strong>Identificación:</strong>{" "}
-                                        {clienteExistente.identificacion}
+                                    <Text size="xs" c="dimmed">
+                                        {
+                                            clienteSeleccionado.tipo_identificacion
+                                        }
+                                        : {clienteSeleccionado.identificacion}
                                     </Text>
-                                    <Group mt="md">
-                                        <Button
-                                            size="xs"
-                                            variant="light"
-                                            onClick={handleLimpiar}
-                                        >
-                                            Buscar otro
-                                        </Button>
-                                    </Group>
                                 </Alert>
                             )}
 
                         {busquedaRealizada &&
-                            !mostrarFormulario &&
-                            !clienteExistente && (
+                            !clienteExistente &&
+                            !mostrarFormulario && (
                                 <Alert
                                     color="orange"
                                     variant="light"
@@ -441,8 +429,6 @@ export const ReGenerarFacturaModal = () => {
                             )}
                     </>
                 )}
-
-                {/* ❌ REMOVIDO: Sección completa de descuentos */}
 
                 {/* RESUMEN: Cliente Seleccionado */}
                 {clienteSeleccionado && (

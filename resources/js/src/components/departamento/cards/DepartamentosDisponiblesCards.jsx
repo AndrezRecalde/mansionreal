@@ -264,7 +264,7 @@ const DepartamentoCard = ({
 
             {usuario &&
             (usuario.role === Roles.ADMINISTRADOR ||
-                usuario.role === Roles.GERENTE) ? (
+                usuario.role === Roles.GERENCIA) ? (
                 <Group justify="center">
                     <Card.Section className={classes.section} mt="sm">
                         <AccionesFooter

@@ -5,7 +5,7 @@ import {
     ConsumoModal,
     ConsumoEditarModal,
     ConsumoEliminarModal,
-    ConsumoAplicarDescuentoModal, // ✅ NUEVO
+    ConsumoAplicarDescuentoModal,
     GastoDrawerTable,
     PagosTable,
     ReservaAccionesTable,
@@ -36,7 +36,10 @@ export const ConsumosDrawer = ({ datos_reserva, fnAsignarElemento }) => {
         if (abrirDrawerConsumosDepartamento && datos_reserva) {
             fnCargarConsumos({ reserva_id: datos_reserva.reserva_id });
 
-            if (usuario.nombre_rol === Roles.GERENTE) {
+            if (
+                usuario.role === Roles.GERENCIA ||
+                usuario.role === Roles.ADMINISTRADOR
+            ) {
                 fnCargarGastos({ reserva_id: datos_reserva.reserva_id });
             }
 
@@ -72,7 +75,10 @@ export const ConsumosDrawer = ({ datos_reserva, fnAsignarElemento }) => {
                 <Stack gap="lg">
                     {/* Acciones de Reserva */}
                     <Card shadow="sm" p="md" withBorder>
-                        <ReservaAccionesTable datos={datos_reserva} />
+                        <ReservaAccionesTable
+                            datos={datos_reserva}
+                            usuario={usuario}
+                        />
                     </Card>
                     {/* Información del huésped */}
                     <ReservaInfoHuespedTable datos={datos_reserva} />
@@ -83,12 +89,14 @@ export const ConsumosDrawer = ({ datos_reserva, fnAsignarElemento }) => {
                     />
                     {/* Tabla de Pagos */}
                     <PagosTable estado={datos_reserva.estado.nombre_estado} />
-                    {/* Tabla de Gastos (solo GERENTE) */}
-                    {usuario.nombre_rol === Roles.GERENTE && (
+
+                    {/* Tabla de Gastos (solo GERENCIA) */}
+                    {usuario.role === Roles.GERENCIA ||
+                    usuario.role === Roles.ADMINISTRADOR ? (
                         <GastoDrawerTable
                             estado={datos_reserva.estado.nombre_estado}
                         />
-                    )}
+                    ) : null}
                 </Stack>
             </Drawer>
             {/* Modales */}

@@ -11,7 +11,6 @@ export const FacturasDetalleSection = ({ clientes, formatMonto, montos }) => {
             <Text
                 size="sm"
                 fw={600}
-                c="#0f172a"
                 mb="lg"
                 tt="uppercase"
                 style={{ letterSpacing: "1px" }}

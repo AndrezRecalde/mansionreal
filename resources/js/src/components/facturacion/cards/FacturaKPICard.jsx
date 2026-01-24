@@ -1,4 +1,4 @@
-import { Paper, Group, Stack, Text, Box } from "@mantine/core";
+import { Paper, Group, Stack, Text } from "@mantine/core";
 
 /**
  * Tarjeta KPI minimalista para empresa seria
@@ -16,7 +16,6 @@ export const FacturaKPICard = ({ icon: Icon, value, label, color }) => {
             radius="sm"
             style={{
                 height: "100%",
-                background: "#ffffff",
                 border: "1px solid #e2e8f0",
             }}
         >
@@ -37,7 +36,7 @@ export const FacturaKPICard = ({ icon: Icon, value, label, color }) => {
                     </Text>
                     <Icon size={24} color={color} strokeWidth={1.5} />
                 </Group>
-                <Text size="32px" fw={600} c="#0f172a">
+                <Text size="32px" fw={600} >
                     {value}
                 </Text>
             </Stack>

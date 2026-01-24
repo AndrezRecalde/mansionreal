@@ -11,7 +11,6 @@ export const FacturaMontoCard = ({ icon: Icon, label, monto, color }) => {
             radius="sm"
             style={{
                 height: "100%",
-                background: "#ffffff",
                 border: "1px solid #e2e8f0",
                 borderLeft: `4px solid ${color}`,
             }}
@@ -23,7 +22,6 @@ export const FacturaMontoCard = ({ icon: Icon, label, monto, color }) => {
                         size="xs"
                         tt="uppercase"
                         fw={600}
-                        c="#64748b"
                         style={{
                             letterSpacing: "1px",
                         }}
@@ -49,7 +47,6 @@ export const FacturaMontoCard = ({ icon: Icon, label, monto, color }) => {
                 <Text
                     size="28px"
                     fw={600}
-                    c="#0f172a"
                     style={{
                         lineHeight: 1,
                         fontVariantNumeric: "tabular-nums",

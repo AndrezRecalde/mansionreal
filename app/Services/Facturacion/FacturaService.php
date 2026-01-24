@@ -308,7 +308,7 @@ class FacturaService
     {
         return Factura::with([
             'consumos.inventario',
-            'consumos.usuarioRegistroDescuento', // ✅ NUEVO
+            'consumos.usuarioRegistroDescuento',
             'clienteFacturacion',
             'usuarioGenero'
         ])->where('reserva_id', $reservaId)->first();

@@ -2,13 +2,14 @@ import { useCallback, useMemo } from "react";
 import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
 import { useMantineReactTable } from "mantine-react-table";
 import { MRT_Localization_ES } from "mantine-react-table/locales/es/index.cjs";
-import { usePagoStore, useUiPago } from "../../../hooks";
+import { usePagoStore, useUiPago, useConsumoStore } from "../../../hooks";
 import { ContenidoTable, MenuAcciones, TextSection } from "../../../components";
 import { Estados } from "../../../helpers/getPrefix";
 import { IconCashRegister, IconEdit, IconTrash } from "@tabler/icons-react";
 
 export const PagosTable = ({ estado }) => {
     const { cargando, pagos, fnAsignarPago } = usePagoStore();
+    const { consumos } = useConsumoStore(); // ✅ Obtener consumos del store
     const {
         fnAbrirModalRegistroPago,
         fnAbrirModalEditarRegistroPago,
@@ -21,6 +22,37 @@ export const PagosTable = ({ estado }) => {
         return pagos.reduce((acc, curr) => acc + Number(curr.monto ?? 0), 0);
     }, [pagos]);
 
+    // ✅ Verifica si hay al menos un consumo sin facturar
+    const hayConsumosSinFacturar = useMemo(() => {
+        if (!Array.isArray(consumos) || consumos.length === 0) return false;
+        return consumos.some((consumo) => consumo.esta_facturado === false);
+    }, [consumos]);
+
+    // ✅ Verifica si el estado es PAGADO o CANCELADO
+    const estadoBloqueado = useMemo(() => {
+        return estado === Estados.PAGADO || estado === Estados.CANCELADO;
+    }, [estado]);
+
+    // ✅ LÓGICA CORREGIDA: Deshabilitar SOLO si:
+    // El estado es PAGADO/CANCELADO Y todos los consumos están facturados
+    // Es decir: HABILITAR si hay consumos sin facturar, sin importar el estado
+    const deshabilitarAcciones = useMemo(() => {
+        // Si hay consumos sin facturar, SIEMPRE habilitar
+        if (hayConsumosSinFacturar) {
+            return false;
+        }
+        // Si NO hay consumos sin facturar (todos facturados) Y el estado es bloqueado
+        return estadoBloqueado;
+    }, [estadoBloqueado, hayConsumosSinFacturar]);
+
+    // ✅ Mensaje del tooltip según la razón de deshabilitación
+    const mensajeTooltip = useMemo(() => {
+        if (deshabilitarAcciones) {
+            return "Todos los consumos están facturados";
+        }
+        return "Agregar Voucher";
+    }, [deshabilitarAcciones]);
+
     const columns = useMemo(
         () => [
             {
@@ -31,11 +63,6 @@ export const PagosTable = ({ estado }) => {
             {
                 header: "Concepto",
                 accessorFn: (row) => row.concepto_pago.nombre_concepto,
-            },
-            {
-                header: "Observación",
-                accessorFn: (row) => row.observaciones || "SIN OBSERVACIÓN",
-                wrap: true,
             },
             {
                 header: "Monto",
@@ -68,14 +95,11 @@ export const PagosTable = ({ estado }) => {
     );
 
     const handleAgregarVoucherClick = () => {
-        // Lógica para agregar voucher
-        //console.log("Agregar Voucher clicked");
         fnAbrirModalRegistroPago(true);
     };
 
     const handleEditarPago = useCallback(
         (selected) => {
-            //console.log("Editar voucher:", selected);
             fnAbrirModalEditarRegistroPago(true);
             fnAsignarPago(selected);
         },
@@ -84,7 +108,6 @@ export const PagosTable = ({ estado }) => {
 
     const handleEliminarPago = useCallback(
         (selected) => {
-            //console.log("Eliminar voucher:", selected);
             fnAbrirModalEliminarRegistroPago(true);
             fnAsignarPago(selected);
         },
@@ -104,7 +127,7 @@ export const PagosTable = ({ estado }) => {
         enableGlobalFilter: false,
         enableRowActions: true,
         enableColumnActions: false,
-        enableColumnFooters: true, // Habilita los footers de columna
+        enableColumnFooters: true,
         enableFilters: false,
         enableHiding: false,
         enableSorting: false,
@@ -122,16 +145,13 @@ export const PagosTable = ({ estado }) => {
         },
         renderTopToolbarCustomActions: () => (
             <Group gap={20} mr={8}>
-                <Tooltip label="Agregar Voucher">
+                <Tooltip label={mensajeTooltip}>
                     <ActionIcon
                         variant="default"
                         size="xl"
                         radius="xs"
                         onClick={handleAgregarVoucherClick}
-                        disabled={
-                            estado === Estados.PAGADO ||
-                            estado === Estados.CANCELADO
-                        }
+                        disabled={deshabilitarAcciones}
                     >
                         <IconCashRegister
                             style={{ width: "80%", height: "80%" }}
@@ -152,17 +172,13 @@ export const PagosTable = ({ estado }) => {
                         label: "Editar",
                         icon: IconEdit,
                         onClick: handleEditarPago,
-                        disabled:
-                            estado === Estados.PAGADO ||
-                            estado === Estados.CANCELADO,
+                        disabled: deshabilitarAcciones,
                     },
                     {
                         label: "Eliminar",
                         icon: IconTrash,
                         onClick: handleEliminarPago,
-                        disabled:
-                            estado === Estados.PAGADO ||
-                            estado === Estados.CANCELADO,
+                        disabled: deshabilitarAcciones,
                     },
                 ]}
             />

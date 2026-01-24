@@ -7,10 +7,10 @@ import {
     useFacturaStore,
     useUiFactura,
 } from "../../../hooks";
-import { Estados } from "../../../helpers/getPrefix";
+import { Estados, Roles } from "../../../helpers/getPrefix";
 import Swal from "sweetalert2";
 
-export const ReservaAccionesTable = ({ datos }) => {
+export const ReservaAccionesTable = ({ datos, usuario }) => {
     //const { fnAbrirDrawerConsumosDepartamento } = useUiConsumo();
     const { fnAbrirModalReservaFinalizar, fnAbrirModalCancelarReserva } =
         useUiReservaDepartamento();
@@ -101,64 +101,69 @@ export const ReservaAccionesTable = ({ datos }) => {
                             : `Resumen de Estadia  — ${datos.estado?.nombre_estado}`}
                     </TextSection>
                 </Group>
-                <Group gap={20}>
-                    {/* Botón Finalizar Reserva */}
-                    <Tooltip label="Finalizar Reserva">
-                        <ActionIcon
-                            variant="default"
-                            size="xl"
-                            radius="xs"
-                            onClick={handleFinalizarReservaClick}
-                            disabled={
-                                datos.estado?.nombre_estado ===
-                                    Estados.CANCELADO ||
-                                datos.estado?.nombre_estado === Estados.PAGADO
-                            }
-                        >
-                            <IconChecks
-                                style={{ width: "80%", height: "80%" }}
-                                stroke={1.5}
-                            />
-                        </ActionIcon>
-                    </Tooltip>
+                {usuario.role === Roles.GERENCIA || usuario.role === Roles.ADMINISTRADOR ? (
+                    <Group gap={20}>
+                        {/* Botón Finalizar Reserva */}
+                        <Tooltip label="Finalizar Reserva">
+                            <ActionIcon
+                                variant="default"
+                                size="xl"
+                                radius="xs"
+                                onClick={handleFinalizarReservaClick}
+                                disabled={
+                                    datos.estado?.nombre_estado ===
+                                        Estados.CANCELADO ||
+                                    datos.estado?.nombre_estado ===
+                                        Estados.PAGADO
+                                }
+                            >
+                                <IconChecks
+                                    style={{ width: "80%", height: "80%" }}
+                                    stroke={1.5}
+                                />
+                            </ActionIcon>
+                        </Tooltip>
 
-                    <Tooltip label="Ver Factura PDF">
-                        <ActionIcon
-                            variant="default"
-                            size="xl"
-                            radius="xs"
-                            onClick={handlePrevisualizarFactura}
-                            disabled={
-                                datos.estado?.nombre_estado !== Estados.PAGADO
-                            }
-                        >
-                            <IconFileText
-                                style={{ width: "80%", height: "80%" }}
-                                stroke={1.5}
-                            />
-                        </ActionIcon>
-                    </Tooltip>
+                        <Tooltip label="Ver Factura PDF">
+                            <ActionIcon
+                                variant="default"
+                                size="xl"
+                                radius="xs"
+                                onClick={handlePrevisualizarFactura}
+                                disabled={
+                                    datos.estado?.nombre_estado !==
+                                    Estados.PAGADO
+                                }
+                            >
+                                <IconFileText
+                                    style={{ width: "80%", height: "80%" }}
+                                    stroke={1.5}
+                                />
+                            </ActionIcon>
+                        </Tooltip>
 
-                    {/* Botón Cancelar Reserva */}
-                    <Tooltip label="Cancelar Reserva">
-                        <ActionIcon
-                            variant="default"
-                            size="xl"
-                            radius="xs"
-                            onClick={handleCancelarReservaClick}
-                            disabled={
-                                datos.estado?.nombre_estado ===
-                                    Estados.CANCELADO ||
-                                datos.estado?.nombre_estado === Estados.PAGADO
-                            }
-                        >
-                            <IconProgressX
-                                style={{ width: "80%", height: "80%" }}
-                                stroke={1.5}
-                            />
-                        </ActionIcon>
-                    </Tooltip>
-                </Group>
+                        {/* Botón Cancelar Reserva */}
+                        <Tooltip label="Cancelar Reserva">
+                            <ActionIcon
+                                variant="default"
+                                size="xl"
+                                radius="xs"
+                                onClick={handleCancelarReservaClick}
+                                disabled={
+                                    datos.estado?.nombre_estado ===
+                                        Estados.CANCELADO ||
+                                    datos.estado?.nombre_estado ===
+                                        Estados.PAGADO
+                                }
+                            >
+                                <IconProgressX
+                                    style={{ width: "80%", height: "80%" }}
+                                    stroke={1.5}
+                                />
+                            </ActionIcon>
+                        </Tooltip>
+                    </Group>
+                ) : null}
             </Group>
             <VisorFacturaPDF
                 opened={abrirModalPdfFactura}

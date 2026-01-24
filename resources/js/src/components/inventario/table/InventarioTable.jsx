@@ -2,12 +2,13 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
     BtnActivarElemento,
     ContenidoTable,
-    MenuTable_EA,
+    MenuAcciones,
 } from "../../../components";
 import { useMantineReactTable } from "mantine-react-table";
 import { MRT_Localization_ES } from "mantine-react-table/locales/es/index.cjs";
 import { useInventarioStore, useUiInventario } from "../../../hooks";
 import { UnstyledButton } from "@mantine/core";
+import { IconEdit } from "@tabler/icons-react";
 
 export const InventarioTable = () => {
     const {
@@ -90,35 +91,26 @@ export const InventarioTable = () => {
                 size: 80,
             },
         ],
-        []
+        [],
     );
 
-    const handleEditar = useCallback(
-        (selected) => {
-            //console.log("clic editar");
-            fnAsignarProductoInventario(selected);
-            fnModalInventario(true);
-        },
-        []
-    );
+    const handleEditar = useCallback((selected) => {
+        //console.log("clic editar");
+        fnAsignarProductoInventario(selected);
+        fnModalInventario(true);
+    }, []);
 
-    const handleAgregarStock = useCallback(
-        (selected) => {
-            //console.log("clic agregar stock");
-            fnAsignarProductoInventario(selected);
-            fnAbrirModalAgregarStock(true);
-        },
-        []
-    );
+    const handleAgregarStock = useCallback((selected) => {
+        //console.log("clic agregar stock");
+        fnAsignarProductoInventario(selected);
+        fnAbrirModalAgregarStock(true);
+    }, []);
 
-    const handleActivar = useCallback(
-        (selected) => {
-            //console.log("clic activar");
-            fnAsignarProductoInventario(selected);
-            fnModalAbrirActivarInventario(true);
-        },
-        []
-    );
+    const handleActivar = useCallback((selected) => {
+        //console.log("clic activar");
+        fnAsignarProductoInventario(selected);
+        fnModalAbrirActivarInventario(true);
+    }, []);
 
     const table = useMantineReactTable({
         columns,
@@ -132,37 +124,36 @@ export const InventarioTable = () => {
             showProgressBars: cargando,
             pagination,
         },
-
+        localization: MRT_Localization_ES,
         onPaginationChange: setPagination,
-
         enableFacetedValues: true,
         enableRowActions: true,
-        localization: MRT_Localization_ES,
-
-        renderRowActionMenuItems: ({ row }) => (
-            <MenuTable_EA
+        enableStickyHeader: true,
+        enableColumnPinning: true,
+        initialState: {
+            density: "md",
+            columnPinning: { left: ["mrt-row-actions"] },
+        },
+        mantineTableProps: {
+            striped: true,
+            highlightOnHover: true,
+            withColumnBorders: true,
+            withTableBorder: true,
+        },
+        renderRowActions: ({ row }) => (
+            <MenuAcciones
                 row={row}
-                titulo="Editar"
-                handleAction={handleEditar}
+                items={[
+                    {
+                        label: "Editar",
+                        icon: IconEdit,
+                        onClick: handleEditar,
+                        disabled: false,
+                        color: "",
+                    },
+                ]}
             />
         ),
-
-        mantineTableProps: {
-            withColumnBorders: true,
-            striped: true,
-            withTableBorder: true,
-            sx: {
-                "thead > tr": {
-                    backgroundColor: "inherit",
-                },
-                "thead > tr > th": {
-                    backgroundColor: "inherit",
-                },
-                "tbody > tr > td": {
-                    backgroundColor: "inherit",
-                },
-            },
-        },
     });
 
     return <ContenidoTable table={table} />;

@@ -15,14 +15,7 @@ import { TitlePage } from "./elements/titles/TitlePage";
 /* Elements: AlertSection */
 import { AlertSection } from "./elements/alert/AlertSection";
 /* Elements: Menu de tables */
-import {
-    MenuTable_EA,
-    MenuUsersTable,
-    MenuTable_DEPT,
-    MenuTable_RESERVA,
-    MenuTable_EE,
-    MenuTableFactura,
-} from "./elements/table/MenuTable";
+import { MenuAcciones } from "./elements/table/MenuAcciones";
 /* Elements: Contenido de tabla */
 import { ContenidoTable } from "./elements/table/ContenidoTable";
 /* Elements: Boton de Activacion */
@@ -138,7 +131,6 @@ import { ReservaConfirmacionStep } from "./reserva/steps/ReservaConfirmacionStep
 import { ConsumosDrawer } from "./consumo/drawer/ConsumosDrawer";
 import { ConsumosDrawerTable } from "./consumo/table/ConsumosDrawerTable";
 import { ConsumoModal } from "./consumo/modal/ConsumoModal";
-import { ConsumosInformacionTable } from "./consumo/table/ConsumosInformacionTable";
 import { ConsumosDetalleTable } from "./consumo/table/ConsumosDetalleTable";
 import { ConsumosTotalTable } from "./consumo/table/ConsumosTotalTable";
 import { ConsumoEditarModal } from "./consumo/modal/ConsumoEditarModal";
@@ -214,12 +206,7 @@ export {
     TextSection,
     TitlePage,
     AlertSection,
-    MenuTable_EA,
-    MenuUsersTable,
-    MenuTable_DEPT,
-    MenuTable_RESERVA,
-    MenuTable_EE,
-    MenuTableFactura,
+    MenuAcciones,
     ContenidoTable,
     BtnActivarElemento,
     ActivarElementoModal,
@@ -328,7 +315,6 @@ export {
     ConsumosDrawer,
     ConsumoModal,
     ConsumosDrawerTable,
-    ConsumosInformacionTable,
     ConsumosDetalleTable,
     ConsumosTotalTable,
     ConsumoEditarModal,

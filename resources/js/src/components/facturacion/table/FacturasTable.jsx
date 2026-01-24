@@ -6,6 +6,13 @@ import { MenuTableFactura } from "../../elements/table/MenuTable";
 import { useFacturaStore, useUiFactura } from "../../../hooks";
 import dayjs from "dayjs";
 import Swal from "sweetalert2";
+import { MenuAcciones } from "../../elements/table/MenuAcciones";
+import {
+    IconBan,
+    IconCloudDownload,
+    IconEdit,
+    IconEye,
+} from "@tabler/icons-react";
 
 export const FacturasTable = () => {
     const {
@@ -191,7 +198,7 @@ export const FacturasTable = () => {
         enableDensityToggle: false,
         initialState: {
             density: "sm",
-            columnPinning: { right: ["mrt-row-actions"] },
+            columnPinning: { left: ["mrt-row-actions"] },
             sorting: [{ id: "fecha_emision", desc: true }],
         },
         state: {
@@ -210,13 +217,31 @@ export const FacturasTable = () => {
             withColumnBorders: true,
             withTableBorder: true,
         },
-        renderRowActionMenuItems: ({ row }) => (
-            <MenuTableFactura
-                factura={row.original}
-                onVerDetalle={handleVerDetalle}
-                onVerPDF={handleVerPDF}
-                onAnular={handleAnular}
-                onDescargar={handleDescargar}
+        renderRowActions: ({ row }) => (
+            <MenuAcciones
+                row={row.original}
+                items={[
+                    {
+                        label: "Ver Detalle",
+                        icon: IconEdit,
+                        onClick: () => handleVerDetalle(row.original),
+                    },
+                    {
+                        label: "Ver PDF",
+                        icon: IconEye,
+                        onClick: () => handleVerPDF(row.original),
+                    },
+                    {
+                        label: "Descargar PDF",
+                        icon: IconCloudDownload,
+                        onClick: () => handleDescargar(row.original),
+                    },
+                    {
+                        label: "Anular Factura",
+                        icon: IconBan,
+                        onClick: () => handleAnular(row.original),
+                    },
+                ]}
             />
         ),
         renderTopToolbarCustomActions: () => (

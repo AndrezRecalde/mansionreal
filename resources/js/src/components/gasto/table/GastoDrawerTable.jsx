@@ -2,9 +2,9 @@ import { useCallback, useMemo } from "react";
 import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
 import { useMantineReactTable } from "mantine-react-table";
 import { MRT_Localization_ES } from "mantine-react-table/locales/es/index.cjs";
-import { ContenidoTable, MenuTable_EE, TextSection } from "../../../components";
+import { ContenidoTable, MenuAcciones, TextSection } from "../../../components";
 import { useGastoStore, useUiGasto } from "../../../hooks";
-import { IconListDetails } from "@tabler/icons-react";
+import { IconEdit, IconListDetails, IconTrash } from "@tabler/icons-react";
 import { Estados } from "../../../helpers/getPrefix";
 
 export const GastoDrawerTable = ({ estado }) => {
@@ -58,7 +58,7 @@ export const GastoDrawerTable = ({ estado }) => {
                 ),
             },
         ],
-        [gastos]
+        [gastos],
     );
 
     const handleAbrirGasto = useCallback(
@@ -67,7 +67,7 @@ export const GastoDrawerTable = ({ estado }) => {
             fnAbrirModalGasto(true);
             fnAsignarGasto(selected);
         },
-        [gastos]
+        [gastos],
     );
 
     const handleEliminarGasto = useCallback(
@@ -76,7 +76,7 @@ export const GastoDrawerTable = ({ estado }) => {
             fnAbrirEliminarModalGasto(true);
             fnAsignarGasto(selected);
         },
-        [gastos]
+        [gastos],
     );
 
     const table = useMantineReactTable({
@@ -95,6 +95,18 @@ export const GastoDrawerTable = ({ estado }) => {
         enableFilters: false,
         enableHiding: false,
         enableSorting: false,
+        enableStickyHeader: true,
+        enableColumnPinning: true,
+        initialState: {
+            density: "md",
+            columnPinning: { left: ["mrt-row-actions"] },
+        },
+       mantineTableProps: {
+            striped: true,
+            highlightOnHover: true,
+            withColumnBorders: true,
+            withTableBorder: true,
+        },
         renderTopToolbarCustomActions: ({ table }) => (
             <Group gap={20} mr={8}>
                 <Tooltip label="Agregar Gasto">
@@ -116,28 +128,29 @@ export const GastoDrawerTable = ({ estado }) => {
                 </Tooltip>
             </Group>
         ),
-        renderRowActionMenuItems: ({ row }) => (
-            <MenuTable_EE
+        renderRowActions: ({ row }) => (
+            <MenuAcciones
                 row={row}
-                handleEditar={handleAbrirGasto}
-                handleEliminar={handleEliminarGasto}
+                items={[
+                    {
+                        label: "Editar",
+                        icon: IconEdit,
+                        onClick: handleAbrirGasto,
+                        disabled:
+                            estado?.nombre_estado === Estados.CANCELADO ||
+                            estado?.nombre_estado === Estados.PAGADO,
+                    },
+                    {
+                        label: "Eliminar",
+                        icon: IconTrash,
+                        onClick: handleEliminarGasto,
+                        disabled:
+                            estado?.nombre_estado === Estados.CANCELADO ||
+                            estado?.nombre_estado === Estados.PAGADO,
+                    },
+                ]}
             />
         ),
-        mantineTableProps: {
-            withColumnBorders: true,
-            withTableBorder: true,
-            sx: {
-                "thead > tr": {
-                    backgroundColor: "inherit",
-                },
-                "thead > tr > th": {
-                    backgroundColor: "inherit",
-                },
-                "tbody > tr > td": {
-                    backgroundColor: "inherit",
-                },
-            },
-        },
     });
     return <ContenidoTable table={table} />;
 };

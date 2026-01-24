@@ -6,9 +6,10 @@ import { Image } from "@mantine/core";
 import {
     BtnActivarElemento,
     ContenidoTable,
-    MenuTable_DEPT,
+    MenuAcciones,
 } from "../../../components";
 import { useDepartamentoStore, useUiDepartamento } from "../../../hooks";
+import { IconCategoryPlus, IconEdit } from "@tabler/icons-react";
 
 export const DepartamentoTable = () => {
     const { cargando, departamentos, fnAsignarDepartamento } =
@@ -66,7 +67,7 @@ export const DepartamentoTable = () => {
                 size: 80,
             },
         ],
-        [departamentos]
+        [departamentos],
     );
 
     const handleEditar = useCallback(
@@ -75,7 +76,7 @@ export const DepartamentoTable = () => {
             fnAsignarDepartamento(selected);
             fnModalAbrirDepartamento(true);
         },
-        [departamentos]
+        [departamentos],
     );
 
     const handleActivar = useCallback(
@@ -84,7 +85,7 @@ export const DepartamentoTable = () => {
             fnAsignarDepartamento(selected);
             fnModalAbrirActivarDepartamento(true);
         },
-        [departamentos]
+        [departamentos],
     );
 
     const handleServicios = useCallback(
@@ -94,28 +95,44 @@ export const DepartamentoTable = () => {
             fnDrawerAbrirServiciosDepartamento(true);
             //fnModalAbrirActivarDepartamento(true);
         },
-        [departamentos]
+        [departamentos],
     );
 
     const table = useMantineReactTable({
         columns,
         data: departamentos, //must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
         state: { showProgressBars: cargando },
+        localization: MRT_Localization_ES,
         enableFacetedValues: true,
         enableRowActions: true,
         enableStickyHeader: true,
         enableColumnPinning: true,
-        localization: MRT_Localization_ES,
-         initialState: {
+        initialState: {
             density: "md",
-            columnPinning: { right: ["mrt-row-actions"] },
+            columnPinning: { left: ["mrt-row-actions"] },
             sorting: [{ id: "numero_departamento", asc: true }],
         },
-        renderRowActionMenuItems: ({ row }) => (
-            <MenuTable_DEPT
+        mantineTableProps: {
+            striped: true,
+            highlightOnHover: true,
+            withColumnBorders: true,
+            withTableBorder: true,
+        },
+        renderRowActions: ({ row }) => (
+            <MenuAcciones
                 row={row}
-                handleEditar={handleEditar}
-                handleServicios={handleServicios}
+                items={[
+                    {
+                        label: "Editar",
+                        icon: IconEdit,
+                        onClick: handleEditar,
+                    },
+                    {
+                        label: "Servicios",
+                        icon: IconCategoryPlus,
+                        onClick: handleServicios,
+                    },
+                ]}
             />
         ),
         renderDetailPanel: ({ row }) => (
@@ -131,23 +148,6 @@ export const DepartamentoTable = () => {
                 ))}
             </Carousel>
         ),
-        mantineTableProps: {
-            withColumnBorders: true,
-            striped: true,
-            withTableBorder: true,
-            sx: {
-                "thead > tr": {
-                    backgroundColor: "inherit",
-                },
-                "thead > tr > th": {
-                    backgroundColor: "inherit",
-                },
-                "tbody > tr > td": {
-                    backgroundColor: "inherit",
-                },
-            },
-        },
     });
-
     return <ContenidoTable table={table} />;
 };

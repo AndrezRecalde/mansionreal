@@ -2,14 +2,15 @@ import { useCallback, useMemo } from "react";
 import { useMantineReactTable } from "mantine-react-table";
 import { MRT_Localization_ES } from "mantine-react-table/locales/es/index.cjs";
 import {
-    MenuTable_EA,
     ContenidoTable,
     BtnActivarElemento,
+    MenuAcciones,
 } from "../../../components";
 import {
     useConfiguracionIvaStore,
     useUiConfiguracionIva,
 } from "../../../hooks";
+import { IconEdit } from "@tabler/icons-react";
 import dayjs from "dayjs";
 
 export const ConfigIvaTable = ({ PAGE_TITLE }) => {
@@ -81,33 +82,35 @@ export const ConfigIvaTable = ({ PAGE_TITLE }) => {
         columns,
         data: ivas, //must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
         state: { showProgressBars: cargando },
+        localization: MRT_Localization_ES,
         enableFacetedValues: true,
         enableRowActions: true,
-        localization: MRT_Localization_ES,
-        renderRowActionMenuItems: ({ row }) => (
-            <MenuTable_EA
+        enableStickyHeader: true,
+        enableColumnPinning: true,
+        initialState: {
+            density: "md",
+            columnPinning: { left: ["mrt-row-actions"] },
+        },
+        mantineTableProps: {
+            striped: true,
+            highlightOnHover: true,
+            withColumnBorders: true,
+            withTableBorder: true,
+        },
+        renderRowActions: ({ row }) => (
+            <MenuAcciones
                 row={row}
-                titulo="Editar"
-                handleAction={handleEditar}
+                items={[
+                    {
+                        label: "Editar",
+                        icon: IconEdit,
+                        onClick: handleEditar,
+                        disabled: false,
+                        color: "",
+                    },
+                ]}
             />
         ),
-        mantineTableProps: {
-            withColumnBorders: true,
-            striped: true,
-            withTableBorder: true,
-            //withTableBorder: colorScheme === "light",
-            sx: {
-                "thead > tr": {
-                    backgroundColor: "inherit",
-                },
-                "thead > tr > th": {
-                    backgroundColor: "inherit",
-                },
-                "tbody > tr > td": {
-                    backgroundColor: "inherit",
-                },
-            },
-        },
     });
 
     return <ContenidoTable table={table} />;

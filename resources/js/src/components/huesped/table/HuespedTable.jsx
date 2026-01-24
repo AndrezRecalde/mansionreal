@@ -1,8 +1,9 @@
 import { useCallback, useMemo } from "react";
 import { useMantineReactTable } from "mantine-react-table";
 import { MRT_Localization_ES } from "mantine-react-table/locales/es/index.cjs";
-import { ContenidoTable, MenuTable_EA } from "../../../components";
+import { ContenidoTable, MenuAcciones } from "../../../components";
 import { useHuespedStore, useUiHuesped } from "../../../hooks";
+import { IconEdit } from "@tabler/icons-react";
 
 export const HuespedTable = ({ pagination, setPagination, PAGE_TITLE }) => {
     const {
@@ -54,35 +55,38 @@ export const HuespedTable = ({ pagination, setPagination, PAGE_TITLE }) => {
             showProgressBars: cargando,
             pagination, // Usamos el estado local
         },
+        localization: MRT_Localization_ES,
         onPaginationChange: setPagination, // Actualiza el estado local
         rowCount: paginacion.total ?? 0,
         manualPagination: true,
         enableFacetedValues: true,
         enableRowActions: true,
-        localization: MRT_Localization_ES,
-        renderRowActionMenuItems: ({ row }) => (
-            <MenuTable_EA
+        enableStickyHeader: true,
+        enableColumnPinning: true,
+        initialState: {
+            density: "md",
+            columnPinning: { left: ["mrt-row-actions"] },
+        },
+        mantineTableProps: {
+            striped: true,
+            highlightOnHover: true,
+            withColumnBorders: true,
+            withTableBorder: true,
+        },
+        renderRowActions: ({ row }) => (
+            <MenuAcciones
                 row={row}
-                titulo="Editar"
-                handleAction={handleEditar}
+                items={[
+                    {
+                        label: "Editar",
+                        icon: IconEdit,
+                        onClick: handleEditar,
+                        disabled: false,
+                        color: "",
+                    },
+                ]}
             />
         ),
-        mantineTableProps: {
-            withColumnBorders: true,
-            striped: true,
-            withTableBorder: true,
-            sx: {
-                "thead > tr": {
-                    backgroundColor: "inherit",
-                },
-                "thead > tr > th": {
-                    backgroundColor: "inherit",
-                },
-                "tbody > tr > td": {
-                    backgroundColor: "inherit",
-                },
-            },
-        },
     });
 
     return <ContenidoTable table={table} />;

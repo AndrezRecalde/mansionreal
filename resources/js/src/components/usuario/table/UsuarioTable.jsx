@@ -5,9 +5,10 @@ import { useUiUsuario, useUsuarioStore } from "../../../hooks";
 import {
     BtnActivarElemento,
     ContenidoTable,
-    MenuUsersTable,
+    MenuAcciones,
 } from "../../../components";
 import { Badge } from "@mantine/core";
+import { IconEdit, IconRestore } from "@tabler/icons-react";
 
 export const UsuarioTable = ({ PAGE_TITLE }) => {
     const { cargando, usuarios, fnAsignarUsuario } = useUsuarioStore();
@@ -89,30 +90,35 @@ export const UsuarioTable = ({ PAGE_TITLE }) => {
         enableFacetedValues: true,
         enableRowActions: true,
         localization: MRT_Localization_ES,
-        renderRowActionMenuItems: ({ row }) => (
-            <MenuUsersTable
+        enableStickyHeader: true,
+        enableColumnPinning: true,
+        initialState: {
+            density: "md",
+            columnPinning: { left: ["mrt-row-actions"] },
+        },
+        mantineTableProps: {
+            striped: true,
+            highlightOnHover: true,
+            withColumnBorders: true,
+            withTableBorder: true,
+        },
+        renderRowActions: ({ row }) => (
+            <MenuAcciones
                 row={row}
-                handleEditar={handleEditar}
-                handleResetearClave={handleResetearClave}
+                items={[
+                    {
+                        label: "Editar",
+                        icon: IconEdit,
+                        onClick: handleEditar,
+                    },
+                    {
+                        label: "Resetear contraseña",
+                        icon: IconRestore,
+                        onClick: handleResetearClave,
+                    },
+                ]}
             />
         ),
-        mantineTableProps: {
-            withColumnBorders: true,
-            striped: true,
-            withTableBorder: true,
-            //withTableBorder: colorScheme === "light",
-            sx: {
-                "thead > tr": {
-                    backgroundColor: "inherit",
-                },
-                "thead > tr > th": {
-                    backgroundColor: "inherit",
-                },
-                "tbody > tr > td": {
-                    backgroundColor: "inherit",
-                },
-            },
-        },
     });
 
     return <ContenidoTable table={table} />;

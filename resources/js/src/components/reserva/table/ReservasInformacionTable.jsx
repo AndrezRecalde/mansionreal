@@ -15,7 +15,11 @@ import {
 } from "../../../hooks";
 import dayjs from "dayjs";
 
-export const ReservasInformacionTable = ({ cargando, handlePrevisualizarFactura, PAGE_TITLE }) => {
+export const ReservasInformacionTable = ({
+    cargando,
+    handlePrevisualizarFactura,
+    PAGE_TITLE,
+}) => {
     const { reservas, fnAsignarReserva } = useReservaDepartamentoStore();
     const { fnAbrirModalReGenerarFactura } = useUiFactura();
     const { fnAbrirDrawerConsumosDepartamento } = useUiConsumo();
@@ -33,23 +37,38 @@ export const ReservasInformacionTable = ({ cargando, handlePrevisualizarFactura,
                 ),
             },
             {
-                accessorKey: "estado.nombre_estado",
+                accessorFn: (row) => row.estado?.nombre_estado ?? "Sin estado",
+                id: "estado", // Añade un id explícito
                 header: PAGE_TITLE.ESTADO,
                 size: 130,
-                Cell: ({ cell }) => (
-                    <Badge
-                        radius="sm"
-                        color={cell.row.original.estado.color}
-                        variant="light"
-                    >
-                        {cell.getValue()}
-                    </Badge>
-                ),
+                Cell: ({ row }) => {
+                    const estado = row.original.estado;
+
+                    // Si no hay estado, muestra un badge por defecto
+                    if (!estado || !estado.nombre_estado) {
+                        return (
+                            <Badge radius="sm" color="gray" variant="light">
+                                Sin estado
+                            </Badge>
+                        );
+                    }
+
+                    return (
+                        <Badge
+                            radius="sm"
+                            color={estado.color ?? "gray"}
+                            variant="light"
+                        >
+                            {estado.nombre_estado}
+                        </Badge>
+                    );
+                },
             },
             {
                 accessorKey: "huesped",
                 header: PAGE_TITLE.HUESPED,
                 size: 200,
+                filterVariant: "autocomplete",
             },
             {
                 accessorKey: "fecha_checkin",
@@ -147,7 +166,6 @@ export const ReservasInformacionTable = ({ cargando, handlePrevisualizarFactura,
         fnAbrirModalReGenerarFactura(true);
     };
 
-
     const handleVerDetalles = (reserva) => {
         fnAsignarReserva(reserva);
         fnAbrirDrawerConsumosDepartamento(true);
@@ -167,7 +185,7 @@ export const ReservasInformacionTable = ({ cargando, handlePrevisualizarFactura,
         positionActionsColumn: "last",
         initialState: {
             density: "md",
-            columnPinning: { right: ["mrt-row-actions"] },
+            columnPinning: { left: ["mrt-row-actions"] },
             sorting: [{ id: "fecha_checkin", desc: true }],
         },
         state: {
@@ -189,9 +207,7 @@ export const ReservasInformacionTable = ({ cargando, handlePrevisualizarFactura,
                             leftSection={<IconFileText size={16} />}
                             onClick={handlePrevisualizarFactura}
                         >
-                            {
-                                PAGE_TITLE.VER_FACTURA
-                            }
+                            {PAGE_TITLE.VER_FACTURA}
                         </Menu.Item>
                     )}
 
@@ -201,9 +217,7 @@ export const ReservasInformacionTable = ({ cargando, handlePrevisualizarFactura,
                             color="orange"
                             onClick={() => handleReGenerarFactura(reserva)}
                         >
-                            {
-                                PAGE_TITLE.VOLVER_GENERAR_FACTURA
-                            }
+                            {PAGE_TITLE.VOLVER_GENERAR_FACTURA}
                         </Menu.Item>
                     )}
 
@@ -212,9 +226,7 @@ export const ReservasInformacionTable = ({ cargando, handlePrevisualizarFactura,
                         leftSection={<IconEye size={16} />}
                         onClick={() => handleVerDetalles(reserva)}
                     >
-                        {
-                            PAGE_TITLE.VER_DETALLES
-                        }
+                        {PAGE_TITLE.VER_DETALLES}
                     </Menu.Item>
                 </Box>
             );

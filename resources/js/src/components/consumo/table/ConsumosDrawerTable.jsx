@@ -289,6 +289,18 @@ export const ConsumosDrawerTable = ({ estado }) => {
         enableFilters: false,
         enableHiding: false,
         enableSorting: false,
+        enableStickyHeader: true,
+        enableColumnPinning: true,
+        initialState: {
+            density: "md",
+            columnPinning: { left: ["mrt-row-actions"] },
+        },
+        mantineTableProps: {
+            striped: true,
+            highlightOnHover: true,
+            withColumnBorders: true,
+            withTableBorder: true,
+        },
         renderTopToolbarCustomActions: () => (
             <Group gap={20} mr={8}>
                 <Tooltip label="Agregar Consumo">
@@ -297,7 +309,10 @@ export const ConsumosDrawerTable = ({ estado }) => {
                         size="xl"
                         aria-label="Agregar consumo"
                         onClick={handleAbrirConsumo}
-                        disabled={estado !== Estados.HOSPEDADO}
+                        disabled={
+                            estado === Estados.PAGADO ||
+                            estado === Estados.CANCELADO
+                        }
                     >
                         <IconShoppingCartPlus
                             style={{ width: "80%", height: "80%" }}
@@ -364,21 +379,6 @@ export const ConsumosDrawerTable = ({ estado }) => {
                     </Menu.Dropdown>
                 </Menu>
             );
-        },
-        mantineTableProps: {
-            withColumnBorders: true,
-            withTableBorder: true,
-            sx: {
-                "thead > tr": {
-                    backgroundColor: "inherit",
-                },
-                "thead > tr > th": {
-                    backgroundColor: "inherit",
-                },
-                "tbody > tr > td": {
-                    backgroundColor: "inherit",
-                },
-            },
         },
     });
 

@@ -1,8 +1,9 @@
 import { useCallback, useMemo } from "react";
 import { useMantineReactTable } from "mantine-react-table";
 import { MRT_Localization_ES } from "mantine-react-table/locales/es/index.cjs";
-import { ContenidoTable, MenuTable_EA } from "../../../components";
+import { ContenidoTable, MenuAcciones } from "../../../components";
 import { useLimpiezaStore, useUiLimpieza } from "../../../hooks";
+import { IconEdit } from "@tabler/icons-react";
 import dayjs from "dayjs";
 
 export const LimpiezaTable = ({ pagination, setPagination, PAGE_TITLE }) => {
@@ -37,7 +38,7 @@ export const LimpiezaTable = ({ pagination, setPagination, PAGE_TITLE }) => {
                         : "SIN USUARIO",
             },
         ],
-        []
+        [],
     );
 
     const handleEditar = useCallback(
@@ -45,7 +46,7 @@ export const LimpiezaTable = ({ pagination, setPagination, PAGE_TITLE }) => {
             fnAsignarLimpieza(selected);
             fnAbrirModalLimpieza(true);
         },
-        [fnAsignarLimpieza, fnAbrirModalLimpieza]
+        [fnAsignarLimpieza, fnAbrirModalLimpieza],
     );
 
     const table = useMantineReactTable({
@@ -55,35 +56,38 @@ export const LimpiezaTable = ({ pagination, setPagination, PAGE_TITLE }) => {
             showProgressBars: cargando,
             pagination,
         },
+        localization: MRT_Localization_ES,
         onPaginationChange: setPagination,
         rowCount: paginacion?.total ?? 0,
         manualPagination: true,
         enableFacetedValues: true,
         enableRowActions: true,
-        localization: MRT_Localization_ES,
-        renderRowActionMenuItems: ({ row }) => (
-            <MenuTable_EA
+        enableStickyHeader: true,
+        enableColumnPinning: true,
+        initialState: {
+            density: "md",
+            columnPinning: { left: ["mrt-row-actions"] },
+        },
+        mantineTableProps: {
+            striped: true,
+            highlightOnHover: true,
+            withColumnBorders: true,
+            withTableBorder: true,
+        },
+        renderRowActions: ({ row }) => (
+            <MenuAcciones
                 row={row}
-                titulo="Editar"
-                handleAction={handleEditar}
+                items={[
+                    {
+                        label: "Editar",
+                        icon: IconEdit,
+                        onClick: handleEditar,
+                        disabled: false,
+                        color: "",
+                    },
+                ]}
             />
         ),
-        mantineTableProps: {
-            withColumnBorders: true,
-            striped: true,
-            withTableBorder: true,
-            sx: {
-                "thead > tr": {
-                    backgroundColor: "inherit",
-                },
-                "thead > tr > th": {
-                    backgroundColor: "inherit",
-                },
-                "tbody > tr > td": {
-                    backgroundColor: "inherit",
-                },
-            },
-        },
     });
 
     return <ContenidoTable table={table} />;

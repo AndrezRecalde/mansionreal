@@ -3,9 +3,9 @@ import { ActionIcon, Group, Stack, Tooltip } from "@mantine/core";
 import { useMantineReactTable } from "mantine-react-table";
 import { MRT_Localization_ES } from "mantine-react-table/locales/es/index.cjs";
 import { usePagoStore, useUiPago } from "../../../hooks";
-import { ContenidoTable, MenuTable_EE, TextSection } from "../../../components";
+import { ContenidoTable, MenuAcciones, TextSection } from "../../../components";
 import { Estados } from "../../../helpers/getPrefix";
-import { IconCashRegister } from "@tabler/icons-react";
+import { IconCashRegister, IconEdit, IconTrash } from "@tabler/icons-react";
 
 export const PagosTable = ({ estado }) => {
     const { cargando, pagos, fnAsignarPago } = usePagoStore();
@@ -103,6 +103,18 @@ export const PagosTable = ({ estado }) => {
         enableFilters: false,
         enableHiding: false,
         enableSorting: false,
+        enableStickyHeader: true,
+        enableColumnPinning: true,
+        initialState: {
+            density: "md",
+            columnPinning: { left: ["mrt-row-actions"] },
+        },
+       mantineTableProps: {
+            striped: true,
+            highlightOnHover: true,
+            withColumnBorders: true,
+            withTableBorder: true,
+        },
         renderTopToolbarCustomActions: () => (
             <Group gap={20} mr={8}>
                 <Tooltip label="Agregar Voucher">
@@ -112,8 +124,8 @@ export const PagosTable = ({ estado }) => {
                         radius="xs"
                         onClick={handleAgregarVoucherClick}
                         disabled={
-                            estado?.nombre_estado === Estados.CANCELADO ||
-                            estado?.nombre_estado === Estados.PAGADO
+                            estado === Estados.PAGADO ||
+                            estado === Estados.CANCELADO
                         }
                     >
                         <IconCashRegister
@@ -124,28 +136,29 @@ export const PagosTable = ({ estado }) => {
                 </Tooltip>
             </Group>
         ),
-        renderRowActionMenuItems: ({ row }) => (
-            <MenuTable_EE
+        renderRowActions: ({ row }) => (
+            <MenuAcciones
                 row={row}
-                handleEditar={handleEditarPago}
-                handleEliminar={handleEliminarPago}
+                items={[
+                    {
+                        label: "Editar",
+                        icon: IconEdit,
+                        onClick: handleEditarPago,
+                        disabled:
+                            estado === Estados.PAGADO ||
+                            estado === Estados.CANCELADO,
+                    },
+                    {
+                        label: "Eliminar",
+                        icon: IconTrash,
+                        onClick: handleEliminarPago,
+                        disabled:
+                            estado === Estados.PAGADO ||
+                            estado === Estados.CANCELADO,
+                    },
+                ]}
             />
         ),
-        mantineTableProps: {
-            withColumnBorders: true,
-            withTableBorder: true,
-            sx: {
-                "thead > tr": {
-                    backgroundColor: "inherit",
-                },
-                "thead > tr > th": {
-                    backgroundColor: "inherit",
-                },
-                "tbody > tr > td": {
-                    backgroundColor: "inherit",
-                },
-            },
-        },
     });
 
     return <ContenidoTable table={table} />;

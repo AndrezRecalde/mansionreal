@@ -92,7 +92,7 @@ export const useAuthStore = () => {
             dispatch(onLogout());
             clearColorScheme();
         } catch (error) {
-            //console.log(error);
+            console.log(error);
             localStorage.clear();
             dispatch(onLogout());
             clearColorScheme();

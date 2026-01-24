@@ -4,13 +4,15 @@ import { MRT_Localization_ES } from "mantine-react-table/locales/es/index.cjs";
 import {
     BtnActivarElemento,
     ContenidoTable,
-    MenuTable_EA,
+    MenuAcciones,
 } from "../../../components";
 import { useCategoriaStore, useUiCategoria } from "../../../hooks";
+import { IconEdit } from "@tabler/icons-react";
 
 export const CategoriaTable = () => {
     const { cargando, categorias, fnAsignarCategoria } = useCategoriaStore();
-    const { fnModalAbrirCategoria, fnModalAbrirActivarCategoria } = useUiCategoria();
+    const { fnModalAbrirCategoria, fnModalAbrirActivarCategoria } =
+        useUiCategoria();
 
     const columns = useMemo(
         () => [
@@ -32,7 +34,7 @@ export const CategoriaTable = () => {
                 size: 80,
             },
         ],
-        [categorias]
+        [categorias],
     );
 
     const handleEditar = useCallback(
@@ -41,7 +43,7 @@ export const CategoriaTable = () => {
             fnAsignarCategoria(selected);
             fnModalAbrirCategoria(true);
         },
-        [categorias]
+        [categorias],
     );
 
     const handleActivar = useCallback(
@@ -50,40 +52,42 @@ export const CategoriaTable = () => {
             fnAsignarCategoria(selected);
             fnModalAbrirActivarCategoria(true);
         },
-        [categorias]
+        [categorias],
     );
 
     const table = useMantineReactTable({
         columns,
         data: categorias, //must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
         state: { showProgressBars: cargando },
+        localization: MRT_Localization_ES,
         enableFacetedValues: true,
         enableRowActions: true,
-        localization: MRT_Localization_ES,
-        renderRowActionMenuItems: ({ row }) => (
-            <MenuTable_EA
+        enableColumnPinning: true,
+        enableStickyHeader: true,
+        initialState: {
+            density: "md",
+            columnPinning: { left: ["mrt-row-actions"] },
+        },
+        mantineTableProps: {
+            striped: true,
+            highlightOnHover: true,
+            withColumnBorders: true,
+            withTableBorder: true,
+        },
+        renderRowActions: ({ row }) => (
+            <MenuAcciones
                 row={row}
-                titulo="Editar"
-                handleAction={handleEditar}
+                items={[
+                    {
+                        label: "Editar",
+                        icon: IconEdit,
+                        onClick: handleEditar,
+                        disabled: false,
+                        color: "",
+                    },
+                ]}
             />
         ),
-        mantineTableProps: {
-            withColumnBorders: true,
-            striped: true,
-            withTableBorder: true,
-            //withTableBorder: colorScheme === "light",
-            sx: {
-                "thead > tr": {
-                    backgroundColor: "inherit",
-                },
-                "thead > tr > th": {
-                    backgroundColor: "inherit",
-                },
-                "tbody > tr > td": {
-                    backgroundColor: "inherit",
-                },
-            },
-        },
     });
 
     return <ContenidoTable table={table} />;

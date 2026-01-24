@@ -84,7 +84,7 @@ export const ConsumosDrawer = ({ datos_reserva, fnAsignarElemento }) => {
                         <TextSection tt="" fz={16} fw={600} mb="md">
                             Consumos
                         </TextSection>
-                        <ConsumosDrawerTable estado={datos_reserva.estado_id} />
+                        <ConsumosDrawerTable estado={datos_reserva.estado.nombre_estado} />
                     </Card>
 
                     {/* Tabla de Pagos */}
@@ -92,7 +92,7 @@ export const ConsumosDrawer = ({ datos_reserva, fnAsignarElemento }) => {
                         <TextSection tt="" fz={16} fw={600} mb="md">
                             Pagos Realizados
                         </TextSection>
-                        <PagosTable estado={datos_reserva.estado_id} />
+                        <PagosTable estado={datos_reserva.estado.nombre_estado} />
                     </Card>
 
                     {/* Tabla de Gastos (solo GERENTE) */}
@@ -102,7 +102,7 @@ export const ConsumosDrawer = ({ datos_reserva, fnAsignarElemento }) => {
                                 Gastos
                             </TextSection>
                             <GastoDrawerTable
-                                estado={datos_reserva.estado_id}
+                                estado={datos_reserva.estado.nombre_estado}
                             />
                         </Card>
                     )}

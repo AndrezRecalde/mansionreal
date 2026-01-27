@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import { Card, Drawer, Stack } from "@mantine/core";
+import { Card, Drawer, Stack, useMantineTheme } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import {
     ConsumosDrawerTable,
     ConsumoModal,
@@ -22,6 +23,8 @@ import { Roles } from "../../../helpers/getPrefix";
 
 export const ConsumosDrawer = ({ datos_reserva, fnAsignarElemento }) => {
     const usuario = JSON.parse(localStorage.getItem("service_user") || "{}");
+    const theme = useMantineTheme();
+    const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
 
     const {
         fnAbrirDrawerConsumosDepartamento,
@@ -63,23 +66,36 @@ export const ConsumosDrawer = ({ datos_reserva, fnAsignarElemento }) => {
             <Drawer
                 opened={abrirDrawerConsumosDepartamento}
                 onClose={handleCerrarDrawer}
-                position="right"
-                size="80%"
+                position={isMobile ? "bottom" : "right"}
+                size={isMobile ? "95%" : "80%"}
                 title={
-                    <TextSection tt="" fz={20} fw={500}>
+                    <TextSection tt="" fz={isMobile ? 16 : 20} fw={500}>
                         Gestión de Consumos, Gastos y Pagos
                     </TextSection>
                 }
                 overlayProps={{ backgroundOpacity: 0.5, blur: 4 }}
+                styles={{
+                    body: {
+                        padding: isMobile ? "0.5rem" : undefined,
+                    },
+                    header: {
+                        padding: isMobile ? "0.75rem" : undefined,
+                    },
+                    content: {
+                        height: isMobile ? "95vh" : undefined,
+                        overflowY: "auto",
+                    },
+                }}
             >
-                <Stack gap="lg">
+                <Stack gap={isMobile ? "md" : "lg"}>
                     {/* Acciones de Reserva */}
-                    <Card shadow="sm" p="md" withBorder>
+                    <Card shadow="sm" p={isMobile ? "xs" : "md"} withBorder>
                         <ReservaAccionesTable
                             datos={datos_reserva}
                             usuario={usuario}
                         />
                     </Card>
+
                     {/* Información del huésped */}
                     <ReservaInfoHuespedTable datos={datos_reserva} />
 
@@ -87,6 +103,7 @@ export const ConsumosDrawer = ({ datos_reserva, fnAsignarElemento }) => {
                     <ConsumosDrawerTable
                         estado={datos_reserva.estado.nombre_estado}
                     />
+
                     {/* Tabla de Pagos */}
                     <PagosTable estado={datos_reserva.estado.nombre_estado} />
 
@@ -99,11 +116,12 @@ export const ConsumosDrawer = ({ datos_reserva, fnAsignarElemento }) => {
                     ) : null}
                 </Stack>
             </Drawer>
+
             {/* Modales */}
             <ConsumoModal reserva_id={datos_reserva?.reserva_id} />
             <ConsumoEditarModal />
             <ConsumoEliminarModal />
-            <ConsumoAplicarDescuentoModal /> {/* ✅ NUEVO */}
+            <ConsumoAplicarDescuentoModal />
         </>
     );
 };

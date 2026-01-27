@@ -31,8 +31,7 @@ export const useReservaDepartamentoStore = () => {
         errores,
     } = useSelector((state) => state.reserva);
     const { fnConsultarDisponibilidadDepartamentos } = useDepartamentoStore();
-    const { fnCargarDatosCalendario } =
-        useCalendarioStore();
+    const { fnCargarDatosCalendario } = useCalendarioStore();
     const { fnCargarEstadias } = useEstadiaStore();
     const dispatch = useDispatch();
     const { ExceptionMessageError } = useErrorException(rtkCargarErrores);
@@ -43,7 +42,7 @@ export const useReservaDepartamentoStore = () => {
                 //actualizando
                 const { data } = await apiAxios.put(
                     `/general/reserva/${reserva.id}`,
-                    reserva
+                    reserva,
                 );
                 dispatch(rtkCargarMensaje(data));
                 setTimeout(() => {
@@ -61,7 +60,7 @@ export const useReservaDepartamentoStore = () => {
             //creando
             const { data } = await apiAxios.post(
                 "/general/reserva/nueva",
-                reserva
+                reserva,
             );
             dispatch(rtkCargarMensaje(data));
             setTimeout(() => {
@@ -89,13 +88,8 @@ export const useReservaDepartamentoStore = () => {
         try {
             const { data } = await apiAxios.put(
                 `/general/reserva/${id}/estado`,
-                { nombre_estado }
+                { nombre_estado },
             );
-            // Recargar datos y mostrar mensaje
-            dispatch(rtkCargarMensaje(data));
-            setTimeout(() => {
-                dispatch(rtkCargarMensaje(undefined));
-            }, 2000);
 
             if (carga_pagina === "DEPARTAMENTOS") {
                 await fnConsultarDisponibilidadDepartamentos();
@@ -113,6 +107,11 @@ export const useReservaDepartamentoStore = () => {
 
                 //await actualizarEstadisticas(new Date());
                 await fnCargarEstadias();
+                // Recargar datos y mostrar mensaje
+                dispatch(rtkCargarMensaje(data));
+                setTimeout(() => {
+                    dispatch(rtkCargarMensaje(undefined));
+                }, 2000);
             }
         } catch (error) {
             //console.log(error);
@@ -123,7 +122,7 @@ export const useReservaDepartamentoStore = () => {
     const fnEliminarReserva = async (reserva) => {
         try {
             const { data } = await apiAxios.delete(
-                `/general/reserva/${reserva.id}`
+                `/general/reserva/${reserva.id}`,
             );
             // Recargar datos y mostrar mensaje
             dispatch(rtkCargarMensaje(data));
@@ -166,7 +165,7 @@ export const useReservaDepartamentoStore = () => {
                 { reserva_id },
                 {
                     responseType: "blob", // Importante para manejar archivos binarios
-                }
+                },
             );
 
             // Extraer el nombre del archivo desde los headers de la respuesta
@@ -175,7 +174,7 @@ export const useReservaDepartamentoStore = () => {
 
             if (contentDisposition) {
                 const fileNameMatch = contentDisposition.match(
-                    /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/
+                    /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/,
                 );
                 if (fileNameMatch && fileNameMatch[1]) {
                     fileName = fileNameMatch[1].replace(/['"]/g, "");
@@ -224,7 +223,7 @@ export const useReservaDepartamentoStore = () => {
                 {
                     motivo_cancelacion,
                     observacion: observacion || null,
-                }
+                },
             );
 
             // Mostrar mensaje de éxito

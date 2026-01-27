@@ -135,7 +135,6 @@ class FacturaController extends Controller
             'cliente_facturacion_id' => 'required|integer|exists:clientes_facturacion,id',
             'solicita_factura_detallada' => 'required|boolean',
             'observaciones' => 'nullable|string|max:500',
-            // ✅ NUEVO: Validación para descuentos en consumos
             'descuentos_consumos' => 'nullable|array',
             'descuentos_consumos.*.consumo_id' => 'required|integer|exists:consumos,id',
             'descuentos_consumos.*.descuento' => 'required|numeric|min:0',
@@ -145,7 +144,6 @@ class FacturaController extends Controller
         ]);
 
         try {
-            // ✅ NUEVO: Transformar descuentos_consumos a formato esperado por el servicio
             $descuentosConsumos = [];
             if ($request->has('descuentos_consumos')) {
                 foreach ($request->descuentos_consumos as $desc) {

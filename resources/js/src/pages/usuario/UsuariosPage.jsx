@@ -69,6 +69,7 @@ const UsuariosPage = () => {
     }, [errores]);
 
     const handleNuevoHuesped = () => {
+        fnAsignarUsuario(null);
         fnModalUsuario(true);
     };
     return (

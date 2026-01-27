@@ -21,7 +21,6 @@ const HuespedPage = () => {
     const { fnCargarHuespedes, fnLimpiarHuespedes, mensaje, errores } =
         useHuespedStore();
     const { fnModalHuesped } = useUiHuesped();
-    const { fnCargarProvincias, fnLimpiarProvincias } = useProvinciaStore();
 
     const handleNuevoHuesped = () => {
         fnModalHuesped(true);
@@ -34,11 +33,8 @@ const HuespedPage = () => {
     });
 
     useEffect(() => {
-        fnCargarProvincias();
-
         return () => {
             fnLimpiarHuespedes();
-            fnLimpiarProvincias();
         };
     }, []);
 

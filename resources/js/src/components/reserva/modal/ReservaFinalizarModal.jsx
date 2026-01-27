@@ -7,6 +7,9 @@ import {
     useUiReservaDepartamento,
     useFacturaStore,
     useClienteFacturacionStore,
+    useDepartamentoStore,
+    useEstadiaStore,
+    useReservaDepartamentoStore,
 } from "../../../hooks";
 
 export const ReservaFinalizarModal = ({ datos_reserva }) => {
@@ -30,6 +33,9 @@ export const ReservaFinalizarModal = ({ datos_reserva }) => {
 
     const handleCerrarModal = () => {
         fnAbrirModalReservaFinalizar(false);
+        //fnAsignarDepartamento(null);
+        //fnAsignarEstadia(null);
+        //fnAsignarReserva(null);
     };
 
     return (

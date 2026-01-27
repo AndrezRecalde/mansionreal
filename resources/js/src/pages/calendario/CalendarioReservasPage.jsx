@@ -144,8 +144,12 @@ const CalendarioReservasPage = () => {
                 orientation="horizontal"
             >
                 <Tabs.List grow>
-                    <Tabs.Tab value={TABS.HOSPEDAJE}>{PAGE_TITLE.CALENDARIO_RESERVAS.TABS.RESERVAS}</Tabs.Tab>
-                    <Tabs.Tab value={TABS.ESTADIA}>{PAGE_TITLE.CALENDARIO_RESERVAS.TABS.ESTADIAS}</Tabs.Tab>
+                    <Tabs.Tab value={TABS.HOSPEDAJE}>
+                        {PAGE_TITLE.CALENDARIO_RESERVAS.TABS.RESERVAS}
+                    </Tabs.Tab>
+                    <Tabs.Tab value={TABS.ESTADIA}>
+                        {PAGE_TITLE.CALENDARIO_RESERVAS.TABS.ESTADIAS}
+                    </Tabs.Tab>
                 </Tabs.List>
 
                 <TabContent

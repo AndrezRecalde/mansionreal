@@ -144,7 +144,7 @@ export const ConsumoAplicarDescuentoModal = () => {
         });
 
         if (result.isConfirmed) {
-            console.log(datosDescuento);
+            //console.log(datosDescuento);
             const resultado = await fnAplicarDescuentoConsumo(
                 activarConsumo.id,
                 datosDescuento,

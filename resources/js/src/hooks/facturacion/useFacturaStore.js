@@ -14,10 +14,10 @@ import {
     rtkCargarMensaje,
     rtkCargarPaginacion,
     rtkCargarReporteIVA,
-    rtkCargarResumenDescuentos, // ✅ NUEVO
+    rtkCargarResumenDescuentos,
     rtkGuardarUltimosFiltros,
     rtkLimpiarFacturas,
-    rtkLimpiarResumenDescuentos, // ✅ NUEVO
+    rtkLimpiarResumenDescuentos,
     rtkSetFacturaActual,
     rtkSetPdfUrl,
     rtkCargandoDetalle,
@@ -36,7 +36,7 @@ export const useFacturaStore = () => {
         pdfUrl,
         activarFactura,
         consumosAgrupados,
-        resumenDescuentos, // ✅ NUEVO
+        resumenDescuentos,
         estadisticas,
         reporteIVA,
         mensaje,
@@ -91,7 +91,7 @@ export const useFacturaStore = () => {
     };
 
     /**
-     * ✅ ACTUALIZADO: Obtener detalle completo de una factura (con resumen de descuentos)
+     * Obtener detalle completo de una factura (con resumen de descuentos)
      */
     const fnCargarFactura = async (facturaId) => {
         try {
@@ -104,7 +104,7 @@ export const useFacturaStore = () => {
                 dispatch(rtkCargarConsumosAgrupados(data.consumos_agrupados));
             }
 
-            // ✅ NUEVO: Cargar resumen de descuentos
+            // NUEVO: Cargar resumen de descuentos
             if (data.resumen_descuentos) {
                 dispatch(rtkCargarResumenDescuentos(data.resumen_descuentos));
             }
@@ -116,7 +116,7 @@ export const useFacturaStore = () => {
     };
 
     /**
-     * ✅ ACTUALIZADO: Generar factura (con descuentos en consumos)
+     * Generar factura (con descuentos en consumos)
      */
     const fnGenerarFactura = async (datosFactura) => {
         try {

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('reserva_cliente_facturacion', function (Blueprint $table) {
             $table->id();
             // Relación reserva - cliente facturación
-            $table->unsignedBigInteger('reserva_id')->unique()->comment('Una reserva tiene un solo cliente');
+            $table->unsignedBigInteger('reserva_id')->comment('Una reserva tiene un solo cliente'); // YA NO ES UNIQUE porque puede cambiarse
             $table->unsignedBigInteger('cliente_facturacion_id')->comment('Puede ser id=1 para CONSUMIDOR FINAL');
 
             // Indica si se solicitó factura con datos o es consumidor final

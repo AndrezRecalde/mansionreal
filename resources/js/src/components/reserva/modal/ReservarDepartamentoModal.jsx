@@ -18,7 +18,6 @@ export const ReservarDepartamentoModal = () => {
     const { activarTipoReserva } = useReservaDepartamentoStore();
     const { abrirModalReservarDepartamento, fnAbrirModalReservarDepartamento } =
         useUiReservaDepartamento();
-    const { fnCargarProvincias } = useProvinciaStore();
     const { fnAsignarHuesped } = useHuespedStore();
 
     const reservaForm = useForm({
@@ -116,7 +115,6 @@ export const ReservarDepartamentoModal = () => {
                 fecha_fin: fecha_checkout,
             });
         }
-        fnCargarProvincias();
     }, [
         abrirModalReservarDepartamento,
         fecha_checkin,

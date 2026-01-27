@@ -206,7 +206,7 @@ export const useConsumoStore = () => {
             setTimeout(() => {
                 dispatch(rtkCargarMensaje(undefined));
             }, 3000);
-            console.log(data.consumo);
+            //console.log(data.consumo);
             return data.consumo;
         } catch (error) {
             ExceptionMessageError(error);

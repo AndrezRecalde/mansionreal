@@ -366,12 +366,12 @@ class FacturaService
 
         // Validar que no tenga factura
         if ($reserva->tiene_factura_emitida) {
-            throw FacturacionException::reservaYaFacturada($reservaId);
+            throw FacturacionException::reservaYaFacturada($reserva->codigo_reserva);
         }
 
         // Validar que tenga consumos
         if ($reserva->consumos->isEmpty()) {
-            throw FacturacionException::reservaSinConsumos($reservaId);
+            throw FacturacionException::reservaSinConsumos($reserva->codigo_reserva);
         }
 
         // Validar que los consumos no estén facturados

@@ -21,10 +21,12 @@ import {
     IconDots,
 } from "@tabler/icons-react";
 import { useConsumoStore, useUiConsumo } from "../../../hooks";
-import { Estados } from "../../../helpers/getPrefix";
+import { Estados, Roles } from "../../../helpers/getPrefix";
 import Swal from "sweetalert2";
 
 export const ConsumosDrawerTable = ({ estado }) => {
+    const usuario = JSON.parse(localStorage.getItem("service_user") || "{}");
+
     const { cargando, consumos, fnAsignarConsumo, fnEliminarDescuentoConsumo } =
         useConsumoStore();
     const {
@@ -329,6 +331,9 @@ export const ConsumosDrawerTable = ({ estado }) => {
             const consumo = row.original;
             const estaFacturado = consumo.esta_facturado;
             const tieneDescuento = consumo.tiene_descuento;
+            const puedeGestionarDescuentos =
+                usuario.role === Roles.ADMINISTRADOR ||
+                usuario.role === Roles.GERENCIA;
 
             return (
                 <Menu shadow="md" width={200}>
@@ -352,22 +357,32 @@ export const ConsumosDrawerTable = ({ estado }) => {
                             Editar cantidad
                         </Menu.Item>
 
-                        {tieneDescuento ? (
-                            <Menu.Item
-                                leftSection={<IconDiscountOff size={16} />}
-                                onClick={() => handleEliminarDescuento(consumo)}
-                                color="orange"
-                            >
-                                Quitar descuento
-                            </Menu.Item>
-                        ) : (
-                            <Menu.Item
-                                leftSection={<IconDiscount size={16} />}
-                                onClick={() => handleAplicarDescuento(consumo)}
-                                color="teal"
-                            >
-                                Aplicar descuento
-                            </Menu.Item>
+                        {puedeGestionarDescuentos && (
+                            <>
+                                {tieneDescuento ? (
+                                    <Menu.Item
+                                        leftSection={
+                                            <IconDiscountOff size={16} />
+                                        }
+                                        onClick={() =>
+                                            handleEliminarDescuento(consumo)
+                                        }
+                                        color="orange"
+                                    >
+                                        Quitar descuento
+                                    </Menu.Item>
+                                ) : (
+                                    <Menu.Item
+                                        leftSection={<IconDiscount size={16} />}
+                                        onClick={() =>
+                                            handleAplicarDescuento(consumo)
+                                        }
+                                        color="teal"
+                                    >
+                                        Aplicar descuento
+                                    </Menu.Item>
+                                )}
+                            </>
                         )}
 
                         <Menu.Divider />

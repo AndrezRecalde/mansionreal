@@ -21,18 +21,18 @@ class FacturacionException extends Exception
     /**
      * Crear excepción con código específico
      */
-    public static function reservaYaFacturada(int $reservaId): self
+    public static function reservaYaFacturada(string $codigoReserva): self
     {
         return new self(
-            "La reserva #{$reservaId} ya tiene una factura generada",
+            "La reserva #{$codigoReserva} ya tiene una factura generada",
             self::RESERVA_YA_FACTURADA
         );
     }
 
-    public static function reservaSinConsumos(int $reservaId): self
+    public static function reservaSinConsumos(string $codigoReserva): self
     {
         return new self(
-            "La reserva #{$reservaId} no tiene consumos para facturar",
+            "La reserva #{$codigoReserva} no tiene consumos para facturar",
             self::RESERVA_SIN_CONSUMOS
         );
     }

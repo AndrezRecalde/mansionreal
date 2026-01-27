@@ -81,7 +81,7 @@ export const useUsuarioStore = () => {
                 dispatch(rtkCargarMensaje(undefined));
             }, 2000);
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             ExceptionMessageError(error);
         } finally {
             dispatch(rtkCargando(false));

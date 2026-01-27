@@ -33,7 +33,7 @@ export const ContrasenaForm = ({ usuario }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(form.getValues());
+        //console.log(form.getValues());
         fnCambiarPassword({
             id: usuario.id,
             password: form.getValues().password,

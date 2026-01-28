@@ -281,10 +281,10 @@ export const InformacionReservaModal = ({
                             </Table.Tr>
                             <Table.Tr>
                                 <Table.Th>Estado</Table.Th>
-                                <Table.Td>
+                                <Table.Td bg={reserva.estado?.color || "gray"}>
                                     <Badge
                                         radius="sm"
-                                        variant="dot"
+                                        variant="filled"
                                         color={reserva.estado?.color || "gray"}
                                     >
                                         {reserva.estado?.nombre_estado}

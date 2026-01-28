@@ -9,11 +9,10 @@ import {
     Select,
     SimpleGrid,
     Stack,
-    Text,
 } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { IconMinus, IconPlus } from "@tabler/icons-react";
-import { BtnSubmit, TextSection } from "../..";
+import { BtnSubmit, TextSection } from "../../../components";
 import {
     useConfiguracionIvaStore,
     useDepartamentoStore,
@@ -38,17 +37,17 @@ export const ReservarDatosReservaSection = ({
     const { fecha_checkin, departamento_id } = reservaForm.values;
     // Handlers para cada contador usando el form
     const changeAdults = (next) => {
-        const value = Math.max(1, Math.min(10, next));
+        const value = Math.max(1, Math.min(300, next));
         reservaForm.setFieldValue("total_adultos", value);
     };
 
     const changeChildren = (next) => {
-        const value = Math.max(0, Math.min(10, next));
+        const value = Math.max(0, Math.min(300, next));
         reservaForm.setFieldValue("total_ninos", value);
     };
 
     const changePets = (next) => {
-        const value = Math.max(0, Math.min(5, next));
+        const value = Math.max(0, Math.min(20, next));
         reservaForm.setFieldValue("total_mascotas", value);
     };
 
@@ -222,10 +221,12 @@ export const ReservarDatosReservaSection = ({
                         {/* Adultos */}
                         <Card className={classes.card} radius="md">
                             <div className={classes.info}>
-                                <Text className={classes.label}>Adultos</Text>
-                                <Text className={classes.sub}>
+                                <TextSection fz={15} fw={700} tt="">
+                                    Adultos
+                                </TextSection>
+                                <TextSection tt="" fz={12} color="dimmed">
                                     Mayores de 12 años
-                                </Text>
+                                </TextSection>
                             </div>
                             <Group spacing={8} className={classes.controls}>
                                 <ActionIcon
@@ -240,9 +241,23 @@ export const ReservarDatosReservaSection = ({
                                 >
                                     <IconMinus size="1rem" />
                                 </ActionIcon>
-                                <div className={classes.counter}>
-                                    {reservaForm.values.total_adultos}
-                                </div>
+                                <NumberInput
+                                    hideControls
+                                    variant="unstyled"
+                                    key={reservaForm.key("total_adultos")}
+                                    {...reservaForm.getInputProps(
+                                        "total_adultos",
+                                    )}
+                                    min={0}
+                                    styles={{
+                                        input: {
+                                            textAlign: "center",
+                                            fontWeight: 600,
+                                            fontSize: "1.1rem",
+                                            width: "50px",
+                                        },
+                                    }}
+                                />
                                 <ActionIcon
                                     onClick={() =>
                                         changeAdults(
@@ -261,10 +276,12 @@ export const ReservarDatosReservaSection = ({
                         {/* Niños */}
                         <Card className={classes.card} radius="md">
                             <div className={classes.info}>
-                                <Text className={classes.label}>Niños</Text>
-                                <Text className={classes.sub}>
+                                <TextSection fz={15} fw={700} tt="">
+                                    Niños
+                                </TextSection>
+                                <TextSection tt="" fz={12} color="dimmed">
                                     De 2 a 12 años
-                                </Text>
+                                </TextSection>
                             </div>
                             <Group spacing={8} className={classes.controls}>
                                 <ActionIcon
@@ -278,9 +295,23 @@ export const ReservarDatosReservaSection = ({
                                 >
                                     <IconMinus size="1rem" />
                                 </ActionIcon>
-                                <div className={classes.counter}>
-                                    {reservaForm.values.total_ninos}
-                                </div>
+                                <NumberInput
+                                    hideControls
+                                    variant="unstyled"
+                                    key={reservaForm.key("total_ninos")}
+                                    {...reservaForm.getInputProps(
+                                        "total_ninos",
+                                    )}
+                                    min={0}
+                                    styles={{
+                                        input: {
+                                            textAlign: "center",
+                                            fontWeight: 600,
+                                            fontSize: "1.1rem",
+                                            width: "50px",
+                                        },
+                                    }}
+                                />
                                 <ActionIcon
                                     onClick={() =>
                                         changeChildren(
@@ -298,10 +329,12 @@ export const ReservarDatosReservaSection = ({
                         {/* Mascotas */}
                         <Card className={classes.card} radius="md">
                             <div className={classes.info}>
-                                <Text className={classes.label}>Mascotas</Text>
-                                <Text className={classes.sub}>
+                                <TextSection fz={15} fw={700} tt="">
+                                    Mascotas
+                                </TextSection>
+                                <TextSection tt="" fz={12} color="dimmed">
                                     Apto según alojamiento
-                                </Text>
+                                </TextSection>
                             </div>
                             <Group spacing={8} className={classes.controls}>
                                 <ActionIcon
@@ -316,9 +349,23 @@ export const ReservarDatosReservaSection = ({
                                 >
                                     <IconMinus size="1rem" />
                                 </ActionIcon>
-                                <div className={classes.counter}>
-                                    {reservaForm.values.total_mascotas}
-                                </div>
+                                <NumberInput
+                                    hideControls
+                                    variant="unstyled"
+                                    key={reservaForm.key("total_mascotas")}
+                                    {...reservaForm.getInputProps(
+                                        "total_mascotas",
+                                    )}
+                                    min={0}
+                                    styles={{
+                                        input: {
+                                            textAlign: "center",
+                                            fontWeight: 600,
+                                            fontSize: "1.1rem",
+                                            width: "50px",
+                                        },
+                                    }}
+                                />
                                 <ActionIcon
                                     onClick={() =>
                                         changePets(

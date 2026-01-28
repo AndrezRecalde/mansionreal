@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class CalendarioReservasController extends Controller
 {
@@ -212,45 +213,47 @@ class CalendarioReservasController extends Controller
         //$huesped = $reserva->huesped;
         $departamento = $reserva->departamento;
         $codigo = $reserva->codigo_reserva;
+        $tipoDepartamento = $departamento?->tipoDepartamento;
 
         //$nombreHuesped = $huesped ? trim("{$huesped->apellidos} {$huesped->nombres}") : 'Sin huesped';
         $numeroDepartamento = $departamento?->numero_departamento ??  'S/N';
         $codigoReserva = $codigo ? " {$codigo}" : '';
+        $tipoDepartamentoNombre = Str::of($tipoDepartamento?->nombre_tipo)->title() ?? 'Tipo Desconocido';
 
-        return "{$numeroDepartamento} - {$codigoReserva}";
+        return "{$tipoDepartamentoNombre} {$numeroDepartamento} - {$codigoReserva}";
     }
 
     private function getColorEvento(?object $estado): string
-{
-    if (!$estado || !isset($estado->color)) {
-        return '#64748B';
+    {
+        if (!$estado || !isset($estado->color)) {
+            return '#64748B';
+        }
+
+        return match ($estado->color) {
+            // Colores base premium
+            'indigo' => '#4338CA',
+            'blue' => '#1E40AF',
+            'red' => '#B91C1C',
+            'teal' => '#0F766E',
+            'gray' => '#475569',
+            'orange' => '#C2410C',
+            'green' => '#15803D',
+            'yellow' => '#CA8A04',
+            'purple' => '#7C3AED',
+            'pink' => '#BE185D',
+
+            // Estados específicos de hotel (opcionales)
+            'confirmed' => '#0F766E',    // Confirmado
+            'pending' => '#CA8A04',      // Pendiente
+            'checked-in' => '#15803D',   // En hotel
+            'checked-out' => '#64748B',  // Check-out
+            'cancelled' => '#B91C1C',    // Cancelado
+            'vip' => '#7C3AED',          // VIP
+            'blocked' => '#1E293B',      // Bloqueado
+
+            default => '#64748B',
+        };
     }
-
-    return match ($estado->color) {
-        // Colores base premium
-        'indigo' => '#4338CA',
-        'blue' => '#1E40AF',
-        'red' => '#B91C1C',
-        'teal' => '#0F766E',
-        'gray' => '#475569',
-        'orange' => '#C2410C',
-        'green' => '#15803D',
-        'yellow' => '#CA8A04',
-        'purple' => '#7C3AED',
-        'pink' => '#BE185D',
-
-        // Estados específicos de hotel (opcionales)
-        'confirmed' => '#0F766E',    // Confirmado
-        'pending' => '#CA8A04',      // Pendiente
-        'checked-in' => '#15803D',   // En hotel
-        'checked-out' => '#64748B',  // Check-out
-        'cancelled' => '#B91C1C',    // Cancelado
-        'vip' => '#7C3AED',          // VIP
-        'blocked' => '#1E293B',      // Bloqueado
-
-        default => '#64748B',
-    };
-}
 
     private function formatearFecha($fecha): string
     {

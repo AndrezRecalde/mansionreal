@@ -107,9 +107,9 @@ export const EstadiasReservadasCards = () => {
                                     <IconCalendar size={16} stroke={1.5} />
                                     <TextSection fz={12} tt="">
                                         {`${formatFechaModal(
-                                            estadia.fecha_checkin
+                                            estadia.fecha_checkin,
                                         )} - ${formatFechaModal(
-                                            estadia.fecha_checkout
+                                            estadia.fecha_checkout,
                                         )}`}
                                     </TextSection>
                                 </Center>
@@ -119,7 +119,7 @@ export const EstadiasReservadasCards = () => {
                                 className={classes.section}
                                 bg={getEstadoColor(
                                     theme,
-                                    estadia?.estado?.color
+                                    estadia?.estado?.color,
                                 )}
                             >
                                 <Badge
@@ -132,9 +132,16 @@ export const EstadiasReservadasCards = () => {
                                         backgroundColor: "transparent",
                                     }}
                                 >
-                                    {estadia?.estado?.nombre_estado ||
-                                        "SIN ESTADO"}{" "}
-                                    - {estadia.codigo_reserva}
+                                    <TextSection
+                                        fz={14}
+                                        fw={700}
+                                        tt=""
+                                        style={{ letterSpacing: "1px" }}
+                                    >
+                                        {estadia?.estado?.nombre_estado ||
+                                            "SIN ESTADO"}{" "}
+                                        - {estadia.codigo_reserva}
+                                    </TextSection>
                                 </Badge>
                             </Card.Section>
                         </Card>

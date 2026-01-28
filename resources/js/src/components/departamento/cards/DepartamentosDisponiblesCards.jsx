@@ -5,14 +5,13 @@ import {
     Card,
     Center,
     Group,
-    Image,
     SimpleGrid,
     Text,
     Tooltip,
     UnstyledButton,
     useMantineTheme,
 } from "@mantine/core";
-import { BtnSection } from "../../../components";
+import { BtnSection, TitlePage } from "../../../components";
 import {
     useDepartamentoStore,
     useReservaDepartamentoStore,
@@ -50,18 +49,17 @@ const ESTADOS_GESTION_CONSUMOS = [ESTADOS.OCUPADO, ESTADOS.RESERVADO];
 // Subcomponente para la información del departamento
 const DepartamentoInfo = ({ departamento }) => (
     <>
-        <Group justify="center">
-            <Badge radius="sm" variant="light">
-                {departamento.tipo_departamento} -{" "}
-                {departamento.numero_departamento}
-            </Badge>
-            <Center>
+        <div>
+            <TitlePage order={4} mb={10} style={{ letterSpacing: "1px" }}>
+                {departamento.tipo_departamento} -{" "}{departamento.numero_departamento}
+            </TitlePage>
+            <Group justify="center">
                 <IconBuilding size={16} className={classes.icon} stroke={1.5} />
                 <Text size="xs">
                     capacidad: {departamento.capacidad} personas
                 </Text>
-            </Center>
-        </Group>
+            </Group>
+        </div>
     </>
 );
 
@@ -243,14 +241,14 @@ const DepartamentoCard = ({
                     cursor: puedeGestionarConsumos ? "pointer" : "default",
                 }}
             >
-                <Image
+                {/* <Image
                     src={imageSrc}
                     alt={`departamento-${departamento.numero_departamento}`}
                     fallbackSrc="https://placehold.co/600x400? text=Placeholder"
                     fit="cover"
                     w="100%"
                     h={{ base: 90, sm: 90, md: 120 }}
-                />
+                /> */}
 
                 <DepartamentoInfo departamento={departamento} />
             </Card.Section>

@@ -1,6 +1,5 @@
 .header {
     height: 70px;
-    //display: flex;
     align-items: center;
     justify-content: space-between;
     padding-left: var(--mantine-spacing-lg);

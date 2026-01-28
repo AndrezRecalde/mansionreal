@@ -249,6 +249,8 @@ export const ReservarDatosReservaSection = ({
                                         "total_adultos",
                                     )}
                                     min={0}
+                                    max={300}
+                                    clampBehavior="strict"
                                     styles={{
                                         input: {
                                             textAlign: "center",
@@ -303,6 +305,8 @@ export const ReservarDatosReservaSection = ({
                                         "total_ninos",
                                     )}
                                     min={0}
+                                    max={300}
+                                    clampBehavior="strict"
                                     styles={{
                                         input: {
                                             textAlign: "center",
@@ -357,6 +361,8 @@ export const ReservarDatosReservaSection = ({
                                         "total_mascotas",
                                     )}
                                     min={0}
+                                    max={300}
+                                    clampBehavior="strict"
                                     styles={{
                                         input: {
                                             textAlign: "center",

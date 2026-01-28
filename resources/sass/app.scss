@@ -1,9 +1,8 @@
 // Fonts
-@use 'sass:meta';
 @import url('https://fonts.bunny.net/css?family=Nunito');
 
-// Variables (sobrescriben Bootstrap)
-@use 'variables';
+// Variables
+@import 'variables';
 
 // Bootstrap
-@use 'bootstrap/scss/bootstrap';
+@import 'bootstrap/scss/bootstrap';

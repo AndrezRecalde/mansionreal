@@ -2,7 +2,8 @@
 
 namespace App\Enums;
 
-enum TIPOSRESERVA:string {
+enum TiposReserva: string
+{
     case HOSPEDAJE = 'HOSPEDAJE';
     case ESTADIA = 'ESTADIA';
 }

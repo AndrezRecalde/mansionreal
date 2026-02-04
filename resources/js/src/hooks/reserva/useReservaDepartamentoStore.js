@@ -74,7 +74,7 @@ export const useReservaDepartamentoStore = () => {
 
             //await actualizarEstadisticas(new Date());
         } catch (error) {
-            //console.log(error);
+            console.log(error);
             ExceptionMessageError(error);
         }
     };

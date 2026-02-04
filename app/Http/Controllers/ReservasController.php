@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\HTTPStatus;
-use App\Enums\TIPOSRESERVA;
+use App\Enums\TiposReserva;
 use App\Http\Requests\ReservaRequest;
 use App\Models\ConfiguracionIva;
 use App\Models\Consumo;
@@ -47,17 +47,17 @@ class ReservasController extends Controller
             if ($traslape) {
                 return response()->json([
                     'status' => HTTPStatus::Error,
-                    'msg'    => 'El departamento ya está reservado en ese rango de fechas.'
+                    'msg' => 'El departamento ya está reservado en ese rango de fechas.'
                 ], 409);
             }
 
             // 2. Obtener o crear huésped
             if ($request->huesped['huesped_id'] == null) {
                 $huesped = Huesped::create([
-                    'nombres_completos'       => $request->huesped['nombres_completos'],
-                    'dni'           => $request->huesped['dni'],
-                    'telefono'      => $request->huesped['telefono'] ?? null,
-                    'email'         => $request->huesped['email'] ?? null,
+                    'nombres_completos' => $request->huesped['nombres_completos'],
+                    'dni' => $request->huesped['dni'],
+                    'telefono' => $request->huesped['telefono'] ?? null,
+                    'email' => $request->huesped['email'] ?? null,
                 ]);
             } else {
                 $huesped = Huesped::findOrFail($request->huesped['huesped_id']);
@@ -73,7 +73,7 @@ class ReservasController extends Controller
                 ->value('id');
             $reserva->fecha_creacion = now();
             $reserva->usuario_creador_id = Auth::id();
-            $reserva->tipo_reserva = TIPOSRESERVA::HOSPEDAJE;
+            $reserva->tipo_reserva = TiposReserva::HOSPEDAJE;
             $reserva->save();
 
             // 4. Obtener producto de hospedaje
@@ -98,14 +98,14 @@ class ReservasController extends Controller
 
             // 7. Crear consumo
             Consumo::create([
-                'reserva_id'      => $reserva->id,
-                'inventario_id'   => $inventario->id,
-                'cantidad'        => $cantidad,
-                'fecha_creacion'  => now(),
-                'subtotal'        => $subtotal,
-                'tasa_iva'        => $tasa_iva,
-                'iva'             => $iva,
-                'total'           => $total,
+                'reserva_id' => $reserva->id,
+                'inventario_id' => $inventario->id,
+                'cantidad' => $cantidad,
+                'fecha_creacion' => now(),
+                'subtotal' => $subtotal,
+                'tasa_iva' => $tasa_iva,
+                'iva' => $iva,
+                'total' => $total,
                 'usuario_creador_id' => Auth::id(),
             ]);
 
@@ -132,7 +132,7 @@ class ReservasController extends Controller
             if (!$reserva) {
                 return response()->json([
                     'status' => HTTPStatus::Error,
-                    'msg'    => HTTPStatus::NotFound
+                    'msg' => HTTPStatus::NotFound
                 ], 404);
             }
 
@@ -140,12 +140,12 @@ class ReservasController extends Controller
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'reserva'   => $reserva
+                'reserva' => $reserva
             ]);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg'    => $th->getMessage()
+                'msg' => $th->getMessage()
             ], 500);
         }
     }
@@ -157,7 +157,7 @@ class ReservasController extends Controller
             if (!$reserva) {
                 return response()->json([
                     'status' => HTTPStatus::Error,
-                    'msg'    => 'Reserva no encontrada'
+                    'msg' => 'Reserva no encontrada'
                 ], 404);
             }
 
@@ -167,7 +167,7 @@ class ReservasController extends Controller
             if (!$estado) {
                 return response()->json([
                     'status' => HTTPStatus::Error,
-                    'msg'    => 'Estado no válido para reserva'
+                    'msg' => 'Estado no válido para reserva'
                 ], 400);
             }
 
@@ -176,12 +176,12 @@ class ReservasController extends Controller
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'msg'   => 'Estado de la reserva actualizado a ' . $estado->nombre_estado
+                'msg' => 'Estado de la reserva actualizado a ' . $estado->nombre_estado
             ]);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg'    => $th->getMessage()
+                'msg' => $th->getMessage()
             ], 500);
         }
     }
@@ -193,7 +193,7 @@ class ReservasController extends Controller
             if (!$reserva) {
                 return response()->json([
                     'status' => HTTPStatus::Error,
-                    'msg'    => HTTPStatus::NotFound
+                    'msg' => HTTPStatus::NotFound
                 ], 404);
             }
 
@@ -201,12 +201,12 @@ class ReservasController extends Controller
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'msg'    => 'Reserva eliminada correctamente'
+                'msg' => 'Reserva eliminada correctamente'
             ]);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg'    => $th->getMessage()
+                'msg' => $th->getMessage()
             ], 500);
         }
     }
@@ -218,7 +218,7 @@ class ReservasController extends Controller
         $fecha_fin = $request->fecha_fin;
         $codigo_reserva = $request->codigo_reserva;
 
-        if (!$codigo_reserva && (! $fecha_inicio || !$fecha_fin)) {
+        if (!$codigo_reserva && (!$fecha_inicio || !$fecha_fin)) {
             return response()->json(['error' => 'Debe proporcionar un código de reserva o el rango de fechas'], 400);
         }
 
@@ -237,35 +237,35 @@ class ReservasController extends Controller
             ->get()
             ->map(function ($r) {
                 $reservaData = [
-                    'reserva_id'      => $r->id,
-                    'codigo_reserva'  => $r->codigo_reserva,
-                    'huesped_id'      => $r->huesped_id,
-                    'huesped'         => $r->huesped ?  $r->huesped->nombres_completos : null,
+                    'reserva_id' => $r->id,
+                    'codigo_reserva' => $r->codigo_reserva,
+                    'huesped_id' => $r->huesped_id,
+                    'huesped' => $r->huesped ? $r->huesped->nombres_completos : null,
                     'departamento_id' => $r->departamento_id,
-                    'numero_departamento'   => $r->departamento ?  $r->departamento->numero_departamento : null,
-                    'tipo_departamento'     => $r->departamento && $r->departamento->tipoDepartamento
+                    'numero_departamento' => $r->departamento ? $r->departamento->numero_departamento : null,
+                    'tipo_departamento' => $r->departamento && $r->departamento->tipoDepartamento
                         ? $r->departamento->tipoDepartamento->nombre_tipo
                         : null,
-                    'fecha_checkin'   => $r->fecha_checkin,
-                    'fecha_checkout'  => $r->fecha_checkout,
-                    'total_noches'    => $r->total_noches,
-                    'estado'          => [
+                    'fecha_checkin' => $r->fecha_checkin,
+                    'fecha_checkout' => $r->fecha_checkout,
+                    'total_noches' => $r->total_noches,
+                    'estado' => [
                         'id' => $r->estado->id,
                         'nombre_estado' => $r->estado->nombre_estado,
                         'color' => $r->estado->color,
                     ],
-                    'fecha_creacion'  => $r->fecha_creacion,
+                    'fecha_creacion' => $r->fecha_creacion,
                     'usuario_creador' => $r->usuarioCreador ? $r->usuarioCreador->nombres . ' ' . $r->usuarioCreador->apellidos : null,
-                    'total_adultos'    => $r->total_adultos,
-                    'total_ninos'      => $r->total_ninos,
-                    'total_mascotas'    => $r->total_mascotas,
+                    'total_adultos' => $r->total_adultos,
+                    'total_ninos' => $r->total_ninos,
+                    'total_mascotas' => $r->total_mascotas,
                     'motivo_cancelacion' => $r->motivo_cancelacion ?? null,
                     'observacion_cancelacion' => $r->observacion_cancelacion ?? null,
                     'fecha_cancelacion' => $r->fecha_cancelacion ?? null,
                     'usuario_cancelador' => $r->usuarioCancelador ? $r->usuarioCancelador->nombres . ' ' . $r->usuarioCancelador->apellidos : null,
-                    'total_consumos'  => $r->consumos->sum('total'),
-                    'total_pagos'     => $r->pagos->sum('monto'),
-                    'total_gastos'    => $r->gastos->sum('monto'),
+                    'total_consumos' => $r->consumos->sum('total'),
+                    'total_pagos' => $r->pagos->sum('monto'),
+                    'total_gastos' => $r->gastos->sum('monto'),
                 ];
 
                 if ($r->ultimaFactura) {
@@ -294,8 +294,8 @@ class ReservasController extends Controller
             });
 
         return response()->json([
-            'status'     => HTTPStatus::Success,
-            'reservas'   => $reservas
+            'status' => HTTPStatus::Success,
+            'reservas' => $reservas
         ]);
     }
 
@@ -446,7 +446,7 @@ class ReservasController extends Controller
         if (!$reservaId) {
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg'    => 'El ID de la reserva es obligatorio'
+                'msg' => 'El ID de la reserva es obligatorio'
             ], 422);
         }
         // 2. Consulta la reserva específica con sus consumos y departamento relacionado
@@ -465,28 +465,28 @@ class ReservasController extends Controller
         }
         // 3. Armar estructura igual a consultarDisponibilidadDepartamentosPorFecha
         $resultado = [
-            'reserva'             => [
-                'id'             => $reserva->id,
+            'reserva' => [
+                'id' => $reserva->id,
                 'codigo_reserva' => $reserva->codigo_reserva,
-                'huesped_id'     => $reserva->huesped_id,
-                'huesped'        => $reserva->huesped?->nombres_completos,
-                'huesped_dni'    => $reserva->huesped?->dni,
-                'fecha_checkin'  => $reserva->fecha_checkin,
+                'huesped_id' => $reserva->huesped_id,
+                'huesped' => $reserva->huesped?->nombres_completos,
+                'huesped_dni' => $reserva->huesped?->dni,
+                'fecha_checkin' => $reserva->fecha_checkin,
                 'fecha_checkout' => $reserva->fecha_checkout,
-                'total_noches'   => $reserva->total_noches,
-                'estado'         => [
-                    'id'      => $reserva->estado?->id,
-                    'nombre'  => $reserva->estado?->nombre_estado,
-                    'color'   => $reserva->estado?->color,
+                'total_noches' => $reserva->total_noches,
+                'estado' => [
+                    'id' => $reserva->estado?->id,
+                    'nombre' => $reserva->estado?->nombre_estado,
+                    'color' => $reserva->estado?->color,
                 ],
-                'consumos'      => $reserva->consumos ? $reserva->consumos->map(function ($consumo) {
+                'consumos' => $reserva->consumos ? $reserva->consumos->map(function ($consumo) {
                     return [
-                        'id'          => $consumo->id,
-                        'producto'    => $consumo->inventario?->nombre_producto,
-                        'cantidad'    => $consumo->cantidad,
-                        'subtotal'    => $consumo->subtotal,
-                        'iva'         => $consumo->iva,
-                        'total'       => $consumo->total,
+                        'id' => $consumo->id,
+                        'producto' => $consumo->inventario?->nombre_producto,
+                        'cantidad' => $consumo->cantidad,
+                        'subtotal' => $consumo->subtotal,
+                        'iva' => $consumo->iva,
+                        'total' => $consumo->total,
                     ];
                 }) : [],
             ],
@@ -499,11 +499,11 @@ class ReservasController extends Controller
 
         // 5. Generar PDF
         $pdf = Pdf::loadView('pdf.nota_venta.nota_venta_pdf', [
-            'ruc'           => $ruc,
-            'direccion'     => $direccion,
-            'logo'          => $logo,
-            'departamento'  => $resultado,
-            'reserva'       => $resultado['reserva'],
+            'ruc' => $ruc,
+            'direccion' => $direccion,
+            'logo' => $logo,
+            'departamento' => $resultado,
+            'reserva' => $resultado['reserva'],
         ]);
 
         return $pdf->download("nota_de_venta_{$reserva->codigo_reserva}.pdf");

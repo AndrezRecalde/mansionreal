@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\HTTPStatus;
-use App\Enums\TIPOSRESERVA;
+use App\Enums\TiposReserva;
 use App\Http\Requests\EstadiaRequest;
 use App\Models\ConfiguracionIva;
 use App\Models\Consumo;
@@ -51,19 +51,19 @@ class EstadiaController extends Controller
                 ->get()
                 ->map(function ($reserva) {
                     return [
-                        'id'             => $reserva->id,
+                        'id' => $reserva->id,
                         'codigo_reserva' => $reserva->codigo_reserva,
-                        'huesped_id'     => $reserva->huesped_id,
-                        'huesped'        => $reserva->huesped->nombres_completos,
-                        'dni'            => $reserva->huesped->dni,
-                        'fecha_checkin'  => $reserva->fecha_checkin,
+                        'huesped_id' => $reserva->huesped_id,
+                        'huesped' => $reserva->huesped->nombres_completos,
+                        'dni' => $reserva->huesped->dni,
+                        'fecha_checkin' => $reserva->fecha_checkin,
                         'fecha_checkout' => $reserva->fecha_checkout,
-                        'total_noches'   => $reserva->total_noches,
-                        'total_adultos'  => $reserva->total_adultos,
-                        'total_ninos'    => $reserva->total_ninos,
+                        'total_noches' => $reserva->total_noches,
+                        'total_adultos' => $reserva->total_adultos,
+                        'total_ninos' => $reserva->total_ninos,
                         'total_mascotas' => $reserva->total_mascotas,
-                        'estado'              => [
-                            'id'    => $reserva ? $reserva->estado->id : null,
+                        'estado' => [
+                            'id' => $reserva ? $reserva->estado->id : null,
                             'nombre_estado' => $reserva ? $reserva->estado->nombre_estado : 'SIN ESTADO',
                             'color' => $reserva ? $reserva->estado->color : 'transparent',
                         ],
@@ -71,14 +71,14 @@ class EstadiaController extends Controller
                 });
 
             return response()->json([
-                'status'         => HTTPStatus::Success,
+                'status' => HTTPStatus::Success,
                 'fecha_consulta' => $fecha,
-                'estadias'       => $estadias,
+                'estadias' => $estadias,
             ]);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg'    => $th->getMessage()
+                'msg' => $th->getMessage()
             ], 500);
         }
     }
@@ -91,10 +91,10 @@ class EstadiaController extends Controller
             // 1. Obtener o crear huésped
             if ($request->huesped['huesped_id'] == null) {
                 $huesped = Huesped::create([
-                    'nombres_completos'       => $request->huesped['nombres_completos'],
-                    'dni'           => $request->huesped['dni'],
-                    'telefono'      => $request->huesped['telefono'] ?? null,
-                    'email'         => $request->huesped['email'] ?? null,
+                    'nombres_completos' => $request->huesped['nombres_completos'],
+                    'dni' => $request->huesped['dni'],
+                    'telefono' => $request->huesped['telefono'] ?? null,
+                    'email' => $request->huesped['email'] ?? null,
                 ]);
             } else {
                 $huesped = Huesped::findOrFail($request->huesped['huesped_id']);
@@ -111,7 +111,7 @@ class EstadiaController extends Controller
                 ->value('id');
             $reserva->fecha_creacion = now();
             $reserva->usuario_creador_id = Auth::id();
-            $reserva->tipo_reserva = TIPOSRESERVA::ESTADIA;
+            $reserva->tipo_reserva = TiposReserva::ESTADIA;
             $reserva->save();
 
             // 3. Obtener tasa de IVA (para TODOS)
@@ -135,14 +135,14 @@ class EstadiaController extends Controller
                 $iva = $subtotal * ($tasa_iva / 100);
 
                 Consumo::create([
-                    'reserva_id'      => $reserva->id,
-                    'inventario_id'   => $inventarioAdulto->id,
-                    'cantidad'        => $reserva->total_adultos,
-                    'fecha_creacion'  => now(),
-                    'subtotal'        => $subtotal,
-                    'tasa_iva'        => $tasa_iva,
-                    'iva'             => $iva,
-                    'total'           => $subtotal + $iva,
+                    'reserva_id' => $reserva->id,
+                    'inventario_id' => $inventarioAdulto->id,
+                    'cantidad' => $reserva->total_adultos,
+                    'fecha_creacion' => now(),
+                    'subtotal' => $subtotal,
+                    'tasa_iva' => $tasa_iva,
+                    'iva' => $iva,
+                    'total' => $subtotal + $iva,
                 ]);
             }
 
@@ -154,14 +154,14 @@ class EstadiaController extends Controller
                 $iva = $subtotal * ($tasa_iva / 100);
 
                 Consumo::create([
-                    'reserva_id'      => $reserva->id,
-                    'inventario_id'   => $inventarioNino->id,
-                    'cantidad'        => $reserva->total_ninos,
-                    'fecha_creacion'  => now(),
-                    'subtotal'        => $subtotal,
-                    'tasa_iva'        => $tasa_iva,
-                    'iva'             => $iva,
-                    'total'           => $subtotal + $iva,
+                    'reserva_id' => $reserva->id,
+                    'inventario_id' => $inventarioNino->id,
+                    'cantidad' => $reserva->total_ninos,
+                    'fecha_creacion' => now(),
+                    'subtotal' => $subtotal,
+                    'tasa_iva' => $tasa_iva,
+                    'iva' => $iva,
+                    'total' => $subtotal + $iva,
                 ]);
             }
 
@@ -187,8 +187,8 @@ class EstadiaController extends Controller
         try {
             // 1. Validar entrada
             $validated = $request->validate([
-                'total_adultos'  => 'nullable|integer|min:0',
-                'total_ninos'    => 'nullable|integer|min:0',
+                'total_adultos' => 'nullable|integer|min:0',
+                'total_ninos' => 'nullable|integer|min:0',
                 'total_mascotas' => 'nullable|integer|min:0',
             ]);
 
@@ -199,8 +199,8 @@ class EstadiaController extends Controller
 
             // 3. Actualizar campos
             $reserva->update([
-                'total_adultos'  => $validated['total_adultos'] ?? $reserva->total_adultos,
-                'total_ninos'    => $validated['total_ninos'] ?? $reserva->total_ninos,
+                'total_adultos' => $validated['total_adultos'] ?? $reserva->total_adultos,
+                'total_ninos' => $validated['total_ninos'] ?? $reserva->total_ninos,
                 'total_mascotas' => $validated['total_mascotas'] ?? $reserva->total_mascotas,
             ]);
 
@@ -245,14 +245,14 @@ class EstadiaController extends Controller
                 $iva = $subtotal * ($tasa_iva / 100);
 
                 Consumo::create([
-                    'reserva_id'      => $reserva->id,
-                    'inventario_id'   => $inventarioAdulto->id,
-                    'cantidad'        => $reserva->total_adultos,
-                    'fecha_creacion'  => now(),
-                    'subtotal'        => $subtotal,
-                    'tasa_iva'        => $tasa_iva,
-                    'iva'             => $iva,
-                    'total'           => $subtotal + $iva,
+                    'reserva_id' => $reserva->id,
+                    'inventario_id' => $inventarioAdulto->id,
+                    'cantidad' => $reserva->total_adultos,
+                    'fecha_creacion' => now(),
+                    'subtotal' => $subtotal,
+                    'tasa_iva' => $tasa_iva,
+                    'iva' => $iva,
+                    'total' => $subtotal + $iva,
                 ]);
             }
 
@@ -262,14 +262,14 @@ class EstadiaController extends Controller
                 $iva = $subtotal * ($tasa_iva / 100);
 
                 Consumo::create([
-                    'reserva_id'      => $reserva->id,
-                    'inventario_id'   => $inventarioNino->id,
-                    'cantidad'        => $reserva->total_ninos,
-                    'fecha_creacion'  => now(),
-                    'subtotal'        => $subtotal,
-                    'tasa_iva'        => $tasa_iva,
-                    'iva'             => $iva,
-                    'total'           => $subtotal + $iva,
+                    'reserva_id' => $reserva->id,
+                    'inventario_id' => $inventarioNino->id,
+                    'cantidad' => $reserva->total_ninos,
+                    'fecha_creacion' => now(),
+                    'subtotal' => $subtotal,
+                    'tasa_iva' => $tasa_iva,
+                    'iva' => $iva,
+                    'total' => $subtotal + $iva,
                     'usuario_creador_id' => Auth::id(),
                 ]);
             }
@@ -308,7 +308,7 @@ class EstadiaController extends Controller
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg'    => $th->getMessage()
+                'msg' => $th->getMessage()
             ], 500);
         }
     }
@@ -316,8 +316,8 @@ class EstadiaController extends Controller
     public function exportConsumosEstadiasPDF(Request $request)
     {
         $fecha_inicio = $request->p_fecha_inicio;
-        $fecha_fin    = $request->p_fecha_fin;
-        $anio         = $request->p_anio;
+        $fecha_fin = $request->p_fecha_fin;
+        $anio = $request->p_anio;
 
         $query = DB::table('consumos as c')
             ->join('reservas as r', 'c.reserva_id', '=', 'r.id')
@@ -371,11 +371,11 @@ class EstadiaController extends Controller
         $total_reservas = $queryReservas->get();
 
         $pdf = Pdf::loadView('pdf.reportes.estadia.consumos_estadias_pdf', [
-            'consumos'        => $consumos,
-            'fecha_inicio'    => $fecha_inicio,
-            'fecha_fin'       => $fecha_fin,
-            'anio'            => $anio,
-            'total_reservas'  => $total_reservas,
+            'consumos' => $consumos,
+            'fecha_inicio' => $fecha_inicio,
+            'fecha_fin' => $fecha_fin,
+            'anio' => $anio,
+            'total_reservas' => $total_reservas,
         ]);
 
         return $pdf->download('consumos_estadias.pdf');

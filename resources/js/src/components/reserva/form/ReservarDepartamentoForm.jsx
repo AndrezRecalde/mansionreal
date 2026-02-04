@@ -11,7 +11,7 @@ import {
     useUiReservaDepartamento,
 } from "../../../hooks";
 import classes from "../modules/ReservarDepartamento.module.css";
-import classess from "../../../components/elements/modules/LabelsInput.module.css"
+import classess from "../../../components/elements/modules/LabelsInput.module.css";
 import Swal from "sweetalert2";
 
 export const ReservarDepartamentoForm = ({ reservaForm }) => {
@@ -34,9 +34,10 @@ export const ReservarDepartamentoForm = ({ reservaForm }) => {
 
     const handleSubmitReserva = (e) => {
         e.preventDefault();
+        console.log(activarTipoReserva);
         Swal.fire({
-            title: "¿Confirmar reserva?",
-            text: "¿Desea confirmar la reserva del departamento?",
+            title: `¿Confirmar ${activarTipoReserva.toLowerCase()}?`,
+            text: `¿Desea confirmar la ${activarTipoReserva.toLowerCase()}?`,
             icon: "question",
             showCancelButton: true,
             confirmButtonText: "Sí, reservar",

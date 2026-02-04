@@ -41,7 +41,7 @@ export const useReservaDepartamentoStore = () => {
             if (reserva.id) {
                 //actualizando
                 const { data } = await apiAxios.put(
-                    `/general/reserva/${reserva.id}`,
+                    `/gerencia/reserva/${reserva.id}`,
                     reserva,
                 );
                 dispatch(rtkCargarMensaje(data));
@@ -59,7 +59,7 @@ export const useReservaDepartamentoStore = () => {
             }
             //creando
             const { data } = await apiAxios.post(
-                "/general/reserva/nueva",
+                "/gerencia/reserva/nueva",
                 reserva,
             );
             dispatch(rtkCargarMensaje(data));
@@ -87,7 +87,7 @@ export const useReservaDepartamentoStore = () => {
     }) => {
         try {
             const { data } = await apiAxios.put(
-                `/general/reserva/${id}/estado`,
+                `/gerencia/reserva/${id}/estado`,
                 { nombre_estado },
             );
 
@@ -122,7 +122,7 @@ export const useReservaDepartamentoStore = () => {
     const fnEliminarReserva = async (reserva) => {
         try {
             const { data } = await apiAxios.delete(
-                `/general/reserva/${reserva.id}`,
+                `/gerencia/reserva/${reserva.id}`,
             );
             // Recargar datos y mostrar mensaje
             dispatch(rtkCargarMensaje(data));
@@ -219,7 +219,7 @@ export const useReservaDepartamentoStore = () => {
             }
             // Realizar petición a la API
             const { data } = await apiAxios.post(
-                `/general/reservas/${id}/cancelar`,
+                `/gerencia/reservas/${id}/cancelar`,
                 {
                     motivo_cancelacion,
                     observacion: observacion || null,

@@ -138,6 +138,13 @@ Route::group(['prefix' => 'gerencia', 'middleware' => ['auth:sanctum', CheckRole
     Route::put('/limpieza/{id}', [LimpiezaController::class, 'update']);
     Route::get('/limpieza/buscar', [LimpiezaController::class, 'buscarPorFecha']);
 
+    /* Reservas */
+    Route::post('/reserva/nueva', [ReservasController::class, 'store']);
+    Route::put('/reserva/{id}', [ReservasController::class, 'update']);
+    Route::put('/reserva/{id}/estado', [ReservasController::class, 'cambiarEstadoReserva']);
+    Route::delete('/reserva/{id}', [ReservasController::class, 'eliminarReserva']);
+    Route::post('/reservas/{reserva}/cancelar', [ReservasController::class, 'cancelar']);
+
     /* Tipos Reservas */
     //Route::post('/tipos-reservas', [TipoReservaController::class, 'getTiposReservas']);
 
@@ -181,12 +188,7 @@ Route::group(['prefix' => 'general', 'middleware' => ['auth:sanctum', CheckRole:
 
 
     /* Reservas */
-    Route::post('/reserva/nueva', [ReservasController::class, 'store']);
-    Route::put('/reserva/{id}', [ReservasController::class, 'update']);
-    Route::put('/reserva/{id}/estado', [ReservasController::class, 'cambiarEstadoReserva']);
-    Route::delete('/reserva/{id}', [ReservasController::class, 'eliminarReserva']);
     Route::post('/reservas/buscar', [ReservasController::class, 'buscarReservas']);
-    Route::post('/reservas/{reserva}/cancelar', [ReservasController::class, 'cancelar']);
 
     /* Exportar PDF Reservas */
     Route::post('/exportar-nota-venta', [ReservasController::class, 'exportarNotaVentaPDF']);

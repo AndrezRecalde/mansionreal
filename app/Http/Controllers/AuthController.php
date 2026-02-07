@@ -33,10 +33,10 @@ class AuthController extends Controller
             if ($usuario) {
                 $token = $usuario->createToken('auth_token')->plainTextToken;
                 return response()->json([
-                    'status'        =>  'success',
-                    'access_token'  =>  $token,
-                    'token_type'    =>  'Bearer',
-                    'usuario'       =>  $usuario
+                    'status' => 'success',
+                    'access_token' => $token,
+                    'token_type' => 'Bearer',
+                    'usuario' => $usuario
                 ]);
             } else {
                 return response()->json(['status' => HTTPStatus::Error, 'msg' => HTTPStatus::UserNotActive], 404);
@@ -44,7 +44,7 @@ class AuthController extends Controller
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg'    => $th->getMessage()
+                'msg' => $th->getMessage()
             ], 500);
         }
     }
@@ -66,14 +66,14 @@ class AuthController extends Controller
             $usuario->tokens()->delete();
             $token = $usuario->createToken('auth_token')->plainTextToken;
             return response()->json([
-                "usuario"       => $usuario,
-                "token_type"    => 'Bearer',
-                "access_token"  => $token,
+                "usuario" => $usuario,
+                "token_type" => 'Bearer',
+                "access_token" => $token,
             ]);
         } else {
             return response()->json([
                 "status" => HTTPStatus::Error,
-                "msg"    => HTTPStatus::UserNotActive
+                "msg" => HTTPStatus::UserNotActive
             ]);
         }
     }
@@ -92,8 +92,8 @@ class AuthController extends Controller
             ->first();
 
         return response()->json([
-            'status'    => HTTPStatus::Success,
-            'profile'   => $profile
+            'status' => HTTPStatus::Success,
+            'profile' => $profile
         ]);
     }
 
@@ -107,17 +107,9 @@ class AuthController extends Controller
             $user->tokens()->delete();
         }
 
-        // Cerrar la sesión (si se usa guard 'web')
-        Auth::guard('web')->logout();
-
-        // Invalidar la sesión del usuario
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        // Eliminar la cookie de autenticación (para Sanctum basado en cookies)
         return response()->json([
             'status' => 200,
-            'msg'    => 'Sesión finalizada'
-        ])->cookie('laravel_session', '', -1); // Expira inmediatamente
+            'msg' => 'Sesión finalizada'
+        ]);
     }
 }

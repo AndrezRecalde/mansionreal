@@ -36,9 +36,9 @@ export const EstadiasReservadasCards = () => {
                     spacing={{ base: "xl", sm: "lg", md: "md" }}
                     verticalSpacing={{ base: "xl", sm: "lg" }}
                 >
-                    {estadias.map((estadia) => (
+                    {estadias.map((estadia, index) => (
                         <Card
-                            key={estadia.id}
+                            key={`estadia-${estadia.id}-${estadia.codigo_reserva || index}`}
                             radius="md"
                             withBorder
                             className={classes.card}

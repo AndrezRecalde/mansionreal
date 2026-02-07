@@ -49,7 +49,8 @@ export default function DashboardPage() {
             fnLimpiarRankingProductos();
             fnLimpiarIngresosPorDepartamento();
             fnLimpiarHuespedesRecurrentes();
-            fnLimpiarEstadias();
+            // No limpiar estadías aquí - son datos compartidos con DisponibilidadDepartamentoPage
+            // fnLimpiarEstadias();
         };
     }, []);
 
@@ -66,10 +67,26 @@ export default function DashboardPage() {
                 fnHandleAction={(values) => {
                     fnCargarResumenKPI(values);
                     fnCargarHuespedesGananciasMes(values.p_anio);
-                    fnCargarRankingProductos({ p_anio: values.p_anio, p_fecha_inicio: values.p_fecha_inicio, p_fecha_fin: values.p_fecha_fin });
-                    fnCargarIngresosPorDepartamento({ p_anio: values.p_anio, p_fecha_inicio: values.p_fecha_inicio, p_fecha_fin: values.p_fecha_fin });
-                    fnCargarReporteEstadiasPorFechas({ p_anio: values.p_anio, p_fecha_inicio: values.p_fecha_inicio, p_fecha_fin: values.p_fecha_fin });
-                    fnCargarHuespedesRecurrentes({ p_anio: values.p_anio, p_fecha_inicio: values.p_fecha_inicio, p_fecha_fin: values.p_fecha_fin });
+                    fnCargarRankingProductos({
+                        p_anio: values.p_anio,
+                        p_fecha_inicio: values.p_fecha_inicio,
+                        p_fecha_fin: values.p_fecha_fin,
+                    });
+                    fnCargarIngresosPorDepartamento({
+                        p_anio: values.p_anio,
+                        p_fecha_inicio: values.p_fecha_inicio,
+                        p_fecha_fin: values.p_fecha_fin,
+                    });
+                    fnCargarReporteEstadiasPorFechas({
+                        p_anio: values.p_anio,
+                        p_fecha_inicio: values.p_fecha_inicio,
+                        p_fecha_fin: values.p_fecha_fin,
+                    });
+                    fnCargarHuespedesRecurrentes({
+                        p_anio: values.p_anio,
+                        p_fecha_inicio: values.p_fecha_inicio,
+                        p_fecha_fin: values.p_fecha_fin,
+                    });
                 }}
             />
 

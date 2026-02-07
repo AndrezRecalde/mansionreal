@@ -161,7 +161,7 @@ const HistorialConsumosPage = () => {
 
     const handleDescargarPdf = () => {
         if (activarFactura) {
-            fnDescargarFacturaPDF(activarFactura.id);
+            fnDescargarFacturaPDF(activarFactura);
         }
     };
 

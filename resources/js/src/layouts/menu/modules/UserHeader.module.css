@@ -4,9 +4,6 @@
     gap: var(--mantine-spacing-sm);
     color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-gray-2));
     padding: var(--mantine-spacing-sm) var(--mantine-spacing-md);
-    border-radius: var(--mantine-radius-md);
-    border: rem(1px) solid
-        light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
     background: light-dark(
         var(--mantine-color-white),
         var(--mantine-color-dark-6)

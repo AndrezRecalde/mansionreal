@@ -69,7 +69,7 @@ export const ReGenerarFacturaModal = () => {
         };
     }, [abrirModalReGenerarFactura]);
 
-    // ✅ CORREGIDO: Setear consumidor final automáticamente cuando switch está OFF
+    // Setear consumidor final automáticamente cuando switch está OFF
     useEffect(() => {
         if (!generarFactura && consumidorFinal) {
             setClienteSeleccionado(consumidorFinal);
@@ -131,7 +131,7 @@ export const ReGenerarFacturaModal = () => {
         setClienteSeleccionado(nuevoCliente);
         setMostrarFormulario(false);
         setBusquedaRealizada(false);
-        setDniBusqueda("");
+        //setDniBusqueda("");
     };
 
     const handleLimpiar = () => {

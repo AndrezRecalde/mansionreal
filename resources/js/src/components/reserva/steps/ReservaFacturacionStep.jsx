@@ -112,7 +112,7 @@ export const ReservaFacturacionStep = ({
         }
     };
 
-    const handleClienteCreado = (nuevoCliente) => {
+    const handleClienteCreado = async (nuevoCliente) => {
         setDatosFacturacion({
             cliente_id: nuevoCliente.id,
             cliente_nombres_completos: nuevoCliente.nombres_completos,
@@ -120,6 +120,13 @@ export const ReservaFacturacionStep = ({
             solicita_detallada: solicitaDetallada,
         });
         setMostrarFormulario(false);
+
+        // Actualizar búsqueda para mostrar el cliente recién creado
+        setDniBusqueda(nuevoCliente.identificacion);
+        setBusquedaRealizada(true);
+
+        // Buscar el cliente para actualizar el estado y mostrarlo
+        await fnBuscarPorIdentificacion(nuevoCliente.identificacion);
     };
 
     const handleLimpiar = () => {

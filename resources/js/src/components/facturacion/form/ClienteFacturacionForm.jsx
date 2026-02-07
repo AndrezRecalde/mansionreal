@@ -38,7 +38,7 @@ export const ClienteFacturacionForm = ({
             form.setValues({
                 tipo_identificacion: datosPrellenados.tipo_identificacion || "",
                 identificacion: datosPrellenados.identificacion || "",
-                nombres_completos:  datosPrellenados.nombres_completos || "",
+                nombres_completos: datosPrellenados.nombres_completos || "",
                 direccion: datosPrellenados.direccion || "",
                 telefono: datosPrellenados.telefono || "",
                 email: datosPrellenados.email || "",
@@ -55,6 +55,13 @@ export const ClienteFacturacionForm = ({
             });
 
             if (nuevoCliente) {
+                Swal.fire({
+                    icon: "success",
+                    title: "¡Cliente creado!",
+                    text: "El cliente ha sido registrado exitosamente.",
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
                 onClienteCreado(nuevoCliente);
                 form.reset();
             }

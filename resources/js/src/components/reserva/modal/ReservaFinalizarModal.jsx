@@ -7,9 +7,6 @@ import {
     useUiReservaDepartamento,
     useFacturaStore,
     useClienteFacturacionStore,
-    useDepartamentoStore,
-    useEstadiaStore,
-    useReservaDepartamentoStore,
 } from "../../../hooks";
 
 export const ReservaFinalizarModal = ({ datos_reserva }) => {

@@ -7,22 +7,13 @@ import {
     Divider,
     Group,
     Button,
-    TextInput,
-    Checkbox,
     Paper,
     Badge,
     Box,
-    Switch,
     LoadingOverlay,
 } from "@mantine/core";
-import {
-    IconAlertCircle,
-    IconRefresh,
-    IconSearch,
-    IconUserPlus,
-    IconX,
-} from "@tabler/icons-react";
-import { ClienteFacturacionForm } from "../../../components";
+import { IconAlertCircle, IconRefresh, IconX } from "@tabler/icons-react";
+import { ClienteFacturacionSelector } from "../../../components";
 import {
     useReservaDepartamentoStore,
     useFacturaStore,
@@ -39,26 +30,18 @@ export const ReGenerarFacturaModal = () => {
     const { cargando: cargandoFactura, fnGenerarFactura } = useFacturaStore();
     const {
         cargando: cargandoCliente,
-        clienteExistente,
-        datosPrellenados,
         consumidorFinal,
-        fnBuscarPorIdentificacion,
-        fnPrellenarDesdeHuesped,
         fnCargarConsumidorFinal,
         fnLimpiarCliente,
     } = useClienteFacturacionStore();
     const { abrirModalReGenerarFactura, fnAbrirModalReGenerarFactura } =
         useUiFactura();
 
-    // Estados del formulario de cliente
     const [generarFactura, setGenerarFactura] = useState(false);
-    const [dniBusqueda, setDniBusqueda] = useState("");
-    const [busquedaRealizada, setBusquedaRealizada] = useState(false);
-    const [mostrarFormulario, setMostrarFormulario] = useState(false);
     const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
     const [solicitaDetallada, setSolicitaDetallada] = useState(false);
 
-    // Cargar consumidor final al montar
+    // Cargar consumidor final al abrir el modal
     useEffect(() => {
         if (abrirModalReGenerarFactura) {
             fnCargarConsumidorFinal();
@@ -69,75 +52,8 @@ export const ReGenerarFacturaModal = () => {
         };
     }, [abrirModalReGenerarFactura]);
 
-    // Setear consumidor final automáticamente cuando switch está OFF
-    useEffect(() => {
-        if (!generarFactura && consumidorFinal) {
-            setClienteSeleccionado(consumidorFinal);
-            setBusquedaRealizada(false);
-            setMostrarFormulario(false);
-        }
-    }, [generarFactura, consumidorFinal]);
-
-    const handleBuscarCliente = async () => {
-        if (!dniBusqueda.trim()) {
-            Swal.fire({
-                icon: "warning",
-                title: "Campo vacío",
-                text: "Ingrese una identificación para buscar",
-            });
-            return;
-        }
-
-        setBusquedaRealizada(true);
-        setMostrarFormulario(false);
-
-        const resultado = await fnBuscarPorIdentificacion(dniBusqueda);
-
-        if (resultado.existe && resultado.cliente) {
-            setClienteSeleccionado(resultado.cliente);
-        } else {
-            setClienteSeleccionado(null);
-        }
-    };
-
-    const handlePrellenarDesdeHuesped = async () => {
-        if (!activarReserva || !activarReserva.huesped_id) {
-            Swal.fire({
-                icon: "error",
-                title: "Error",
-                text: "No se pudo obtener información del huésped",
-            });
-            return;
-        }
-
-        const resultado = await fnPrellenarDesdeHuesped(
-            activarReserva.huesped_id,
-        );
-
-        if (resultado.existe && resultado.cliente_existente) {
-            // Cliente ya existe en la base de datos
-            setDniBusqueda(resultado.cliente_existente.identificacion);
-            setClienteSeleccionado(resultado.cliente_existente);
-            setBusquedaRealizada(true);
-            setMostrarFormulario(false);
-        } else {
-            // Cliente no existe, mostrar formulario para crearlo con datos prellenados
-            setMostrarFormulario(true);
-            setBusquedaRealizada(false);
-        }
-    };
-
-    const handleClienteCreado = (nuevoCliente) => {
-        setClienteSeleccionado(nuevoCliente);
-        setMostrarFormulario(false);
-        setBusquedaRealizada(false);
-        //setDniBusqueda("");
-    };
-
     const handleLimpiar = () => {
-        setDniBusqueda("");
-        setBusquedaRealizada(false);
-        setMostrarFormulario(false);
+        setGenerarFactura(false);
         setClienteSeleccionado(null);
         setSolicitaDetallada(false);
         fnLimpiarCliente();
@@ -278,157 +194,17 @@ export const ReGenerarFacturaModal = () => {
 
                 <Divider label="DATOS DE FACTURACIÓN" labelPosition="center" />
 
-                {/* SWITCH: Consumidor Final vs Cliente Registrado */}
-                <Paper p="md" withBorder style={{ background: "#f8f9fa" }}>
-                    <Switch
-                        size="md"
-                        label="Generar factura con datos de cliente registrado"
-                        description={
-                            generarFactura
-                                ? "Se generará factura con datos del cliente registrado"
-                                : "Se generará factura a nombre de CONSUMIDOR FINAL"
-                        }
-                        checked={generarFactura}
-                        onChange={(event) => {
-                            const checked = event.currentTarget.checked;
-                            setGenerarFactura(checked);
-                            handleLimpiar();
-                        }}
-                        styles={{
-                            label: { fontWeight: 600 },
-                        }}
-                    />
-                </Paper>
-
-                {/* OPCIÓN 1: Consumidor Final */}
-                {!generarFactura && consumidorFinal && (
-                    <Alert
-                        color="blue"
-                        variant="light"
-                        title="Consumidor Final Seleccionado"
-                    >
-                        <Text size="sm">
-                            La factura se generará a nombre de{" "}
-                            <strong>CONSUMIDOR FINAL</strong>
-                        </Text>
-                        <Text size="sm" mt="xs" c="dimmed">
-                            Identificación: {consumidorFinal.identificacion}
-                        </Text>
-                    </Alert>
-                )}
-
-                {/* OPCIÓN 2: Cliente Registrado */}
-                {generarFactura && (
-                    <>
-                        <Divider
-                            label="Buscar o Crear Cliente"
-                            labelPosition="center"
-                        />
-
-                        <Group grow align="flex-end">
-                            <TextInput
-                                label="Identificación del Cliente"
-                                placeholder="Ej: 1712345678"
-                                value={dniBusqueda}
-                                onChange={(e) => setDniBusqueda(e.target.value)}
-                                leftSection={<IconSearch size={16} />}
-                                onKeyDown={(e) => {
-                                    if (e.key === "Enter") {
-                                        handleBuscarCliente();
-                                    }
-                                }}
-                            />
-                            <Button
-                                onClick={handleBuscarCliente}
-                                loading={cargandoCliente}
-                            >
-                                Buscar
-                            </Button>
-                        </Group>
-
-                        <Button
-                            variant="light"
-                            onClick={handlePrellenarDesdeHuesped}
-                        >
-                            Prellenar con datos del huésped
-                        </Button>
-
-                        {busquedaRealizada &&
-                            clienteExistente &&
-                            clienteSeleccionado && (
-                                <Alert
-                                    color="green"
-                                    variant="light"
-                                    title="Cliente Encontrado"
-                                >
-                                    <Text size="sm">
-                                        {clienteSeleccionado.nombres_completos}
-                                    </Text>
-                                    <Text size="xs" c="dimmed">
-                                        {
-                                            clienteSeleccionado.tipo_identificacion
-                                        }
-                                        : {clienteSeleccionado.identificacion}
-                                    </Text>
-                                </Alert>
-                            )}
-
-                        {busquedaRealizada &&
-                            !clienteExistente &&
-                            !mostrarFormulario && (
-                                <Alert
-                                    color="orange"
-                                    variant="light"
-                                    title="Cliente No Encontrado"
-                                >
-                                    <Text size="sm" mb="sm">
-                                        No existe un cliente con la
-                                        identificación ingresada.
-                                    </Text>
-                                    <Button
-                                        size="sm"
-                                        leftSection={<IconUserPlus size={16} />}
-                                        onClick={() =>
-                                            setMostrarFormulario(true)
-                                        }
-                                    >
-                                        Registrar nuevo cliente
-                                    </Button>
-                                </Alert>
-                            )}
-
-                        {mostrarFormulario && (
-                            <Paper p="md" withBorder>
-                                <Text size="sm" fw={600} mb="md">
-                                    Crear nuevo cliente
-                                </Text>
-                                <ClienteFacturacionForm
-                                    dniBusqueda={dniBusqueda}
-                                    datosPrellenados={datosPrellenados}
-                                    onClienteCreado={handleClienteCreado}
-                                    onCancelar={() => {
-                                        setMostrarFormulario(false);
-                                        handleLimpiar();
-                                    }}
-                                />
-                            </Paper>
-                        )}
-
-                        {clienteSeleccionado &&
-                            clienteSeleccionado.id !== consumidorFinal?.id && (
-                                <Checkbox
-                                    label="Solicita factura con datos completos (para deducción de impuestos)"
-                                    description="Marque esta opción si el cliente requiere factura detallada para fines tributarios"
-                                    checked={solicitaDetallada}
-                                    onChange={(e) =>
-                                        setSolicitaDetallada(
-                                            e.currentTarget.checked,
-                                        )
-                                    }
-                                />
-                            )}
-                    </>
-                )}
+                {/* SELECTOR DE CLIENTE (componente reutilizable) */}
+                <ClienteFacturacionSelector
+                    consumidorFinal={consumidorFinal}
+                    huespedId={activarReserva?.huesped_id}
+                    generarFactura={generarFactura}
+                    setGenerarFactura={setGenerarFactura}
+                    clienteSeleccionado={clienteSeleccionado}
+                    onClienteChange={setClienteSeleccionado}
+                    solicitaDetallada={solicitaDetallada}
+                    setSolicitaDetallada={setSolicitaDetallada}
+                />
 
                 {/* RESUMEN: Cliente Seleccionado */}
                 {clienteSeleccionado && (
@@ -438,7 +214,7 @@ export const ReGenerarFacturaModal = () => {
                         variant="light"
                     >
                         <Group justify="space-between">
-                            <div>
+                            <Box>
                                 <Text size="sm" fw={600}>
                                     {clienteSeleccionado.nombres_completos}
                                 </Text>
@@ -454,7 +230,7 @@ export const ReGenerarFacturaModal = () => {
                                         Factura Detallada
                                     </Badge>
                                 )}
-                            </div>
+                            </Box>
                         </Group>
                     </Alert>
                 )}

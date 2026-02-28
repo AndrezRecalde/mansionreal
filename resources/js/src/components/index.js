@@ -105,6 +105,7 @@ import { ConsultarEstadiasSection } from "./reserva/section/ConsultarEstadiasSec
 
 /* Facturacion */
 import { ClienteFacturacionForm } from "./facturacion/form/ClienteFacturacionForm";
+import { ClienteFacturacionSelector } from "./facturacion/form/ClienteFacturacionSelector";
 import { FacturasTable } from "./facturacion/table/FacturasTable";
 import { FacturaDetalleModal } from "./facturacion/modal/FacturaDetalleModal";
 import { FacturaAnularModal } from "./facturacion/modal/FacturaAnularModal";
@@ -289,6 +290,7 @@ export {
 
     /* Facturacion */
     ClienteFacturacionForm,
+    ClienteFacturacionSelector,
     FacturasTable,
     FacturaDetalleModal,
     FacturaAnularModal,

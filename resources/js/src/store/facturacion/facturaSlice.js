@@ -7,15 +7,12 @@ export const facturaSlice = createSlice({
         cargandoPDF: false,
         cargandoDetalle: false,
         facturas: [],
-        paginacion: {},
         ultimosFiltros: {
             estado: null,
             cliente_id: null,
             p_fecha_inicio: null,
             p_fecha_fin: null,
             p_anio: null,
-            page: 1,
-            per_page: 20,
         },
         factura: null,
         facturaActual: null,
@@ -42,9 +39,6 @@ export const facturaSlice = createSlice({
         rtkCargarFacturas: (state, { payload }) => {
             state.facturas = payload;
             state.cargando = false;
-        },
-        rtkCargarPaginacion: (state, { payload }) => {
-            state.paginacion = payload;
         },
         rtkGuardarUltimosFiltros: (state, { payload }) => {
             state.ultimosFiltros = payload;
@@ -95,15 +89,12 @@ export const facturaSlice = createSlice({
         rtkLimpiarFacturas: (state) => {
             state.facturas = [];
             state.factura = null;
-            state.paginacion = {};
             state.ultimosFiltros = {
                 estado: null,
                 cliente_id: null,
                 p_fecha_inicio: null,
                 p_fecha_fin: null,
                 p_anio: null,
-                page: 1,
-                per_page: 20,
             };
             state.facturaActual = null;
             state.pdfUrl = null;
@@ -136,7 +127,6 @@ export const {
     rtkCargandoPDF,
     rtkCargandoDetalle,
     rtkCargarFacturas,
-    rtkCargarPaginacion,
     rtkGuardarUltimosFiltros,
     rtkCargarFactura,
     rtkCargarConsumosAgrupados,

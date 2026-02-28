@@ -139,6 +139,7 @@ export const useReservaDepartamentoStore = () => {
         fecha_inicio = null,
         fecha_fin = null,
         codigo_reserva = null,
+        anio = null,
     }) => {
         try {
             dispatch(rtkCargando(true));
@@ -146,6 +147,7 @@ export const useReservaDepartamentoStore = () => {
                 fecha_inicio,
                 fecha_fin,
                 codigo_reserva,
+                anio,
             });
             const { reservas } = data;
             dispatch(rtkCargarReservas(reservas));

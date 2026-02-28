@@ -156,6 +156,15 @@ class Reserva extends Model
         return $query;
     }
 
+    /** Scope para filtrar por año de checkin */
+    public function scopeAnio($query, $anio)
+    {
+        if ($anio) {
+            return $query->whereYear('fecha_checkin', $anio);
+        }
+        return $query;
+    }
+
     protected static function boot()
     {
         parent::boot();
@@ -223,7 +232,7 @@ class Reserva extends Model
     public function getEsConsumidorFinalAttribute(): bool
     {
         $cliente = $this->clienteFacturacion;
-        return ! $cliente || ! $cliente->solicita_factura_detallada;
+        return !$cliente || !$cliente->solicita_factura_detallada;
     }
 
     /**
@@ -292,7 +301,7 @@ class Reserva extends Model
         }
 
         // No tiene cliente asignado
-        if (! $this->tiene_cliente_facturacion) {
+        if (!$this->tiene_cliente_facturacion) {
             return false;
         }
 

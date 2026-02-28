@@ -1,6 +1,6 @@
 import { Box, Fieldset, SimpleGrid, TextInput } from "@mantine/core";
 import { BtnSubmit } from "../../../components";
-import { DateInput } from "@mantine/dates";
+import { DateInput, YearPickerInput } from "@mantine/dates";
 import { useForm } from "@mantine/form";
 import { IconSearch } from "@tabler/icons-react";
 import { useStorageField } from "../../../hooks";
@@ -17,6 +17,7 @@ export const FiltrarPorFechasCodigo = ({
             codigo_reserva: "",
             fecha_inicio: "",
             fecha_fin: "",
+            anio: null,
         },
         validate: (values) => {
             const errors = {};
@@ -24,14 +25,15 @@ export const FiltrarPorFechasCodigo = ({
             const tieneCodigo = values.codigo_reserva.trim() !== "";
             const tieneFechas =
                 values.fecha_inicio !== "" && values.fecha_fin !== "";
+            const tieneAnio = values.anio !== null && values.anio !== "";
 
-            if (!tieneCodigo && !tieneFechas) {
-                errors.codigo_reserva =
-                    "Debes buscar por código de reserva o por rango de fechas";
-                errors.fecha_inicio =
-                    "Debes buscar por código de reserva o por rango de fechas";
-                errors.fecha_fin =
-                    "Debes buscar por código de reserva o por rango de fechas";
+            if (!tieneCodigo && !tieneFechas && !tieneAnio) {
+                const msg =
+                    "Debes buscar por código de reserva, rango de fechas o año";
+                errors.codigo_reserva = msg;
+                errors.fecha_inicio = msg;
+                errors.fecha_fin = msg;
+                errors.anio = msg;
             }
 
             return errors;
@@ -44,6 +46,7 @@ export const FiltrarPorFechasCodigo = ({
             fecha_fin: dayjs(values.fecha_fin).isValid()
                 ? dayjs(values.fecha_fin).add(1, "day").format("YYYY-MM-DD")
                 : null,
+            anio: values.anio ? dayjs(values.anio).year() : null,
         }),
     });
 
@@ -61,11 +64,7 @@ export const FiltrarPorFechasCodigo = ({
     };
 
     return (
-        <Fieldset
-            mt={20}
-            mb={20}
-            legend="Filtrar por fechas y código"
-        >
+        <Fieldset mt={20} mb={20} legend="Filtrar por fechas, año o código">
             <Box
                 component="form"
                 onSubmit={form.onSubmit((_, e) => handleSubmit(e))}
@@ -77,7 +76,15 @@ export const FiltrarPorFechasCodigo = ({
                     classNames={classes}
                     {...form.getInputProps("codigo_reserva")}
                 />
-                <SimpleGrid cols={{ base: 1, sm: 2, md: 2, lg: 2 }} mt={10}>
+                <SimpleGrid cols={{ base: 1, sm: 2, md: 3, lg: 3 }} mt={10}>
+                    <YearPickerInput
+                        withAsterisk
+                        label="Año"
+                        placeholder="Seleccione un año"
+                        classNames={classes}
+                        clearable
+                        {...form.getInputProps("anio")}
+                    />
                     <DateInput
                         withAsterisk
                         valueFormat="YYYY-MM-DD"

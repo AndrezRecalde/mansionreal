@@ -6,12 +6,15 @@ import {
     Group,
     Select,
     Badge,
+    SimpleGrid,
+    Button,
 } from "@mantine/core";
-import { TextSection, TitlePage } from "../../components";
+import { YearPickerInput } from "@mantine/dates";
+import { BtnSection, TextSection, TitlePage } from "../../components";
 import { useInventarioStore, useTitleHook } from "../../hooks";
 import { MantineReactTable } from "mantine-react-table";
 import { formatFechaHoraModal } from "../../helpers/fnHelper";
-import classes from "../../components/elements/modules/LabelsInput.module.css"
+import classes from "../../components/elements/modules/LabelsInput.module.css";
 
 const HistorialMovimientosInvPage = () => {
     useTitleHook("Historial de Movimientos - Inventario");
@@ -21,18 +24,19 @@ const HistorialMovimientosInvPage = () => {
         inventarios,
         fnCargarHistorialMovimientos,
         movimientos,
-        paginacion,
         cargando,
         fnLimpiarInventarios,
     } = useInventarioStore();
 
     const [productoId, setProductoId] = useState(null);
+    const [anio, setAnio] = useState(null);
 
-    // PAGINACION
-    const [pagination, setPagination] = useState({
-        pageIndex: 0, // MRT usa 0-indexed
-        pageSize: 20,
-    });
+    const handleBuscar = () => {
+        if (productoId) {
+            const anioVal = anio ? new Date(anio).getFullYear() : null;
+            fnCargarHistorialMovimientos(productoId, { anio: anioVal });
+        }
+    };
 
     useEffect(() => {
         fnCargarProductosInventario({ activo: 1, all: true });
@@ -42,18 +46,15 @@ const HistorialMovimientosInvPage = () => {
         };
     }, []);
 
-    useEffect(() => {
+    /* useEffect(() => {
         if (productoId) {
-            fnCargarHistorialMovimientos(productoId, {
-                page: pagination.pageIndex + 1, // tu backend espera 1-indexed
-                per_page: pagination.pageSize,
-            });
+            const anioVal = anio ? new Date(anio).getFullYear() : null;
+            fnCargarHistorialMovimientos(productoId, { anio: anioVal });
         }
-        // Solo se llama cuando cambia producto o paginación
-    }, [productoId, pagination]);
+    }, [productoId, anio]); */
 
     // Extraer datos del JSON
-    const movimientosArray = movimientos?.movimientos || [];
+    const movimientosArray = movimientos?.movimientos ?? [];
 
     const columns = useMemo(
         () => [
@@ -106,7 +107,7 @@ const HistorialMovimientosInvPage = () => {
                 header: "Observación",
             },
         ],
-        []
+        [],
     );
 
     return (
@@ -114,21 +115,38 @@ const HistorialMovimientosInvPage = () => {
             <TitlePage order={2}>Historial Movimientos — Productos</TitlePage>
             <Divider my={10} />
             <Fieldset legend="Filtrar Búsqueda">
-                <Select
-                    label="Seleccione un producto"
-                    placeholder="Seleccione un producto"
-                    data={inventarios.map((inv) => ({
-                        value: inv.id.toString(),
-                        label: inv.nombre_producto,
-                    }))}
-                    searchable
-                    nothingFoundMessage="No hay resultados"
-                    onChange={(value) => {
-                        setProductoId(value);
-                        setPagination({ ...pagination, pageIndex: 0 }); // Reinicia paginación al cambiar producto
-                    }}
-                    classNames={classes}
-                />
+                <SimpleGrid cols={{ base: 1, sm: 2, md: 2 }}>
+                    <YearPickerInput
+                        label="Año"
+                        placeholder="Seleccione un año"
+                        value={anio}
+                        onChange={setAnio}
+                        clearable
+                        classNames={classes}
+                    />
+                    <Select
+                        label="Producto"
+                        placeholder="Seleccione un producto"
+                        data={inventarios.map((inv) => ({
+                            value: inv.id.toString(),
+                            label: inv.nombre_producto,
+                        }))}
+                        searchable
+                        clearable
+                        nothingFoundMessage="No hay resultados"
+                        onChange={(value) => setProductoId(value)}
+                        classNames={classes}
+                    />
+                </SimpleGrid>
+                <BtnSection
+                    fullWidth={true}
+                    mt={24}
+                    onClick={handleBuscar}
+                    loading={cargando}
+                    disabled={!productoId}
+                >
+                    Buscar
+                </BtnSection>
             </Fieldset>
             <Divider my={20} />
 
@@ -137,12 +155,8 @@ const HistorialMovimientosInvPage = () => {
                 data={movimientosArray}
                 state={{
                     isLoading: cargando,
-                    pagination,
                 }}
-                // PAGINACION REMOTA
-                manualPagination
-                rowCount={paginacion.total || 0}
-                onPaginationChange={setPagination}
+                autoResetPageIndex={false}
                 mantineTableProps={{
                     striped: true,
                     highlightOnHover: true,
@@ -164,7 +178,7 @@ const HistorialMovimientosInvPage = () => {
                                 </TextSection>
                                 <Badge color="blue" variant="light">
                                     Total de movimientos:{" "}
-                                    {paginacion.total || 0}
+                                    {movimientosArray.length}
                                 </Badge>
                                 <Badge color="green" variant="light">
                                     Stock Actual:{" "}

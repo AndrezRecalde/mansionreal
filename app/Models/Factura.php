@@ -261,9 +261,12 @@ class Factura extends Model
     /**
      * Scope: Facturas en un rango de fechas
      */
-    public function scopeEntreFechas($query, Carbon $inicio, Carbon $fin)
+    public function scopeEntreFechas($query, $inicio, $fin)
     {
-        return $query->whereBetween('fecha_emision', [$inicio, $fin]);
+        return $query->whereBetween('fecha_emision', [
+            Carbon::parse($inicio)->startOfDay(),
+            Carbon::parse($fin)->endOfDay(),
+        ]);
     }
 
     public function scopePorAnio($query, int $anio)

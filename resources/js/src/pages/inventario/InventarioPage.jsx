@@ -25,6 +25,7 @@ const InventarioPage = () => {
         activarInventario,
         fnAsignarProductoInventario,
         fnActualizarStatusProductoInventario,
+        fnLimpiarInventarios,
         mensaje,
         errores,
     } = useInventarioStore();
@@ -40,6 +41,7 @@ const InventarioPage = () => {
 
         return () => {
             fnLimpiarCategorias();
+            fnLimpiarInventarios();
         };
     }, []);
 

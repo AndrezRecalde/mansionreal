@@ -7,8 +7,6 @@ import {
     rtkCargarInventarios,
     rtkCargarMensaje,
     rtkCargarMovimientos,
-    rtkCargarPaginacion,
-    rtkGuardarUltimosFiltros,
     rtkLimpiarInventarios,
 } from "../../store/inventario/inventarioSlice";
 import apiAxios from "../../api/apiAxios";
@@ -18,8 +16,6 @@ export const useInventarioStore = () => {
         cargando,
         inventarios,
         movimientos,
-        paginacion,
-        ultimosFiltros,
         activarInventario,
         mensaje,
         errores,
@@ -34,9 +30,7 @@ export const useInventarioStore = () => {
         nombre_producto = null,
         activo = null,
         all = false,
-        page = 1,
-        per_page = 20,
-    }) => {
+    } = {}) => {
         try {
             dispatch(rtkCargando(true));
 
@@ -45,38 +39,13 @@ export const useInventarioStore = () => {
             if (categoria_id) params.categoria_id = categoria_id;
             if (nombre_producto) params.nombre_producto = nombre_producto;
             if (activo !== null) params.activo = activo;
+            if (all) params.all = 1;
 
-            if (all) {
-                params.all = 1;
-            } else {
-                params.page = page;
-                params.per_page = per_page;
-            }
+            const { data } = await apiAxios.get("/productos/inventario", {
+                params,
+            });
 
-            if (!all) {
-                dispatch(
-                    rtkGuardarUltimosFiltros({
-                        categoria_id,
-                        nombre_producto,
-                        activo,
-                        page,
-                        per_page,
-                    })
-                );
-            }
-
-            const { data } = await apiAxios.get(
-                "/productos/inventario",
-                { params }
-            );
-
-            const { productos, paginacion } = data;
-
-            dispatch(rtkCargarInventarios(productos || []));
-
-            if (paginacion) {
-                dispatch(rtkCargarPaginacion(paginacion));
-            }
+            dispatch(rtkCargarInventarios(data.productos || []));
         } catch (error) {
             console.error("Error:", error);
             ExceptionMessageError(error);
@@ -91,7 +60,7 @@ export const useInventarioStore = () => {
                 //actualizando
                 const { data } = await apiAxios.put(
                     `/gerencia/producto/inventario/${producto.id}`,
-                    producto
+                    producto,
                 );
                 fnCargarProductosInventario({});
                 dispatch(rtkCargarMensaje(data));
@@ -103,7 +72,7 @@ export const useInventarioStore = () => {
             //creando
             const { data } = await apiAxios.post(
                 "/gerencia/producto/inventario",
-                producto
+                producto,
             );
             if (producto.storageFields !== null) {
                 fnCargarProductosInventario(producto.storageFields);
@@ -125,10 +94,10 @@ export const useInventarioStore = () => {
         try {
             const { data } = await apiAxios.put(
                 `/gerencia/producto/inventario/${producto.id}/status`,
-                producto
+                producto,
             );
 
-            await fnCargarProductosInventario(ultimosFiltros);
+            await fnCargarProductosInventario();
 
             dispatch(rtkCargarMensaje(data));
             setTimeout(() => {
@@ -145,7 +114,7 @@ export const useInventarioStore = () => {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.post(
                 `/gerencia/producto/inventario/${producto.id}/agregar-stock`,
-                producto
+                producto,
             );
             if (storageFields !== null) {
                 fnCargarProductosInventario(storageFields);
@@ -164,26 +133,17 @@ export const useInventarioStore = () => {
         }
     };
 
-    const fnCargarHistorialMovimientos = async (
-        id,
-        { page = 1, per_page = 20 } = {}
-    ) => {
+    const fnCargarHistorialMovimientos = async (id, { anio = null } = {}) => {
         try {
             dispatch(rtkCargando(true));
-            // Construye la URL con los parámetros de paginación
+            const params = {};
+            if (anio) params.anio = anio;
             const { data } = await apiAxios.get(
                 `/gerencia/producto/inventario/${id}/historial-movimientos`,
-                {
-                    params: {
-                        page,
-                        per_page,
-                    },
-                }
+                { params },
             );
-            // Ahora toda la respuesta JSON (con movimientos y paginacion) está disponible
-            const { inventario, movimientos, paginacion } = data;
+            const { inventario, movimientos } = data;
             dispatch(rtkCargarMovimientos({ inventario, movimientos }));
-            dispatch(rtkCargarPaginacion(paginacion));
         } catch (error) {
             //console.log(error);
             ExceptionMessageError(error);
@@ -207,7 +167,7 @@ export const useInventarioStore = () => {
                     fecha_fin,
                     tipo_movimiento,
                     inventario_id,
-                }
+                },
             );
             const { movimientos } = data;
             dispatch(rtkCargarMovimientos(movimientos));
@@ -231,7 +191,6 @@ export const useInventarioStore = () => {
         cargando,
         inventarios,
         movimientos,
-        paginacion,
         //ultimosFiltros,
         activarInventario,
         mensaje,

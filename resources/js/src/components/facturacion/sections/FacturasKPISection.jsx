@@ -39,7 +39,7 @@ export const FacturasKPISection = ({ facturas, clientes }) => {
     ];
 
     return (
-        <Box mb={40}>
+        <Box mb={40} mt={40}>
             <Text
                 size="sm"
                 fw={600}

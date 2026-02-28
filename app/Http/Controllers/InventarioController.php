@@ -16,51 +16,26 @@ class InventarioController extends Controller
     function getProductosInventario(Request $request): JsonResponse
     {
         try {
-            $productos = Inventario::from('inventarios as i')
+            $query = Inventario::from('inventarios as i')
                 ->select('i.*', 'c.id as categoria_id', 'c.nombre_categoria')
                 ->join('categorias as c', 'i.categoria_id', '=', 'c.id')
                 ->porCategoria($request->input('categoria_id'))
                 ->porNombreProducto($request->input('nombre_producto'));
 
-            // Conversión a booleano con Laravel
-            $all = $request->boolean('all');
-
-            // Aplicar filtro de activos solo si "all" es false Y si viene el parámetro activo
-            if (!$all && $request->has('activo')) {
-                $productos->buscarActivos($request->input('activo'));
+            if ($request->has('activo')) {
+                $query->buscarActivos($request->input('activo'));
             }
 
-            if ($all) {
-                $resultados = $productos->get();
-
-                return response()->json([
-                    'status' => HTTPStatus::Success,
-                    'productos' => $resultados,
-                ], 200);
-            }
-
-            // Si no, aplica paginación normal
-            $perPage = intval($request->input('per_page', 20));
-            $page = intval($request->input('page', 1));
-
-            $productosPaginados = $productos->paginate($perPage, ['*'], 'page', $page);
+            $productos = $query->get();
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'productos' => $productosPaginados->items(),
-                'paginacion' => [
-                    'total' => $productosPaginados->total(),
-                    'por_pagina' => $productosPaginados->perPage(),
-                    'pagina_actual' => $productosPaginados->currentPage(),
-                    'ultima_pagina' => $productosPaginados->lastPage(),
-                    'desde' => $productosPaginados->firstItem() ?? 0,
-                    'hasta' => $productosPaginados->lastItem() ?? 0,
-                ]
+                'productos' => $productos,
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg'    => $th->getMessage()
+                'msg' => $th->getMessage()
             ], 500);
         }
     }
@@ -72,12 +47,12 @@ class InventarioController extends Controller
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'msg'   => HTTPStatus::Creacion
+                'msg' => HTTPStatus::Creacion
             ]);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg'    => $th->getMessage()
+                'msg' => $th->getMessage()
             ], 500);
         }
     }
@@ -89,7 +64,7 @@ class InventarioController extends Controller
             if (!$producto) {
                 return response()->json([
                     'status' => HTTPStatus::Error,
-                    'msg'    => HTTPStatus::NotFound
+                    'msg' => HTTPStatus::NotFound
                 ], 404);
             }
 
@@ -101,12 +76,12 @@ class InventarioController extends Controller
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'msg'   => HTTPStatus::Actualizado
+                'msg' => HTTPStatus::Actualizado
             ]);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg'    => $th->getMessage()
+                'msg' => $th->getMessage()
             ], 500);
         }
     }
@@ -118,7 +93,7 @@ class InventarioController extends Controller
             if (!$producto) {
                 return response()->json([
                     'status' => HTTPStatus::Error,
-                    'msg'    => HTTPStatus::NotFound
+                    'msg' => HTTPStatus::NotFound
                 ], 404);
             }
 
@@ -126,12 +101,12 @@ class InventarioController extends Controller
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'msg'   => HTTPStatus::Actualizado
+                'msg' => HTTPStatus::Actualizado
             ]);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg'    => $th->getMessage()
+                'msg' => $th->getMessage()
             ], 500);
         }
     }
@@ -143,8 +118,8 @@ class InventarioController extends Controller
     public function agregarStock(Request $request, int $id): JsonResponse
     {
         $request->validate([
-            'cantidad'      => 'required|integer|min:1',
-            'motivo'        => 'required|string|max:255',
+            'cantidad' => 'required|integer|min:1',
+            'motivo' => 'required|string|max:255',
             'observaciones' => 'nullable|string'
         ]);
 
@@ -178,15 +153,16 @@ class InventarioController extends Controller
     {
         try {
             $inventario = Inventario::findOrFail($id);
+            $anio = $request->query('anio');
 
-            // Obtiene los parámetros de paginación desde la query, usa valores por defecto si no están
-            $perPage = intval($request->query('per_page', 20));
-            $page = intval($request->query('page', 1));
+            $query = $inventario->movimientos()
+                ->with(['usuario:id,nombres,apellidos', 'reserva:id,codigo_reserva', 'consumo:id,cantidad']);
 
-            $movimientos = $inventario->movimientos()
-                ->with(['usuario:id,nombres,apellidos', 'reserva:id,codigo_reserva', 'consumo:id,cantidad'])
-                ->orderBy('fecha_movimiento', 'desc')
-                ->paginate($perPage, ['*'], 'page', $page);
+            if ($anio) {
+                $query->whereYear('fecha_movimiento', $anio);
+            }
+
+            $movimientos = $query->orderBy('fecha_movimiento', 'desc')->get();
 
             return response()->json([
                 'status' => HTTPStatus::Success,
@@ -197,15 +173,8 @@ class InventarioController extends Controller
                     'sin_stock' => $inventario->sin_stock,
                     'activo' => $inventario->activo,
                 ],
-                'movimientos' => $movimientos->items(),
-                'paginacion' => [
-                    'total' => $movimientos->total(),
-                    'por_pagina' => $movimientos->perPage(),
-                    'pagina_actual' => $movimientos->currentPage(),
-                    'ultima_pagina' => $movimientos->lastPage(),
-                    'desde' => $movimientos->firstItem() ?? 0,
-                    'hasta' => $movimientos->lastItem() ?? 0,
-                ]
+                'movimientos' => $movimientos,
+                'total' => $movimientos->count(),
             ]);
         } catch (\Exception $e) {
             return response()->json([

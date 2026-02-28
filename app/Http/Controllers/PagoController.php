@@ -25,12 +25,12 @@ class PagoController extends Controller
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'pagos'   => $pagos
+                'pagos' => $pagos
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg'    => $th->getMessage()
+                'msg' => $th->getMessage()
             ], 500);
         }
     }
@@ -38,19 +38,30 @@ class PagoController extends Controller
     function getHistorialPagos(Request $request): JsonResponse
     {
         try {
+            $codigoReserva = $request->codigo_reserva;
+            $fechaInicio = $request->fecha_inicio;
+            $fechaFin = $request->fecha_fin;
+            $anio = $request->anio;
+
             $pagos = Pago::with(['conceptoPago', 'reserva'])
                 ->buscarPorCodigoVoucher($request->codigo_voucher)
-                ->buscarPorFechas($request->fecha_inicio, $request->fecha_fin)
+                ->buscarPorFechas($fechaInicio, $fechaFin)
+                ->porAnio($anio)
+                ->when($codigoReserva, function ($query) use ($codigoReserva) {
+                    $query->whereHas('reserva', function ($q) use ($codigoReserva) {
+                        $q->where('codigo_reserva', 'like', '%' . $codigoReserva . '%');
+                    });
+                })
                 ->get();
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'pagos'   => $pagos
+                'pagos' => $pagos
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg'    => $th->getMessage()
+                'msg' => $th->getMessage()
             ], 500);
         }
     }
@@ -63,19 +74,19 @@ class PagoController extends Controller
 
         foreach ($request->pagos as $pagoData) {
             $pagosCreados[] = $reserva->pagos()->create([
-                'codigo_voucher'   => $pagoData['codigo_voucher'] ?? null,
+                'codigo_voucher' => $pagoData['codigo_voucher'] ?? null,
                 'concepto_pago_id' => $pagoData['concepto_pago_id'],
-                'monto'            => $pagoData['monto'],
-                'metodo_pago'      => $pagoData['metodo_pago'],
-                'fecha_pago'       => now(),
-                'observaciones'    => $pagoData['observaciones'] ?? null,
+                'monto' => $pagoData['monto'],
+                'metodo_pago' => $pagoData['metodo_pago'],
+                'fecha_pago' => now(),
+                'observaciones' => $pagoData['observaciones'] ?? null,
                 'usuario_creador_id' => Auth::id(),
             ]);
         }
 
         return response()->json([
             'status' => HTTPStatus::Success,
-            'msg'    => HTTPStatus::Creacion
+            'msg' => HTTPStatus::Creacion
         ], 201);
     }
 
@@ -85,22 +96,22 @@ class PagoController extends Controller
             $pago = Pago::findOrFail($id);
 
             $pago->update([
-                'codigo_voucher'   => $request->codigo_voucher ?? null,
+                'codigo_voucher' => $request->codigo_voucher ?? null,
                 'concepto_pago_id' => $request->concepto_pago_id,
-                'monto'            => $request->monto,
-                'metodo_pago'      => $request->metodo_pago,
-                'observaciones'    => $request->observaciones ?? null,
+                'monto' => $request->monto,
+                'metodo_pago' => $request->metodo_pago,
+                'observaciones' => $request->observaciones ?? null,
                 'usuario_modificador_id' => Auth::id(),
             ]);
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'msg'    => HTTPStatus::Actualizado
+                'msg' => HTTPStatus::Actualizado
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg'    => $th->getMessage()
+                'msg' => $th->getMessage()
             ], 500);
         }
     }
@@ -113,7 +124,7 @@ class PagoController extends Controller
             if (!$pago) {
                 return response()->json([
                     'status' => HTTPStatus::Error,
-                    'msg'    => HTTPStatus::NotFound
+                    'msg' => HTTPStatus::NotFound
                 ], 404);
             }
 
@@ -123,7 +134,7 @@ class PagoController extends Controller
             if (!$user || !$user->hasRole('GERENTE')) {
                 return response()->json([
                     'status' => HTTPStatus::Error,
-                    'msg'    => 'El DNI no corresponde a un usuario con rol GERENTE o no existe.'
+                    'msg' => 'El DNI no corresponde a un usuario con rol GERENTE o no existe.'
                 ], 403);
             }
 
@@ -131,12 +142,12 @@ class PagoController extends Controller
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'msg'    => HTTPStatus::Eliminado,
+                'msg' => HTTPStatus::Eliminado,
             ]);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg'    => $th->getMessage()
+                'msg' => $th->getMessage()
             ], 500);
         }
     }
@@ -155,7 +166,7 @@ class PagoController extends Controller
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg'    => $th->getMessage()
+                'msg' => $th->getMessage()
             ], 500);
         }
     }

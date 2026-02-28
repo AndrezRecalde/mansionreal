@@ -12,10 +12,8 @@ import {
     rtkCargarFactura,
     rtkCargarFacturas,
     rtkCargarMensaje,
-    rtkCargarPaginacion,
     rtkCargarReporteIVA,
     rtkCargarResumenDescuentos,
-    rtkGuardarUltimosFiltros,
     rtkLimpiarFacturas,
     rtkLimpiarResumenDescuentos,
     rtkSetFacturaActual,
@@ -29,8 +27,6 @@ export const useFacturaStore = () => {
         cargando,
         cargandoPDF,
         facturas,
-        paginacion,
-        ultimosFiltros,
         factura,
         facturaActual,
         pdfUrl,
@@ -55,14 +51,8 @@ export const useFacturaStore = () => {
             const { data } = await apiAxios.get("/facturas", {
                 params: filtros,
             });
-            const { facturas, paginacion, filtros_aplicados } = data;
+            const { facturas } = data;
             dispatch(rtkCargarFacturas(facturas));
-            if (paginacion) {
-                dispatch(rtkCargarPaginacion(paginacion));
-            }
-            if (filtros_aplicados) {
-                dispatch(rtkGuardarUltimosFiltros(filtros_aplicados));
-            }
         } catch (error) {
             ExceptionMessageError(error);
         } finally {
@@ -389,8 +379,6 @@ export const useFacturaStore = () => {
         cargando,
         cargandoPDF,
         facturas,
-        paginacion,
-        ultimosFiltros,
         factura,
         facturaActual,
         pdfUrl,

@@ -1,18 +1,23 @@
 import { useEffect } from "react";
-import { Container, Paper, Divider } from "@mantine/core";
+import { Container, Divider } from "@mantine/core";
 import {
     TitlePage,
     FacturasTable,
     FacturaDetalleModal,
     FacturaAnularModal,
     VisorFacturaPDF,
-    FiltrarPorFechasForm,
+    FiltrarPorFechasCodigo,
     FacturaPeriodoIndicator,
     FacturasKPISection,
     FacturasMontosSection,
     FacturasDetalleSection,
 } from "../../components";
-import { useFacturaStore, useNotificaciones, useTitleHook, useUiFactura } from "../../hooks";
+import {
+    useFacturaStore,
+    useNotificaciones,
+    useTitleHook,
+    useUiFactura,
+} from "../../hooks";
 import Swal from "sweetalert2";
 
 const FacturasPage = () => {
@@ -49,9 +54,9 @@ const FacturasPage = () => {
     };
 
     useEffect(() => {
-        const currentYear = new Date().getFullYear();
-        fnCargarFacturas({ p_anio: currentYear });
-        fnCargarEstadisticasFacturacion({ p_anio: currentYear });
+        //const currentYear = new Date().getFullYear();
+        //fnCargarFacturas({ p_anio: currentYear });
+        //fnCargarEstadisticasFacturacion({ p_anio: currentYear });
 
         return () => {
             fnLimpiarFacturas();
@@ -59,8 +64,15 @@ const FacturasPage = () => {
     }, []);
 
     const handleBuscarFacturas = (values) => {
-        fnCargarFacturas(values);
-        fnCargarEstadisticasFacturacion(values);
+        // Mapear campos de FiltrarPorFechasCodigo al formato que usa el backend de facturas
+        const filtros = {
+            p_codigo_reserva: values.codigo_reserva ?? null,
+            p_fecha_inicio: values.fecha_inicio ?? null,
+            p_fecha_fin: values.fecha_fin ?? null,
+            p_anio: values.anio ?? null,
+        };
+        fnCargarFacturas(filtros);
+        fnCargarEstadisticasFacturacion(filtros);
     };
 
     // Mensajes de error/éxito
@@ -89,13 +101,10 @@ const FacturasPage = () => {
             <TitlePage order={2}>Gestión de Facturas</TitlePage>
 
             {/* Filtros */}
-            <Paper shadow="sm" p="md" withBorder mt={20}>
-                <FiltrarPorFechasForm
-                    titulo="Filtrar por fechas"
-                    cargando={cargando}
-                    fnHandleAction={handleBuscarFacturas}
-                />
-            </Paper>
+            <FiltrarPorFechasCodigo
+                cargando={cargando}
+                fnHandleAction={handleBuscarFacturas}
+            />
 
             <Divider my={20} />
 
@@ -106,6 +115,9 @@ const FacturasPage = () => {
             />
 
             <Divider my={20} />
+
+            {/* Tabla de Facturas */}
+            <FacturasTable />
 
             {/* KPIs Principales */}
             <FacturasKPISection
@@ -125,9 +137,6 @@ const FacturasPage = () => {
                 formatMonto={formatMonto}
                 montos={estadisticas?.montos}
             />
-
-            {/* Tabla de Facturas */}
-            <FacturasTable />
 
             {/* Modales */}
             <FacturaDetalleModal

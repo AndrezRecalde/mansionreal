@@ -217,9 +217,10 @@ class ReservasController extends Controller
         $fecha_inicio = $request->fecha_inicio;
         $fecha_fin = $request->fecha_fin;
         $codigo_reserva = $request->codigo_reserva;
+        $anio = $request->anio;
 
-        if (!$codigo_reserva && (!$fecha_inicio || !$fecha_fin)) {
-            return response()->json(['error' => 'Debe proporcionar un código de reserva o el rango de fechas'], 400);
+        if (!$codigo_reserva && (!$fecha_inicio || !$fecha_fin) && !$anio) {
+            return response()->json(['error' => 'Debe proporcionar un código de reserva, el rango de fechas o un año'], 400);
         }
 
         $reservas = Reserva::with([
@@ -233,6 +234,7 @@ class ReservasController extends Controller
         ])
             ->codigoReserva($codigo_reserva)
             ->fechaCheckin($fecha_inicio, $fecha_fin)
+            ->anio($anio)
             ->orderBy('fecha_checkin', 'DESC')
             ->get()
             ->map(function ($r) {

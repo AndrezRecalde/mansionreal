@@ -44,7 +44,6 @@ const HistorialConsumosPage = () => {
         activarFactura,
         fnLimpiarPdfUrl,
         fnDescargarFacturaPDF,
-        fnCargarFacturaPorReserva,
         fnPrevisualizarFacturaPDF,
         fnActivarFactura,
     } = useFacturaStore();

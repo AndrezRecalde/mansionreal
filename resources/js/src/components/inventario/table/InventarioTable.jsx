@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import {
     BtnActivarElemento,
     ContenidoTable,
@@ -14,9 +14,7 @@ export const InventarioTable = () => {
     const {
         cargando,
         inventarios: productos,
-        paginacion,
         fnAsignarProductoInventario,
-        fnCargarProductosInventario,
     } = useInventarioStore();
 
     const {
@@ -24,25 +22,6 @@ export const InventarioTable = () => {
         fnModalAbrirActivarInventario,
         fnAbrirModalAgregarStock,
     } = useUiInventario();
-
-    const [pagination, setPagination] = useState({
-        pageIndex: 0, // MRT usa índice 0
-        pageSize: 20, // Items por página
-    });
-
-    const [filtros, setFiltros] = useState({
-        categoria_id: null,
-        nombre_producto: null,
-        activo: null,
-    });
-
-    useEffect(() => {
-        fnCargarProductosInventario({
-            ...filtros,
-            page: pagination.pageIndex + 1, // Convertir de 0-indexed a 1-indexed
-            per_page: pagination.pageSize,
-        });
-    }, [pagination, filtros]);
 
     const columns = useMemo(
         () => [
@@ -116,16 +95,12 @@ export const InventarioTable = () => {
         columns,
         data: productos ?? [],
 
-        // PAGINACIÓN REMOTA
-        manualPagination: true,
-        rowCount: paginacion?.total ?? 0,
+        autoResetPageIndex: false,
 
         state: {
             showProgressBars: cargando,
-            pagination,
         },
         localization: MRT_Localization_ES,
-        onPaginationChange: setPagination,
         enableFacetedValues: true,
         enableRowActions: true,
         enableStickyHeader: true,

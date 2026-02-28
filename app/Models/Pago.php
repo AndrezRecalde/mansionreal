@@ -57,4 +57,13 @@ class Pago extends Model
         }
         return $query;
     }
+
+    // scope de filtro por año
+    public function scopePorAnio(Builder $query, $anio)
+    {
+        if (!empty($anio)) {
+            return $query->whereYear('fecha_pago', $anio);
+        }
+        return $query;
+    }
 }

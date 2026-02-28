@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Grid, Title, Container, Group } from "@mantine/core";
+import { Grid, Title, Container, Group, Divider } from "@mantine/core";
 import {
     useDashboardKPIStore,
     useDashHuepedGananciaStore,
@@ -61,6 +61,8 @@ export default function DashboardPage() {
                     {PAGE_TITLE.DASHBOARD.TITLE_PAGE}
                 </Title>
             </Group>
+            <Divider my={10} />
+
             {/* Filtros */}
             <FiltrarPorFechasForm
                 titulo="Filtrar por Año"

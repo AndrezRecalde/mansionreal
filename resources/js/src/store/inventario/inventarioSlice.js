@@ -4,13 +4,10 @@ const initialState = {
     cargando: false,
     inventarios: [],
     movimientos: [],
-    paginacion: {},
     ultimosFiltros: {
         categoria_id: null,
         nombre_producto: null,
         activo: null,
-        page: 1,
-        per_page: 20,
     },
     activarInventario: null,
     mensaje: undefined,
@@ -32,9 +29,6 @@ export const inventarioSlice = createSlice({
             state.movimientos = payload;
             state.cargando = false;
         },
-        rtkCargarPaginacion: (state, { payload }) => {
-            state.paginacion = payload;
-        },
         rtkGuardarUltimosFiltros: (state, { payload }) => {
             state.ultimosFiltros = payload;
         },
@@ -44,7 +38,7 @@ export const inventarioSlice = createSlice({
         },
         rtkActualizarInventario: (state, { payload }) => {
             state.inventarios = state.inventarios.map((inventario) =>
-                inventario.id === payload.id ? payload : inventario
+                inventario.id === payload.id ? payload : inventario,
             );
             state.cargando = false;
         },
@@ -56,13 +50,10 @@ export const inventarioSlice = createSlice({
         rtkLimpiarInventarios: (state) => {
             state.inventarios = [];
             state.movimientos = [];
-            state.paginacion = {};
             state.ultimosFiltros = {
                 categoria_id: null,
                 nombre_producto: null,
                 activo: null,
-                page: 1,
-                per_page: 20,
             };
             state.cargando = false;
             state.activarInventario = null;
@@ -82,7 +73,6 @@ export const {
     rtkCargando,
     rtkCargarInventarios,
     rtkCargarMovimientos,
-    rtkCargarPaginacion,
     rtkGuardarUltimosFiltros,
     rtkAgregarInventario,
     rtkActualizarInventario,

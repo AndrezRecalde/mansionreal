@@ -34,12 +34,12 @@ class FacturaController extends Controller
     public function index(Request $request): JsonResponse
     {
         try {
-            $perPage = $request->per_page ?? 20;
             $fechaInicio = $request->p_fecha_inicio;
             $fechaFin = $request->p_fecha_fin;
             $anio = $request->p_anio;
             $estado = $request->p_estado;
             $clienteId = $request->p_cliente_id;
+            $codigoReserva = $request->p_codigo_reserva;
 
             $query = Factura::with([
                 'reserva:id,codigo_reserva',
@@ -62,28 +62,27 @@ class FacturaController extends Controller
                 $query->where('cliente_facturacion_id', $clienteId);
             }
 
+            if ($codigoReserva) {
+                $query->whereHas('reserva', function ($q) use ($codigoReserva) {
+                    $q->where('codigo_reserva', 'like', '%' . $codigoReserva . '%');
+                });
+            }
+
             $facturas = $query->orderBy('fecha_emision', 'desc')
                 ->orderBy('numero_factura', 'desc')
-                ->paginate($perPage);
+                ->get();
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'facturas' => $facturas->items(),
+                'facturas' => $facturas,
                 'filtros_aplicados' => [
                     'fecha_inicio' => $fechaInicio,
                     'fecha_fin' => $fechaFin,
                     'anio' => $anio,
                     'estado' => $estado,
                     'cliente_id' => $clienteId,
+                    'codigo_reserva' => $codigoReserva,
                 ],
-                'paginacion' => [
-                    'total' => $facturas->total(),
-                    'por_pagina' => $facturas->perPage(),
-                    'pagina_actual' => $facturas->currentPage(),
-                    'ultima_pagina' => $facturas->lastPage(),
-                    'desde' => $facturas->firstItem(),
-                    'hasta' => $facturas->lastItem()
-                ]
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
@@ -389,7 +388,7 @@ class FacturaController extends Controller
                 ->wherePivot('cliente_facturacion_id', $factura->cliente_facturacion_id)
                 ->first()
                 ?->pivot
-                ?->solicita_factura_detallada ?? false;
+                    ?->solicita_factura_detallada ?? false;
 
             $factura->solicita_factura_detallada = $solicitaDetallada;
 
@@ -495,37 +494,37 @@ class FacturaController extends Controller
                     'es_anio' => (!$fechaInicio && !$fechaFin && $anio) ? true : false,
                 ],
                 'facturas' => [
-                    'total_emitidas' => (int)$totalEmitidas,
-                    'total_anuladas' => (int)$totalAnuladas,
+                    'total_emitidas' => (int) $totalEmitidas,
+                    'total_anuladas' => (int) $totalAnuladas,
                     'total_con_descuento' => $facturasConDescuento,
-                    'total_general' => (int)($totalEmitidas + $totalAnuladas),
+                    'total_general' => (int) ($totalEmitidas + $totalAnuladas),
                 ],
                 'montos' => [
-                    'total_facturado' => (float)round($totalFacturado, 2),
-                    'total_iva' => (float)round($totalIva, 2),
-                    'total_sin_iva' => (float)round($totalSinIva, 2),
-                    'total_descuentos' => (float)round($totalDescuentos, 2),
-                    'ticket_maximo' => (float)round(
+                    'total_facturado' => (float) round($totalFacturado, 2),
+                    'total_iva' => (float) round($totalIva, 2),
+                    'total_sin_iva' => (float) round($totalSinIva, 2),
+                    'total_descuentos' => (float) round($totalDescuentos, 2),
+                    'ticket_maximo' => (float) round(
                         $totalEmitidas > 0
-                            ? $queryClone->max('total_factura')
-                            : 0,
+                        ? $queryClone->max('total_factura')
+                        : 0,
                         2
                     ),
-                    'ticket_minimo' => (float)round(
+                    'ticket_minimo' => (float) round(
                         $totalEmitidas > 0
-                            ? $queryClone->min('total_factura')
-                            : 0,
+                        ? $queryClone->min('total_factura')
+                        : 0,
                         2
                     ),
                     'promedio_factura' => $totalEmitidas > 0
-                        ? (float)round($totalFacturado / $totalEmitidas, 2)
+                        ? (float) round($totalFacturado / $totalEmitidas, 2)
                         : 0,
                 ],
                 'clientes' => [
                     'total_clientes' => $clientesFacturados,
                     'consumidores_finales' => $consumidoresFinales,
                     'clientes_registrados' => $clientesRegistrados,
-                    'clientes_unicos'      => $clientesFacturados - $consumidoresFinales,
+                    'clientes_unicos' => $clientesFacturados - $consumidoresFinales,
                 ]
             ], 200);
         } catch (\Throwable $th) {

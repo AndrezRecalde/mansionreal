@@ -82,7 +82,7 @@ export const InventarioForm = ({ form }) => {
                     withAsterisk
                     label="Precio unitario (usd/.)"
                     placeholder="Ingrese el precio unitario"
-                    min={1}
+                    min={0}
                     step={0.01}
                     precision={2}
                     {...form.getInputProps("precio_unitario")}

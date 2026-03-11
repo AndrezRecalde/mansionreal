@@ -196,13 +196,15 @@ export const ClienteFacturacionSelector = ({
                         </Button>
                     </Group>
 
-                    <Button
-                        variant="light"
-                        leftSection={<IconUserPlus size={16} />}
-                        onClick={handlePrellenarDesdeHuesped}
-                    >
-                        Prellenar con datos del huésped
-                    </Button>
+                    {huespedId && (
+                        <Button
+                            variant="light"
+                            leftSection={<IconUserPlus size={16} />}
+                            onClick={handlePrellenarDesdeHuesped}
+                        >
+                            Prellenar con datos del huésped
+                        </Button>
+                    )}
 
                     {/* Resultado: cliente encontrado */}
                     {busquedaRealizada &&

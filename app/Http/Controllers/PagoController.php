@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\HTTPStatus;
 use App\Http\Requests\PagoRequest;
 use App\Http\Requests\PagoUpdateRequest;
+use App\Models\Consumo;
 use App\Models\Pago;
 use App\Models\Reserva;
 use App\Models\User;
@@ -15,6 +16,117 @@ use Illuminate\Support\Facades\Auth;
 
 class PagoController extends Controller
 {
+    // ====================================================================
+    // VENTAS DE MOSTRADOR (SIN RESERVA)
+    // ====================================================================
+
+    /**
+     * Registrar un pago para una venta de mostrador (sin reserva).
+     * El campo consumo_ids[] es requerido para asociar el pago
+     * a los consumos externos correspondientes.
+     */
+    public function storeExterno(Request $request): JsonResponse
+    {
+        $request->validate([
+            'codigo_voucher' => 'nullable|string|max:100',
+            'concepto_pago_id' => 'required|integer|exists:conceptos_pagos,id',
+            'monto' => 'required|numeric|min:0.01',
+            'metodo_pago' => 'required|in:EFECTIVO,TRANSFERENCIA,TARJETA,OTRO',
+            'observaciones' => 'nullable|string|max:500',
+        ]);
+
+        try {
+            $pago = Pago::create([
+                'reserva_id' => null, // ← Venta de mostrador
+                'codigo_voucher' => $request->codigo_voucher,
+                'concepto_pago_id' => $request->concepto_pago_id,
+                'monto' => $request->monto,
+                'metodo_pago' => $request->metodo_pago,
+                'fecha_pago' => now(),
+                'observaciones' => $request->observaciones,
+                'usuario_creador_id' => Auth::id(),
+            ]);
+
+            return response()->json([
+                'status' => HTTPStatus::Success,
+                'msg' => HTTPStatus::Creacion,
+                'pago' => $pago->load('conceptoPago'),
+            ], 201);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => HTTPStatus::Error,
+                'msg' => $th->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Listar pagos de ventas de mostrador (reserva_id IS NULL).
+     */
+    public function getPagosExternos(Request $request): JsonResponse
+    {
+        try {
+            $query = Pago::with('conceptoPago')
+                ->whereNull('reserva_id');
+
+            if ($request->fecha_inicio && $request->fecha_fin) {
+                $query->buscarPorFechas($request->fecha_inicio, $request->fecha_fin);
+            }
+
+            $pagos = $query->orderBy('created_at', 'desc')->get();
+
+            return response()->json([
+                'status' => HTTPStatus::Success,
+                'pagos' => $pagos,
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => HTTPStatus::Error,
+                'msg' => $th->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Calcular los totales (subtotal, IVA, total, descuentos)
+     * para un conjunto de consumos externos dados por sus IDs.
+     */
+    public function getTotalesExterno(Request $request): JsonResponse
+    {
+        $request->validate([
+            'consumo_ids' => 'required|array|min:1',
+            'consumo_ids.*' => 'integer|exists:consumos,id',
+        ]);
+
+        try {
+            $consumos = Consumo::whereIn('id', $request->consumo_ids)
+                ->whereNull('reserva_id')
+                ->get();
+
+            $result = [
+                'subtotal' => (float) round($consumos->sum('subtotal'), 2),
+                'total_descuentos' => (float) round($consumos->sum('descuento'), 2),
+                'total_iva' => (float) round($consumos->sum('iva'), 2),
+                'total' => (float) round($consumos->sum('total'), 2),
+                'cantidad_items' => $consumos->count(),
+            ];
+
+            return response()->json([
+                'status' => HTTPStatus::Success,
+                'totales' => $result,
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => HTTPStatus::Error,
+                'msg' => $th->getMessage(),
+            ], 500);
+        }
+    }
+
+    // ====================================================================
+    // EXISTENTES (con reserva)
+    // ====================================================================
+
 
     function getPagos(Request $request): JsonResponse
     {

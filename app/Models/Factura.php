@@ -33,6 +33,7 @@ class Factura extends Model
         'fecha_anulacion',
         'usuario_anulo_id',
         'usuario_genero_id',
+        'solicita_factura_detallada',
     ];
 
     protected $casts = [
@@ -44,6 +45,7 @@ class Factura extends Model
         'total_factura' => 'decimal:2',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'solicita_factura_detallada' => 'boolean',
     ];
 
     // ====================================================================

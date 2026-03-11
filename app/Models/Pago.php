@@ -10,7 +10,7 @@ class Pago extends Model
     protected $table = 'pagos';
 
     protected $fillable = [
-        'reserva_id',
+        'reserva_id',          // nullable: null para ventas de mostrador
         'codigo_voucher',
         'concepto_pago_id',
         'monto',
@@ -24,6 +24,19 @@ class Pago extends Model
     public function reserva()
     {
         return $this->belongsTo(Reserva::class, 'reserva_id');
+    }
+
+    /**
+     * Verificar si es un pago de venta de mostrador (sin reserva)
+     */
+    public function getEsVentaMostradorAttribute(): bool
+    {
+        return $this->reserva_id === null;
+    }
+
+    public function scopeSinReserva(Builder $query)
+    {
+        return $query->whereNull('reserva_id');
     }
 
     public function conceptoPago()

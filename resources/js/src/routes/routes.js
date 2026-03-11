@@ -1,6 +1,13 @@
 import { lazy } from "react";
 import { Roles } from "../helpers/getPrefix";
 
+const VentaMostradorPage = lazy(
+    () =>
+        import(
+            /* webpackChunkName: "VentaMostradorPage" */ "../pages/ventaMostrador/VentaMostradorPage"
+        ),
+);
+
 const AuthPage = lazy(
     () => import(/* webpackChunkName: "AuthPage" */ "../pages/auth/AuthPage"),
 );
@@ -176,6 +183,7 @@ export const MENU_PATH = {
     REPORTE_CONSUMOS: "reporte-consumos",
     HISTORIAL_PAGOS: "historial-pagos",
     FACTURAS: "facturas",
+    VENTA_MOSTRADOR: "venta-mostrador",
 
     PERFIL: "perfil",
     CAMBIAR_CONTRASENA: "cambiar-contrasena",
@@ -249,6 +257,10 @@ const gerenciaRoutes = generateRoutes(
         {
             path: MENU_PATH.FACTURAS,
             Component: FacturasPage,
+        },
+        {
+            path: MENU_PATH.VENTA_MOSTRADOR,
+            Component: VentaMostradorPage,
         },
     ],
     [Roles.ADMINISTRADOR, Roles.GERENCIA],

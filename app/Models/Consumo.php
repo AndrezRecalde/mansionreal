@@ -52,7 +52,7 @@ class Consumo extends Model
     // ====================================================================
 
     /**
-     * Reserva asociada
+     * Reserva asociada (puede ser null para ventas de mostrador)
      */
     public function reserva(): BelongsTo
     {
@@ -188,6 +188,14 @@ class Consumo extends Model
         return $this->usuarioRegistroDescuento?->nombres_completos ?? 'No aplica';
     }
 
+    /**
+     * Verificar si es una venta de mostrador (sin reserva)
+     */
+    public function getEsVentaMostradorAttribute(): bool
+    {
+        return $this->reserva_id === null;
+    }
+
     // ====================================================================
     // SCOPES
     // ====================================================================
@@ -222,6 +230,22 @@ class Consumo extends Model
     public function scopeDeReserva($query, int $reservaId)
     {
         return $query->where('reserva_id', $reservaId);
+    }
+
+    /**
+     * Scope: Consumos sin reserva (ventas de mostrador)
+     */
+    public function scopeSinReserva($query)
+    {
+        return $query->whereNull('reserva_id');
+    }
+
+    /**
+     * Scope: Consumos con reserva (huéspedes)
+     */
+    public function scopeConReserva($query)
+    {
+        return $query->whereNotNull('reserva_id');
     }
 
     /**

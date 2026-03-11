@@ -225,6 +225,20 @@ Route::group(['prefix' => 'general', 'middleware' => ['auth:sanctum', CheckRole:
     Route::post('/reporte-departamentos', [DepartamentoController::class, 'reporteDepartamentosPorFechas']);
     Route::post('/reservas-reporte/pdf', [DepartamentoController::class, 'exportarKpiYDepartamentosPdf']);
     Route::post('/consumos-por-departamento/pdf', [DepartamentoController::class, 'exportConsumosPorDepartamentoPDF']);
+
+    // ========================================================================
+    // VENTAS DE MOSTRADOR (sin reserva)
+    // ========================================================================
+    /* Consumos externos */
+    Route::get('/consumos-externos', [ConsumosController::class, 'buscarConsumosExternos']);
+    Route::post('/consumos-externos', [ConsumosController::class, 'registrarConsumosExterno']);
+
+    /* Pagos externos */
+    Route::get('/pagos-externos', [PagoController::class, 'getPagosExternos']);
+    Route::post('/pagos-externos', [PagoController::class, 'storeExterno']);
+
+    /* Totales externos */
+    Route::post('/totales-externos', [PagoController::class, 'getTotalesExterno']);
 });
 
 
@@ -268,6 +282,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Operaciones principales
         Route::post('/generar', [FacturaController::class, 'generarFactura']);
+        Route::post('/generar-externa', [FacturaController::class, 'generarFacturaExterna']); // Venta de mostrador
         Route::post('/{id}/anular', [FacturaController::class, 'anularFactura']);
 
         // ACTUALIZADO: Gestión de descuentos en CONSUMOS

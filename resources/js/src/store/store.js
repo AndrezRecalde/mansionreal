@@ -50,6 +50,7 @@ import {
     uiUsuarioSlice,
     usuarioSlice,
 } from "../store";
+import { ventaMostradorSlice } from "./ventaMostrador/ventaMostradorSlice";
 
 export const store = configureStore({
     reducer: {
@@ -148,6 +149,9 @@ export const store = configureStore({
 
         /* Storage */
         storageFields: storageFieldsSlice.reducer,
+
+        /* Ventas de Mostrador */
+        ventaMostrador: ventaMostradorSlice.reducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

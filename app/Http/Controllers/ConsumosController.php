@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\HTTPStatus;
 use App\Http\Requests\AplicarDescuentoConsumoRequest;
 use App\Http\Requests\RegistrarConsumosRequest;
+use App\Http\Requests\RegistrarConsumosExternoRequest;
 use App\Http\Resources\ConsumoResource;
 use App\Models\Consumo;
 use Illuminate\Http\JsonResponse;
@@ -23,6 +24,138 @@ use Illuminate\Support\Facades\Log;
 
 class ConsumosController extends Controller
 {
+
+    // ====================================================================
+    // VENTAS DE MOSTRADOR (SIN RESERVA)
+    // ====================================================================
+
+    /**
+     * Listar consumos externos (sin reserva = ventas de mostrador).
+     * Opcionalmente filtrar por:
+     *  - solo_pendientes=1  → consumos aún no facturados
+     *  - fecha_inicio / fecha_fin
+     */
+    public function buscarConsumosExternos(Request $request): JsonResponse
+    {
+        try {
+            $query = Consumo::with(['inventario.categoria', 'usuarioCreador'])
+                ->whereNull('reserva_id');
+
+            if ($request->boolean('solo_pendientes')) {
+                $query->whereNull('factura_id');
+            }
+
+            if ($request->fecha_inicio && $request->fecha_fin) {
+                $query->whereBetween('fecha_creacion', [
+                    $request->fecha_inicio,
+                    $request->fecha_fin,
+                ]);
+            }
+
+            $consumos = $query->orderBy('created_at', 'desc')->get();
+
+            return response()->json([
+                'status' => HTTPStatus::Success,
+                'consumos' => ConsumoResource::collection($consumos),
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => HTTPStatus::Error,
+                'msg' => $th->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Registrar consumos externos (venta de mostrador, sin reserva).
+     */
+    public function registrarConsumosExterno(RegistrarConsumosExternoRequest $request): JsonResponse
+    {
+        DB::beginTransaction();
+        try {
+            $consumos = $request->validated()['consumos'];
+            $ivaConfig = ConfiguracionIva::where('activo', true)->first();
+            $tasa_iva = $ivaConfig ? $ivaConfig->tasa_iva : 15.00;
+
+            $procesados = [];
+
+            foreach ($consumos as $c) {
+                $inventario = Inventario::findOrFail($c['inventario_id']);
+                $cantidad = $c['cantidad'];
+                $precio_unitario = $inventario->precio_unitario;
+                $subtotal = $cantidad * $precio_unitario;
+                $iva = $subtotal * ($tasa_iva / 100);
+                $total = $subtotal + $iva;
+
+                // Verificar stock
+                if (!$inventario->sin_stock && $inventario->stock < $cantidad) {
+                    throw new \Exception("Stock insuficiente para {$inventario->nombre_producto}. Disponible: {$inventario->stock}");
+                }
+
+                $consumo = Consumo::create([
+                    'reserva_id' => null, // ← Venta de mostrador
+                    'inventario_id' => $inventario->id,
+                    'cantidad' => $cantidad,
+                    'fecha_creacion' => now(),
+                    'subtotal' => $subtotal,
+                    'tasa_iva' => $tasa_iva,
+                    'iva' => $iva,
+                    'total' => $total,
+                    'descuento' => 0,
+                    'tipo_descuento' => Consumo::TIPO_DESCUENTO_SIN_DESCUENTO,
+                    'creado_por_usuario_id' => Auth::id(),
+                ]);
+
+                // Descontar stock
+                if (!$inventario->sin_stock) {
+                    $inventario->registrarSalida(
+                        $cantidad,
+                        'Venta de mostrador',
+                        null,          // observaciones
+                        null,          // reservaId (no aplica)
+                        $consumo->id,  // consumoId
+                        Auth::id()     // usuarioId
+                    );
+                }
+
+                $procesados[] = $consumo->id;
+            }
+
+            DB::commit();
+
+            $result = Consumo::with(['inventario.categoria'])
+                ->whereIn('id', $procesados)
+                ->get();
+
+            return response()->json([
+                'status' => HTTPStatus::Success,
+                'msg' => 'Venta de mostrador registrada correctamente',
+                'consumos' => ConsumoResource::collection($result),
+            ], 201);
+        } catch (\Exception $e) {
+            // Errores de negocio (stock insuficiente, validaciones, etc.)
+            DB::rollBack();
+            return response()->json([
+                'status' => HTTPStatus::Error,
+                'msg' => $e->getMessage(),
+            ], 422);
+        } catch (\Throwable $th) {
+            // Errores inesperados del servidor
+            DB::rollBack();
+            Log::error('Error inesperado en registrarConsumosExterno: ' . $th->getMessage(), [
+                'trace' => $th->getTraceAsString(),
+            ]);
+            return response()->json([
+                'status' => HTTPStatus::Error,
+                'msg' => 'Error interno al registrar la venta.',
+            ], 500);
+        }
+    }
+
+    // ====================================================================
+    // EXISTENTES (con reserva)
+    // ====================================================================
+
     /**
      * ✅ ACTUALIZADO: Buscar consumos por reserva (incluye descuentos)
      */
@@ -77,16 +210,16 @@ class ConsumosController extends Controller
                 $total = $subtotal + $iva;
 
                 $consumo = Consumo::create([
-                    'reserva_id'      => $reserva_id,
-                    'inventario_id'   => $inventario->id,
-                    'cantidad'        => $cantidad,
-                    'fecha_creacion'  => now(),
-                    'subtotal'        => $subtotal,
-                    'tasa_iva'        => $tasa_iva,
-                    'iva'             => $iva,
-                    'total'           => $total,
-                    'descuento'       => 0,
-                    'tipo_descuento'  => Consumo::TIPO_DESCUENTO_SIN_DESCUENTO,
+                    'reserva_id' => $reserva_id,
+                    'inventario_id' => $inventario->id,
+                    'cantidad' => $cantidad,
+                    'fecha_creacion' => now(),
+                    'subtotal' => $subtotal,
+                    'tasa_iva' => $tasa_iva,
+                    'iva' => $iva,
+                    'total' => $total,
+                    'descuento' => 0,
+                    'tipo_descuento' => Consumo::TIPO_DESCUENTO_SIN_DESCUENTO,
                     'creado_por_usuario_id' => Auth::id(),
                 ]);
 
@@ -132,7 +265,7 @@ class ConsumosController extends Controller
             if (!$consumo) {
                 return response()->json([
                     'status' => 'error',
-                    'msg'    => 'Consumo no encontrado'
+                    'msg' => 'Consumo no encontrado'
                 ], 404);
             }
 
@@ -314,7 +447,7 @@ class ConsumosController extends Controller
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'msg'    => 'Consumo actualizado correctamente',
+                'msg' => 'Consumo actualizado correctamente',
                 'consumo' => new ConsumoResource($consumo) // ✅ Usar Resource
             ]);
         } catch (\Throwable $th) {
@@ -338,7 +471,7 @@ class ConsumosController extends Controller
             if (!$consumo) {
                 return response()->json([
                     'status' => HTTPStatus::Error,
-                    'msg'    => HTTPStatus::NotFound
+                    'msg' => HTTPStatus::NotFound
                 ], 404);
             }
 
@@ -354,7 +487,7 @@ class ConsumosController extends Controller
             if (!$user || !$user->hasRole('GERENTE')) {
                 return response()->json([
                     'status' => HTTPStatus::Error,
-                    'msg'    => 'El DNI no corresponde a un usuario con rol GERENTE o no existe.'
+                    'msg' => 'El DNI no corresponde a un usuario con rol GERENTE o no existe.'
                 ], 403);
             }
 
@@ -375,13 +508,13 @@ class ConsumosController extends Controller
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'msg'    => HTTPStatus::Eliminado,
+                'msg' => HTTPStatus::Eliminado,
             ]);
         } catch (\Throwable $th) {
             DB::rollBack();
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg'    => $th->getMessage()
+                'msg' => $th->getMessage()
             ], 500);
         }
     }

@@ -53,13 +53,7 @@ class FacturaService
         int $usuarioId,
         array $opciones = []
     ): Factura {
-        return DB::transaction(function () use (
-            $reservaId,
-            $clienteFacturacionId,
-            $solicitaFacturaDetallada,
-            $usuarioId,
-            $opciones
-        ) {
+        return DB::transaction(function () use ($reservaId, $clienteFacturacionId, $solicitaFacturaDetallada, $usuarioId, $opciones) {
             // 1. VALIDAR RESERVA
             $reserva = $this->validarReserva($reservaId);
 
@@ -88,7 +82,8 @@ class FacturaService
                 $cliente,
                 $totales,
                 $usuarioId,
-                $opciones
+                $opciones,
+                $solicitaFacturaDetallada
             );
 
             // 8. ASOCIAR CONSUMOS A LA FACTURA
@@ -119,6 +114,94 @@ class FacturaService
     }
 
     /**
+     * Generar factura para VENTA DE MOSTRADOR (sin reserva).
+     *
+     * @param array  $consumoIds              IDs de los consumos externos a facturar
+     * @param int    $clienteFacturacionId    ID del cliente (puede ser consumidor final)
+     * @param int    $usuarioId
+     * @param array  $opciones                [observaciones, descuentos_consumos]
+     * @return Factura
+     * @throws FacturacionException
+     */
+    public function generarFacturaExterna(
+        array $consumoIds,
+        int $clienteFacturacionId,
+        int $usuarioId,
+        array $opciones = []
+    ): Factura {
+        return DB::transaction(function () use ($consumoIds, $clienteFacturacionId, $usuarioId, $opciones) {
+            // 1. Cargar y validar consumos
+            $consumos = Consumo::whereIn('id', $consumoIds)
+                ->whereNull('reserva_id')
+                ->get();
+
+            if ($consumos->isEmpty()) {
+                throw new FacturacionException('No se encontraron consumos externos válidos para facturar.');
+            }
+
+            // Verificar que ninguno esté ya facturado
+            $yaFacturados = $consumos->filter(fn($c) => $c->factura_id !== null);
+            if ($yaFacturados->isNotEmpty()) {
+                throw new FacturacionException('Uno o más consumos ya fueron facturados en otra factura.');
+            }
+
+            // 2. Validar cliente
+            $cliente = $this->clienteService->validarCliente($clienteFacturacionId);
+
+            // 3. Aplicar descuentos si vienen en opciones
+            if (!empty($opciones['descuentos_consumos'])) {
+                $this->aplicarDescuentosAConsumos($consumos, $opciones['descuentos_consumos'], $usuarioId);
+                // Recargar con los nuevos valores
+                $consumos = Consumo::whereIn('id', $consumoIds)->get();
+            }
+
+            // 4. Generar número de factura
+            $numeroFactura = $this->secuenciaService->generarNumero();
+
+            // 5. Calcular totales
+            $totales = $this->calcularTotalesDesdeConsumos($consumos);
+
+            // 6. Crear factura (sin reserva_id)
+            $factura = new Factura();
+            $factura->numero_factura = $numeroFactura;
+            $factura->reserva_id = null; // ← venta de mostrador
+            $factura->cliente_facturacion_id = $cliente->id;
+            $factura->fecha_emision = now()->toDateString();
+            $factura->observaciones = $opciones['observaciones'] ?? null;
+            $factura->usuario_genero_id = $usuarioId;
+            $factura->estado = Factura::ESTADO_EMITIDA;
+            $factura->solicita_factura_detallada = (bool) ($opciones['solicita_factura_detallada'] ?? false);
+
+            $factura->copiarDatosCliente($cliente);
+
+            $factura->subtotal_sin_iva = $totales['subtotal_sin_iva'];
+            $factura->total_descuento = $totales['total_descuento'];
+            $factura->total_iva = $totales['total_iva'];
+            $factura->total_factura = $totales['total_factura'];
+
+            $factura->save();
+
+            // 7. Asociar consumos a la factura
+            $this->asociarConsumos($consumos, $factura->id);
+
+            Log::info("Factura externa generada: {$factura->numero_factura}", [
+                'factura_id' => $factura->id,
+                'consumos' => $consumoIds,
+                'cliente_id' => $cliente->id,
+                'total_factura' => $factura->total_factura,
+                'usuario_id' => $usuarioId,
+            ]);
+
+            return $factura->fresh([
+                'consumos.inventario.categoria',
+                'consumos.usuarioRegistroDescuento',
+                'clienteFacturacion',
+                'usuarioGenero',
+            ]);
+        });
+    }
+
+    /**
      * ✅ NUEVO: Aplicar descuento a un consumo específico
      *
      * @param int $consumoId
@@ -138,14 +221,7 @@ class FacturaService
         ?string $motivo = null,
         int $usuarioId
     ): Consumo {
-        return DB::transaction(function () use (
-            $consumoId,
-            $descuento,
-            $tipoDescuento,
-            $porcentajeDescuento,
-            $motivo,
-            $usuarioId
-        ) {
+        return DB::transaction(function () use ($consumoId, $descuento, $tipoDescuento, $porcentajeDescuento, $motivo, $usuarioId) {
             $consumo = Consumo::findOrFail($consumoId);
 
             // Validar que no esté facturado
@@ -457,7 +533,8 @@ class FacturaService
         ClienteFacturacion $cliente,
         array $totales,
         int $usuarioId,
-        array $opciones
+        array $opciones,
+        bool $solicitaFacturaDetallada = false
     ): Factura {
         $factura = new Factura();
         $factura->numero_factura = $numeroFactura;
@@ -466,6 +543,7 @@ class FacturaService
         $factura->fecha_emision = now()->toDateString();
         $factura->observaciones = $opciones['observaciones'] ?? null;
         $factura->usuario_genero_id = $usuarioId;
+        $factura->solicita_factura_detallada = $solicitaFacturaDetallada;
 
         // Copiar datos del cliente (inmutabilidad)
         $factura->copiarDatosCliente($cliente);

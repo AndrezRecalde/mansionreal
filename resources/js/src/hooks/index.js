@@ -103,6 +103,9 @@ import { useUiClienteFacturacion } from "./facturacion/useUiClienteFacturacion";
 /* Storage Fields */
 import { useStorageField } from "./storage/useStorageField";
 
+/* Ventas de Mostrador */
+import { useVentaMostradorStore } from "./ventaMostrador/useVentaMostradorStore";
+
 export {
     useAuthStore,
 
@@ -209,4 +212,7 @@ export {
 
     /* Storage Fields */
     useStorageField,
+
+    /* Ventas de Mostrador */
+    useVentaMostradorStore,
 };

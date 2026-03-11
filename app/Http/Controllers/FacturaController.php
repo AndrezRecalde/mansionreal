@@ -186,6 +186,50 @@ class FacturaController extends Controller
     }
 
     /**
+     * Generar factura para una VENTA DE MOSTRADOR (sin reserva).
+     * Recibe consumo_ids[] en lugar de reserva_id.
+     */
+    public function generarFacturaExterna(Request $request): JsonResponse
+    {
+        $request->validate([
+            'consumo_ids' => 'required|array|min:1',
+            'consumo_ids.*' => 'integer|exists:consumos,id',
+            'cliente_facturacion_id' => 'required|integer|exists:clientes_facturacion,id',
+            'observaciones' => 'nullable|string|max:500',
+            'solicita_factura_detallada' => 'nullable|boolean',
+        ]);
+
+        try {
+            $factura = $this->facturaService->generarFacturaExterna(
+                consumoIds: $request->consumo_ids,
+                clienteFacturacionId: $request->cliente_facturacion_id,
+                usuarioId: Auth::id(),
+                opciones: [
+                    'observaciones' => $request->observaciones,
+                    'solicita_factura_detallada' => $request->boolean('solicita_factura_detallada'),
+                ]
+            );
+
+            return response()->json([
+                'status' => HTTPStatus::Success,
+                'msg' => 'Factura generada correctamente',
+                'factura' => $factura,
+            ], 201);
+        } catch (FacturacionException $e) {
+            return response()->json([
+                'status' => HTTPStatus::Error,
+                'msg' => $e->getMessage(),
+                'code' => $e->getCode(),
+            ], 400);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => HTTPStatus::Error,
+                'msg' => 'Error al generar factura: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * ✅ NUEVO: Aplicar descuento a un consumo específico
      */
     public function aplicarDescuentoConsumo(Request $request, int $consumoId): JsonResponse
@@ -383,12 +427,20 @@ class FacturaController extends Controller
                 'usuarioAnulo'
             ])->findOrFail($id);
 
-            // Determinar si solicita factura detallada
-            $solicitaDetallada = $factura->reserva->clientesFacturacion()
-                ->wherePivot('cliente_facturacion_id', $factura->cliente_facturacion_id)
-                ->first()
-                ?->pivot
-                    ?->solicita_factura_detallada ?? false;
+            // Determinar si solicita factura detallada:
+            // - Para ventas de mostrador: se lee directamente de facturas.solicita_factura_detallada
+            // - Para reservas: se lee del pivot reserva_cliente_facturacion
+            if ($factura->reserva_id && $factura->reserva) {
+                $solicitaDetallada = $factura->reserva
+                    ->clientesFacturacion()
+                    ->wherePivot('cliente_facturacion_id', $factura->cliente_facturacion_id)
+                    ->first()
+                    ?->pivot
+                        ?->solicita_factura_detallada ?? false;
+            } else {
+                // Venta de mostrador: usar el campo de la tabla facturas
+                $solicitaDetallada = (bool) $factura->solicita_factura_detallada;
+            }
 
             $factura->solicita_factura_detallada = $solicitaDetallada;
 

@@ -30,7 +30,7 @@ export const useDepartamentoStore = () => {
     const fnCargarDepartamentos = async () => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.get("/gerencia/departamentos");
+            const { data } = await apiAxios.get("/departamentos");
             const { departamentos } = data;
             dispatch(rtkCargarDepartamentos(departamentos));
         } catch (error) {
@@ -40,14 +40,20 @@ export const useDepartamentoStore = () => {
         }
     };
 
-    const fnCargarDepartamentosDisponibles = async ({ fecha_inicio, fecha_fin }) => {
+    const fnCargarDepartamentosDisponibles = async ({
+        fecha_inicio,
+        fecha_fin,
+    }) => {
         try {
-            const { data } = await apiAxios.get("/general/buscar-departamentos-disponibles", {
-                params: {
-                    fecha_inicio,
-                    fecha_fin,
+            const { data } = await apiAxios.get(
+                "/general/buscar-departamentos-disponibles",
+                {
+                    params: {
+                        fecha_inicio,
+                        fecha_fin,
+                    },
                 },
-            });
+            );
             const { departamentos } = data;
             dispatch(rtkCargarDepartamentosDisponibles(departamentos));
         } catch (error) {
@@ -85,7 +91,7 @@ export const useDepartamentoStore = () => {
     const fnMostrarDepartamento = async (departamento) => {
         try {
             const { data } = await apiAxios.get(
-                `/gerencia/departamento/${departamento.id}`
+                `/gerencia/departamento/${departamento.id}`,
             );
             dispatch(rtkActivarDepartamento(data));
         } catch (error) {
@@ -101,7 +107,7 @@ export const useDepartamentoStore = () => {
         try {
             const { data } = await apiAxios.post(
                 "/gerencia/disponibilidad-departamento",
-                { fecha_checkin, fecha_checkout }
+                { fecha_checkin, fecha_checkout },
             );
             const { departamentos } = data;
             dispatch(rtkCargarDepartamentos(departamentos));
@@ -115,7 +121,7 @@ export const useDepartamentoStore = () => {
         try {
             const { data } = await apiAxios.post(
                 "/gerencia/departamento-servicios",
-                servicios
+                servicios,
             );
             // Recargar datos y mostrar mensaje
             fnCargarDepartamentos();
@@ -133,7 +139,7 @@ export const useDepartamentoStore = () => {
         try {
             const { data } = await apiAxios.put(
                 `/general/departamento/${id}/status`,
-                { nombre_estado }
+                { nombre_estado },
             );
             // Recargar datos y mostrar mensaje
             fnConsultarDisponibilidadDepartamentos();
@@ -152,7 +158,7 @@ export const useDepartamentoStore = () => {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.post(
                 "/general/departamentos-disponibilidad",
-                { fecha }
+                { fecha },
             );
             const { departamentos } = data;
             dispatch(rtkCargarDepartamentos(departamentos));
@@ -176,7 +182,7 @@ export const useDepartamentoStore = () => {
                     p_fecha_inicio,
                     p_fecha_fin,
                     p_anio,
-                }
+                },
             );
             const { result } = data;
             dispatch(rtkCargarDepartamentos(result));
@@ -197,7 +203,7 @@ export const useDepartamentoStore = () => {
                 datos,
                 {
                     responseType: "blob",
-                }
+                },
             );
 
             const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -218,7 +224,7 @@ export const useDepartamentoStore = () => {
     // NUEVA FUNCION PARA EXPORTAR PDF CON IMAGEN DEL GRAFICO
     const fnExportarKpiYDepartamentosPdfConGrafico = async (
         datos,
-        chartImages
+        chartImages,
     ) => {
         try {
             dispatch(rtkCargandoExportacion(true));
@@ -234,7 +240,7 @@ export const useDepartamentoStore = () => {
                 },
                 {
                     responseType: "blob",
-                }
+                },
             );
 
             const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -271,7 +277,7 @@ export const useDepartamentoStore = () => {
                 },
                 {
                     responseType: "blob", // Importante para manejar archivos binarios
-                }
+                },
             );
 
             // Crear un enlace para descargar el archivo PDF

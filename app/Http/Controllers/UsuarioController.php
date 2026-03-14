@@ -12,38 +12,37 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
+use Spatie\Permission\Models\Permission;
 
 class UsuarioController extends Controller
 {
     public function getUsuarios(): JsonResponse
     {
         try {
-            $usuarios = User::with('roles')->get();
+            $usuarios = User::with('roles', 'permissions')->get();
 
-            // Transforma los usuarios para incluir solo el primer nombre de rol
             $usuarios = $usuarios->map(function ($usuario) {
                 return [
-                    'id' => $usuario->id,
-                    'apellidos' => $usuario->apellidos,
-                    'nombres' => $usuario->nombres,
-                    'dni' => $usuario->dni,
-                    'activo' => $usuario->activo,
-                    'email' => $usuario->email,
-                    // Toma solo el primer rol (si existe), si no, null
-                    'role' => optional($usuario->roles->first())->name,
-                    'roles' => $usuario->roles,
-                    // Agrega más campos si lo necesitas
+                    'id'                 => $usuario->id,
+                    'apellidos'          => $usuario->apellidos,
+                    'nombres'            => $usuario->nombres,
+                    'dni'                => $usuario->dni,
+                    'activo'             => $usuario->activo,
+                    'email'              => $usuario->email,
+                    'role'               => optional($usuario->roles->first())->name,
+                    'roles'              => $usuario->roles->map(fn($r) => ['id' => $r->id, 'name' => $r->name]),
+                    'permisos_directos'  => $usuario->permissions->map(fn($p) => ['id' => $p->id, 'name' => $p->name]),
                 ];
             });
 
             return response()->json([
-                'status' => HTTPStatus::Success,
-                'usuarios' => $usuarios
+                'status'   => HTTPStatus::Success,
+                'usuarios' => $usuarios,
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg' => $e->getMessage()
+                'msg'    => $e->getMessage(),
             ], 500);
         }
     }
@@ -267,5 +266,53 @@ class UsuarioController extends Controller
                 'total_monto' => $usuario->pagosRegistrados->sum('monto'),
             ];
         });
+    }
+
+    /**
+     * Obtener permisos directos de un usuario.
+     */
+    public function getPermisosDirectos(int $id): JsonResponse
+    {
+        try {
+            $usuario = User::findOrFail($id);
+            $permisos = $usuario->permissions->map(fn($p) => ['id' => $p->id, 'name' => $p->name]);
+
+            return response()->json([
+                'status'   => HTTPStatus::Success,
+                'permisos' => $permisos,
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => HTTPStatus::Error,
+                'msg'    => $th->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Sincronizar permisos directos de un usuario.
+     * Enviar un array de nombres de permisos; reemplaza todos los permisos directos actuales.
+     */
+    public function asignarPermisosDirectos(Request $request, int $id): JsonResponse
+    {
+        try {
+            $request->validate([
+                'permisos'   => 'array',
+                'permisos.*' => 'string|exists:permissions,name',
+            ]);
+
+            $usuario = User::findOrFail($id);
+            $usuario->syncPermissions($request->permisos ?? []);
+
+            return response()->json([
+                'status' => HTTPStatus::Success,
+                'msg'    => 'Permisos directos del usuario actualizados correctamente',
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => HTTPStatus::Error,
+                'msg'    => $th->getMessage(),
+            ], 500);
+        }
     }
 }

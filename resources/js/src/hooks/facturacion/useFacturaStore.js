@@ -48,7 +48,7 @@ export const useFacturaStore = () => {
     const fnCargarFacturas = async (filtros = {}) => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.get("/facturas", {
+            const { data } = await apiAxios.get("/general/facturas", {
                 params: filtros,
             });
             const { facturas } = data;
@@ -67,7 +67,7 @@ export const useFacturaStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.get(
-                "/facturas/estadisticas/generales",
+                "/general/facturas/estadisticas/generales",
                 {
                     params: filtros,
                 },
@@ -86,7 +86,9 @@ export const useFacturaStore = () => {
     const fnCargarFactura = async (facturaId) => {
         try {
             dispatch(rtkCargandoDetalle(true));
-            const { data } = await apiAxios.get(`/facturas/${facturaId}`);
+            const { data } = await apiAxios.get(
+                `/general/facturas/${facturaId}`,
+            );
 
             dispatch(rtkCargarFactura(data.factura));
 
@@ -112,7 +114,7 @@ export const useFacturaStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.post(
-                "/facturas/generar",
+                "/general/facturas/generar",
                 datosFactura,
             );
 
@@ -139,7 +141,7 @@ export const useFacturaStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.post(
-                `/facturas/${facturaId}/anular`,
+                `/general/facturas/${facturaId}/anular`,
                 { motivo_anulacion: motivo },
             );
 
@@ -166,7 +168,7 @@ export const useFacturaStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.get(
-                `/facturas/verificar-reserva/${reservaId}`,
+                `/general/facturas/verificar-reserva/${reservaId}`,
             );
             return data;
         } catch (error) {
@@ -184,7 +186,7 @@ export const useFacturaStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.get(
-                `/facturas/reserva/${reservaId}`,
+                `/general/facturas/reserva/${reservaId}`,
             );
             dispatch(rtkCargarFactura(data.factura));
             return data.factura;
@@ -203,7 +205,7 @@ export const useFacturaStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.post(
-                `/facturas/${facturaId}/recalcular-totales`,
+                `/general/facturas/${facturaId}/recalcular-totales`,
             );
 
             dispatch(rtkActualizarFactura(data.factura));
@@ -228,9 +230,12 @@ export const useFacturaStore = () => {
     const fnPrevisualizarFacturaPDF = async (facturaId) => {
         try {
             dispatch(rtkCargandoPDF(true));
-            const response = await apiAxios.get(`/facturas/${facturaId}/pdf`, {
-                responseType: "blob",
-            });
+            const response = await apiAxios.get(
+                `/general/facturas/${facturaId}/pdf`,
+                {
+                    responseType: "blob",
+                },
+            );
 
             const pdfBlob = new Blob([response.data], {
                 type: "application/pdf",
@@ -263,9 +268,12 @@ export const useFacturaStore = () => {
     const fnDescargarFacturaPDF = async (facturaId) => {
         try {
             dispatch(rtkCargandoPDF(true));
-            const response = await apiAxios.get(`/facturas/${facturaId}/pdf`, {
-                responseType: "blob",
-            });
+            const response = await apiAxios.get(
+                `/general/facturas/${facturaId}/pdf`,
+                {
+                    responseType: "blob",
+                },
+            );
 
             const pdfBlob = new Blob([response.data], {
                 type: "application/pdf",
@@ -302,7 +310,7 @@ export const useFacturaStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.get(
-                "/facturas/estadisticas/generales",
+                "/general/facturas/estadisticas/generales",
                 {
                     params: filtros,
                 },
@@ -321,9 +329,12 @@ export const useFacturaStore = () => {
     const fnCargarReporteIVA = async (filtros = {}) => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.get("/facturas/reporte-iva", {
-                params: filtros,
-            });
+            const { data } = await apiAxios.get(
+                "/general/facturas/reporte-iva",
+                {
+                    params: filtros,
+                },
+            );
             dispatch(rtkCargarReporteIVA(data));
         } catch (error) {
             ExceptionMessageError(error);
@@ -339,7 +350,7 @@ export const useFacturaStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.get(
-                `/facturas/reportes/cliente/${clienteId}`,
+                `/general/facturas/reportes/cliente/${clienteId}`,
                 {
                     params: filtros,
                 },

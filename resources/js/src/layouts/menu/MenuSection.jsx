@@ -65,9 +65,7 @@ export const MenuSection = ({
                                             variant="default"
                                             radius="md"
                                         >
-                                            <item.icon
-                                                size={18}
-                                            />
+                                            <item.icon size={18} />
                                         </ThemeIcon>
                                         <Text size="sm">{item.title}</Text>
                                     </Group>
@@ -82,4 +80,3 @@ export const MenuSection = ({
         </>
     );
 };
-

@@ -43,6 +43,7 @@ export const menuProfile = [
     },
 ];
 
+/* Rutas para administrar: Usuarios, Departamentos, Servicios, Iva, Limpiezas */
 export const headerConfigRoutes = {
     CONFIGURACION: [
         {
@@ -84,7 +85,8 @@ export const headerConfigRoutes = {
     ],
 };
 
-export const headerGerenciaRoutes = {
+/* Rutas para administrar: Calendario Reservas, Disponibilidad Actual, Huespedes */
+export const headerReservasRoutes = {
     GERENCIA: [
         {
             icon: IconCalendar,
@@ -109,7 +111,10 @@ export const headerGerenciaRoutes = {
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
         },
     ],
+};
 
+/* Rutas para administrar: Calendario Reservas, Disponibilidad Actual, Huespedes */
+export const headerReportesRoutes = {
     REPORTES: [
         {
             icon: IconBuildings,
@@ -118,13 +123,6 @@ export const headerGerenciaRoutes = {
             link: "/gerencia/reporte-reservas",
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
         },
-        /* {
-            icon: IconFileIsr,
-            title: "Reportes de Gerente",
-            path: "reportes-gerentes",
-            link: "/gerencia/reportes-gerentes",
-            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
-        }, */
         {
             icon: IconFileIsr,
             title: "Reporte de Consumos",
@@ -151,6 +149,7 @@ export const headerGerenciaRoutes = {
     ],
 };
 
+/* Rutas para administrar: Categorias, Inventario, Historial de Movimientos */
 export const headerInventarioRoutes = {
     INVENTARIO: [
         {
@@ -177,6 +176,7 @@ export const headerInventarioRoutes = {
     ],
 };
 
+/* Rutas para administrar: Facturas, Venta de Mostrador */
 export const headerFacturasRoutes = {
     FACTURAS: [
         {
@@ -196,6 +196,7 @@ export const headerFacturasRoutes = {
     ],
 };
 
+/* Rutas para configuracion rapida: Usuarios, Departamentos, Servicios, Iva, Limpiezas */
 export const menuConfiguracionRapida = [
     {
         icon: IconUserCheck,

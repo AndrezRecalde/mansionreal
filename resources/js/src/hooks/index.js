@@ -21,6 +21,9 @@ import { useUiUsuario } from "./usuario/useUiUsuario";
 /* Roles */
 import { useRoleStore } from "./role/useRoleStore";
 
+/* Permisos */
+import { usePermissionStore } from "./permission/usePermissionStore";
+
 /* Provincia */
 import { useProvinciaStore } from "./provincia/useProvinciaStore";
 
@@ -128,6 +131,9 @@ export {
 
     /* Roles */
     useRoleStore,
+
+    /* Permisos */
+    usePermissionStore,
 
     /* Provincia */
     useProvinciaStore,

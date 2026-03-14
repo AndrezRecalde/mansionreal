@@ -1,7 +1,6 @@
-import { useMemo } from "react";
 import { AppShell } from "@mantine/core";
 import { HeaderMenu } from "./HeaderMenu";
-import classes from "./modules/AppBody.module.css"
+import classes from "./modules/AppBody.module.css";
 
 export const AppHeaderMenu = ({ children }) => {
     const usuario = JSON.parse(localStorage.getItem("service_user") || "{}");

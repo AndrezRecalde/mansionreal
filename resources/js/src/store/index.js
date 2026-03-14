@@ -23,6 +23,9 @@ import { dashRankingProductosSlice } from "./dashboard/dashRankingProductosSlice
 /* Roles */
 import { roleSlice } from "./role/roleSlice";
 
+/* Permisos */
+import { permissionSlice } from "./permission/permissionSlice";
+
 /* Provincias */
 import { provinciaSlice } from "./provincia/provinciaSlice";
 
@@ -120,6 +123,9 @@ export {
 
     /* Roles */
     roleSlice,
+
+    /* Permisos */
+    permissionSlice,
 
     /* Provincias */
     provinciaSlice,

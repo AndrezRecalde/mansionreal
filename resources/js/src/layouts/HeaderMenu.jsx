@@ -4,9 +4,10 @@ import { Roles } from "../helpers/getPrefix";
 import { HeaderBtnInicio } from "./HeaderBtnInicio";
 import {
     headerFacturasRoutes,
-    headerGerenciaRoutes,
+    headerReportesRoutes,
     headerInventarioRoutes,
     menuConfiguracionRapida,
+    headerReservasRoutes,
 } from "../routes/menuRoutes";
 import { useUiHeaderMenu } from "../hooks";
 import { GestionMenu } from "./menu/GestionMenu";
@@ -32,13 +33,25 @@ export const HeaderMenu = ({ usuario }) => {
                                     classes={classes}
                                 />
                             ) : null}
-                            {/* MENU DE GESTION GERENCIAL DEL HOTEL */}
+                            {/* MENU DE GESTION DE RESERVAS DEL HOTEL */}
                             {usuario.role === Roles.ADMINISTRADOR ||
                             usuario.role === Roles.GERENCIA ||
                             usuario.role === Roles.ASISTENTE ? (
                                 <GestionMenu
-                                    title="Gerencia"
-                                    menuData={headerGerenciaRoutes}
+                                    title="Reservas Hotel"
+                                    menuData={headerReservasRoutes}
+                                    usuario={usuario}
+                                    classes={classes}
+                                    theme={theme}
+                                />
+                            ) : null}
+                            {/* MENU DE GESTION DE REPORTES DEL HOTEL */}
+                            {usuario.role === Roles.ADMINISTRADOR ||
+                            usuario.role === Roles.GERENCIA ||
+                            usuario.role === Roles.ASISTENTE ? (
+                                <GestionMenu
+                                    title="Reportes Hotel"
+                                    menuData={headerReportesRoutes}
                                     usuario={usuario}
                                     classes={classes}
                                     theme={theme}

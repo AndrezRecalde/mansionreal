@@ -72,11 +72,15 @@ export const FacturasTable = () => {
                 ),
             },
             {
-                accessorKey: "reserva.codigo_reserva",
+                accessorFn: (row) => row.reserva?.codigo_reserva || "N/A",
                 header: "Reserva",
                 size: 120,
                 Cell: ({ cell }) => (
-                    <Badge radius="sm" variant="light">
+                    <Badge
+                        radius="sm"
+                        variant="light"
+                        color={cell.getValue() !== "N/A" ? "blue" : "gray"}
+                    >
                         {cell.getValue()}
                     </Badge>
                 ),

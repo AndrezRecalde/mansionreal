@@ -3,25 +3,16 @@ import { useErrorException } from "../error/useErrorException";
 import {
     rtkActivarUsuario,
     rtkCargando,
-    rtkCargandoReportes,
     rtkCargarErrores,
     rtkCargarMensaje,
-    rtkCargarReportes,
     rtkCargarUsuarios,
     rtkLimpiarUsuarios,
 } from "../../store/usuario/usuarioSlice";
 import apiAxios from "../../api/apiAxios";
 
 export const useUsuarioStore = () => {
-    const {
-        cargando,
-        cargandoReportes,
-        usuarios,
-        reportes,
-        activarUsuario,
-        mensaje,
-        errores,
-    } = useSelector((state) => state.usuario);
+    const { cargando, usuarios, activarUsuario, mensaje, errores } =
+        useSelector((state) => state.usuario);
 
     const dispatch = useDispatch();
 
@@ -46,7 +37,7 @@ export const useUsuarioStore = () => {
                 //actualizando
                 const { data } = await apiAxios.put(
                     `/gerencia/usuario/${usuario.id}`,
-                    usuario
+                    usuario,
                 );
                 fnCargarUsuarios();
                 dispatch(rtkCargarMensaje(data));
@@ -68,13 +59,17 @@ export const useUsuarioStore = () => {
         }
     };
 
-    const fnCambiarPassword = async ({ id, password, password_confirmation }) => {
+    const fnCambiarPassword = async ({
+        id,
+        password,
+        password_confirmation,
+    }) => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.put(
-                `/general/usuario/${id}/password`,
-                { password, password_confirmation }
-            );
+            const { data } = await apiAxios.put(`/usuario/${id}/password`, {
+                password,
+                password_confirmation,
+            });
             fnCargarUsuarios();
             dispatch(rtkCargarMensaje(data));
             setTimeout(() => {
@@ -92,7 +87,7 @@ export const useUsuarioStore = () => {
         try {
             const { data } = await apiAxios.put(
                 `/gerencia/usuario/${usuario.id}/status`,
-                usuario
+                usuario,
             );
             fnCargarUsuarios();
             dispatch(rtkCargarMensaje(data));
@@ -100,87 +95,7 @@ export const useUsuarioStore = () => {
                 dispatch(rtkCargarMensaje(undefined));
             }, 2000);
         } catch (error) {
-            //console.log(error);
             ExceptionMessageError(error);
-        }
-    };
-
-    const fnCargarReportes = async ({
-        p_fecha_inicio,
-        p_fecha_fin,
-        p_anio,
-        p_usuario_id = null,
-    }) => {
-        try {
-            dispatch(rtkCargandoReportes(true));
-
-            const { data } = await apiAxios.post(
-                "/gerencia/reportes/pagos/gerentes",
-                {
-                    p_fecha_inicio,
-                    p_fecha_fin,
-                    p_anio,
-                    p_usuario_id,
-                }
-            );
-            const { results } = data;
-            dispatch(rtkCargarReportes(results));
-        } catch (error) {
-            //console.log(error);
-            ExceptionMessageError(error);
-        } finally {
-            dispatch(rtkCargandoReportes(false));
-        }
-    };
-
-    const fnCargarGerentes = async () => {
-        try {
-            dispatch(rtkCargando(true));
-            const { data } = await apiAxios.get("/gerencia/usuarios/gerentes");
-            const { usuarios } = data;
-            dispatch(rtkCargarUsuarios(usuarios));
-        } catch (error) {
-            //console.log(error);
-            dispatch(rtkCargando(false));
-            ExceptionMessageError(error);
-        }
-    };
-
-    const fnExportarPDFReportesPorGerente = async ({
-        p_fecha_inicio,
-        p_fecha_fin,
-        p_anio,
-        p_usuario_id = null,
-    }) => {
-        try {
-            dispatch(rtkCargandoReportes(true));
-
-            const response = await apiAxios.post(
-                "/gerencia/reportes/pagos/gerentes/pdf",
-                {
-                    p_fecha_inicio,
-                    p_fecha_fin,
-                    p_anio,
-                    p_usuario_id,
-                },
-                {
-                    responseType: "blob", // importante
-                }
-            );
-
-            // Crear un enlace para descargar el archivo PDF
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement("a");
-            link.href = url;
-            link.setAttribute("download", "reporte_pagos_gerentes.pdf"); // nombre del archivo
-            document.body.appendChild(link);
-            link.click();
-            link.parentNode.removeChild(link);
-        } catch (error) {
-            //console.log(error);
-            ExceptionMessageError(error);
-        } finally {
-            dispatch(rtkCargandoReportes(false));
         }
     };
 
@@ -192,11 +107,37 @@ export const useUsuarioStore = () => {
         dispatch(rtkLimpiarUsuarios());
     };
 
+    /** Asignar permisos directos a un usuario (sincronización completa) */
+    const fnAsignarPermisosDirectos = async (usuarioId, permisosArray) => {
+        try {
+            dispatch(rtkCargando(true));
+            await apiAxios.put(`/gerencia/usuario/${usuarioId}/permisos`, {
+                permisos: permisosArray,
+            });
+            await fnCargarUsuarios();
+        } catch (error) {
+            dispatch(rtkCargando(false));
+            ExceptionMessageError(error);
+            throw error;
+        }
+    };
+
+    /** Obtener permisos directos de un usuario */
+    const fnGetPermisosDirectos = async (usuarioId) => {
+        try {
+            const { data } = await apiAxios.get(
+                `/gerencia/usuario/${usuarioId}/permisos`
+            );
+            return data.permisos;
+        } catch (error) {
+            ExceptionMessageError(error);
+            return [];
+        }
+    };
+
     return {
         cargando,
-        cargandoReportes,
         usuarios,
-        reportes,
         activarUsuario,
         mensaje,
         errores,
@@ -205,10 +146,9 @@ export const useUsuarioStore = () => {
         fnAgregarUsuario,
         fnCambiarPassword,
         fnCambiarStatus,
-        fnCargarReportes,
-        fnCargarGerentes,
-        fnExportarPDFReportesPorGerente,
         fnAsignarUsuario,
         fnLimpiarUsuarios,
+        fnAsignarPermisosDirectos,
+        fnGetPermisosDirectos,
     };
 };

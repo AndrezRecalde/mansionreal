@@ -2,7 +2,11 @@ import { Divider, Drawer, Group, ScrollArea } from "@mantine/core";
 import { Roles } from "../../helpers/getPrefix";
 import { MenuHome } from "./MenuHome";
 import { MenuSection } from "./MenuSection";
-import { headerConfigRoutes, headerGerenciaRoutes, headerInventarioRoutes } from "../../routes/menuRoutes";
+import {
+    headerConfigRoutes,
+    headerReportesRoutes,
+    headerInventarioRoutes,
+} from "../../routes/menuRoutes";
 import { useUiHeaderMenu } from "../../hooks";
 import { UserBtnMobile } from "./UserBtnMobile";
 
@@ -15,7 +19,7 @@ export const DrawerMenuMobile = ({ usuario, classes, theme }) => {
         fnDrawerMobile,
         fnLinksConfiguracion,
         fnLinksGerencia,
-        fnLinksInventario
+        fnLinksInventario,
     } = useUiHeaderMenu();
     return (
         <Drawer
@@ -39,8 +43,8 @@ export const DrawerMenuMobile = ({ usuario, classes, theme }) => {
                 />
                 <Divider my="sm" />
 
-                { usuario.role === Roles.ADMINISTRADOR ||
-                  usuario.role === Roles.GERENCIA ? (
+                {usuario.role === Roles.ADMINISTRADOR ||
+                usuario.role === Roles.GERENCIA ? (
                     <MenuSection
                         title="Configuraciónes"
                         usuario={usuario}
@@ -53,13 +57,13 @@ export const DrawerMenuMobile = ({ usuario, classes, theme }) => {
                     />
                 ) : null}
 
-                { usuario.role === Roles.ADMINISTRADOR ||
-                  usuario.role === Roles.GERENCIA ||
-                  usuario.role === Roles.ASISTENTE ? (
+                {usuario.role === Roles.ADMINISTRADOR ||
+                usuario.role === Roles.GERENCIA ||
+                usuario.role === Roles.ASISTENTE ? (
                     <MenuSection
                         title="Gerencia"
                         usuario={usuario}
-                        menuData={headerGerenciaRoutes}
+                        menuData={headerReportesRoutes}
                         classes={classes}
                         theme={theme}
                         isOpen={abrirLinksGerencia}
@@ -68,8 +72,8 @@ export const DrawerMenuMobile = ({ usuario, classes, theme }) => {
                     />
                 ) : null}
 
-                { usuario.role === Roles.ADMINISTRADOR ||
-                  usuario.role === Roles.GERENCIA ? (
+                {usuario.role === Roles.ADMINISTRADOR ||
+                usuario.role === Roles.GERENCIA ? (
                     <MenuSection
                         title="Inventario"
                         usuario={usuario}

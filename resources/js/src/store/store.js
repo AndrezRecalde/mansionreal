@@ -27,6 +27,7 @@ import {
     provinciaSlice,
     reservaSlice,
     roleSlice,
+    permissionSlice,
     secuenciaFacturaSlice,
     servicioSlice,
     storageFieldsSlice,
@@ -75,6 +76,9 @@ export const store = configureStore({
 
         /* Roles */
         role: roleSlice.reducer,
+
+        /* Permisos */
+        permission: permissionSlice.reducer,
 
         /* Provincia */
         provincia: provinciaSlice.reducer,

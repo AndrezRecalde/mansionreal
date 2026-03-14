@@ -40,6 +40,13 @@ const UsuariosPage = lazy(
         ),
 );
 
+const RolesPermisosPage = lazy(
+    () =>
+        import(
+            /* webpackChunkName: "RolesPermisosPage" */ "../pages/usuario/RolesPermisosPage"
+        ),
+);
+
 const CategoriasPage = lazy(
     () =>
         import(
@@ -187,6 +194,7 @@ export const MENU_PATH = {
 
     PERFIL: "perfil",
     CAMBIAR_CONTRASENA: "cambiar-contrasena",
+    ROLES_PERMISOS: "roles-permisos",
 };
 
 export const authRoutes = {
@@ -213,6 +221,7 @@ const gerenciaRoutes = generateRoutes(
         { path: MENU_PATH.CATEGORIAS, Component: CategoriasPage },
         { path: MENU_PATH.SERVICIOS, Component: ServiciosPage },
         { path: MENU_PATH.USUARIOS, Component: UsuariosPage },
+        { path: MENU_PATH.ROLES_PERMISOS, Component: RolesPermisosPage },
         { path: MENU_PATH.HUESPEDES, Component: HuespedesPage },
         { path: MENU_PATH.LIMPIEZA, Component: LimpiezaPage },
         {

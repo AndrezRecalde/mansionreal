@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import {
+    Accordion,
     Badge,
     Box,
     Button,
@@ -23,6 +24,7 @@ import {
     IconFileInvoice,
     IconMinus,
     IconPlus,
+    IconSearch,
     IconShoppingCart,
     IconTrash,
 } from "@tabler/icons-react";
@@ -31,7 +33,7 @@ import {
     useInventarioStore,
     useVentaMostradorStore,
 } from "../../hooks";
-import { ClienteFacturacionSelector } from "../../components";
+import { ClienteFacturacionSelector, TextSection } from "../../components";
 import Swal from "sweetalert2";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -53,6 +55,37 @@ const CarritoStep = ({ onNext }) => {
         fnEliminarDelCarrito,
         fnActualizarCantidad,
     } = useVentaMostradorStore();
+
+    const [busqueda, setBusqueda] = useState("");
+    const [categoriasExpandidas, setCategoriasExpandidas] = useState([]);
+
+    // Filtrar por búsqueda y activos
+    const productosFiltrados = inventarios.filter((p) => {
+        if (!p.activo) return false;
+        if (busqueda.trim() === "") return true;
+
+        const termino = busqueda.toLowerCase();
+        const nomProd = (p.nombre_producto || "").toLowerCase();
+        const nomCat = (p.nombre_categoria || "").toLowerCase();
+
+        return nomProd.includes(termino) || nomCat.includes(termino);
+    });
+
+    // Agrupar por categoría
+    const productosPorCategoria = productosFiltrados.reduce((acc, prod) => {
+        const catName = prod.nombre_categoria || "Otros";
+        if (!acc[catName]) acc[catName] = [];
+        acc[catName].push(prod);
+        return acc;
+    }, {});
+
+    useEffect(() => {
+        if (busqueda.trim() !== "") {
+            setCategoriasExpandidas(Object.keys(productosPorCategoria));
+        } else {
+            setCategoriasExpandidas([]);
+        }
+    }, [busqueda]);
 
     // Subtotal local
     const subtotal = carrito.reduce(
@@ -91,46 +124,95 @@ const CarritoStep = ({ onNext }) => {
                 <Text fw={600} size="sm" c="dimmed">
                     Catálogo de Productos
                 </Text>
+                <TextInput
+                    placeholder="Buscar producto o categoría..."
+                    value={busqueda}
+                    onChange={(e) => setBusqueda(e.currentTarget.value)}
+                    leftSection={<IconSearch size={16} />}
+                />
                 <ScrollArea h={400}>
-                    <Stack gap="xs">
-                        {inventarios
-                            .filter((p) => p.activo)
-                            .map((prod) => (
-                                <Paper
-                                    key={prod.id}
-                                    p="sm"
-                                    withBorder
-                                    style={{ cursor: "pointer" }}
-                                    onClick={() => handleAgregar(prod)}
-                                >
-                                    <Group justify="space-between">
-                                        <Stack gap={2}>
-                                            <Text size="sm" fw={500}>
-                                                {prod.nombre_producto}
-                                            </Text>
-                                            <Text size="xs" c="dimmed">
-                                                {prod.sin_stock
-                                                    ? "Sin control de stock"
-                                                    : `Stock: ${prod.stock}`}
-                                            </Text>
-                                        </Stack>
-                                        <Group gap="xs">
-                                            <Badge variant="light">
-                                                {formatMoney(
-                                                    prod.precio_unitario,
-                                                )}
-                                            </Badge>
-                                            <ThemeIcon
-                                                size="sm"
-                                                variant="light"
-                                            >
-                                                <IconPlus size={12} />
-                                            </ThemeIcon>
-                                        </Group>
-                                    </Group>
-                                </Paper>
-                            ))}
-                    </Stack>
+                    {Object.keys(productosPorCategoria).length === 0 ? (
+                        <Text c="dimmed" size="sm" ta="center" mt="md">
+                            No se encontraron productos
+                        </Text>
+                    ) : (
+                        <Accordion
+                            multiple
+                            variant="contained"
+                            value={categoriasExpandidas}
+                            onChange={setCategoriasExpandidas}
+                        >
+                            {Object.entries(productosPorCategoria).map(
+                                ([categoria, productos]) => (
+                                    <Accordion.Item
+                                        key={categoria}
+                                        value={categoria}
+                                    >
+                                        <Accordion.Control>
+                                            <TextSection fw={500}>
+                                                {categoria} ({productos.length})
+                                            </TextSection>
+                                        </Accordion.Control>
+                                        <Accordion.Panel>
+                                            <Stack gap="xs">
+                                                {productos.map((prod) => (
+                                                    <Paper
+                                                        key={prod.id}
+                                                        p="sm"
+                                                        withBorder
+                                                        style={{
+                                                            cursor: "pointer",
+                                                        }}
+                                                        onClick={() =>
+                                                            handleAgregar(prod)
+                                                        }
+                                                    >
+                                                        <Group justify="space-between">
+                                                            <Stack gap={2}>
+                                                                <Text
+                                                                    size="sm"
+                                                                    fw={500}
+                                                                >
+                                                                    {
+                                                                        prod.nombre_producto
+                                                                    }
+                                                                </Text>
+                                                                <Text
+                                                                    size="xs"
+                                                                    c="dimmed"
+                                                                >
+                                                                    {prod.sin_stock
+                                                                        ? "Sin control de stock"
+                                                                        : `Stock: ${prod.stock}`}
+                                                                </Text>
+                                                            </Stack>
+                                                            <Group gap="xs">
+                                                                <Badge variant="light">
+                                                                    {formatMoney(
+                                                                        prod.precio_unitario,
+                                                                    )}
+                                                                </Badge>
+                                                                <ThemeIcon
+                                                                    size="sm"
+                                                                    variant="light"
+                                                                >
+                                                                    <IconPlus
+                                                                        size={
+                                                                            12
+                                                                        }
+                                                                    />
+                                                                </ThemeIcon>
+                                                            </Group>
+                                                        </Group>
+                                                    </Paper>
+                                                ))}
+                                            </Stack>
+                                        </Accordion.Panel>
+                                    </Accordion.Item>
+                                ),
+                            )}
+                        </Accordion>
+                    )}
                 </ScrollArea>
             </Stack>
 

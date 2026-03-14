@@ -13,12 +13,24 @@ class CheckRole
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, string $role): Response
+    public function handle(Request $request, Closure $next, string $roles): Response
     {
-        if (!$request->user()->hasRole($role)) {
-            abort(403, "Access to this resource on the server is denied");
-            //return response()->json(["message"=> "Access to this resource on the server is denied"], Response::HTTP_FORBIDDEN);
+        // Asegurar la obtención del usuario, ya sea por el guard por defecto o explícitamente por sanctum
+        $user = $request->user() ?? auth('sanctum')->user() ?? auth()->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
         }
+
+        // Soporte para múltiples roles separados por | (ej: ADMINISTRADOR|GERENTE)
+        $rolesArray = explode('|', $roles);
+
+        if (!$user->hasAnyRole($rolesArray)) {
+            return response()->json([
+                'message' => 'No tienes permisos para acceder a este recurso.'
+            ], 403);
+        }
+
         return $next($request);
     }
 }

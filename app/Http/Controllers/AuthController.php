@@ -32,11 +32,16 @@ class AuthController extends Controller
 
             if ($usuario) {
                 $token = $usuario->createToken('auth_token')->plainTextToken;
+
+                // Cargar permisos del usuario (directos + heredados de roles)
+                $permisos = $this->appendRolesAndPermissions($usuario, $usuario->id);
+
                 return response()->json([
-                    'status' => 'success',
+                    'status'       => 'success',
                     'access_token' => $token,
-                    'token_type' => 'Bearer',
-                    'usuario' => $usuario
+                    'token_type'   => 'Bearer',
+                    'usuario'      => $usuario,
+                    'permissions'  => $permisos,
                 ]);
             } else {
                 return response()->json(['status' => HTTPStatus::Error, 'msg' => HTTPStatus::UserNotActive], 404);
@@ -44,7 +49,7 @@ class AuthController extends Controller
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg' => $th->getMessage()
+                'msg'    => $th->getMessage()
             ], 500);
         }
     }
@@ -63,17 +68,34 @@ class AuthController extends Controller
             ->first();
 
         if ($usuario) {
-            $usuario->tokens()->delete();
+            // BUG FIX: Evitamos borrar los tokens inmediatamente para que las 
+            // peticiones paralelas (axios concurrentes) que usan el token anterior no devuelvan 401.
+            // En su lugar, el token simplemente expirará de acuerdo a config/sanctum.php o
+            // podemos limpiar tokens antiguos periódicamente.
+            // $usuario->tokens()->delete();
+            
+            // Opcionalmente borrar solo los tokens más antiguos si hay muchos
+            if ($usuario->tokens()->count() > 5) {
+                // Borramos todos los exceptos los últimos 2 por seguridad
+                $tokensToDelete = $usuario->tokens()->orderBy('created_at', 'desc')->skip(2)->take(10)->get();
+                foreach($tokensToDelete as $t) { $t->delete(); }
+            }
+
             $token = $usuario->createToken('auth_token')->plainTextToken;
+
+            // Cargar permisos del usuario (directos + heredados de roles)
+            $permisos = $this->appendRolesAndPermissions($usuario, $authUserId);
+
             return response()->json([
-                "usuario" => $usuario,
-                "token_type" => 'Bearer',
+                "usuario"      => $usuario,
+                "token_type"   => 'Bearer',
                 "access_token" => $token,
+                "permissions"  => $permisos,
             ]);
         } else {
             return response()->json([
                 "status" => HTTPStatus::Error,
-                "msg" => HTTPStatus::UserNotActive
+                "msg"    => HTTPStatus::UserNotActive
             ]);
         }
     }
@@ -91,9 +113,13 @@ class AuthController extends Controller
             ->where('u.activo', 1)
             ->first();
 
+        // Cargar permisos del usuario (directos + heredados de roles)
+        $permisos = $this->appendRolesAndPermissions($profile, $authUserId);
+
         return response()->json([
-            'status' => HTTPStatus::Success,
-            'profile' => $profile
+            'status'      => HTTPStatus::Success,
+            'profile'     => $profile,
+            'permissions' => $permisos,
         ]);
     }
 
@@ -109,7 +135,30 @@ class AuthController extends Controller
 
         return response()->json([
             'status' => 200,
-            'msg' => 'Sesión finalizada'
+            'msg'    => 'Sesión finalizada'
         ]);
     }
+
+    /**
+     * Agrega roles y permisos de Spatie al objeto de usuario y retorna array de permisos.
+     */
+    private function appendRolesAndPermissions($user, int $userId): array
+    {
+        $usuarioModel = User::find($userId);
+        
+        if (!$usuarioModel) {
+            $user->roles = [];
+            $user->permissions = [];
+            return [];
+        }
+
+        $roles = $usuarioModel->getRoleNames()->toArray();
+        $permisos = $usuarioModel->getAllPermissions()->pluck('name')->toArray();
+        
+        $user->roles = empty($roles) ? [] : $roles;
+        $user->permissions = empty($permisos) ? [] : $permisos;
+
+        return $user->permissions;
+    }
 }
+

@@ -1,6 +1,6 @@
 import { Divider, Paper, Text } from "@mantine/core";
 import { useTitleHook } from "../../hooks";
-import { AuthForm, TitlePage } from "../../components";
+import { AuthForm, TextSection, TitlePage } from "../../components";
 import {
     BIENVENIDA,
     BIENVENIDA_MENSAJE,
@@ -16,7 +16,12 @@ const AuthPage = () => {
             <Paper radius="md" shadow="md" className={classes.card}>
                 {/* Columna izquierda: formulario */}
                 <div className={classes.left}>
-                    <TitlePage ta="center" order={1} mb="md" style={{ letterSpacing: "1px" }}>
+                    <TitlePage
+                        ta="center"
+                        order={1}
+                        mb="md"
+                        style={{ letterSpacing: "1px" }}
+                    >
                         {NOMBRE_SISTEMA}
                     </TitlePage>
                     <Divider mb="xl" />
@@ -25,13 +30,24 @@ const AuthPage = () => {
 
                 {/* Columna derecha: mensaje */}
                 <div className={classes.right}>
-                    <TitlePage order={2} mb="sm" c="dark.5" style={{ letterSpacing: "1px" }}>
+                    <TitlePage
+                        order={2}
+                        mb="sm"
+                        c="white"
+                        style={{ letterSpacing: "1px" }}
+                    >
                         {BIENVENIDA}
                     </TitlePage>
-                    <Text size="sm" c="dark.4" style={{ letterSpacing: "0.5px" }}>
+                    <TextSection
+                        tt=""
+                        fz={12}
+                        fs="italic"
+                        color="white"
+                        style={{ letterSpacing: "0.5px" }}
+                    >
                         {BIENVENIDA_MENSAJE}
                         <br />
-                    </Text>
+                    </TextSection>
                 </div>
             </Paper>
         </div>

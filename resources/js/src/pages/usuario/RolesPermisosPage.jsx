@@ -32,12 +32,13 @@ import {
     IconCheck,
     IconX,
     IconCubePlus,
+    IconUserShield,
 } from "@tabler/icons-react";
 import { MantineReactTable, useMantineReactTable } from "mantine-react-table";
 import { MRT_Localization_ES } from "mantine-react-table/locales/es/index.esm.mjs";
 import { useRoleStore, usePermissionStore, useUsuarioStore } from "../../hooks";
 import { TitlePage } from "../../components/elements/titles/TitlePage";
-import { BtnSection } from "../../components";
+import { BtnSection, PrincipalSectionPage } from "../../components";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helpers
@@ -642,16 +643,22 @@ function TabUsuarios() {
                 centered
             >
                 <Stack gap="md">
-                    {usuarioSeleccionado?.roles && usuarioSeleccionado.roles.length > 0 && (
-                        <Text size="sm" c="dimmed">
-                            Roles actuales:{" "}
-                            {usuarioSeleccionado.roles.map(r => (
-                                <Badge key={r.id || r.name || r} color="blue" variant="light" mr="xs">
-                                    {r.name || r}
-                                </Badge>
-                            ))}
-                        </Text>
-                    )}
+                    {usuarioSeleccionado?.roles &&
+                        usuarioSeleccionado.roles.length > 0 && (
+                            <Text size="sm" c="dimmed">
+                                Roles actuales:{" "}
+                                {usuarioSeleccionado.roles.map((r) => (
+                                    <Badge
+                                        key={r.id || r.name || r}
+                                        color="blue"
+                                        variant="light"
+                                        mr="xs"
+                                    >
+                                        {r.name || r}
+                                    </Badge>
+                                ))}
+                            </Text>
+                        )}
                     <MultiSelect
                         label="Permisos directos asignados"
                         description="Los permisos directos se suman a los del rol asignado."
@@ -689,10 +696,12 @@ function TabUsuarios() {
 // ─────────────────────────────────────────────────────────────────────────────
 const RolesPermisosPage = () => {
     return (
-        <Container size="xl">
-            <TitlePage order={2} fw={700}>
-                Roles &amp; Permisos
-            </TitlePage>
+        <Container size="xl" my={20}>
+            <PrincipalSectionPage
+                title="Roles &amp; Permisos"
+                description="Administra los roles y permisos del sistema."
+                icon={<IconUserShield size={22} />}
+            />
             <Divider my={10} />
 
             <Tabs defaultValue="roles" variant="outline" radius="md">

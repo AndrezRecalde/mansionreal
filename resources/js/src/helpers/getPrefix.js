@@ -54,6 +54,7 @@ export const PAGE_TITLE = {
     PERFIL: {
         TITLE: "Mi Perfil - Mansión Real",
         TITLE_PAGE: "Mi Perfil",
+        DESCRIPCION_PAGE: "Gestiona tus datos personales y tus reservas.",
         SECTION_LABELS: {
             NOMBRES_COMPLETOS: "Nombres Completos",
             NUMERO_CEDULA: "Número de Cédula",

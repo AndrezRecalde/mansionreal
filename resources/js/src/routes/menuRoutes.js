@@ -15,6 +15,7 @@ import {
     IconUserCheck,
     IconUserCircle,
     IconUserPentagon,
+    IconUserShield,
 } from "@tabler/icons-react";
 import { Roles } from "../helpers/getPrefix";
 
@@ -207,36 +208,42 @@ export const menuConfiguracionRapida = [
         title: "Usuarios",
         path: "usuarios",
         link: "/gerencia/usuarios",
-        roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+        roles: [Roles.ADMINISTRADOR],
     },
-
+    {
+        icon: IconUserShield,
+        title: "Roles y Permisos",
+        path: "roles-permisos",
+        link: "/gerencia/roles-permisos",
+        roles: [Roles.ADMINISTRADOR],
+    },
     {
         icon: IconBuildings,
         title: "Departamentos",
         path: "departamentos",
         link: "/gerencia/departamentos",
-        roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+        roles: [Roles.ADMINISTRADOR],
     },
     {
         icon: IconListCheck,
         title: "Servicios",
         path: "servicios",
         link: "/gerencia/servicios",
-        roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+        roles: [Roles.ADMINISTRADOR],
     },
     {
         icon: IconReceiptTax,
         title: "Configurar Iva",
         path: "config-iva",
         link: "/gerencia/config-iva",
-        roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+        roles: [Roles.ADMINISTRADOR],
     },
     {
         icon: IconSpray,
         title: "Limpiezas",
         path: "limpiezas",
         link: "/gerencia/limpiezas",
-        roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+        roles: [Roles.ADMINISTRADOR],
     },
 ];
 

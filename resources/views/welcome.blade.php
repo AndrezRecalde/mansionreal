@@ -5,6 +5,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <!-- Favicon 32x32-->
+    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+
     <title>{{ config('app.name', 'Mansion Real') }}</title>
 
     <!-- Fonts -->

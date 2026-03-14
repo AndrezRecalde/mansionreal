@@ -30,12 +30,12 @@
 }
 
 .right {
-    background-image: url("https://github.com/AndrezRecalde/imagenes_mansionreal/blob/main/hotel_right.png?raw=true");
-    background-size: cover;
+    background-image: url("https://github.com/AndrezRecalde/imagenes_mansionreal/blob/main/background_auth.png?raw=true");
+    background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
     width: 50%;
-    background-color: #1a1a1a;
+    background-color: #fff;
     color: white;
     padding: 2rem;
     display: flex;

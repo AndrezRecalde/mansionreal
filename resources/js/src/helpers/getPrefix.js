@@ -92,6 +92,7 @@ export const PAGE_TITLE = {
     DASHBOARD: {
         TITLE: "Dashboard - Mansión Real",
         TITLE_PAGE: "Panel Administrativo",
+        DESCRIPCION_PAGE: "Análisis comparativo de ocupación e ingresos",
 
         CHART_HUESPEDES_GANANCIAS: {
             TITLE: "Huéspedes y Ganancias Mensuales",
@@ -170,6 +171,7 @@ export const PAGE_TITLE = {
     HUESPEDES: {
         TITLE: "Gestión de Huéspedes - Mansión Real",
         TITLE_PAGE: "Gestión de Huéspedes",
+        DESCRIPCION_PAGE: "Administra los huéspedes del hotel",
         BUTTONS: {
             NUEVO_HUESPED: "Nuevo Huésped",
         },
@@ -202,6 +204,7 @@ export const PAGE_TITLE = {
     REPORTE_CONSUMOS: {
         TITLE: "Reporte de Consumos - Mansión Real",
         TITLE_PAGE: "Reporte de Consumos por Categoría",
+        DESCRIPCION_PAGE: "Reporte de Consumos por Categoría",
         ALERTS_SECTION: {
             ERROR_ALERT: {
                 TITLE: "Error",
@@ -279,6 +282,7 @@ export const PAGE_TITLE = {
     HISTORIAL_CONSUMOS: {
         TITLE: "Historial de Reservas - Mansión Real",
         TITLE_PAGE: "Historial de Reservas",
+        DESCRIPCION_PAGE: "Historial de Reservas y Consumos",
 
         CAMPOS_TABLA: {
             CODIGO_RESERVA: "Código de Reserva",
@@ -299,13 +303,15 @@ export const PAGE_TITLE = {
     DEPARTAMENTOS: {
         TITLE: "Gestión de Departamentos - Mansión Real",
         TITLE_PAGE: "Gestión de Departamentos",
+        DESCRIPCION_PAGE:
+            "Gestionar la creación y modificación de departamentos el el hotel",
         BUTTONS: {
             NUEVO_DEPARTAMENTO: "Nuevo Departamento",
         },
         ACTIVAR_ELEMENTO: {
             TITLE: "¿Deseas activar este departamento?",
         },
-        CAMPOS_MODAL : {
+        CAMPOS_MODAL: {
             TITULO_MODAL: "Departamento",
             INPUT_NUMERO_DEPARTAMENTO: {
                 LABEL: "Número de Departamento",
@@ -325,12 +331,14 @@ export const PAGE_TITLE = {
                 PLACEHOLDER: "Seleccione imágenes",
             },
             BUTTON_GUARDAR: "Guardar Departamento",
-        }
+        },
     },
 
     USUARIOS: {
         TITLE: "Gestión de Usuarios - Mansión Real",
         TITLE_PAGE: "Gestión de Usuarios",
+        DESCRIPCION_PAGE:
+            "Gestionar la creación y modificación de usuarios con su respectivo role",
         BUTTONS: {
             NUEVO_USUARIO: "Nuevo Usuario",
         },
@@ -371,6 +379,8 @@ export const PAGE_TITLE = {
     SERVICIOS: {
         TITLE: "Gestión de Servicios - Mansión Real",
         TITLE_PAGE: "Gestión de Servicios",
+        DESCRIPCION_PAGE:
+            "Gestionar la creación y modificación de servicios para los departamentos",
         BUTTONS: {
             NUEVO_SERVICIO: "Nuevo Servicio",
         },
@@ -395,6 +405,7 @@ export const PAGE_TITLE = {
     IVA: {
         TITLE: "Gestión de IVA - Mansión Real",
         TITLE_PAGE: "Gestión de IVA",
+        DESCRIPCION_PAGE: "Gestionar la activación y modificación de IVA",
         BUTTONS: {
             NUEVO_IVA: "Nuevo IVA",
         },
@@ -431,6 +442,7 @@ export const PAGE_TITLE = {
     LIMPIEZA: {
         TITLE: "Historial de Limpiezas - Mansión Real",
         TITLE_PAGE: "Historial de Limpiezas",
+        DESCRIPCION_PAGE: "Gestión del Historial de Limpiezas",
         BUTTONS: {
             FILTRAR_LIMPIEZAS: "Filtrar Limpiezas",
         },
@@ -449,7 +461,6 @@ export const PAGE_TITLE = {
             BUTTON_GUARDAR: "Guardar Limpieza",
         },
     },
-
 
     PRODUCTOS: "Gestión de Productos - Mansión Real",
     REPORTES: "Reportes - Mansión Real",

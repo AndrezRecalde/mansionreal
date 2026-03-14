@@ -3,12 +3,12 @@ import { Container, Divider, Group } from "@mantine/core";
 import {
     ActivarElementoModal,
     BtnSection,
+    PrincipalSectionPage,
     ResetearPwdModal,
-    TitlePage,
     UsuarioModal,
     UsuarioTable,
 } from "../../components";
-import { IconCubePlus } from "@tabler/icons-react";
+import { IconCubePlus, IconUserCircle } from "@tabler/icons-react";
 import {
     useRoleStore,
     useTitleHook,
@@ -75,7 +75,11 @@ const UsuariosPage = () => {
     return (
         <Container size="xl" my={20}>
             <Group justify="space-between" mb={10}>
-                <TitlePage order={2}>{PAGE_TITLE.USUARIOS.TITLE_PAGE}</TitlePage>
+                <PrincipalSectionPage
+                    title={PAGE_TITLE.USUARIOS.TITLE_PAGE}
+                    description={PAGE_TITLE.USUARIOS.DESCRIPCION_PAGE}
+                    icon={<IconUserCircle size={22} />}
+                />
                 <BtnSection
                     IconSection={IconCubePlus}
                     handleAction={handleNuevoHuesped}

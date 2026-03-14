@@ -5,6 +5,7 @@ import {
     LimpiezaModal,
     TabContentDisponibilidad,
     ReservaModals,
+    PrincipalSectionPage,
 } from "../../components";
 import {
     useDepartamentoStore,
@@ -20,6 +21,7 @@ import { PAGE_CONFIG, TABS } from "../../helpers/calendario.constants";
 import { PAGE_TITLE } from "../../helpers/getPrefix";
 import classes from "./modules/Tabs.module.css";
 import Swal from "sweetalert2";
+import { IconBuildingSkyscraper } from "@tabler/icons-react";
 
 /**
  * Página de disponibilidad de departamentos
@@ -116,12 +118,12 @@ const DisponibilidadDepartamentoPage = () => {
     // Hooks personalizados - Ahora retorna también activeTab
     const { activeTab, handleTabChange } = useDisponibilidadTabManagement(
         fnConsultarDisponibilidadDepartamentos,
-        fnCargarEstadias
+        fnCargarEstadias,
     );
 
     const datos_reserva = useDatosReservaDisponibilidad(
         activarDepartamento,
-        activarEstadia
+        activarEstadia,
     );
 
     // Memoizar la función según el tab activo
@@ -146,8 +148,11 @@ const DisponibilidadDepartamentoPage = () => {
             size={PAGE_CONFIG.DISPONIBILIDAD.CONTAINER_SIZE}
             my={PAGE_CONFIG.DISPONIBILIDAD.MARGIN_Y}
         >
-            <TitlePage order={2}>{PAGE_CONFIG.DISPONIBILIDAD.TITLE}</TitlePage>
-
+            <PrincipalSectionPage
+                title={PAGE_CONFIG.DISPONIBILIDAD.TITLE}
+                description={PAGE_CONFIG.DISPONIBILIDAD.DESCRIPCION_PAGE}
+                icon={<IconBuildingSkyscraper size={22} />}
+            />
             <Divider my={PAGE_CONFIG.DISPONIBILIDAD.DIVIDER_MARGIN} />
 
             <Tabs

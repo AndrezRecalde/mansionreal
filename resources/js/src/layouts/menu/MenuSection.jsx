@@ -44,7 +44,11 @@ export const MenuSection = ({
                             {category}
                         </Text>
                         {items.map((item) => {
-                            const isAllowed = item.roles.includes(usuario.role);
+                            const hasRole = Array.isArray(usuario.roles) && item.roles.some((r) => usuario.roles.includes(r));
+                            const hasPermission = item.permissions && Array.isArray(usuario.permissions) 
+                                ? item.permissions.some((perm) => usuario.permissions.includes(perm))
+                                : false;
+                            const isAllowed = hasRole || hasPermission;
 
                             if (!isAllowed) return null; // Oculta el item si el rol no tiene permiso
 

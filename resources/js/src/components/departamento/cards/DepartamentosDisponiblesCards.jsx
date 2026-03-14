@@ -261,8 +261,8 @@ const DepartamentoCard = ({
             <EstadoBadge estado={departamento.estado} theme={theme} />
 
             {usuario &&
-            (usuario.role === Roles.ADMINISTRADOR ||
-                usuario.role === Roles.GERENCIA) ? (
+            (usuario.roles?.includes(Roles.ADMINISTRADOR) ||
+                usuario.roles?.includes(Roles.GERENCIA)) ? (
                 <Group justify="center">
                     <Card.Section className={classes.section} mt="sm">
                         <AccionesFooter

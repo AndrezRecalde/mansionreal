@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Box, Select, SimpleGrid, Stack, TextInput } from "@mantine/core";
+import { Box, MultiSelect, SimpleGrid, Stack, TextInput } from "@mantine/core";
 import { BtnSubmit } from "../../../components";
 import { useRoleStore, useUiUsuario, useUsuarioStore } from "../../../hooks";
 import classes from "../../../components/elements/modules/LabelsInput.module.css";
@@ -14,7 +14,7 @@ export const UsuarioForm = ({ form, PAGE_TITLE }) => {
         if (activarUsuario !== null) {
             form.setValues({
                 ...activarUsuario,
-                role: activarUsuario.roles[0].id.toString(),
+                roles: activarUsuario.roles.map((r) => r.id.toString()),
             });
         }
     }, [activarUsuario]);
@@ -71,7 +71,7 @@ export const UsuarioForm = ({ form, PAGE_TITLE }) => {
                     {...form.getInputProps("email")}
                     classNames={classes}
                 />
-                <Select
+                <MultiSelect
                     withAsterisk
                     searchable
                     clearable
@@ -82,7 +82,7 @@ export const UsuarioForm = ({ form, PAGE_TITLE }) => {
                         value: role.id.toString(),
                         label: role.name,
                     }))}
-                    {...form.getInputProps("role")}
+                    {...form.getInputProps("roles")}
                     classNames={classes}
                 />
                 <BtnSubmit>{PAGE_TITLE.CAMPOS_MODAL.BUTTON_GUARDAR}</BtnSubmit>

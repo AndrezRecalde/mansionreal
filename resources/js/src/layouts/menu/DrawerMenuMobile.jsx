@@ -6,6 +6,7 @@ import {
     headerConfigRoutes,
     headerReportesRoutes,
     headerInventarioRoutes,
+    headerVentasRapidasRoutes,
 } from "../../routes/menuRoutes";
 import { useUiHeaderMenu } from "../../hooks";
 import { UserBtnMobile } from "./UserBtnMobile";
@@ -16,11 +17,26 @@ export const DrawerMenuMobile = ({ usuario, classes, theme }) => {
         abrirLinksConfiguracion,
         abrirLinksGerencia,
         abrirLinksInventario,
+        abrirLinksFacturas,
         fnDrawerMobile,
         fnLinksConfiguracion,
         fnLinksGerencia,
         fnLinksInventario,
+        fnLinksFacturas,
     } = useUiHeaderMenu();
+
+    // Check if user has roles or permissions to see the Facturas menu
+    const showFacturasMenu =
+        usuario.roles?.includes(Roles.ADMINISTRADOR) ||
+        usuario.roles?.includes(Roles.GERENCIA) ||
+        (Array.isArray(usuario.permissions) &&
+            usuario.permissions.some((p) =>
+                [
+                    "ver_facturas",
+                    "ver_consumos_externos",
+                    "ver_pagos_externos",
+                ].includes(p),
+            ));
     return (
         <Drawer
             opened={abrirDrawerMobile}
@@ -43,8 +59,8 @@ export const DrawerMenuMobile = ({ usuario, classes, theme }) => {
                 />
                 <Divider my="sm" />
 
-                {usuario.role === Roles.ADMINISTRADOR ||
-                usuario.role === Roles.GERENCIA ? (
+                {usuario.roles?.includes(Roles.ADMINISTRADOR) ||
+                usuario.roles?.includes(Roles.GERENCIA) ? (
                     <MenuSection
                         title="Configuraciónes"
                         usuario={usuario}
@@ -57,9 +73,9 @@ export const DrawerMenuMobile = ({ usuario, classes, theme }) => {
                     />
                 ) : null}
 
-                {usuario.role === Roles.ADMINISTRADOR ||
-                usuario.role === Roles.GERENCIA ||
-                usuario.role === Roles.ASISTENTE ? (
+                {usuario.roles?.includes(Roles.ADMINISTRADOR) ||
+                usuario.roles?.includes(Roles.GERENCIA) ||
+                usuario.roles?.includes(Roles.ASISTENTE) ? (
                     <MenuSection
                         title="Gerencia"
                         usuario={usuario}
@@ -72,8 +88,8 @@ export const DrawerMenuMobile = ({ usuario, classes, theme }) => {
                     />
                 ) : null}
 
-                {usuario.role === Roles.ADMINISTRADOR ||
-                usuario.role === Roles.GERENCIA ? (
+                {usuario.roles?.includes(Roles.ADMINISTRADOR) ||
+                usuario.roles?.includes(Roles.GERENCIA) ? (
                     <MenuSection
                         title="Inventario"
                         usuario={usuario}
@@ -82,6 +98,19 @@ export const DrawerMenuMobile = ({ usuario, classes, theme }) => {
                         theme={theme}
                         isOpen={abrirLinksInventario}
                         toggle={fnLinksInventario}
+                        toggleDrawer={fnDrawerMobile}
+                    />
+                ) : null}
+
+                {showFacturasMenu ? (
+                    <MenuSection
+                        title="Ventas Rápidas"
+                        usuario={usuario}
+                        menuData={headerVentasRapidasRoutes}
+                        classes={classes}
+                        theme={theme}
+                        isOpen={abrirLinksFacturas}
+                        toggle={fnLinksFacturas}
                         toggleDrawer={fnDrawerMobile}
                     />
                 ) : null}

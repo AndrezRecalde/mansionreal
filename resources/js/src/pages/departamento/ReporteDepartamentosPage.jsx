@@ -4,7 +4,7 @@ import {
     ConsultarEstadiasSection,
     ConsultarReservaSection,
     FiltrarPorFechasForm,
-    TitlePage,
+    PrincipalSectionPage,
 } from "../../components";
 import {
     useDashboardKPIStore,
@@ -24,6 +24,7 @@ import ProductPieChart from "../../components/dashboard/ProductPieChart";
 import DepartmentBarChartExport from "../../components/dashboard/export/DepartmentBarChartExport";
 import EstadiasBarChartExport from "../../components/dashboard/export/EstadiasBarChartExport";
 import ProductPieChartExport from "../../components/dashboard/export/ProductPieChartExport";
+import { IconFileText } from "@tabler/icons-react";
 
 const ReporteDepartamentosPage = () => {
     useTitleHook("Reporte Reservas - Mansión Real");
@@ -158,7 +159,11 @@ const ReporteDepartamentosPage = () => {
 
     return (
         <Container size="xl" my={20}>
-            <TitlePage order={2}>Reporte Reservas & Estadías</TitlePage>
+            <PrincipalSectionPage
+                title="Reporte Reservas & Estadías"
+                description="Reporte de Reservas & Estadías"
+                icon={<IconFileText size={22} />}
+            />
             <Divider my={10} />
             <FiltrarPorFechasForm
                 titulo="Filtrar por fechas"

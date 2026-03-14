@@ -55,7 +55,7 @@ class UsuarioController extends Controller
             $data = $request->validated();
 
             $usuario = User::create($data);
-            $usuario->assignRole($request->role);
+            $usuario->assignRole($request->roles);
 
             DB::commit();
 
@@ -79,9 +79,9 @@ class UsuarioController extends Controller
             if ($usuario) {
                 $usuario->update($request->validated());
 
-                if ($request->filled('role')) {
+                if ($request->filled('roles')) {
                     $usuario->roles()->detach();
-                    $usuario->assignRole($request->role);
+                    $usuario->assignRole($request->roles);
                 }
                 DB::commit();
                 return response()->json([

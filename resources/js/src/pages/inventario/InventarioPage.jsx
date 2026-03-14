@@ -7,6 +7,7 @@ import {
     InventarioBusquedaForm,
     InventarioModal,
     InventarioTable,
+    PrincipalSectionPage,
     TitlePage,
 } from "../../components";
 import {
@@ -15,7 +16,7 @@ import {
     useTitleHook,
     useUiInventario,
 } from "../../hooks";
-import { IconCubePlus } from "@tabler/icons-react";
+import { IconBuildingStore, IconCubePlus } from "@tabler/icons-react";
 import Swal from "sweetalert2";
 
 const InventarioPage = () => {
@@ -74,7 +75,11 @@ const InventarioPage = () => {
     return (
         <Container size="xl" my={20}>
             <Group justify="space-between" mb={10}>
-                <TitlePage order={2}>Inventario — Productos</TitlePage>
+                <PrincipalSectionPage
+                    title="Gestión de Inventario - Productos"
+                    description="Administración del Inventario de Productos"
+                    icon={<IconBuildingStore size={22} />}
+                />
                 <BtnSection
                     IconSection={IconCubePlus}
                     handleAction={handleNuevoHuesped}

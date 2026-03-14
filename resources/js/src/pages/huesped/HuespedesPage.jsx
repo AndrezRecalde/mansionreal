@@ -3,16 +3,11 @@ import { Container, Divider, Group } from "@mantine/core";
 import {
     BtnSection,
     HuespedModal,
-    TitlePage,
     HuespedTable,
+    PrincipalSectionPage,
 } from "../../components";
-import {
-    useHuespedStore,
-    useProvinciaStore,
-    useTitleHook,
-    useUiHuesped,
-} from "../../hooks";
-import { IconCubePlus } from "@tabler/icons-react";
+import { useHuespedStore, useTitleHook, useUiHuesped } from "../../hooks";
+import { IconCubePlus, IconUsersGroup } from "@tabler/icons-react";
 import Swal from "sweetalert2";
 import { PAGE_TITLE } from "../../helpers/getPrefix";
 
@@ -72,7 +67,12 @@ const HuespedPage = () => {
     return (
         <Container size="xl" my={20}>
             <Group justify="space-between" mb={10}>
-                <TitlePage>{PAGE_TITLE.HUESPEDES.TITLE_PAGE}</TitlePage>
+                <PrincipalSectionPage
+                    title={PAGE_TITLE.HUESPEDES.TITLE_PAGE}
+                    description={PAGE_TITLE.HUESPEDES.DESCRIPCION_PAGE}
+                    icon={<IconUsersGroup size={22} />}
+                />
+
                 <BtnSection
                     IconSection={IconCubePlus}
                     handleAction={handleNuevoHuesped}

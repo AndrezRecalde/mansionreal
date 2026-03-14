@@ -1,6 +1,6 @@
 import { Group, Stack } from "@mantine/core";
-import { TitlePage } from "../../../components";
-import { IconBeach, IconBuilding } from "@tabler/icons-react";
+import { PrincipalSectionPage, TitlePage } from "../../../components";
+import { IconBeach, IconBuilding, IconCalendar } from "@tabler/icons-react";
 import { BtnAddActions } from "../../../components";
 import { useMediaQuery } from "@mantine/hooks";
 import { PAGE_TITLE } from "../../../helpers/getPrefix";
@@ -28,9 +28,13 @@ export const CalendarioHeader = ({ onReservar, onEstadia }) => {
             {isMobile ? (
                 <>
                     <Group justify="center">
-                        <TitlePage order={3}>
-                            {PAGE_TITLE.CALENDARIO_RESERVAS.TITLE_PAGE}
-                        </TitlePage>
+                        <PrincipalSectionPage
+                            title={PAGE_TITLE.CALENDARIO_RESERVAS.TITLE_PAGE}
+                            description={
+                                PAGE_TITLE.CALENDARIO_RESERVAS.DESCRIPCION_PAGE
+                            }
+                            icon={<IconCalendar size={22} />}
+                        />
                     </Group>
                     <Group justify="center">
                         <BtnAddActions actions={menuActions} fullWidth>
@@ -41,9 +45,13 @@ export const CalendarioHeader = ({ onReservar, onEstadia }) => {
             ) : (
                 <Group justify="space-between">
                     <Group>
-                        <TitlePage order={2}>
-                            {PAGE_TITLE.CALENDARIO_RESERVAS.TITLE_PAGE}
-                        </TitlePage>
+                        <PrincipalSectionPage
+                            title={PAGE_TITLE.CALENDARIO_RESERVAS.TITLE_PAGE}
+                            description={
+                                PAGE_TITLE.CALENDARIO_RESERVAS.DESCRIPCION_PAGE
+                            }
+                            icon={<IconCalendar size={22} />}
+                        />
                     </Group>
                     <Group>
                         <BtnAddActions actions={menuActions}>

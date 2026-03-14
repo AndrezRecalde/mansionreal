@@ -7,14 +7,18 @@ import {
     Select,
     Badge,
     SimpleGrid,
-    Button,
 } from "@mantine/core";
 import { YearPickerInput } from "@mantine/dates";
-import { BtnSection, TextSection, TitlePage } from "../../components";
+import {
+    BtnSection,
+    PrincipalSectionPage,
+    TextSection,
+} from "../../components";
 import { useInventarioStore, useTitleHook } from "../../hooks";
 import { MantineReactTable } from "mantine-react-table";
 import { formatFechaHoraModal } from "../../helpers/fnHelper";
 import classes from "../../components/elements/modules/LabelsInput.module.css";
+import { IconLogs } from "@tabler/icons-react";
 
 const HistorialMovimientosInvPage = () => {
     useTitleHook("Historial de Movimientos - Inventario");
@@ -112,7 +116,11 @@ const HistorialMovimientosInvPage = () => {
 
     return (
         <Container size="xl" my={20}>
-            <TitlePage order={2}>Historial Movimientos — Productos</TitlePage>
+            <PrincipalSectionPage
+                title="Historial Movimientos de Productos"
+                description="Administración del Historial de Movimientos de Productos"
+                icon={<IconLogs size={22} />}
+            />
             <Divider my={10} />
             <Fieldset legend="Filtrar Búsqueda">
                 <SimpleGrid cols={{ base: 1, sm: 2, md: 2 }}>

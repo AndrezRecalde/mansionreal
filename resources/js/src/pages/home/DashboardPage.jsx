@@ -16,8 +16,9 @@ import DepartmentBarChart from "../../components/dashboard/DepartmentBarChart";
 import ProductPieChart from "../../components/dashboard/ProductPieChart";
 import GuestsRankingTable from "../../components/dashboard/GuestsRankingTable";
 import EstadiasBarChart from "../../components/dashboard/EstadiasBarChart";
-import { FiltrarPorFechasForm } from "../../components";
+import { FiltrarPorFechasForm, PrincipalSectionPage } from "../../components";
 import { PAGE_TITLE } from "../../helpers/getPrefix";
+import { IconChartAreaLineFilled } from "@tabler/icons-react";
 
 export default function DashboardPage() {
     useTitleHook(PAGE_TITLE.DASHBOARD.TITLE);
@@ -56,11 +57,11 @@ export default function DashboardPage() {
 
     return (
         <Container size="xl">
-            <Group justify="space-between">
-                <Title order={2} mb="md">
-                    {PAGE_TITLE.DASHBOARD.TITLE_PAGE}
-                </Title>
-            </Group>
+            <PrincipalSectionPage
+                title={PAGE_TITLE.DASHBOARD.TITLE_PAGE}
+                description={PAGE_TITLE.DASHBOARD.DESCRIPCION_PAGE}
+                icon={<IconChartAreaLineFilled size={22} />}
+            />
             <Divider my={10} />
 
             {/* Filtros */}

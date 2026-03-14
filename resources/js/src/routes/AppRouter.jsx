@@ -28,12 +28,15 @@ export const AppRouter = () => {
 
     // Helper para renderizar rutas de acuerdo a la estructura dinámica
     const renderRoutes = (routeConfig) => {
-        return routeConfig.map(({ path, Component, roles }) => (
+        return routeConfig.map(({ path, Component, roles, permissions }) => (
             <Route
                 key={path}
                 path={path}
                 element={
-                    <PrivateRoutes requiredRole={roles}>
+                    <PrivateRoutes
+                        requiredRole={roles}
+                        requiredPermissions={permissions}
+                    >
                         <AppHeaderMenu>
                             <Component />
                         </AppHeaderMenu>

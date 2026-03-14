@@ -15,7 +15,7 @@ export const UsuarioModal = ({ PAGE_TITLE }) => {
             nombres: "",
             dni: "",
             email: "",
-            role: null,
+            roles: [],
         },
         validate: {
             apellidos: isNotEmpty("Los apellidos son obligatorios"),
@@ -23,13 +23,13 @@ export const UsuarioModal = ({ PAGE_TITLE }) => {
             dni: isNotEmpty("El DNI es obligatorio"),
             email: (value) =>
                 /^\S+@\S+$/.test(value) ? null : "El email no es válido",
-            role: isNotEmpty("El rol es obligatorio"),
+            roles: isNotEmpty("Debe seleccionar al menos un rol"),
         },
         transformValues: (values) => ({
             ...values,
             dni: values.dni.trim(),
             email: values.email.trim().toLowerCase(),
-            role: Number(values.role),
+            roles: values.roles.map(Number),
         }),
     });
 

@@ -80,7 +80,7 @@ export const UserBtnHeader = ({ usuario }) => {
                                     : "Sin datos"}
                             </TextSection>
                             <TextSection fs="italic" fz={14} fw={700}>
-                                {usuario?.role ?? "Sin datos"}
+                                {usuario?.roles?.join(', ') || "Sin datos"}
                             </TextSection>
                         </div>
                         <IconChevronDown
@@ -108,7 +108,7 @@ export const UserBtnHeader = ({ usuario }) => {
                             <br />
                         </TextSection>
                         <TextSection tt="" fz={15} fs="italic" fw={700} size="sm">
-                            {usuario?.role || "Sin datos"}
+                            {usuario?.roles?.join(', ') || "Sin datos"}
                         </TextSection>
                     </div>
                 </Group>

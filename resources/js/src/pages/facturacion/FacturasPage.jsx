@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { Container, Divider } from "@mantine/core";
 import {
-    TitlePage,
     FacturasTable,
     FacturaDetalleModal,
     FacturaAnularModal,
@@ -11,6 +10,7 @@ import {
     FacturasKPISection,
     FacturasMontosSection,
     FacturasDetalleSection,
+    PrincipalSectionPage,
 } from "../../components";
 import {
     useFacturaStore,
@@ -19,6 +19,7 @@ import {
     useUiFactura,
 } from "../../hooks";
 import Swal from "sweetalert2";
+import { IconFileInvoice } from "@tabler/icons-react";
 
 const FacturasPage = () => {
     useTitleHook("Gestión de Facturas - Mansión Real");
@@ -98,8 +99,11 @@ const FacturasPage = () => {
 
     return (
         <Container size="xl" my={20}>
-            <TitlePage order={2}>Gestión de Facturas</TitlePage>
-
+            <PrincipalSectionPage
+                title="Gestión de Facturas"
+                description="Gestión de Información de Facturas"
+                icon={<IconFileInvoice size={22} />}
+            />
             {/* Filtros */}
             <FiltrarPorFechasCodigo
                 cargando={cargando}

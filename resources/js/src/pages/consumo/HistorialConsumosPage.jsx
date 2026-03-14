@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Container, Divider } from "@mantine/core";
 import {
     FiltrarPorFechasCodigo,
+    PrincipalSectionPage,
     ReGenerarFacturaModal,
     ReservaModals,
     ReservasInformacionTable,
@@ -23,6 +24,7 @@ import {
 } from "../../hooks";
 import { PAGE_TITLE } from "../../helpers/getPrefix";
 import Swal from "sweetalert2";
+import { IconFileText } from "@tabler/icons-react";
 
 const HistorialConsumosPage = () => {
     useTitleHook(PAGE_TITLE.HISTORIAL_CONSUMOS.TITLE);
@@ -166,9 +168,11 @@ const HistorialConsumosPage = () => {
 
     return (
         <Container size="xl" my={20}>
-            <TitlePage order={2}>
-                {PAGE_TITLE.HISTORIAL_CONSUMOS.TITLE_PAGE}
-            </TitlePage>
+            <PrincipalSectionPage
+                title={PAGE_TITLE.HISTORIAL_CONSUMOS.TITLE_PAGE}
+                description={PAGE_TITLE.HISTORIAL_CONSUMOS.DESCRIPCION_PAGE}
+                icon={<IconFileText size={22} />}
+            />
             <Divider my={10} />
             <FiltrarPorFechasCodigo
                 cargando={cargando}

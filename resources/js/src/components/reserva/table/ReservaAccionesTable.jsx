@@ -101,7 +101,7 @@ export const ReservaAccionesTable = ({ datos, usuario }) => {
                             : `Resumen de Estadia  — ${datos.estado?.nombre_estado}`}
                     </TextSection>
                 </Group>
-                {usuario.role === Roles.GERENCIA || usuario.role === Roles.ADMINISTRADOR ? (
+                {usuario.roles?.includes(Roles.GERENCIA) || usuario.roles?.includes(Roles.ADMINISTRADOR) ? (
                     <Group gap={20}>
                         {/* Botón Finalizar Reserva */}
                         <Tooltip label="Finalizar Reserva">

@@ -147,6 +147,16 @@ export const headerReportesRoutes = {
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
         },
     ],
+    FACTURAS: [
+        {
+            icon: IconReceiptTax,
+            title: "Facturas",
+            path: "facturas",
+            link: "/gerencia/facturas",
+            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA, Roles.ASISTENTE],
+            permissions: ["ver_facturas"],
+        },
+    ],
 };
 
 /* Rutas para administrar: Categorias, Inventario, Historial de Movimientos */
@@ -177,21 +187,15 @@ export const headerInventarioRoutes = {
 };
 
 /* Rutas para administrar: Facturas, Venta de Mostrador */
-export const headerFacturasRoutes = {
-    FACTURAS: [
-        {
-            icon: IconReceiptTax,
-            title: "Facturas",
-            path: "facturas",
-            link: "/gerencia/facturas",
-            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
-        },
+export const headerVentasRapidasRoutes = {
+    VENTAS_RAPIDAS: [
         {
             icon: IconShoppingCart,
             title: "Venta de Mostrador",
             path: "venta-mostrador",
             link: "/gerencia/venta-mostrador",
-            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA, Roles.ASISTENTE],
+            permissions: ["ver_consumos_externos", "ver_pagos_externos"],
         },
     ],
 };
@@ -200,7 +204,7 @@ export const headerFacturasRoutes = {
 export const menuConfiguracionRapida = [
     {
         icon: IconUserCheck,
-        title: "Listar Usuarios",
+        title: "Usuarios",
         path: "usuarios",
         link: "/gerencia/usuarios",
         roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
@@ -208,14 +212,14 @@ export const menuConfiguracionRapida = [
 
     {
         icon: IconBuildings,
-        title: "Listar Departamentos",
+        title: "Departamentos",
         path: "departamentos",
         link: "/gerencia/departamentos",
         roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
     },
     {
         icon: IconListCheck,
-        title: "Listar Servicios",
+        title: "Servicios",
         path: "servicios",
         link: "/gerencia/servicios",
         roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
@@ -229,7 +233,7 @@ export const menuConfiguracionRapida = [
     },
     {
         icon: IconSpray,
-        title: "Listar Limpiezas",
+        title: "Limpiezas",
         path: "limpiezas",
         link: "/gerencia/limpiezas",
         roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],

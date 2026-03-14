@@ -4,6 +4,7 @@ import {
     Badge,
     Box,
     Button,
+    Container,
     Divider,
     Group,
     NumberInput,
@@ -33,7 +34,12 @@ import {
     useInventarioStore,
     useVentaMostradorStore,
 } from "../../hooks";
-import { ClienteFacturacionSelector, TextSection } from "../../components";
+import {
+    ClienteFacturacionSelector,
+    PrincipalSectionPage,
+    TextSection,
+    TitlePage,
+} from "../../components";
 import Swal from "sweetalert2";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -625,18 +631,12 @@ const VentaMostradorPage = () => {
     };
 
     return (
-        <Box p="md">
-            <Group mb="lg">
-                <ThemeIcon size={40} radius="md" variant="light">
-                    <IconShoppingCart size={22} />
-                </ThemeIcon>
-                <Box>
-                    <Title order={3}>Venta de Mostrador</Title>
-                    <Text c="dimmed" size="sm">
-                        Registro de consumos para clientes sin reserva
-                    </Text>
-                </Box>
-            </Group>
+        <Container size="xl" my={20}>
+            <PrincipalSectionPage
+                title="Venta de Mostrador"
+                description="Registro de consumos para clientes sin reserva"
+                icon={<IconShoppingCart size={22} />}
+            />
 
             <Paper p="xl" withBorder>
                 <Stepper
@@ -672,7 +672,7 @@ const VentaMostradorPage = () => {
                     />
                 )}
             </Paper>
-        </Box>
+        </Container>
     );
 };
 

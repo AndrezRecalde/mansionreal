@@ -3,7 +3,7 @@ import { Logo } from "../components";
 import { Roles } from "../helpers/getPrefix";
 import { HeaderBtnInicio } from "./HeaderBtnInicio";
 import {
-    headerFacturasRoutes,
+    headerVentasRapidasRoutes,
     headerReportesRoutes,
     headerInventarioRoutes,
     menuConfiguracionRapida,
@@ -19,6 +19,20 @@ import classes from "./modules/HeaderMenu.module.css";
 export const HeaderMenu = ({ usuario }) => {
     const { abrirDrawerMobile, fnDrawerMobile } = useUiHeaderMenu();
     const theme = useMantineTheme();
+
+    // Check if user has roles or permissions to see the Facturas menu
+    const showFacturasMenu =
+        usuario.roles?.includes(Roles.ADMINISTRADOR) ||
+        usuario.roles?.includes(Roles.GERENCIA) ||
+        (Array.isArray(usuario.permissions) &&
+            usuario.permissions.some((p) =>
+                [
+                    "ver_facturas",
+                    "ver_consumos_externos",
+                    "ver_pagos_externos",
+                ].includes(p),
+            ));
+
     return (
         <Box pb={30}>
             <header className={classes.header}>
@@ -26,17 +40,17 @@ export const HeaderMenu = ({ usuario }) => {
                     <Group h="100%">
                         <Logo height={50} width={200} />
                         <Group h="100%" gap={0} visibleFrom="lg">
-                            {usuario.role === Roles.ADMINISTRADOR ||
-                            usuario.role === Roles.GERENCIA ? (
+                            {usuario.roles?.includes(Roles.ADMINISTRADOR) ||
+                            usuario.roles?.includes(Roles.GERENCIA) ? (
                                 <HeaderBtnInicio
                                     usuario={usuario}
                                     classes={classes}
                                 />
                             ) : null}
                             {/* MENU DE GESTION DE RESERVAS DEL HOTEL */}
-                            {usuario.role === Roles.ADMINISTRADOR ||
-                            usuario.role === Roles.GERENCIA ||
-                            usuario.role === Roles.ASISTENTE ? (
+                            {usuario.roles?.includes(Roles.ADMINISTRADOR) ||
+                            usuario.roles?.includes(Roles.GERENCIA) ||
+                            usuario.roles?.includes(Roles.ASISTENTE) ? (
                                 <GestionMenu
                                     title="Reservas Hotel"
                                     menuData={headerReservasRoutes}
@@ -46,9 +60,9 @@ export const HeaderMenu = ({ usuario }) => {
                                 />
                             ) : null}
                             {/* MENU DE GESTION DE REPORTES DEL HOTEL */}
-                            {usuario.role === Roles.ADMINISTRADOR ||
-                            usuario.role === Roles.GERENCIA ||
-                            usuario.role === Roles.ASISTENTE ? (
+                            {usuario.roles?.includes(Roles.ADMINISTRADOR) ||
+                            usuario.roles?.includes(Roles.GERENCIA) ||
+                            usuario.roles?.includes(Roles.ASISTENTE) ? (
                                 <GestionMenu
                                     title="Reportes Hotel"
                                     menuData={headerReportesRoutes}
@@ -58,8 +72,8 @@ export const HeaderMenu = ({ usuario }) => {
                                 />
                             ) : null}
                             {/* MENU DE GESTION DE INVENTARIO */}
-                            {usuario.role === Roles.ADMINISTRADOR ||
-                            usuario.role === Roles.GERENCIA ? (
+                            {usuario.roles?.includes(Roles.ADMINISTRADOR) ||
+                            usuario.roles?.includes(Roles.GERENCIA) ? (
                                 <GestionMenu
                                     title="Inventario"
                                     menuData={headerInventarioRoutes}
@@ -69,11 +83,10 @@ export const HeaderMenu = ({ usuario }) => {
                                 />
                             ) : null}
 
-                            {usuario.role === Roles.ADMINISTRADOR ||
-                            usuario.role === Roles.GERENCIA ? (
+                            {showFacturasMenu ? (
                                 <GestionMenu
-                                    title="Facturas"
-                                    menuData={headerFacturasRoutes}
+                                    title="Ventas Rápidas"
+                                    menuData={headerVentasRapidasRoutes}
                                     usuario={usuario}
                                     classes={classes}
                                     theme={theme}
@@ -82,8 +95,8 @@ export const HeaderMenu = ({ usuario }) => {
                         </Group>
                     </Group>
                     <Group visibleFrom="lg">
-                        {usuario.role === Roles.ADMINISTRADOR ||
-                        usuario.role === Roles.GERENCIA ? (
+                        {usuario.roles?.includes(Roles.ADMINISTRADOR) ||
+                        usuario.roles?.includes(Roles.GERENCIA) ? (
                             <ConfiguracionMenu
                                 menuData={menuConfiguracionRapida}
                                 classes={classes}

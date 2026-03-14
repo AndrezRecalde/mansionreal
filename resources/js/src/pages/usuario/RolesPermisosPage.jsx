@@ -530,18 +530,31 @@ function TabUsuarios() {
             { accessorKey: "apellidos", header: "Apellidos" },
             { accessorKey: "dni", header: "DNI", size: 100 },
             {
-                accessorKey: "role",
-                header: "Rol",
-                Cell: ({ cell }) =>
-                    cell.getValue() ? (
-                        <Badge color="blue" variant="light">
-                            {cell.getValue()}
-                        </Badge>
-                    ) : (
-                        <Badge color="gray" variant="outline">
-                            Sin rol
-                        </Badge>
-                    ),
+                accessorKey: "roles",
+                header: "Roles",
+                enableSorting: false,
+                Cell: ({ cell }) => {
+                    const rls = cell.getValue() || [];
+                    if (rls.length === 0)
+                        return (
+                            <Badge color="gray" variant="outline">
+                                Sin roles
+                            </Badge>
+                        );
+                    return (
+                        <Group gap={4} wrap="wrap">
+                            {rls.map((r) => (
+                                <Badge
+                                    key={r.id || r.name || r}
+                                    color="blue"
+                                    variant="light"
+                                >
+                                    {r.name || r}
+                                </Badge>
+                            ))}
+                        </Group>
+                    );
+                },
             },
             {
                 accessorKey: "permisos_directos",
@@ -629,12 +642,14 @@ function TabUsuarios() {
                 centered
             >
                 <Stack gap="md">
-                    {usuarioSeleccionado?.role && (
+                    {usuarioSeleccionado?.roles && usuarioSeleccionado.roles.length > 0 && (
                         <Text size="sm" c="dimmed">
-                            Rol actual:{" "}
-                            <Badge color="blue" variant="light">
-                                {usuarioSeleccionado.role}
-                            </Badge>
+                            Roles actuales:{" "}
+                            {usuarioSeleccionado.roles.map(r => (
+                                <Badge key={r.id || r.name || r} color="blue" variant="light" mr="xs">
+                                    {r.name || r}
+                                </Badge>
+                            ))}
                         </Text>
                     )}
                     <MultiSelect

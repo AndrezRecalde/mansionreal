@@ -5,11 +5,11 @@ import {
     BtnSection,
     CategoriaModal,
     CategoriaTable,
-    TitlePage,
+    PrincipalSectionPage,
 } from "../../components";
 import { useCategoriaStore, useTitleHook, useUiCategoria } from "../../hooks";
 import { PAGE_TITLE } from "../../helpers/getPrefix";
-import { IconCubePlus } from "@tabler/icons-react";
+import { IconCategoryFilled, IconCubePlus } from "@tabler/icons-react";
 import Swal from "sweetalert2";
 
 const CategoriasPage = () => {
@@ -66,7 +66,11 @@ const CategoriasPage = () => {
     return (
         <Container size="xl" my={20}>
             <Group justify="space-between" mb={10}>
-                <TitlePage>Categorias</TitlePage>
+                <PrincipalSectionPage
+                    title="Gestión de Categorias"
+                    description="Administración de Categorias"
+                    icon={<IconCategoryFilled size={22} />}
+                />
                 <BtnSection
                     IconSection={IconCubePlus}
                     handleAction={handleNuevaCategoria}

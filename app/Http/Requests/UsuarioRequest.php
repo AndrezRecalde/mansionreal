@@ -30,7 +30,7 @@ class UsuarioRequest extends FormRequest
             'nombres'   => 'required',
             'dni'       => ['required', Rule::unique('users')->ignore($this->request->get('id'))],
             'email'     => ['required', 'string', 'email', 'max:200', 'unique:users,email,' . $this->route('id')],
-            'role'      => 'required'
+            'roles'     => 'required|array|min:1'
         ];
     }
 
@@ -44,7 +44,9 @@ class UsuarioRequest extends FormRequest
             'email.required'     => 'El email es obligatorio.',
             'email.email'        => 'El email no es válido.',
             'email.unique'       => 'El email ya está registrado.',
-            'role.required'      => 'El rol es obligatorio.'
+            'roles.required'     => 'Debe seleccionar al menos un rol.',
+            'roles.array'        => 'Debe seleccionar al menos un rol.',
+            'roles.min'          => 'Debe seleccionar al menos un rol.'
         ];
     }
 

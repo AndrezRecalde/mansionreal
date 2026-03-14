@@ -7,6 +7,7 @@ const initialState = {
     profile: {},
     validate: undefined,
     errores: undefined,
+    permissions: [],
 };
 
 export const authSlice = createSlice({
@@ -46,6 +47,9 @@ export const authSlice = createSlice({
         onClearErrores: (state) => {
             state.errores = undefined;
         },
+        onLoadPermissions: (state, { payload }) => {
+            state.permissions = payload;
+        },
     },
 });
 
@@ -59,4 +63,5 @@ export const {
     onClearValidates,
     onLoadErrores,
     onClearErrores,
+    onLoadPermissions,
 } = authSlice.actions;

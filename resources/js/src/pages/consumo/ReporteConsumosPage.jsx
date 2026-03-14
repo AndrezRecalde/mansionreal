@@ -2,12 +2,12 @@ import { Container, Divider } from "@mantine/core";
 import { useEffect } from "react";
 import {
     FiltrarPorFechasForm,
-    TitlePage,
     ReporteConsumosVisualizacion,
     AlertSection,
+    PrincipalSectionPage,
 } from "../../components";
 import { useConsumoStore, useTitleHook } from "../../hooks";
-import { IconAlertCircle } from "@tabler/icons-react";
+import { IconAlertCircle, IconFileText } from "@tabler/icons-react";
 import { PAGE_TITLE } from "../../helpers/getPrefix";
 
 const ReporteConsumosPage = () => {
@@ -48,9 +48,11 @@ const ReporteConsumosPage = () => {
 
     return (
         <Container size="xl" py="md">
-            <TitlePage order={2}>
-                {PAGE_TITLE.REPORTE_CONSUMOS.TITLE_PAGE}
-            </TitlePage>
+            <PrincipalSectionPage
+                title={PAGE_TITLE.REPORTE_CONSUMOS.TITLE_PAGE}
+                description={PAGE_TITLE.REPORTE_CONSUMOS.DESCRIPCION_PAGE}
+                icon={<IconFileText size={22} />}
+            />
             <Divider my={10} />
 
             {/* Formulario de filtros */}
@@ -64,12 +66,19 @@ const ReporteConsumosPage = () => {
             {errores && (
                 <AlertSection
                     icon={IconAlertCircle}
-                    title={PAGE_TITLE.REPORTE_CONSUMOS.ALERTS_SECTION.ERROR_ALERT.TITLE}
-                    color={PAGE_TITLE.REPORTE_CONSUMOS.ALERTS_SECTION.ERROR_ALERT.COLOR}
+                    title={
+                        PAGE_TITLE.REPORTE_CONSUMOS.ALERTS_SECTION.ERROR_ALERT
+                            .TITLE
+                    }
+                    color={
+                        PAGE_TITLE.REPORTE_CONSUMOS.ALERTS_SECTION.ERROR_ALERT
+                            .COLOR
+                    }
                 >
                     {errores.general
                         ? errores.general[0]
-                        : PAGE_TITLE.REPORTE_CONSUMOS.ALERTS_SECTION.ERROR_ALERT.MESSAGE}
+                        : PAGE_TITLE.REPORTE_CONSUMOS.ALERTS_SECTION.ERROR_ALERT
+                              .MESSAGE}
                 </AlertSection>
             )}
 
@@ -77,8 +86,14 @@ const ReporteConsumosPage = () => {
             {mensaje && (
                 <AlertSection
                     icon={IconAlertCircle}
-                    title={PAGE_TITLE.REPORTE_CONSUMOS.ALERTS_SECTION.SUCCESS_ALERT.TITLE}
-                    color={PAGE_TITLE.REPORTE_CONSUMOS.ALERTS_SECTION.SUCCESS_ALERT.COLOR}
+                    title={
+                        PAGE_TITLE.REPORTE_CONSUMOS.ALERTS_SECTION.SUCCESS_ALERT
+                            .TITLE
+                    }
+                    color={
+                        PAGE_TITLE.REPORTE_CONSUMOS.ALERTS_SECTION.SUCCESS_ALERT
+                            .COLOR
+                    }
                 >
                     {mensaje.msg}
                 </AlertSection>

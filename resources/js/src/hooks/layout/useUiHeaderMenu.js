@@ -4,10 +4,11 @@ import {
     rtkAbrirLinksConfiguracion,
     rtkAbrirLinksGerencia,
     rtkAbrirLinksInventario,
+    rtkAbrirLinksFacturas,
 } from "../../store/layout/uiHeaderMenuSlice";
 
 export const useUiHeaderMenu = () => {
-    const { abrirDrawerMobile, abrirLinksConfiguracion, abrirLinksGerencia, abrirLinksInventario } =
+    const { abrirDrawerMobile, abrirLinksConfiguracion, abrirLinksGerencia, abrirLinksInventario, abrirLinksFacturas } =
         useSelector((state) => state.uiHeaderMenu);
     const dispatch = useDispatch();
 
@@ -25,7 +26,11 @@ export const useUiHeaderMenu = () => {
 
     const fnLinksInventario = (abrir) => {
         dispatch(rtkAbrirLinksInventario(abrir));
-    }
+    };
+
+    const fnLinksFacturas = (abrir) => {
+        dispatch(rtkAbrirLinksFacturas(abrir));
+    };
 
     return {
         // Propiedades
@@ -33,10 +38,12 @@ export const useUiHeaderMenu = () => {
         abrirLinksConfiguracion,
         abrirLinksGerencia,
         abrirLinksInventario,
+        abrirLinksFacturas,
 
         fnDrawerMobile,
         fnLinksConfiguracion,
         fnLinksGerencia,
-        fnLinksInventario
+        fnLinksInventario,
+        fnLinksFacturas,
     };
 };

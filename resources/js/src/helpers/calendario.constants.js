@@ -23,6 +23,7 @@ export const PAGE_CONFIG = {
     },
     DISPONIBILIDAD: {
         TITLE: "Disponibilidad Actual - Mansión Real",
+        DESCRIPCION_PAGE: "Disponibilidad a Fecha de Hoy - Mansión Real",
         CONTAINER_SIZE: "xl",
         MARGIN_Y: 20,
         DIVIDER_MARGIN: 10,

@@ -10,10 +10,14 @@ import { Link } from "react-router-dom";
 
 export const MenuList = ({ usuario, menuData, theme }) => {
     return Object.entries(menuData).map(([category, items]) => {
-        // Filtramos los items permitidos según el role del usuario
-        const allowedItems = items.filter((item) =>
-            item.roles.includes(usuario.role)
-        );
+        // Filtramos los items permitidos según el role del usuario o sus permisos directos
+        const allowedItems = items.filter((item) => {
+            const hasRole = Array.isArray(usuario.roles) && item.roles.some((r) => usuario.roles.includes(r));
+            const hasPermission = item.permissions && Array.isArray(usuario.permissions) 
+                ? item.permissions.some((perm) => usuario.permissions.includes(perm))
+                : false;
+            return hasRole || hasPermission;
+        });
 
         // Si no hay items permitidos, no renderizamos nada para esta categoría
         if (allowedItems.length === 0) return null;

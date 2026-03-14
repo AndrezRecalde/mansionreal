@@ -4,14 +4,14 @@ import {
     ActivarElementoModal,
     ConfigIvaModal,
     ConfigIvaTable,
-    TitlePage,
+    PrincipalSectionPage,
 } from "../../components";
 import {
     useConfiguracionIvaStore,
     useTitleHook,
     useUiConfiguracionIva,
 } from "../../hooks";
-import { IconCubePlus } from "@tabler/icons-react";
+import { IconCubePlus, IconReceiptTax } from "@tabler/icons-react";
 import { PAGE_TITLE } from "../../helpers/getPrefix";
 import Swal from "sweetalert2";
 
@@ -64,7 +64,12 @@ const ConfigIvaPage = () => {
 
     return (
         <Container size="xl" my={20}>
-            <TitlePage order={2}>{PAGE_TITLE.IVA.TITLE_PAGE}</TitlePage>
+            <PrincipalSectionPage
+                title={PAGE_TITLE.IVA.TITLE_PAGE}
+                description={PAGE_TITLE.IVA.DESCRIPCION_PAGE}
+                icon={<IconReceiptTax size={22} />}
+            />
+
             <Divider my={10} />
 
             <ConfigIvaTable PAGE_TITLE={PAGE_TITLE.IVA.CAMPOS_TABLA} />

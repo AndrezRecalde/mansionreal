@@ -10,12 +10,13 @@ import {
     onLoadToken,
     onLogout,
     onValidate,
+    onLoadPermissions,
 } from "../../store/auth/authSlice";
 import apiAxios from "../../api/apiAxios";
 
 export const useAuthStore = () => {
     const { clearColorScheme } = useMantineColorScheme();
-    const { isLoading, user, token, profile, validate, errores } = useSelector(
+    const { isLoading, user, token, profile, validate, errores, permissions } = useSelector(
         (state) => state.auth
     );
 
@@ -30,12 +31,13 @@ export const useAuthStore = () => {
                 dni,
                 password,
             });
-            const { usuario, access_token } = data;
+            const { usuario, access_token, permissions } = data;
             localStorage.setItem("service_user", JSON.stringify(usuario));
             localStorage.setItem("auth_token", access_token);
             localStorage.setItem("token_init_date", new Date().getTime());
             dispatch(onLoadToken(access_token));
             dispatch(onAuthenticate(usuario));
+            dispatch(onLoadPermissions(permissions || []));
         } catch (error) {
             //console.log(error);
             error.response.data.errores
@@ -55,12 +57,13 @@ export const useAuthStore = () => {
 
         try {
             const { data } = await apiAxios.get("/refresh");
-            const { usuario, access_token } = data;
+            const { usuario, access_token, permissions } = data;
             localStorage.setItem("service_user", JSON.stringify(usuario));
             localStorage.setItem("auth_token", access_token);
             localStorage.setItem("token_init_date", new Date().getTime());
             dispatch(onAuthenticate(usuario));
             dispatch(onLoadToken(access_token));
+            dispatch(onLoadPermissions(permissions || []));
         } catch (error) {
             //console.log(error);
             localStorage.clear();
@@ -106,6 +109,7 @@ export const useAuthStore = () => {
         profile,
         validate,
         errores,
+        permissions,
 
         startLogin,
         checkAuthToken,

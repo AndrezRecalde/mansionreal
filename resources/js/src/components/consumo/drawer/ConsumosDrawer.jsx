@@ -40,8 +40,8 @@ export const ConsumosDrawer = ({ datos_reserva, fnAsignarElemento }) => {
             fnCargarConsumos({ reserva_id: datos_reserva.reserva_id });
 
             if (
-                usuario.role === Roles.GERENCIA ||
-                usuario.role === Roles.ADMINISTRADOR
+                usuario.roles?.includes(Roles.GERENCIA) ||
+                usuario.roles?.includes(Roles.ADMINISTRADOR)
             ) {
                 fnCargarGastos({ reserva_id: datos_reserva.reserva_id });
             }
@@ -108,8 +108,8 @@ export const ConsumosDrawer = ({ datos_reserva, fnAsignarElemento }) => {
                     <PagosTable estado={datos_reserva.estado.nombre_estado} />
 
                     {/* Tabla de Gastos (solo GERENCIA) */}
-                    {usuario.role === Roles.GERENCIA ||
-                    usuario.role === Roles.ADMINISTRADOR ? (
+                    {usuario.roles?.includes(Roles.GERENCIA) ||
+                    usuario.roles?.includes(Roles.ADMINISTRADOR) ? (
                         <GastoDrawerTable
                             estado={datos_reserva.estado.nombre_estado}
                         />

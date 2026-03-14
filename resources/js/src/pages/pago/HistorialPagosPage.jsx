@@ -2,9 +2,10 @@ import { Container, Divider } from "@mantine/core";
 import {
     FiltrarPorFechasCodigo,
     PagosHistorialTable,
-    TitlePage,
+    PrincipalSectionPage,
 } from "../../components";
 import { usePagoStore, useTitleHook } from "../../hooks";
+import { IconFileText } from "@tabler/icons-react";
 
 const HistorialPagosPage = () => {
     useTitleHook("Historial de Pagos - Mansión Real");
@@ -22,14 +23,16 @@ const HistorialPagosPage = () => {
 
     return (
         <Container size="xl" my={20}>
-            <TitlePage order={2}>Historial de Pagos</TitlePage>
+            <PrincipalSectionPage
+                title="Historial de Pagos"
+                description="Historial de Información de Pagos"
+                icon={<IconFileText size={22} />}
+            />
             <Divider my={10} />
-
             <FiltrarPorFechasCodigo
                 cargando={cargando}
                 fnHandleAction={handleBuscar}
             />
-
             <Divider my={10} />
             <PagosHistorialTable />
         </Container>

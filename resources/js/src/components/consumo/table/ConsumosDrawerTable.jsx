@@ -332,8 +332,8 @@ export const ConsumosDrawerTable = ({ estado }) => {
             const estaFacturado = consumo.esta_facturado;
             const tieneDescuento = consumo.tiene_descuento;
             const puedeGestionarDescuentos =
-                usuario.role === Roles.ADMINISTRADOR ||
-                usuario.role === Roles.GERENCIA;
+                usuario.roles?.includes(Roles.ADMINISTRADOR) ||
+                usuario.roles?.includes(Roles.GERENCIA);
 
             return (
                 <Menu shadow="md" width={200}>

@@ -4,10 +4,11 @@ import {
     FiltrarPorFechasForm,
     LimpiezaModal,
     LimpiezaTable,
-    TitlePage,
+    PrincipalSectionPage,
 } from "../../components";
 import { useLimpiezaStore, useTitleHook } from "../../hooks";
 import { PAGE_TITLE } from "../../helpers/getPrefix";
+import { IconSpray } from "@tabler/icons-react";
 
 const LimpiezaPage = () => {
     useTitleHook(PAGE_TITLE.LIMPIEZA.TITLE);
@@ -24,7 +25,6 @@ const LimpiezaPage = () => {
         pageIndex: 0,
         pageSize: 20,
     });
-
 
     // Bandera para saber si ya se ha filtrado al menos una vez
     const [haFiltrado, setHaFiltrado] = useState(false);
@@ -75,7 +75,11 @@ const LimpiezaPage = () => {
 
     return (
         <Container size="xl" my={20}>
-            <TitlePage order={2}>{PAGE_TITLE.LIMPIEZA.TITLE_PAGE}</TitlePage>
+            <PrincipalSectionPage
+                title={PAGE_TITLE.LIMPIEZA.TITLE_PAGE}
+                description={PAGE_TITLE.LIMPIEZA.DESCRIPCION_PAGE}
+                icon={<IconSpray size={22} />}
+            />
             <Divider my={10} />
             <FiltrarPorFechasForm
                 titulo={PAGE_TITLE.LIMPIEZA.BUTTONS.FILTRAR_LIMPIEZAS}

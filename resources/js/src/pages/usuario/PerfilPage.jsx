@@ -82,9 +82,7 @@ const PerfilPage = () => {
                         radius="lg"
                         autoContrast
                     >
-                        <TextSection tt="" fw={600} fz={14}>
-                            {usuario.role}
-                        </TextSection>
+                        {usuario.roles?.join(", ") || "Sin Rol"}
                     </Badge>
                     <Divider />
                     <TitlePage order={3}>{BIENVENIDA}</TitlePage>

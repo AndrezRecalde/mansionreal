@@ -9,6 +9,8 @@ import {
     BtnSubmit,
     BtnAddActions,
 } from "./elements/buttons/BtnServices";
+/* Elements: Seccion */
+import { PrincipalSectionPage } from "./elements/seccion/PrincipalSectionPage";
 /* Elements: Titulos */
 import { TextSection } from "./elements/titles/TextSection";
 import { TitlePage } from "./elements/titles/TitlePage";
@@ -203,6 +205,7 @@ export {
     BtnSection,
     BtnSubmit,
     BtnAddActions,
+    PrincipalSectionPage,
     Logo,
     TextSection,
     TitlePage,

@@ -157,12 +157,13 @@ const ErrorNotFound = lazy(
         ),
 );
 
-const generateRoutes = (basePath, components, roles) =>
-    components.map(({ path, Component }) => ({
+const generateRoutes = (basePath, components, defaultRoles) =>
+    components.map(({ path, Component, roles, permissions }) => ({
         path: `${path}`,
         link: `${basePath}${path}`,
         Component,
-        roles,
+        roles: roles || defaultRoles,
+        permissions: permissions || null,
     }));
 
 export const PREFIX_ROUTES = {
@@ -266,10 +267,14 @@ const gerenciaRoutes = generateRoutes(
         {
             path: MENU_PATH.FACTURAS,
             Component: FacturasPage,
+            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA, Roles.ASISTENTE],
+            permissions: ["ver_facturas"],
         },
         {
             path: MENU_PATH.VENTA_MOSTRADOR,
             Component: VentaMostradorPage,
+            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA, Roles.ASISTENTE],
+            permissions: ["ver_consumos_externos", "ver_pagos_externos"],
         },
     ],
     [Roles.ADMINISTRADOR, Roles.GERENCIA],

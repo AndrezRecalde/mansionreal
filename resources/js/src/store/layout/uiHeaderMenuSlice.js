@@ -7,6 +7,7 @@ export const uiHeaderMenuSlice = createSlice({
         abrirLinksConfiguracion: false,
         abrirLinksGerencia: false,
         abrirLinksInventario: false,
+        abrirLinksFacturas: false,
     },
     reducers: {
         rtkAbrirDrawerMobile: (state, { payload }) => {
@@ -21,6 +22,9 @@ export const uiHeaderMenuSlice = createSlice({
         rtkAbrirLinksInventario: (state, { payload }) => {
             state.abrirLinksInventario = payload;
         },
+        rtkAbrirLinksFacturas: (state, { payload }) => {
+            state.abrirLinksFacturas = payload;
+        },
     },
 });
 
@@ -29,4 +33,5 @@ export const {
     rtkAbrirLinksConfiguracion,
     rtkAbrirLinksGerencia,
     rtkAbrirLinksInventario,
+    rtkAbrirLinksFacturas,
 } = uiHeaderMenuSlice.actions;

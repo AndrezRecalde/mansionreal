@@ -6,10 +6,14 @@ import {
     DepartamentoDrawer,
     DepartamentoModal,
     DepartamentoTable,
-    TitlePage,
+    PrincipalSectionPage,
 } from "../../components";
 import { IconBuilding, IconCubePlus } from "@tabler/icons-react";
-import { useDepartamentoStore, useTitleHook, useUiDepartamento } from "../../hooks";
+import {
+    useDepartamentoStore,
+    useTitleHook,
+    useUiDepartamento,
+} from "../../hooks";
 import { PAGE_TITLE } from "../../helpers/getPrefix";
 import Swal from "sweetalert2";
 
@@ -67,7 +71,11 @@ const DepartamentosPage = () => {
     return (
         <Container size="xl" my={20}>
             <Group justify="space-between" mb={10}>
-                <TitlePage>{PAGE_TITLE.DEPARTAMENTOS.TITLE_PAGE}</TitlePage>
+                <PrincipalSectionPage
+                    title={PAGE_TITLE.DEPARTAMENTOS.TITLE_PAGE}
+                    description={PAGE_TITLE.DEPARTAMENTOS.DESCRIPCION_PAGE}
+                    icon={<IconBuilding size={22} />}
+                />
                 <BtnSection
                     IconSection={IconCubePlus}
                     handleAction={handleNuevoDepartamento}
@@ -78,7 +86,9 @@ const DepartamentosPage = () => {
             <Divider my={10} />
             <DepartamentoTable />
 
-            <DepartamentoModal PAGE_TITLE={PAGE_TITLE.DEPARTAMENTOS.CAMPOS_MODAL} />
+            <DepartamentoModal
+                PAGE_TITLE={PAGE_TITLE.DEPARTAMENTOS.CAMPOS_MODAL}
+            />
             <DepartamentoDrawer />
             <ActivarElementoModal
                 titulo={PAGE_TITLE.DEPARTAMENTOS.ACTIVAR_ELEMENTO.TITLE}

@@ -87,7 +87,7 @@ export const useConfiguracionIvaStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.get(
-                "/administracion/configuracion-iva/activa",
+                "/configuracion-iva/activa",
             );
             const { configuracionIva } = data;
             dispatch(rtkActivarIva(configuracionIva.tasa_iva));

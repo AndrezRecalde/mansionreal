@@ -63,6 +63,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/tipos-departamentos', [TiposDepartamentosController::class , 'getTiposDepartamentos']);
     Route::get('/departamentos', [DepartamentoController::class , 'getDepartamentos']);
     Route::post('/tipos-dano', [TiposDanoController::class , 'getTiposDano']);
+    Route::get('/configuracion-iva/activa', [ConfiguracionIvaController::class , 'getConfiguracionIvaActiva']);
 
 
     // ========================================================================
@@ -100,7 +101,6 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/configuracion-iva', [ConfiguracionIvaController::class , 'store']);
             Route::put('/configuracion-iva/{id}', [ConfiguracionIvaController::class , 'update']);
             Route::put('/configuracion-iva/{id}/status', [ConfiguracionIvaController::class , 'updateStatus']);
-            Route::get('/configuracion-iva/activa', [ConfiguracionIvaController::class , 'getConfiguracionIvaActiva']);
 
             /* ---- Departamentos ---- */
             Route::post('/departamento', [DepartamentoController::class , 'store']);

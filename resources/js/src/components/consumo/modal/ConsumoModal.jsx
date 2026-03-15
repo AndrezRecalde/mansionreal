@@ -25,6 +25,7 @@ import {
     useUiConsumo,
     useInventarioStore,
     useConsumoStore,
+    useConfiguracionIvaStore,
     MODAL_CONFIG,
 } from "../../../hooks";
 import Swal from "sweetalert2";
@@ -41,6 +42,7 @@ export function ConsumoModal({ reserva_id }) {
     const { abrirModalConsumo, fnAbrirModalConsumo } = useUiConsumo();
     const { fnCargarProductosInventario, fnLimpiarInventarios, inventarios } = useInventarioStore();
     const { fnAgregarConsumo } = useConsumoStore();
+    const { activarIva, fnCargarConfiguracionIvaActiva } = useConfiguracionIvaStore();
 
     const [carrito, setCarrito] = useState([]);
     const [busqueda, setBusqueda] = useState("");
@@ -48,8 +50,9 @@ export function ConsumoModal({ reserva_id }) {
 
     useEffect(() => {
         if (abrirModalConsumo) {
-            // Cargar todos los productos activos
+            // Cargar todos los productos activos y el IVA activo
             fnCargarProductosInventario({ activo: 1 });
+            fnCargarConfiguracionIvaActiva();
         }
         return () => {
             fnLimpiarInventarios();
@@ -92,6 +95,11 @@ export function ConsumoModal({ reserva_id }) {
         (acc, item) => acc + item.precio_unitario * item.cantidad,
         0,
     );
+
+    // IVA y total
+    const tasaIva = parseFloat(activarIva || 0) / 100;
+    const valorIva = subtotal * tasaIva;
+    const total = subtotal + valorIva;
 
     const handleAgregar = (prod) => {
         const existe = carrito.find((item) => item.inventario_id === prod.id);
@@ -381,9 +389,24 @@ export function ConsumoModal({ reserva_id }) {
                         </ScrollArea>
                         <Divider />
                         <Group justify="space-between">
-                            <Text fw={600}>Total estimado:</Text>
-                            <Text fw={700} size="lg">
+                            <Text size="sm" c="dimmed">Subtotal:</Text>
+                            <Text size="sm" c="dimmed">
                                 {formatMoney(subtotal)}
+                            </Text>
+                        </Group>
+                        {activarIva > 0 && (
+                            <Group justify="space-between">
+                                <Text size="sm" c="dimmed">IVA ({activarIva}%):</Text>
+                                <Text size="sm" c="dimmed">
+                                    {formatMoney(valorIva)}
+                                </Text>
+                            </Group>
+                        )}
+                        <Divider variant="dashed" />
+                        <Group justify="space-between">
+                            <Text fw={700}>Total{activarIva > 0 ? ` (IVA ${activarIva}% incl.)` : ""}:</Text>
+                            <Text fw={700} size="lg" c="blue">
+                                {formatMoney(activarIva > 0 ? total : subtotal)}
                             </Text>
                         </Group>
                         <Group justify="flex-end" mt="md">

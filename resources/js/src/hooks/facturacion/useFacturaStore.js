@@ -16,7 +16,6 @@ import {
     rtkCargarResumenDescuentos,
     rtkLimpiarFacturas,
     rtkLimpiarResumenDescuentos,
-    rtkSetFacturaActual,
     rtkSetPdfUrl,
     rtkCargandoDetalle,
 } from "../../store/facturacion/facturaSlice";
@@ -199,7 +198,7 @@ export const useFacturaStore = () => {
     };
 
     /**
-     * ✅ ACTUALIZADO: Recalcular totales desde consumos
+     * Recalcular totales desde consumos
      */
     const fnRecalcularTotales = async (facturaId) => {
         try {
@@ -379,7 +378,7 @@ export const useFacturaStore = () => {
     };
 
     /**
-     * ✅ NUEVO: Limpiar solo el resumen de descuentos
+     * Limpiar solo el resumen de descuentos
      */
     const fnLimpiarResumenDescuentos = () => {
         dispatch(rtkLimpiarResumenDescuentos());

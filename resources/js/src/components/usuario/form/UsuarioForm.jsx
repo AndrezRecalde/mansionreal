@@ -41,7 +41,9 @@ export const UsuarioForm = ({ form, PAGE_TITLE }) => {
                 <TextInput
                     withAsterisk
                     label={PAGE_TITLE.CAMPOS_MODAL.INPUT_CEDULA.LABEL}
-                    placeholder={PAGE_TITLE.CAMPOS_MODAL.INPUT_CEDULA.PLACEHOLDER}
+                    placeholder={
+                        PAGE_TITLE.CAMPOS_MODAL.INPUT_CEDULA.PLACEHOLDER
+                    }
                     {...form.getInputProps("dni")}
                     classNames={classes}
                 />
@@ -52,14 +54,18 @@ export const UsuarioForm = ({ form, PAGE_TITLE }) => {
                     <TextInput
                         withAsterisk
                         label={PAGE_TITLE.CAMPOS_MODAL.INPUT_APELLIDOS.LABEL}
-                        placeholder={PAGE_TITLE.CAMPOS_MODAL.INPUT_APELLIDOS.PLACEHOLDER}
+                        placeholder={
+                            PAGE_TITLE.CAMPOS_MODAL.INPUT_APELLIDOS.PLACEHOLDER
+                        }
                         {...form.getInputProps("apellidos")}
                         classNames={classes}
                     />
                     <TextInput
                         withAsterisk
                         label={PAGE_TITLE.CAMPOS_MODAL.INPUT_NOMBRES.LABEL}
-                        placeholder={PAGE_TITLE.CAMPOS_MODAL.INPUT_NOMBRES.PLACEHOLDER}
+                        placeholder={
+                            PAGE_TITLE.CAMPOS_MODAL.INPUT_NOMBRES.PLACEHOLDER
+                        }
                         {...form.getInputProps("nombres")}
                         classNames={classes}
                     />
@@ -67,7 +73,9 @@ export const UsuarioForm = ({ form, PAGE_TITLE }) => {
                 <TextInput
                     withAsterisk
                     label={PAGE_TITLE.CAMPOS_MODAL.INPUT_EMAIL.LABEL}
-                    placeholder={PAGE_TITLE.CAMPOS_MODAL.INPUT_EMAIL.PLACEHOLDER}
+                    placeholder={
+                        PAGE_TITLE.CAMPOS_MODAL.INPUT_EMAIL.PLACEHOLDER
+                    }
                     {...form.getInputProps("email")}
                     classNames={classes}
                 />
@@ -75,13 +83,16 @@ export const UsuarioForm = ({ form, PAGE_TITLE }) => {
                     withAsterisk
                     searchable
                     clearable
-                    nothingFoundMessage={PAGE_TITLE.CAMPOS_MODAL.SELECT_ROL.NOTHING_FOUND}
+                    nothingFoundMessage={
+                        PAGE_TITLE.CAMPOS_MODAL.SELECT_ROL.NOTHING_FOUND
+                    }
                     label={PAGE_TITLE.CAMPOS_MODAL.SELECT_ROL.LABEL}
                     placeholder={PAGE_TITLE.CAMPOS_MODAL.SELECT_ROL.PLACEHOLDER}
                     data={roles.map((role) => ({
                         value: role.id.toString(),
                         label: role.name,
                     }))}
+                    maxValues={1}
                     {...form.getInputProps("roles")}
                     classNames={classes}
                 />

@@ -45,8 +45,8 @@ export const useEstadiaStore = () => {
             if (estadia.id) {
                 //actualizando
                 const { data } = await apiAxios.put(
-                    `/general/estadia/${estadia.id}`,
-                    estadia
+                    `/gerencia/estadia/${estadia.id}`,
+                    estadia,
                 );
                 dispatch(rtkCargarMensaje(data));
                 setTimeout(() => {
@@ -57,8 +57,8 @@ export const useEstadiaStore = () => {
             }
             //creando
             const { data } = await apiAxios.post(
-                "/general/estadia/nueva",
-                estadia
+                "/gerencia/estadia/nueva",
+                estadia,
             );
             dispatch(rtkCargarMensaje(data));
             setTimeout(() => {
@@ -78,7 +78,7 @@ export const useEstadiaStore = () => {
     }) => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.post("/general/reporte-estadias", {
+            const { data } = await apiAxios.post("/gerencia/reporte-estadias", {
                 p_fecha_inicio,
                 p_fecha_fin,
                 p_anio,
@@ -101,7 +101,7 @@ export const useEstadiaStore = () => {
         try {
             dispatch(rtkCargandoPDFReporte(true));
             const response = await apiAxios.post(
-                "/general/reporte-estadias-pdf",
+                "/gerencia/reporte-estadias-pdf",
                 {
                     p_fecha_inicio,
                     p_fecha_fin,
@@ -109,7 +109,7 @@ export const useEstadiaStore = () => {
                 },
                 {
                     responseType: "blob",
-                }
+                },
             );
             // Crear un enlace para descargar el PDF
             const url = window.URL.createObjectURL(new Blob([response.data]));

@@ -17,19 +17,20 @@ class RoleController extends Controller
      */
     public function getRoles(): JsonResponse
     {
-        $roles = Role::orderBy('id', 'ASC')->get(['id', 'name']);
-        $user  = auth()->user();
+        $roles = Role::with('permissions')->orderBy('id', 'ASC')->get(['id', 'name']);
+        $user = auth()->user();
 
         if ($user && $user->hasRole(DataRoles::ADMINISTRADOR)) {
             $rolesFiltrados = $roles;
-        } else {
+        }
+        else {
             $rolesFiltrados = $roles->skip(1)->take(50)->values();
         }
 
         return response()->json([
             'status' => HTTPStatus::Success,
-            'roles'  => $rolesFiltrados,
-        ]);
+            'roles' => $rolesFiltrados,
+        ], 200);
     }
 
     /**
@@ -40,13 +41,14 @@ class RoleController extends Controller
         try {
             $permisos = Permission::orderBy('id', 'ASC')->get(['id', 'name']);
             return response()->json([
-                'status'   => HTTPStatus::Success,
+                'status' => HTTPStatus::Success,
                 'permisos' => $permisos,
             ]);
-        } catch (\Throwable $th) {
+        }
+        catch (\Throwable $th) {
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg'    => $th->getMessage(),
+                'msg' => $th->getMessage(),
             ], 500);
         }
     }
@@ -62,19 +64,20 @@ class RoleController extends Controller
             ]);
 
             $rol = Role::create([
-                'name'       => strtoupper($request->name),
+                'name' => strtoupper($request->name),
                 'guard_name' => 'web',
             ]);
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'msg'    => HTTPStatus::Creacion,
-                'rol'    => $rol,
+                'msg' => HTTPStatus::Creacion,
+                'rol' => $rol,
             ], 201);
-        } catch (\Throwable $th) {
+        }
+        catch (\Throwable $th) {
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg'    => $th->getMessage(),
+                'msg' => $th->getMessage(),
             ], 500);
         }
     }
@@ -95,13 +98,14 @@ class RoleController extends Controller
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'msg'    => HTTPStatus::Actualizado,
-                'rol'    => $rol,
+                'msg' => HTTPStatus::Actualizado,
+                'rol' => $rol,
             ]);
-        } catch (\Throwable $th) {
+        }
+        catch (\Throwable $th) {
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg'    => $th->getMessage(),
+                'msg' => $th->getMessage(),
             ], 500);
         }
     }
@@ -117,12 +121,13 @@ class RoleController extends Controller
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'msg'    => 'Rol eliminado correctamente',
+                'msg' => 'Rol eliminado correctamente',
             ]);
-        } catch (\Throwable $th) {
+        }
+        catch (\Throwable $th) {
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg'    => $th->getMessage(),
+                'msg' => $th->getMessage(),
             ], 500);
         }
     }
@@ -135,13 +140,14 @@ class RoleController extends Controller
         try {
             $rol = Role::with('permissions')->findOrFail($id);
             return response()->json([
-                'status'   => HTTPStatus::Success,
+                'status' => HTTPStatus::Success,
                 'permisos' => $rol->permissions->map(fn($p) => ['id' => $p->id, 'name' => $p->name]),
             ]);
-        } catch (\Throwable $th) {
+        }
+        catch (\Throwable $th) {
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg'    => $th->getMessage(),
+                'msg' => $th->getMessage(),
             ], 500);
         }
     }
@@ -153,7 +159,7 @@ class RoleController extends Controller
     {
         try {
             $request->validate([
-                'permisos'   => 'array',
+                'permisos' => 'array',
                 'permisos.*' => 'string|exists:permissions,name',
             ]);
 
@@ -162,14 +168,14 @@ class RoleController extends Controller
 
             return response()->json([
                 'status' => HTTPStatus::Success,
-                'msg'    => 'Permisos del rol actualizados correctamente',
+                'msg' => 'Permisos del rol actualizados correctamente',
             ]);
-        } catch (\Throwable $th) {
+        }
+        catch (\Throwable $th) {
             return response()->json([
                 'status' => HTTPStatus::Error,
-                'msg'    => $th->getMessage(),
+                'msg' => $th->getMessage(),
             ], 500);
         }
     }
 }
-

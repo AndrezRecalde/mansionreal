@@ -7,11 +7,10 @@ import { EstadiasReservadasCards } from "../../reserva/cards/EstadiasReservadasC
 
 /**
  * Componente que maneja el contenido de los tabs
- * @param {string} activeTab - Tab activo actualmente
  * @param {Set} tabsVisitados - Set de tabs que han sido visitados
  * @param {boolean} cargandoEstadias - Estado de carga de estadías
  */
-export const TabContent = ({ activeTab, tabsVisitados, cargandoEstadias }) => {
+export const TabContent = ({ tabsVisitados, cargandoEstadias }) => {
     const renderTabPanel = useMemo(() => {
         return {
             [TABS.HOSPEDAJE]: tabsVisitados.has(TABS.HOSPEDAJE) && (

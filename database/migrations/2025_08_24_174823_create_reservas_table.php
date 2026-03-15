@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+return new class extends Migration 
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('reservas', function (Blueprint $table) {
             $table->id();
-            $table->string('codigo_reserva', 100)->unique();
+            $table->string('codigo_reserva', 100)->nullable()->unique();
 
             $table->enum('tipo_reserva', ['HOSPEDAJE', 'ESTADIA'])->default('HOSPEDAJE');
 

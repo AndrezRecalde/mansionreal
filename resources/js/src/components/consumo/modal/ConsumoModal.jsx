@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
     Modal,
     Group,
@@ -8,82 +8,164 @@ import {
     Divider,
     Box,
     rem,
+    SimpleGrid,
+    TextInput,
+    ScrollArea,
+    Accordion,
+    Paper,
+    Badge,
+    ThemeIcon,
+    NumberInput,
+    Button,
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
-import { BtnSection, BtnSubmit, ConsumoCard } from "../../../components";
-import { IconPlus } from "@tabler/icons-react";
+import { BtnSubmit, TextSection } from "../../../components";
+import { IconSearch, IconPlus, IconMinus, IconTrash, IconShoppingCart } from "@tabler/icons-react";
 import {
     useUiConsumo,
-    useCategoriaStore,
     useInventarioStore,
     useConsumoStore,
-    useConsumoForm,
-    MAX_CONSUMOS,
-    INITIAL_CONSUMO,
     MODAL_CONFIG,
 } from "../../../hooks";
 import Swal from "sweetalert2";
 
+const formatMoney = (v) =>
+    parseFloat(v || 0).toLocaleString("es-EC", {
+        style: "currency",
+        currency: "USD",
+        minimumFractionDigits: 2,
+    });
+
 export function ConsumoModal({ reserva_id }) {
     const isMobile = useMediaQuery("(max-width: 768px)");
     const { abrirModalConsumo, fnAbrirModalConsumo } = useUiConsumo();
-    const { fnCargarCategorias, fnLimpiarCategorias, categorias } =
-        useCategoriaStore();
-    const { fnCargarProductosInventario, fnLimpiarInventarios, inventarios } =
-        useInventarioStore();
+    const { fnCargarProductosInventario, fnLimpiarInventarios, inventarios } = useInventarioStore();
     const { fnAgregarConsumo } = useConsumoStore();
 
-    const form = useConsumoForm();
+    const [carrito, setCarrito] = useState([]);
+    const [busqueda, setBusqueda] = useState("");
+    const [categoriasExpandidas, setCategoriasExpandidas] = useState([]);
 
     useEffect(() => {
         if (abrirModalConsumo) {
-            form.setFieldValue("reserva_id", reserva_id);
-            fnCargarCategorias({ activo: 1 });
+            // Cargar todos los productos activos
+            fnCargarProductosInventario({ activo: 1 });
         }
         return () => {
-            fnLimpiarCategorias();
             fnLimpiarInventarios();
-            form.reset();
+            setCarrito([]);
+            setBusqueda("");
+            setCategoriasExpandidas([]);
         };
-    }, [abrirModalConsumo, reserva_id]);
+    }, [abrirModalConsumo]);
 
-    const handleAddConsumo = () => {
-        if (form.values.consumos.length < MAX_CONSUMOS) {
-            form.insertListItem("consumos", { ...INITIAL_CONSUMO });
-        }
-    };
+    // Filtrar por búsqueda y activos
+    const productosFiltrados = inventarios.filter((p) => {
+        if (!p.activo) return false;
+        if (busqueda.trim() === "") return true;
 
-    const handleRemoveConsumo = (idx) => {
-        form.removeListItem("consumos", idx);
-    };
+        const termino = busqueda.toLowerCase();
+        const nomProd = (p.nombre_producto || "").toLowerCase();
+        const nomCat = (p.nombre_categoria || "").toLowerCase();
 
-    const handleCategoriaChange = (idx, value) => {
-        form.setFieldValue(`consumos.${idx}.categoria_id`, value || "");
-        form.setFieldValue(`consumos.${idx}.inventario_id`, "");
-        if (value) {
-            fnCargarProductosInventario({
-                categoria_id: value,
-                all: false,
-                activo: 1,
-            });
+        return nomProd.includes(termino) || nomCat.includes(termino);
+    });
+
+    // Agrupar por categoría
+    const productosPorCategoria = productosFiltrados.reduce((acc, prod) => {
+        const catName = prod.nombre_categoria || "Otros";
+        if (!acc[catName]) acc[catName] = [];
+        acc[catName].push(prod);
+        return acc;
+    }, {});
+
+    useEffect(() => {
+        if (busqueda.trim() !== "") {
+            setCategoriasExpandidas(Object.keys(productosPorCategoria));
         } else {
-            fnLimpiarInventarios();
+            setCategoriasExpandidas([]);
+        }
+    }, [busqueda]);
+
+    // Subtotal local
+    const subtotal = carrito.reduce(
+        (acc, item) => acc + item.precio_unitario * item.cantidad,
+        0,
+    );
+
+    const handleAgregar = (prod) => {
+        const existe = carrito.find((item) => item.inventario_id === prod.id);
+        if (existe) {
+            setCarrito(
+                carrito.map((item) =>
+                    item.inventario_id === prod.id
+                        ? { ...item, cantidad: item.cantidad + 1 }
+                        : item
+                )
+            );
+        } else {
+            setCarrito([
+                ...carrito,
+                {
+                    categoria_id: prod.categoria_id, // Importante para el backend 
+                    inventario_id: prod.id,
+                    nombre: prod.nombre_producto,
+                    precio_unitario: parseFloat(prod.precio_unitario),
+                    cantidad: 1,
+                    stock: prod.stock,
+                    sin_stock: prod.sin_stock,
+                },
+            ]);
         }
     };
 
-    const handleSubmit = (values) => {
+    const fnActualizarCantidad = (id, cantidad) => {
+        setCarrito(
+            carrito.map((item) =>
+                item.inventario_id === id ? { ...item, cantidad } : item
+            )
+        );
+    };
+
+    const fnEliminarDelCarrito = (id) => {
+        setCarrito(carrito.filter((item) => item.inventario_id !== id));
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        
+        if (carrito.length === 0) {
+            Swal.fire({
+                icon: "warning",
+                title: "Carrito vacío",
+                text: "Agregue al menos un producto.",
+            });
+            return;
+        }
+
         Swal.fire({
             icon: "question",
             title: "¿Confirmar? ",
-            text: "¿Desea registrar estos consumos?",
+            text: "¿Desea registrar estos consumos para la reserva?",
             showCancelButton: true,
             confirmButtonText: "Sí, registrar",
             cancelButtonText: "Cancelar",
         }).then((result) => {
             if (result.isConfirmed) {
-                fnAgregarConsumo(values).then(() => {
+                // Preparar payload
+                const payload = {
+                    reserva_id,
+                    consumos: carrito.map((item) => ({
+                        categoria_id: item.categoria_id,
+                        inventario_id: item.inventario_id,
+                        cantidad: item.cantidad,
+                        precio_unitario: item.precio_unitario,
+                    }))
+                };
+
+                fnAgregarConsumo(payload).then(() => {
                     fnAbrirModalConsumo(false);
-                    form.reset();
+                    setCarrito([]);
                 });
             }
         });
@@ -91,10 +173,8 @@ export function ConsumoModal({ reserva_id }) {
 
     const handleCloseModal = () => {
         fnAbrirModalConsumo(false);
-        form.reset();
+        setCarrito([]);
     };
-
-    const isMaxConsumos = form.values.consumos.length >= MAX_CONSUMOS;
 
     return (
         <Modal
@@ -102,63 +182,219 @@ export function ConsumoModal({ reserva_id }) {
             opened={abrirModalConsumo}
             onClose={handleCloseModal}
             closeOnClickOutside={false}
-            size={MODAL_CONFIG.size}
+            size="xl" // Usar un tamaño más grande o MODAL_CONFIG.size si era grande
             overlayProps={MODAL_CONFIG.overlayProps}
             title={
                 <Group>
                     <Title order={4} fw={700}>
-                        Registrar Consumo
+                        Registrar Consumo a Reserva
                     </Title>
                 </Group>
             }
         >
-            <Box mb={rem(20)}>
+            <Box mb={rem(15)}>
                 <Text mt={rem(5)} c="dimmed" size="sm">
-                    Agrega hasta {MAX_CONSUMOS} consumos con categoría, producto
-                    y cantidad.
+                    Busque y seleccione los productos a agregar como consumo de la reserva.
                 </Text>
             </Box>
             <Divider mb={rem(15)} />
 
-            <form onSubmit={form.onSubmit(handleSubmit)}>
-                <Stack>
-                    {form.values.consumos.map((consumo, idx) => (
-                        <ConsumoCard
-                            key={idx}
-                            consumo={consumo}
-                            idx={idx}
-                            categorias={categorias}
-                            inventarios={inventarios}
-                            form={form}
-                            onRemove={handleRemoveConsumo}
-                            onCategoriaChange={handleCategoriaChange}
-                            canRemove={form.values.consumos.length > 1}
-                        />
-                    ))}
-
-                    <Group>
-                        <BtnSection
-                            variant="light"
-                            IconSection={IconPlus}
-                            handleAction={handleAddConsumo}
-                            disabled={isMaxConsumos}
-                            radius="sm"
-                        >
-                            Agregar consumo
-                        </BtnSection>
-                        <BtnSubmit fullwidth={false} height={40} fontSize={14}>
-                            Guardar consumos
-                        </BtnSubmit>
-                    </Group>
-
-                    {isMaxConsumos && (
-                        <Text c="indigo.6" size="xs" ta="right">
-                            Máximo {MAX_CONSUMOS} consumos permitidos por
-                            reserva.
+            <form onSubmit={handleSubmit}>
+                <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg">
+                    {/* Catálogo */}
+                    <Stack gap="sm">
+                        <Text fw={600} size="sm" c="dimmed">
+                            Catálogo de Productos
                         </Text>
-                    )}
-                </Stack>
+                        <TextInput
+                            placeholder="Buscar producto o categoría..."
+                            value={busqueda}
+                            onChange={(e) => setBusqueda(e.currentTarget.value)}
+                            leftSection={<IconSearch size={16} />}
+                        />
+                        <ScrollArea h={400}>
+                            {Object.keys(productosPorCategoria).length === 0 ? (
+                                <Text c="dimmed" size="sm" ta="center" mt="md">
+                                    No se encontraron productos
+                                </Text>
+                            ) : (
+                                <Accordion
+                                    multiple
+                                    variant="contained"
+                                    value={categoriasExpandidas}
+                                    onChange={setCategoriasExpandidas}
+                                >
+                                    {Object.entries(productosPorCategoria).map(
+                                        ([categoria, productos]) => (
+                                            <Accordion.Item
+                                                key={categoria}
+                                                value={categoria}
+                                            >
+                                                <Accordion.Control>
+                                                    <TextSection fw={500}>
+                                                        {categoria} ({productos.length})
+                                                    </TextSection>
+                                                </Accordion.Control>
+                                                <Accordion.Panel>
+                                                    <Stack gap="xs">
+                                                        {productos.map((prod) => (
+                                                            <Paper
+                                                                key={prod.id}
+                                                                p="sm"
+                                                                withBorder
+                                                                style={{
+                                                                    cursor: "pointer",
+                                                                }}
+                                                                onClick={() =>
+                                                                    handleAgregar(prod)
+                                                                }
+                                                            >
+                                                                <Group justify="space-between">
+                                                                    <Stack gap={2}>
+                                                                        <Text
+                                                                            size="sm"
+                                                                            fw={500}
+                                                                        >
+                                                                            {
+                                                                                prod.nombre_producto
+                                                                            }
+                                                                        </Text>
+                                                                        <Text
+                                                                            size="xs"
+                                                                            c="dimmed"
+                                                                        >
+                                                                            {prod.sin_stock
+                                                                                ? "Sin control de stock"
+                                                                                : `Stock: ${prod.stock}`}
+                                                                        </Text>
+                                                                    </Stack>
+                                                                    <Group gap="xs">
+                                                                        <Badge variant="light">
+                                                                            {formatMoney(
+                                                                                prod.precio_unitario,
+                                                                            )}
+                                                                        </Badge>
+                                                                        <ThemeIcon
+                                                                            size="sm"
+                                                                            variant="light"
+                                                                        >
+                                                                            <IconPlus
+                                                                                size={
+                                                                                    12
+                                                                                }
+                                                                            />
+                                                                        </ThemeIcon>
+                                                                    </Group>
+                                                                </Group>
+                                                            </Paper>
+                                                        ))}
+                                                    </Stack>
+                                                </Accordion.Panel>
+                                            </Accordion.Item>
+                                        ),
+                                    )}
+                                </Accordion>
+                            )}
+                        </ScrollArea>
+                    </Stack>
+
+                    {/* Carrito */}
+                    <Stack gap="sm">
+                        <Text fw={600} size="sm" c="dimmed">
+                            Consumos a registrar ({carrito.length}{" "}
+                            {carrito.length === 1 ? "item" : "items"})
+                        </Text>
+                        <ScrollArea h={300}>
+                            {carrito.length === 0 ? (
+                                <Text c="dimmed" size="sm" ta="center" mt="xl">
+                                    Seleccione productos del catálogo
+                                </Text>
+                            ) : (
+                                <Stack gap="xs">
+                                    {carrito.map((item) => (
+                                        <Paper
+                                            key={item.inventario_id}
+                                            p="sm"
+                                            withBorder
+                                        >
+                                            <Group
+                                                justify="space-between"
+                                                wrap="nowrap"
+                                            >
+                                                <Text size="sm" flex={1} lineClamp={1}>
+                                                    {item.nombre}
+                                                </Text>
+                                                <Group gap="xs" wrap="nowrap">
+                                                    <NumberInput
+                                                        value={item.cantidad}
+                                                        onChange={(v) =>
+                                                            fnActualizarCantidad(
+                                                                item.inventario_id,
+                                                                Math.max(
+                                                                    1,
+                                                                    parseInt(v) || 1,
+                                                                ),
+                                                            )
+                                                        }
+                                                        min={1}
+                                                        max={
+                                                            item.sin_stock
+                                                                ? 9999
+                                                                : item.stock
+                                                        }
+                                                        style={{ width: 70 }}
+                                                        size="xs"
+                                                        leftSection={
+                                                            <IconMinus size={10} />
+                                                        }
+                                                    />
+                                                    <Text
+                                                        size="xs"
+                                                        fw={600}
+                                                        w={70}
+                                                        ta="right"
+                                                    >
+                                                        {formatMoney(
+                                                            item.precio_unitario *
+                                                                item.cantidad,
+                                                        )}
+                                                    </Text>
+                                                    <Button
+                                                        size="xs"
+                                                        color="red"
+                                                        variant="subtle"
+                                                        p={4}
+                                                        onClick={() =>
+                                                            fnEliminarDelCarrito(
+                                                                item.inventario_id,
+                                                            )
+                                                        }
+                                                    >
+                                                        <IconTrash size={14} />
+                                                    </Button>
+                                                </Group>
+                                            </Group>
+                                        </Paper>
+                                    ))}
+                                </Stack>
+                            )}
+                        </ScrollArea>
+                        <Divider />
+                        <Group justify="space-between">
+                            <Text fw={600}>Total estimado:</Text>
+                            <Text fw={700} size="lg">
+                                {formatMoney(subtotal)}
+                            </Text>
+                        </Group>
+                        <Group justify="flex-end" mt="md">
+                            <BtnSubmit fullwidth={false} height={40} fontSize={14} disabled={carrito.length === 0} leftSection={<IconShoppingCart size={16} />}>
+                                Guardar consumos
+                            </BtnSubmit>
+                        </Group>
+                    </Stack>
+                </SimpleGrid>
             </form>
         </Modal>
     );
 }
+

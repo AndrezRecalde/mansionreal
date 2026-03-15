@@ -20,18 +20,20 @@ export const HeaderMenu = ({ usuario }) => {
     const { abrirDrawerMobile, fnDrawerMobile } = useUiHeaderMenu();
     const theme = useMantineTheme();
 
-    // Check if user has roles or permissions to see the Facturas menu
-    const showFacturasMenu =
-        usuario.roles?.includes(Roles.ADMINISTRADOR) ||
-        usuario.roles?.includes(Roles.GERENCIA) ||
-        (Array.isArray(usuario.permissions) &&
-            usuario.permissions.some((p) =>
-                [
-                    "ver_facturas",
-                    "ver_consumos_externos",
-                    "ver_pagos_externos",
-                ].includes(p),
-            ));
+    // Helper to evaluate if a menu group has at least one accessible item based on permissions
+    const hasAccessToMenu = (menuData) => {
+        const userPerms = Array.isArray(usuario.permissions)
+            ? usuario.permissions
+            : [];
+        return Object.values(menuData).some((items) =>
+            items.some(
+                (item) =>
+                    !item.permissions ||
+                    item.permissions.length === 0 ||
+                    item.permissions.some((p) => userPerms.includes(p)),
+            ),
+        );
+    };
 
     return (
         <Box pb={30}>
@@ -40,6 +42,7 @@ export const HeaderMenu = ({ usuario }) => {
                     <Group h="100%">
                         <Logo height={50} width={200} />
                         <Group h="100%" gap={0} visibleFrom="lg">
+                            {/* Inicio Button */}
                             {usuario.roles?.includes(Roles.ADMINISTRADOR) ||
                             usuario.roles?.includes(Roles.GERENCIA) ? (
                                 <HeaderBtnInicio
@@ -47,10 +50,9 @@ export const HeaderMenu = ({ usuario }) => {
                                     classes={classes}
                                 />
                             ) : null}
+
                             {/* MENU DE GESTION DE RESERVAS DEL HOTEL */}
-                            {usuario.roles?.includes(Roles.ADMINISTRADOR) ||
-                            usuario.roles?.includes(Roles.GERENCIA) ||
-                            usuario.roles?.includes(Roles.ASISTENTE) ? (
+                            {hasAccessToMenu(headerReservasRoutes) && (
                                 <GestionMenu
                                     title="Reservas Hotel"
                                     menuData={headerReservasRoutes}
@@ -58,11 +60,9 @@ export const HeaderMenu = ({ usuario }) => {
                                     classes={classes}
                                     theme={theme}
                                 />
-                            ) : null}
+                            )}
                             {/* MENU DE GESTION DE REPORTES DEL HOTEL */}
-                            {usuario.roles?.includes(Roles.ADMINISTRADOR) ||
-                            usuario.roles?.includes(Roles.GERENCIA) ||
-                            usuario.roles?.includes(Roles.ASISTENTE) ? (
+                            {hasAccessToMenu(headerReportesRoutes) && (
                                 <GestionMenu
                                     title="Reportes Hotel"
                                     menuData={headerReportesRoutes}
@@ -70,10 +70,9 @@ export const HeaderMenu = ({ usuario }) => {
                                     classes={classes}
                                     theme={theme}
                                 />
-                            ) : null}
+                            )}
                             {/* MENU DE GESTION DE INVENTARIO */}
-                            {usuario.roles?.includes(Roles.ADMINISTRADOR) ||
-                            usuario.roles?.includes(Roles.GERENCIA) ? (
+                            {hasAccessToMenu(headerInventarioRoutes) && (
                                 <GestionMenu
                                     title="Inventario"
                                     menuData={headerInventarioRoutes}
@@ -81,9 +80,9 @@ export const HeaderMenu = ({ usuario }) => {
                                     classes={classes}
                                     theme={theme}
                                 />
-                            ) : null}
+                            )}
 
-                            {showFacturasMenu ? (
+                            {hasAccessToMenu(headerVentasRapidasRoutes) && (
                                 <GestionMenu
                                     title="Ventas Rápidas"
                                     menuData={headerVentasRapidasRoutes}
@@ -91,19 +90,29 @@ export const HeaderMenu = ({ usuario }) => {
                                     classes={classes}
                                     theme={theme}
                                 />
-                            ) : null}
+                            )}
                         </Group>
                     </Group>
                     <Group visibleFrom="lg">
-                        {usuario.roles?.includes(Roles.ADMINISTRADOR) ||
-                        usuario.roles?.includes(Roles.GERENCIA) ? (
+                        {menuConfiguracionRapida.some(
+                            (item) =>
+                                !item.permissions ||
+                                (Array.isArray(usuario.permissions) &&
+                                    item.permissions.some((p) =>
+                                        usuario.permissions.includes(p),
+                                    )),
+                        ) && (
                             <ConfiguracionMenu
                                 menuData={menuConfiguracionRapida}
                                 classes={classes}
                                 theme={theme}
                             />
-                        ) : null}
-                        <UserBtnHeader usuario={usuario} />
+                        )}
+                        <UserBtnHeader
+                            usuario={usuario}
+                            theme={theme}
+                            classes={classes}
+                        />
                     </Group>
                     <Burger
                         opened={abrirDrawerMobile}

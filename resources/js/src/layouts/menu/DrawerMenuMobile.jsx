@@ -25,18 +25,13 @@ export const DrawerMenuMobile = ({ usuario, classes, theme }) => {
         fnLinksFacturas,
     } = useUiHeaderMenu();
 
-    // Check if user has roles or permissions to see the Facturas menu
-    const showFacturasMenu =
-        usuario.roles?.includes(Roles.ADMINISTRADOR) ||
-        usuario.roles?.includes(Roles.GERENCIA) ||
-        (Array.isArray(usuario.permissions) &&
-            usuario.permissions.some((p) =>
-                [
-                    "ver_facturas",
-                    "ver_consumos_externos",
-                    "ver_pagos_externos",
-                ].includes(p),
-            ));
+    // Helper to evaluate if a menu group has at least one accessible item based on permissions
+    const hasAccessToMenu = (menuData) => {
+        const userPerms = Array.isArray(usuario.permissions) ? usuario.permissions : [];
+        return Object.values(menuData).some(items => 
+            items.some(item => !item.permissions || item.permissions.length === 0 || item.permissions.some(p => userPerms.includes(p)))
+        );
+    };
     return (
         <Drawer
             opened={abrirDrawerMobile}
@@ -59,8 +54,7 @@ export const DrawerMenuMobile = ({ usuario, classes, theme }) => {
                 />
                 <Divider my="sm" />
 
-                {usuario.roles?.includes(Roles.ADMINISTRADOR) ||
-                usuario.roles?.includes(Roles.GERENCIA) ? (
+                {hasAccessToMenu(headerConfigRoutes) && (
                     <MenuSection
                         title="Configuraciónes"
                         usuario={usuario}
@@ -71,11 +65,10 @@ export const DrawerMenuMobile = ({ usuario, classes, theme }) => {
                         toggle={fnLinksConfiguracion}
                         toggleDrawer={fnDrawerMobile}
                     />
-                ) : null}
+                )}
 
-                {usuario.roles?.includes(Roles.ADMINISTRADOR) ||
-                usuario.roles?.includes(Roles.GERENCIA) ||
-                usuario.roles?.includes(Roles.ASISTENTE) ? (
+                {/* NOTE: Reportes appears mapped here as 'Gerencia' but using the right route constant */}
+                {hasAccessToMenu(headerReportesRoutes) && (
                     <MenuSection
                         title="Gerencia"
                         usuario={usuario}
@@ -86,10 +79,9 @@ export const DrawerMenuMobile = ({ usuario, classes, theme }) => {
                         toggle={fnLinksGerencia}
                         toggleDrawer={fnDrawerMobile}
                     />
-                ) : null}
+                )}
 
-                {usuario.roles?.includes(Roles.ADMINISTRADOR) ||
-                usuario.roles?.includes(Roles.GERENCIA) ? (
+                {hasAccessToMenu(headerInventarioRoutes) && (
                     <MenuSection
                         title="Inventario"
                         usuario={usuario}
@@ -100,9 +92,9 @@ export const DrawerMenuMobile = ({ usuario, classes, theme }) => {
                         toggle={fnLinksInventario}
                         toggleDrawer={fnDrawerMobile}
                     />
-                ) : null}
+                )}
 
-                {showFacturasMenu ? (
+                {hasAccessToMenu(headerVentasRapidasRoutes) && (
                     <MenuSection
                         title="Ventas Rápidas"
                         usuario={usuario}
@@ -113,7 +105,7 @@ export const DrawerMenuMobile = ({ usuario, classes, theme }) => {
                         toggle={fnLinksFacturas}
                         toggleDrawer={fnDrawerMobile}
                     />
-                ) : null}
+                )}
 
                 <Group justify="center" mt={20} mb={20} p={20}>
                     <UserBtnMobile />

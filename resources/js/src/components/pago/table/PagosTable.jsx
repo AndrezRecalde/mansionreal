@@ -22,18 +22,18 @@ export const PagosTable = ({ estado }) => {
         return pagos.reduce((acc, curr) => acc + Number(curr.monto ?? 0), 0);
     }, [pagos]);
 
-    // ✅ Verifica si hay al menos un consumo sin facturar
+    // Verifica si hay al menos un consumo sin facturar
     const hayConsumosSinFacturar = useMemo(() => {
         if (!Array.isArray(consumos) || consumos.length === 0) return false;
         return consumos.some((consumo) => consumo.esta_facturado === false);
     }, [consumos]);
 
-    // ✅ Verifica si el estado es PAGADO o CANCELADO
+    // Verifica si el estado es PAGADO o CANCELADO
     const estadoBloqueado = useMemo(() => {
         return estado === Estados.PAGADO || estado === Estados.CANCELADO;
     }, [estado]);
 
-    // ✅ LÓGICA CORREGIDA: Deshabilitar SOLO si:
+    // LÓGICA CORREGIDA: Deshabilitar SOLO si:
     // El estado es PAGADO/CANCELADO Y todos los consumos están facturados
     // Es decir: HABILITAR si hay consumos sin facturar, sin importar el estado
     const deshabilitarAcciones = useMemo(() => {
@@ -45,7 +45,7 @@ export const PagosTable = ({ estado }) => {
         return estadoBloqueado;
     }, [estadoBloqueado, hayConsumosSinFacturar]);
 
-    // ✅ Mensaje del tooltip según la razón de deshabilitación
+    // Mensaje del tooltip según la razón de deshabilitación
     const mensajeTooltip = useMemo(() => {
         if (deshabilitarAcciones) {
             return "Todos los consumos están facturados";

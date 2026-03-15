@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+return new class extends Migration 
 {
     /**
      * Run the migrations.
@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('numero_factura', 50)->unique();
 
             // Relaciones principales
-            $table->unsignedBigInteger('reserva_id')->comment('Una factura por reserva');
+            $table->unsignedBigInteger('reserva_id')->nullable()->comment('Una factura por reserva');
             $table->unsignedBigInteger('cliente_facturacion_id')->comment('Referencia al cliente (puede ser id=1 CF)');
 
             // Fecha de emisión

@@ -48,8 +48,15 @@ const CalendarioReservasPage = () => {
         cargando: cargandoEstadias,
         fnCargarEstadias,
         fnAsignarEstadia,
+        mensaje: mensajeEstadia,
+        errores: erroresEstadia,
     } = useEstadiaStore();
-    const { activarReserva, fnAsignarReserva } = useReservaDepartamentoStore();
+    const {
+        activarReserva,
+        fnAsignarReserva,
+        mensaje: mensajeReserva,
+        errores: erroresReserva,
+    } = useReservaDepartamentoStore();
 
     // Hooks personalizados
     const { activeTab, tabsVisitados, handleTabChange } =
@@ -61,6 +68,46 @@ const CalendarioReservasPage = () => {
     const { mensaje: mensajeConsumos, errores: erroresConsumos } =
         useConsumoStore();
     const { mensaje: mensajeGastos, errores: erroresGastos } = useGastoStore();
+
+    useEffect(() => {
+        if (mensajeReserva !== undefined) {
+            Swal.fire({
+                icon: mensajeReserva.status,
+                text: mensajeReserva.msg,
+                showConfirmButton: true,
+            });
+        }
+    }, [mensajeReserva]);
+
+    useEffect(() => {
+        if (erroresReserva !== undefined) {
+            Swal.fire({
+                icon: "error",
+                text: erroresReserva,
+                showConfirmButton: true,
+            });
+        }
+    }, [erroresReserva]);
+
+    useEffect(() => {
+        if (mensajeEstadia !== undefined) {
+            Swal.fire({
+                icon: mensajeEstadia.status,
+                text: mensajeEstadia.msg,
+                showConfirmButton: true,
+            });
+        }
+    }, [mensajeEstadia]);
+
+    useEffect(() => {
+        if (erroresEstadia !== undefined) {
+            Swal.fire({
+                icon: "error",
+                text: erroresEstadia,
+                showConfirmButton: true,
+            });
+        }
+    }, [erroresEstadia]);
 
     useEffect(() => {
         if (mensajeGastos !== undefined) {

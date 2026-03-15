@@ -29,8 +29,6 @@ import { ActivarElementoForm } from "./elements/modal/ActivarElementoForm";
 import { FiltrarPorFechasForm } from "./elements/filter/FiltrarPorFechasForm";
 /* Elements: Filtrar por Fechas y codigo */
 import { FiltrarPorFechasCodigo } from "./elements/filter/FiltrarPorFechasCodigo";
-/* Elements: Filtrar disponibilidad departamentos */
-import { FiltroDisponibilidad } from "./elements/filter/FiltroDisponibilidad";
 /* Elements: Contenido de TABS */
 import { TabContent } from "./elements/tabs/TabContent";
 import { TabContentDisponibilidad } from "./elements/tabs/TabContentDisponibilidad";
@@ -82,7 +80,6 @@ import { ReservarBusquedaClienteSection } from "./reserva/section/ReservarBusque
 import { ReservarBusquedaClienteForm } from "./reserva/form/ReservarBusquedaClienteForm";
 import { ReservarDatosClienteForm } from "./reserva/form/ReservarDatosClienteForm";
 import { ReservarDatosReservaSection } from "./reserva/section/ReservarDatosReservaSection";
-import { DisponibilidadTable } from "./reserva/section/DisponibilidadTable";
 import { DetalleReservaTable } from "./reserva/table/DetalleReservaTable";
 import { ReservaAccionesTable } from "./reserva/table/ReservaAccionesTable";
 import { ReservaInfoHuespedTable } from "./reserva/table/ReservaInfoHuespedTable";
@@ -143,7 +140,6 @@ import { ConsumoEditarForm } from "./consumo/form/ConsumoEditarForm";
 import { ConsumoEliminarForm } from "./consumo/form/ConsumoEliminarForm";
 import { ConsumoForm } from "./consumo/form/ConsumoForm";
 import { ConsumoDescuentoForm } from "./consumo/form/ConsumoDescuentoForm";
-import { ConsumoCard } from "./consumo/section/ConsumoCard";
 
 /* Gastos de Danos */
 import { GastoDrawerTable } from "./gasto/table/GastoDrawerTable";
@@ -217,7 +213,6 @@ export {
     ActivarElementoForm,
     FiltrarPorFechasForm,
     FiltrarPorFechasCodigo,
-    FiltroDisponibilidad,
     TabContent,
     TabContentDisponibilidad,
 
@@ -268,7 +263,6 @@ export {
     ReservarBusquedaClienteForm,
     ReservarDatosClienteForm,
     ReservarDatosReservaSection,
-    DisponibilidadTable,
     DetalleReservaTable,
     ReservaAccionesTable,
     ReservaInfoHuespedTable,
@@ -329,7 +323,6 @@ export {
     ConsumoEliminarForm,
     ConsumoForm,
     ConsumoDescuentoForm,
-    ConsumoCard,
 
     /* Gastos */
     GastoDrawerTable,

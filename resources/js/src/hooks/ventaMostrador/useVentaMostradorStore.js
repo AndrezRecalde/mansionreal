@@ -146,12 +146,15 @@ export const useVentaMostradorStore = () => {
     }) => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.post("/facturas/generar-externa", {
-                consumo_ids: consumoIds,
-                cliente_facturacion_id: clienteFacturacionId,
-                observaciones: observaciones || null,
-                solicita_factura_detallada: solicitaFacturaDetallada,
-            });
+            const { data } = await apiAxios.post(
+                "/general/facturas/generar-externa",
+                {
+                    consumo_ids: consumoIds,
+                    cliente_facturacion_id: clienteFacturacionId,
+                    observaciones: observaciones || null,
+                    solicita_factura_detallada: solicitaFacturaDetallada,
+                },
+            );
             dispatch(rtkCargarFactura(data.factura));
             dispatch(
                 rtkCargarMensaje({
@@ -177,9 +180,12 @@ export const useVentaMostradorStore = () => {
     const fnDescargarFacturaPDF = async (facturaId) => {
         try {
             dispatch(rtkCargando(true));
-            const response = await apiAxios.get(`/facturas/${facturaId}/pdf`, {
-                responseType: "blob",
-            });
+            const response = await apiAxios.get(
+                `/general/facturas/${facturaId}/pdf`,
+                {
+                    responseType: "blob",
+                },
+            );
             const url = window.URL.createObjectURL(
                 new Blob([response.data], { type: "application/pdf" }),
             );

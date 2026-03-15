@@ -12,9 +12,7 @@ import {
     Tooltip,
     Stack,
     Paper,
-    Title,
     ThemeIcon,
-    Box,
     Container,
     Divider,
 } from "@mantine/core";
@@ -25,7 +23,6 @@ import {
     IconShieldLock,
     IconKey,
     IconUsers,
-    IconPlus,
     IconEdit,
     IconTrash,
     IconShield,
@@ -37,8 +34,8 @@ import {
 import { MantineReactTable, useMantineReactTable } from "mantine-react-table";
 import { MRT_Localization_ES } from "mantine-react-table/locales/es/index.esm.mjs";
 import { useRoleStore, usePermissionStore, useUsuarioStore } from "../../hooks";
-import { TitlePage } from "../../components/elements/titles/TitlePage";
 import { BtnSection, PrincipalSectionPage } from "../../components";
+import { MenuAcciones } from "../../components/elements/table/MenuAcciones";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helpers
@@ -109,7 +106,7 @@ function TabRoles() {
         openPerm();
         await fnCargarPermisos();
         const { data } = await import("../../api/apiAxios").then((m) =>
-            m.default.get(`/gerencia/rol/${rol.id}/permisos`),
+            m.default.get(`/administracion/rol/${rol.id}/permisos`),
         );
         setPermisosSeleccionados(data.permisos.map((p) => p.name));
     }, []);
@@ -173,6 +170,34 @@ function TabRoles() {
         columns: [
             //{ accessorKey: "id", header: "ID", size: 60 },
             { accessorKey: "name", header: "Nombre" },
+            {
+                accessorKey: "permissions",
+                header: "Permisos",
+                enableSorting: false,
+                Cell: ({ cell }) => {
+                    const perms = cell.getValue() || [];
+                    if (perms.length === 0)
+                        return (
+                            <Text size="xs" c="dimmed">
+                                Sin permisos
+                            </Text>
+                        );
+                    return (
+                        <Group gap={4} wrap="wrap">
+                            {perms.map((p) => (
+                                <Badge
+                                    key={p.id || p.name}
+                                    size="xs"
+                                    color="violet"
+                                    variant="dot"
+                                >
+                                    {p.name}
+                                </Badge>
+                            ))}
+                        </Group>
+                    );
+                },
+            },
         ],
         data: roles,
         state: { isLoading: cargando },
@@ -180,35 +205,29 @@ function TabRoles() {
         enableRowActions: true,
         positionActionsColumn: "last",
         renderRowActions: ({ row }) => (
-            <Group wrap="nowrap" gap={4}>
-                <Tooltip label="Editar nombre">
-                    <ActionIcon
-                        variant="subtle"
-                        color="blue"
-                        onClick={() => handleOpenEdit(row.original)}
-                    >
-                        <IconEdit size={16} />
-                    </ActionIcon>
-                </Tooltip>
-                <Tooltip label="Asignar permisos">
-                    <ActionIcon
-                        variant="subtle"
-                        color="violet"
-                        onClick={() => handleOpenPermisos(row.original)}
-                    >
-                        <IconShield size={16} />
-                    </ActionIcon>
-                </Tooltip>
-                <Tooltip label="Eliminar">
-                    <ActionIcon
-                        variant="subtle"
-                        color="red"
-                        onClick={() => handleDelete(row.original)}
-                    >
-                        <IconTrash size={16} />
-                    </ActionIcon>
-                </Tooltip>
-            </Group>
+            <MenuAcciones
+                row={row}
+                items={[
+                    {
+                        label: "Editar nombre",
+                        icon: IconEdit,
+                        onClick: (original) => handleOpenEdit(original),
+                        color: "blue",
+                    },
+                    {
+                        label: "Asignar permisos",
+                        icon: IconShield,
+                        onClick: (original) => handleOpenPermisos(original),
+                        color: "violet",
+                    },
+                    {
+                        label: "Eliminar",
+                        icon: IconTrash,
+                        onClick: (original) => handleDelete(original),
+                        color: "red",
+                    },
+                ]}
+            />
         ),
         renderTopToolbarCustomActions: () => (
             <BtnSection
@@ -403,26 +422,23 @@ function TabPermisos() {
         enableRowActions: true,
         positionActionsColumn: "last",
         renderRowActions: ({ row }) => (
-            <Group wrap="nowrap" gap={4}>
-                <Tooltip label="Editar">
-                    <ActionIcon
-                        variant="subtle"
-                        color="blue"
-                        onClick={() => handleOpenEdit(row.original)}
-                    >
-                        <IconEdit size={16} />
-                    </ActionIcon>
-                </Tooltip>
-                <Tooltip label="Eliminar">
-                    <ActionIcon
-                        variant="subtle"
-                        color="red"
-                        onClick={() => handleDelete(row.original)}
-                    >
-                        <IconTrash size={16} />
-                    </ActionIcon>
-                </Tooltip>
-            </Group>
+            <MenuAcciones
+                row={row}
+                items={[
+                    {
+                        label: "Editar",
+                        icon: IconEdit,
+                        onClick: (original) => handleOpenEdit(original),
+                        color: "blue",
+                    },
+                    {
+                        label: "Eliminar",
+                        icon: IconTrash,
+                        onClick: (original) => handleDelete(original),
+                        color: "red",
+                    },
+                ]}
+            />
         ),
         renderTopToolbarCustomActions: () => (
             <BtnSection

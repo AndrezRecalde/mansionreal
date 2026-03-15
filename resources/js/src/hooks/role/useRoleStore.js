@@ -21,7 +21,7 @@ export const useRoleStore = () => {
     const fnCargarRoles = async () => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.get("/gerencia/roles");
+            const { data } = await apiAxios.get("/administracion/roles");
             dispatch(rtkCargandoRoles(data.roles));
         } catch (error) {
             ExceptionMessageError(error);
@@ -34,7 +34,7 @@ export const useRoleStore = () => {
     const fnCargarPermisos = async () => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.get("/gerencia/permisos");
+            const { data } = await apiAxios.get("/administracion/permisos");
             dispatch(rtkCargarPermisosRol(data.permisos));
         } catch (error) {
             ExceptionMessageError(error);
@@ -48,7 +48,7 @@ export const useRoleStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.get(
-                `/gerencia/rol/${rolId}/permisos`,
+                `/administracion/rol/${rolId}/permisos`,
             );
             dispatch(rtkCargarPermisosDeRol(data.permisos));
         } catch (error) {
@@ -62,7 +62,7 @@ export const useRoleStore = () => {
     const fnAsignarPermisos = async (rolId, permisosArray) => {
         try {
             dispatch(rtkCargando(true));
-            await apiAxios.put(`/gerencia/rol/${rolId}/permisos`, {
+            await apiAxios.put(`/administracion/rol/${rolId}/permisos`, {
                 permisos: permisosArray,
             });
             await fnCargarPermisosDeRol(rolId);
@@ -77,7 +77,7 @@ export const useRoleStore = () => {
     const fnCrearRol = async (nombre) => {
         try {
             dispatch(rtkCargando(true));
-            await apiAxios.post("/gerencia/rol", { name: nombre });
+            await apiAxios.post("/administracion/rol", { name: nombre });
             await fnCargarRoles();
         } catch (error) {
             ExceptionMessageError(error);
@@ -90,7 +90,7 @@ export const useRoleStore = () => {
     const fnActualizarRol = async (id, nombre) => {
         try {
             dispatch(rtkCargando(true));
-            await apiAxios.put(`/gerencia/rol/${id}`, { name: nombre });
+            await apiAxios.put(`/administracion/rol/${id}`, { name: nombre });
             await fnCargarRoles();
         } catch (error) {
             ExceptionMessageError(error);
@@ -103,7 +103,7 @@ export const useRoleStore = () => {
     const fnEliminarRol = async (id) => {
         try {
             dispatch(rtkCargando(true));
-            await apiAxios.delete(`/gerencia/rol/${id}`);
+            await apiAxios.delete(`/administracion/rol/${id}`);
             await fnCargarRoles();
         } catch (error) {
             ExceptionMessageError(error);

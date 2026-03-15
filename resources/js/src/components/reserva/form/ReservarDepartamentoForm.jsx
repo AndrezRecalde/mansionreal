@@ -34,7 +34,7 @@ export const ReservarDepartamentoForm = ({ reservaForm }) => {
 
     const handleSubmitReserva = (e) => {
         e.preventDefault();
-        console.log(activarTipoReserva);
+        //console.log(activarTipoReserva);
         Swal.fire({
             title: `¿Confirmar ${activarTipoReserva.toLowerCase()}?`,
             text: `¿Desea confirmar la ${activarTipoReserva.toLowerCase()}?`,

@@ -21,7 +21,7 @@ export const useUsuarioStore = () => {
     const fnCargarUsuarios = async () => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.get("/gerencia/usuarios");
+            const { data } = await apiAxios.get("/administracion/usuarios");
             const { usuarios } = data;
             dispatch(rtkCargarUsuarios(usuarios));
         } catch (error) {
@@ -36,7 +36,7 @@ export const useUsuarioStore = () => {
             if (usuario.id) {
                 //actualizando
                 const { data } = await apiAxios.put(
-                    `/gerencia/usuario/${usuario.id}`,
+                    `/administracion/usuario/${usuario.id}`,
                     usuario,
                 );
                 fnCargarUsuarios();
@@ -47,7 +47,10 @@ export const useUsuarioStore = () => {
                 return;
             }
             //creando
-            const { data } = await apiAxios.post("/gerencia/usuario", usuario);
+            const { data } = await apiAxios.post(
+                "/administracion/usuario",
+                usuario,
+            );
             fnCargarUsuarios();
             dispatch(rtkCargarMensaje(data));
             setTimeout(() => {
@@ -86,7 +89,7 @@ export const useUsuarioStore = () => {
     const fnCambiarStatus = async (usuario) => {
         try {
             const { data } = await apiAxios.put(
-                `/gerencia/usuario/${usuario.id}/status`,
+                `/administracion/usuario/${usuario.id}/status`,
                 usuario,
             );
             fnCargarUsuarios();
@@ -111,9 +114,12 @@ export const useUsuarioStore = () => {
     const fnAsignarPermisosDirectos = async (usuarioId, permisosArray) => {
         try {
             dispatch(rtkCargando(true));
-            await apiAxios.put(`/gerencia/usuario/${usuarioId}/permisos`, {
-                permisos: permisosArray,
-            });
+            await apiAxios.put(
+                `/administracion/usuario/${usuarioId}/permisos`,
+                {
+                    permisos: permisosArray,
+                },
+            );
             await fnCargarUsuarios();
         } catch (error) {
             dispatch(rtkCargando(false));
@@ -126,7 +132,7 @@ export const useUsuarioStore = () => {
     const fnGetPermisosDirectos = async (usuarioId) => {
         try {
             const { data } = await apiAxios.get(
-                `/gerencia/usuario/${usuarioId}/permisos`
+                `/administracion/usuario/${usuarioId}/permisos`,
             );
             return data.permisos;
         } catch (error) {

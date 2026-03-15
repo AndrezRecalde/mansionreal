@@ -55,7 +55,7 @@ export const useConsumoStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.post(
-                "/general/reporte-consumos",
+                "/gerencia/reporte-consumos",
                 filtros,
             );
             const { reporteData } = data;
@@ -88,7 +88,7 @@ export const useConsumoStore = () => {
             }
 
             const response = await apiAxios.post(
-                "/general/consumos/categoria/pdf",
+                "/gerencia/consumos/categoria/pdf",
                 payload,
                 {
                     responseType: "blob",
@@ -189,13 +189,13 @@ export const useConsumoStore = () => {
     };
 
     /**
-     * ✅ NUEVO: Aplicar descuento a un consumo
+     * Aplicar descuento a un consumo
      */
     const fnAplicarDescuentoConsumo = async (consumoId, datosDescuento) => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.post(
-                `/general/consumo/${consumoId}/aplicar-descuento`,
+                `/gerencia/consumo/${consumoId}/aplicar-descuento`,
                 datosDescuento,
             );
 
@@ -222,7 +222,7 @@ export const useConsumoStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.delete(
-                `/general/consumo/${consumoId}/eliminar-descuento`,
+                `/gerencia/consumo/${consumoId}/eliminar-descuento`,
             );
 
             // Actualizar el consumo en el estado
@@ -243,7 +243,7 @@ export const useConsumoStore = () => {
     };
 
     /**
-     * ✅ NUEVO: Aplicar descuentos masivos a múltiples consumos
+     * Aplicar descuentos masivos a múltiples consumos
      */
     const fnAplicarDescuentosMasivos = async (descuentos) => {
         try {
@@ -251,7 +251,7 @@ export const useConsumoStore = () => {
 
             const promesas = descuentos.map(({ consumoId, datosDescuento }) =>
                 apiAxios.post(
-                    `/general/consumo/${consumoId}/aplicar-descuento`,
+                    `/gerencia/consumo/${consumoId}/aplicar-descuento`,
                     datosDescuento,
                 ),
             );

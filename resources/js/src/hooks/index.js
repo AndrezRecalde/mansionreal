@@ -67,7 +67,6 @@ import { useEstadiaStore } from "./reserva/useEstadiaStore";
 /* Consumo */
 import { useConsumoStore } from "./consumo/useConsumoStore";
 import { useUiConsumo } from "./consumo/useUiConsumo";
-import { useConsumoForm } from "./consumo/useConsumoForm";
 import { MAX_CONSUMOS, INITIAL_CONSUMO, MODAL_CONFIG } from "./consumo/consumo";
 
 /* Gastos */
@@ -178,7 +177,6 @@ export {
     /* Consumo */
     useConsumoStore,
     useUiConsumo,
-    useConsumoForm,
     MAX_CONSUMOS,
     INITIAL_CONSUMO,
     MODAL_CONFIG,

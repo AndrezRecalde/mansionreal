@@ -201,34 +201,85 @@ class ConsumosController extends Controller
 
             foreach ($consumos as $c) {
                 $inventario = Inventario::findOrFail($c['inventario_id']);
-                $cantidad = $c['cantidad'];
+                $cantidad_agregar = $c['cantidad'];
                 $precio_unitario = $inventario->precio_unitario;
-                $subtotal = $cantidad * $precio_unitario;
+                
+                // Check if there is already a pending consumption for the same reservation and product
+                $consumoExistente = Consumo::where('reserva_id', $reserva_id)
+                                           ->where('inventario_id', $inventario->id)
+                                           ->whereNull('factura_id')
+                                           ->first();
 
-                // Calcular IVA
-                $iva = $subtotal * ($tasa_iva / 100);
-                $total = $subtotal + $iva;
+                if ($consumoExistente) {
+                    // Accumulate quantities and recalculate totals
+                    $nueva_cantidad = $consumoExistente->cantidad + $cantidad_agregar;
+                    $subtotal = $nueva_cantidad * $precio_unitario;
+                    $iva = $subtotal * ($tasa_iva / 100);
+                    $total = $subtotal + $iva;
 
-                $consumo = Consumo::create([
-                    'reserva_id' => $reserva_id,
-                    'inventario_id' => $inventario->id,
-                    'cantidad' => $cantidad,
-                    'fecha_creacion' => now(),
-                    'subtotal' => $subtotal,
-                    'tasa_iva' => $tasa_iva,
-                    'iva' => $iva,
-                    'total' => $total,
-                    'descuento' => 0,
-                    'tipo_descuento' => Consumo::TIPO_DESCUENTO_SIN_DESCUENTO,
-                    'creado_por_usuario_id' => Auth::id(),
-                ]);
+                    $consumoExistente->update([
+                        'cantidad' => $nueva_cantidad,
+                        'subtotal' => $subtotal,
+                        'tasa_iva' => $tasa_iva,
+                        'iva' => $iva,
+                        'total' => $total,
+                        'actualizado_por_usuario_id' => Auth::id(),
+                    ]);
+                    
+                    // If it had a discount initially applied, applying changes over discount logic
+                    // Although typically we wouldn't merge items that have distinct manual discounts, 
+                    // this handles the baseline recalculation safely if it had NO discount previously.
+                    // If a discount exists, it should probably be removed or recalculated. We'll recalculate over NO discount.
+                    if ($consumoExistente->tipo_descuento != Consumo::TIPO_DESCUENTO_SIN_DESCUENTO) {
+                         $consumoExistente->aplicarDescuento(
+                             descuento: $consumoExistente->descuento,
+                             tipo: $consumoExistente->tipo_descuento,
+                             motivo: $consumoExistente->motivo_descuento,
+                             usuarioId: $consumoExistente->usuario_registro_descuento_id
+                         );
+                    }
 
-                $consumosProcesados[] = $consumo;
+                    $consumosProcesados[] = $consumoExistente->id;
+                } else {
+                    // Create a new consumption record
+                    $subtotal = $cantidad_agregar * $precio_unitario;
+                    $iva = $subtotal * ($tasa_iva / 100);
+                    $total = $subtotal + $iva;
+
+                    $consumo = Consumo::create([
+                        'reserva_id' => $reserva_id,
+                        'inventario_id' => $inventario->id,
+                        'cantidad' => $cantidad_agregar,
+                        'fecha_creacion' => now(),
+                        'subtotal' => $subtotal,
+                        'tasa_iva' => $tasa_iva,
+                        'iva' => $iva,
+                        'total' => $total,
+                        'descuento' => 0,
+                        'tipo_descuento' => Consumo::TIPO_DESCUENTO_SIN_DESCUENTO,
+                        'creado_por_usuario_id' => Auth::id(),
+                    ]);
+
+                    $consumosProcesados[] = $consumo->id;
+                }
 
                 // Descontar stock si aplica
                 if (!$inventario->sin_stock) {
-                    $inventario->stock -= $cantidad;
-                    $inventario->save();
+                    // Check availability first if needed, though typically done on frontend, good practice
+                    if ($inventario->stock < $cantidad_agregar) {
+                         throw new \Exception("Stock insuficiente para {$inventario->nombre_producto}. Disponible: {$inventario->stock}");
+                    }
+                    
+                    $consumoId = $consumoExistente ? $consumoExistente->id : $consumo->id;
+
+                    $inventario->registrarSalida(
+                        cantidad: $cantidad_agregar,
+                        motivo: 'Consumo registrado en reserva',
+                        observaciones: null,
+                        reservaId: $reserva_id,
+                        consumoId: $consumoId,
+                        usuarioId: Auth::id()
+                    );
                 }
             }
 
@@ -236,7 +287,7 @@ class ConsumosController extends Controller
 
             // ✅ Cargar relaciones y usar Resource
             $consumosProcesados = Consumo::with(['inventario', 'reserva.huesped'])
-                ->whereIn('id', collect($consumosProcesados)->pluck('id'))
+                ->whereIn('id', $consumosProcesados)
                 ->get();
 
             return response()->json([

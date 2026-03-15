@@ -20,9 +20,9 @@ export const PrivateRoutes = ({
     // Verificar si el usuario tiene el rol requerido
     const userHasRequiredRole = requiredRole
         ? Array.isArray(requiredRole)
-            ? requiredRole.some((r) => user?.roles?.includes(r)) // Si requiredRole es un array, verifica si algún rol requerido está en los roles del usuario
-            : user?.roles?.includes(requiredRole) // Si requiredRole es un string, verifica si el rol requerido está incluido en el array de usuario
-        : true; // Si no se especifica requiredRole, se permite el acceso
+            ? requiredRole.some((r) => user?.roles?.includes(r))
+            : user?.roles?.includes(requiredRole)
+        : false; // Si no hay rol requerido, no lo salvamos por rol
 
     // Verificar si el usuario tiene al menos uno de los permisos requeridos
     const userHasRequiredPermission = requiredPermissions
@@ -31,8 +31,11 @@ export const PrivateRoutes = ({
             : userPermissions.includes(requiredPermissions)
         : false;
 
-    // Si el usuario no tiene el rol requerido NI el permiso requerido, mostrar componente de acceso denegado
-    if (!userHasRequiredRole && !userHasRequiredPermission) {
+    // Si la ruta no exige ni rol ni permiso, se considera pública-autenticada (acceso libre)
+    const routeHasNoRestrictions = !requiredRole && !requiredPermissions;
+
+    // Si el usuario no tiene el rol requerido NI el permiso requerido, y la ruta EXIGE restricciones, mostrar componente de acceso denegado
+    if (!routeHasNoRestrictions && !userHasRequiredRole && !userHasRequiredPermission) {
         return <ErrorAccessDenied />;
     }
 

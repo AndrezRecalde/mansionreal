@@ -37,7 +37,7 @@ export const useSecuenciaFacturaStore = () => {
     const fnCargarSecuencias = async () => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.get("/secuencias-factura");
+            const { data } = await apiAxios.get("/general/secuencias-factura");
             dispatch(rtkCargarSecuencias(data.secuencias));
         } catch (error) {
             ExceptionMessageError(error);
@@ -53,7 +53,7 @@ export const useSecuenciaFacturaStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.get(
-                `/secuencias-factura/${secuenciaId}`
+                `/general/secuencias-factura/${secuenciaId}`,
             );
             dispatch(rtkCargarSecuencia(data.data.secuencia));
             return data.data;
@@ -70,7 +70,9 @@ export const useSecuenciaFacturaStore = () => {
     const fnCargarSecuenciaActiva = async () => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.get("/secuencias-factura/activa");
+            const { data } = await apiAxios.get(
+                "/general/secuencias-factura/activa",
+            );
             dispatch(rtkCargarSecuenciaActiva(data.secuencia));
             return data.secuencia;
         } catch (error) {
@@ -88,7 +90,7 @@ export const useSecuenciaFacturaStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.get(
-                `/secuencias-factura/${secuenciaId}/verificar-disponibilidad`
+                `/general/secuencias-factura/${secuenciaId}/verificar-disponibilidad`,
             );
             dispatch(rtkCargarDisponibilidad(data));
             return data;
@@ -106,8 +108,8 @@ export const useSecuenciaFacturaStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.post(
-                "/secuencias-factura",
-                datosSecuencia
+                "/general/secuencias-factura",
+                datosSecuencia,
             );
 
             dispatch(rtkAgregarSecuencia(data.secuencia));
@@ -133,8 +135,8 @@ export const useSecuenciaFacturaStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.put(
-                `/secuencias-factura/${secuenciaId}`,
-                datosSecuencia
+                `/general/secuencias-factura/${secuenciaId}`,
+                datosSecuencia,
             );
 
             dispatch(rtkActualizarSecuencia(data.secuencia));
@@ -160,7 +162,7 @@ export const useSecuenciaFacturaStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.patch(
-                `/secuencias-factura/${secuenciaId}/toggle-estado`
+                `/general/secuencias-factura/${secuenciaId}/toggle-estado`,
             );
 
             dispatch(rtkActualizarSecuencia(data.secuencia));
@@ -185,8 +187,8 @@ export const useSecuenciaFacturaStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.post(
-                `/secuencias-factura/${secuenciaId}/reiniciar`,
-                { confirmacion: "REINICIAR_SECUENCIA" }
+                `/general/secuencias-factura/${secuenciaId}/reiniciar`,
+                { confirmacion: "REINICIAR_SECUENCIA" },
             );
 
             dispatch(rtkActualizarSecuencia(data.secuencia));

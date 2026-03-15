@@ -29,10 +29,10 @@ export const useCalendarioStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.get(
-                "/general/calendario/reservas",
+                "/gerencia/calendario/reservas",
                 {
                     params: filtros,
-                }
+                },
             );
             const { eventos } = data;
 
@@ -48,7 +48,7 @@ export const useCalendarioStore = () => {
     const fnCargarRecursosDepartamentos = async () => {
         try {
             const { data } = await apiAxios.get(
-                "/general/calendario/recursos-departamentos"
+                "/gerencia/calendario/recursos-departamentos",
             );
             const { recursos } = data;
             dispatch(rtkCargarRecursosDepartamentos(recursos));
@@ -61,10 +61,10 @@ export const useCalendarioStore = () => {
     const fnCargarEstadisticasOcupacion = async (filtros = {}) => {
         try {
             const { data } = await apiAxios.get(
-                "/general/calendario/estadisticas-ocupacion",
+                "/gerencia/calendario/estadisticas-ocupacion",
                 {
                     params: filtros,
-                }
+                },
             );
 
             dispatch(rtkCargarEstadisticasOcupacion(data));
@@ -80,10 +80,10 @@ export const useCalendarioStore = () => {
 
             // Cargar reservas primero
             const { data: dataEventos } = await apiAxios.get(
-                "/general/calendario/reservas",
+                "/gerencia/calendario/reservas",
                 {
                     params: filtros,
-                }
+                },
             );
 
             const { eventos } = dataEventos;
@@ -92,14 +92,12 @@ export const useCalendarioStore = () => {
 
             // Luego cargar recursos
             const { data: recursosData } = await apiAxios.get(
-                "/general/calendario/recursos-departamentos"
+                "/gerencia/calendario/recursos-departamentos",
             );
 
             const { recursos } = recursosData;
 
-            dispatch(
-                rtkCargarRecursosDepartamentos(recursos)
-            );
+            dispatch(rtkCargarRecursosDepartamentos(recursos));
         } catch (error) {
             //console.error("Error al cargar datos del calendario:", error);
             ExceptionMessageError(error);

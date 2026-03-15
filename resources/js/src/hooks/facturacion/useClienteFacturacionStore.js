@@ -43,9 +43,12 @@ export const useClienteFacturacionStore = () => {
     const fnCargarClientes = async (filtros = {}) => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.get("/clientes-facturacion", {
-                params: filtros,
-            });
+            const { data } = await apiAxios.get(
+                "/general/clientes-facturacion",
+                {
+                    params: filtros,
+                },
+            );
             dispatch(rtkCargarClientes(data.clientes.data || data.clientes));
         } catch (error) {
             ExceptionMessageError(error);

@@ -38,17 +38,23 @@ export const MenuSection = ({
                 </Center>
             </UnstyledButton>
             <Collapse in={isOpen}>
-                {Object.entries(menuData).map(([category, items]) => (
-                    <div key={category} style={{ paddingLeft: 10 }}>
-                        <Text fw={700} size="sm" c="dimmed">
-                            {category}
-                        </Text>
+                {menuData.map(({ category, items }) => {
+                    const userPerms = Array.isArray(usuario.permissions) ? usuario.permissions : [];
+
+                    const allowedItems = items.filter((item) => {
+                        return !item.permissions || (item.permissions.length === 0) || item.permissions.some((perm) => userPerms.includes(perm));
+                    });
+
+                    if (allowedItems.length === 0) return null;
+
+                    return (
+                        <div key={category} style={{ paddingLeft: 10 }}>
+                            <Text fw={700} size="sm" c="dimmed">
+                                {category}
+                            </Text>
                         {items.map((item) => {
-                            const hasRole = Array.isArray(usuario.roles) && item.roles.some((r) => usuario.roles.includes(r));
-                            const hasPermission = item.permissions && Array.isArray(usuario.permissions) 
-                                ? item.permissions.some((perm) => usuario.permissions.includes(perm))
-                                : false;
-                            const isAllowed = hasRole || hasPermission;
+                            const userPerms = Array.isArray(usuario.permissions) ? usuario.permissions : [];
+                            const isAllowed = !item.permissions || (item.permissions.length === 0) || item.permissions.some((perm) => userPerms.includes(perm));
 
                             if (!isAllowed) return null; // Oculta el item si el rol no tiene permiso
 
@@ -75,10 +81,12 @@ export const MenuSection = ({
                                     </Group>
                                 </Link>
                             );
+
                         })}
                         <Divider my="sm" />
-                    </div>
-                ))}
+                        </div>
+                    );
+                })}
             </Collapse>
             <Divider my="sm" />
         </>

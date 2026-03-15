@@ -1,7 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { Container, Divider, Tabs } from "@mantine/core";
 import {
-    TitlePage,
     LimpiezaModal,
     TabContentDisponibilidad,
     ReservaModals,

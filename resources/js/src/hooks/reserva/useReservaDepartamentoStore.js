@@ -74,7 +74,7 @@ export const useReservaDepartamentoStore = () => {
 
             //await actualizarEstadisticas(new Date());
         } catch (error) {
-            //console.log(error);
+            console.log(error);
             ExceptionMessageError(error);
         }
     };
@@ -143,7 +143,7 @@ export const useReservaDepartamentoStore = () => {
     }) => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.post("/general/reservas/buscar", {
+            const { data } = await apiAxios.post("/gerencia/reservas/buscar", {
                 fecha_inicio,
                 fecha_fin,
                 codigo_reserva,
@@ -163,7 +163,7 @@ export const useReservaDepartamentoStore = () => {
         try {
             dispatch(rtkCargandoPDFNotaVenta(true));
             const response = await apiAxios.post(
-                "/general/exportar-nota-venta",
+                "/gerencia/exportar-nota-venta",
                 { reserva_id },
                 {
                     responseType: "blob", // Importante para manejar archivos binarios

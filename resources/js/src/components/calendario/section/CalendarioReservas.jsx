@@ -5,13 +5,11 @@ import { subMonths, addMonths, startOfMonth, endOfMonth } from "date-fns";
 import {
     useCalendarioStore,
     useReservaDepartamentoStore,
-    //useReservaDepartamentoStore,
     useUiConsumo,
     useUiReservaDepartamento,
 } from "../../../hooks";
 import {
     CalendarioGrid,
-    //CalendarioHeader,
     CalendarioKPIs,
     InformacionReservaModal,
 } from "../../../components";
@@ -61,7 +59,7 @@ export const CalendarioReservas = () => {
                 fecha_fin: formatDateStr(finMes),
             });
         },
-        [mesActualKPI, fnCargarEstadisticasOcupacion]
+        [mesActualKPI, fnCargarEstadisticasOcupacion],
     );
 
     const cargarDatosIniciales = useCallback(async () => {
@@ -117,7 +115,7 @@ export const CalendarioReservas = () => {
                 cargandoNavegacion.current = false;
             }
         },
-        [rangosCargados, fnCargarDatosCalendario, actualizarEstadisticas]
+        [rangosCargados, fnCargarDatosCalendario, actualizarEstadisticas],
     );
 
     useEffect(() => {
@@ -131,7 +129,7 @@ export const CalendarioReservas = () => {
             setCurrentDate(newDate);
             await cargarMasDatos(newDate);
         },
-        [cargarMasDatos]
+        [cargarMasDatos],
     );
 
     const handleViewChange = useCallback((newView) => {

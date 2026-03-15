@@ -18,7 +18,7 @@ export const usePermissionStore = () => {
     const fnCargarPermisos = async () => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.get("/gerencia/permisos");
+            const { data } = await apiAxios.get("/administracion/permisos");
             dispatch(rtkCargarPermisos(data.permisos));
         } catch (error) {
             console.log(error.response.data);
@@ -31,7 +31,7 @@ export const usePermissionStore = () => {
     const fnCrearPermiso = async (nombre) => {
         try {
             dispatch(rtkCargando(true));
-            await apiAxios.post("/gerencia/permiso", { name: nombre });
+            await apiAxios.post("/administracion/permiso", { name: nombre });
             await fnCargarPermisos();
         } catch (error) {
             ExceptionMessageError(error);
@@ -44,7 +44,9 @@ export const usePermissionStore = () => {
     const fnActualizarPermiso = async (id, nombre) => {
         try {
             dispatch(rtkCargando(true));
-            await apiAxios.put(`/gerencia/permiso/${id}`, { name: nombre });
+            await apiAxios.put(`/administracion/permiso/${id}`, {
+                name: nombre,
+            });
             await fnCargarPermisos();
         } catch (error) {
             ExceptionMessageError(error);
@@ -57,7 +59,7 @@ export const usePermissionStore = () => {
     const fnEliminarPermiso = async (id) => {
         try {
             dispatch(rtkCargando(true));
-            await apiAxios.delete(`/gerencia/permiso/${id}`);
+            await apiAxios.delete(`/administracion/permiso/${id}`);
             await fnCargarPermisos();
         } catch (error) {
             ExceptionMessageError(error);

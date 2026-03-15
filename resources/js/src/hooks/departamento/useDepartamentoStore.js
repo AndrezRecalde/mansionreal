@@ -66,8 +66,8 @@ export const useDepartamentoStore = () => {
         try {
             // Definir URL según si es creación o actualización
             const url = departamentoFormData.get("id")
-                ? `/gerencia/departamento/${departamentoFormData.get("id")}`
-                : "/gerencia/departamento";
+                ? `/administracion/departamento/${departamentoFormData.get("id")}`
+                : "/administracion/departamento";
 
             // Petición POST con FormData
             const { data } = await apiAxios.post(url, departamentoFormData, {
@@ -91,7 +91,7 @@ export const useDepartamentoStore = () => {
     const fnMostrarDepartamento = async (departamento) => {
         try {
             const { data } = await apiAxios.get(
-                `/gerencia/departamento/${departamento.id}`,
+                `/administracion/departamento/${departamento.id}`,
             );
             dispatch(rtkActivarDepartamento(data));
         } catch (error) {
@@ -106,7 +106,7 @@ export const useDepartamentoStore = () => {
     }) => {
         try {
             const { data } = await apiAxios.post(
-                "/gerencia/disponibilidad-departamento",
+                "/general/disponibilidad-departamento",
                 { fecha_checkin, fecha_checkout },
             );
             const { departamentos } = data;
@@ -120,7 +120,7 @@ export const useDepartamentoStore = () => {
     const fnAgregarServiciosDepartamento = async (servicios) => {
         try {
             const { data } = await apiAxios.post(
-                "/gerencia/departamento-servicios",
+                "/administracion/departamento-servicios",
                 servicios,
             );
             // Recargar datos y mostrar mensaje
@@ -138,7 +138,7 @@ export const useDepartamentoStore = () => {
     const fnCambiarEstadoDepartamento = async ({ id, nombre_estado }) => {
         try {
             const { data } = await apiAxios.put(
-                `/general/departamento/${id}/status`,
+                `/gerencia/departamento/${id}/status`,
                 { nombre_estado },
             );
             // Recargar datos y mostrar mensaje
@@ -177,7 +177,7 @@ export const useDepartamentoStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.post(
-                "/general/reporte-departamentos",
+                "/gerencia/reporte-departamentos",
                 {
                     p_fecha_inicio,
                     p_fecha_fin,
@@ -199,7 +199,7 @@ export const useDepartamentoStore = () => {
         try {
             dispatch(rtkCargandoExportacion(true));
             const response = await apiAxios.post(
-                "/general/reservas-reporte/pdf",
+                "/gerencia/reservas-reporte/pdf",
                 datos,
                 {
                     responseType: "blob",
@@ -229,7 +229,7 @@ export const useDepartamentoStore = () => {
         try {
             dispatch(rtkCargandoExportacion(true));
             const response = await apiAxios.post(
-                "/general/reservas-reporte/pdf",
+                "/gerencia/reservas-reporte/pdf",
                 {
                     ...datos,
                     charts: {
@@ -268,7 +268,7 @@ export const useDepartamentoStore = () => {
         try {
             dispatch(rtkCargandoExportacion(true));
             const response = await apiAxios.post(
-                "/general/consumos-por-departamento/pdf",
+                "/gerencia/consumos-por-departamento/pdf",
                 {
                     p_fecha_inicio,
                     p_fecha_fin,

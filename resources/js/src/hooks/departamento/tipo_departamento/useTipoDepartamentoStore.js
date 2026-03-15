@@ -25,7 +25,7 @@ export const useTipoDepartamentoStore = () => {
     const fnCargarTiposDepartamentos = async () => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.get("/gerencia/tipos-departamentos");
+            const { data } = await apiAxios.get("/tipos-departamentos");
             //console.log(data);
             const { tiposDepartamentos } = data;
             dispatch(rtkCargarTiposDepartamentos(tiposDepartamentos));
@@ -40,8 +40,8 @@ export const useTipoDepartamentoStore = () => {
             if (tipoDepartamento.id) {
                 //actualizando
                 const { data } = await apiAxios.put(
-                    `/gerencia/tipo-departamento/${tipoDepartamento.id}`,
-                    tipoDepartamento
+                    `/administracion/tipo-departamento/${tipoDepartamento.id}`,
+                    tipoDepartamento,
                 );
                 fnCargarTiposDepartamentos();
                 dispatch(rtkCargarMensaje(data));
@@ -52,8 +52,8 @@ export const useTipoDepartamentoStore = () => {
             }
             //creando
             const { data } = await apiAxios.post(
-                "/gerencia/tipo-departamento",
-                tipoDepartamento
+                "/administracion/tipo-departamento",
+                tipoDepartamento,
             );
             fnCargarTiposDepartamentos();
             dispatch(rtkCargarMensaje(data));

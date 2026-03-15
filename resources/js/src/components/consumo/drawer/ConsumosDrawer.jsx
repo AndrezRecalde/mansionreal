@@ -39,10 +39,7 @@ export const ConsumosDrawer = ({ datos_reserva, fnAsignarElemento }) => {
         if (abrirDrawerConsumosDepartamento && datos_reserva) {
             fnCargarConsumos({ reserva_id: datos_reserva.reserva_id });
 
-            if (
-                usuario.roles?.includes(Roles.GERENCIA) ||
-                usuario.roles?.includes(Roles.ADMINISTRADOR)
-            ) {
+            if (usuario.permissions.includes("gestionar_gastos_danos")) {
                 fnCargarGastos({ reserva_id: datos_reserva.reserva_id });
             }
 
@@ -108,8 +105,7 @@ export const ConsumosDrawer = ({ datos_reserva, fnAsignarElemento }) => {
                     <PagosTable estado={datos_reserva.estado.nombre_estado} />
 
                     {/* Tabla de Gastos (solo GERENCIA) */}
-                    {usuario.roles?.includes(Roles.GERENCIA) ||
-                    usuario.roles?.includes(Roles.ADMINISTRADOR) ? (
+                    {usuario.permissions.includes("gestionar_gastos_danos") ? (
                         <GastoDrawerTable
                             estado={datos_reserva.estado.nombre_estado}
                         />

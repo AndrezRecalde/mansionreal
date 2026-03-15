@@ -53,14 +53,15 @@ export const headerConfigRoutes = {
             path: "usuarios",
             link: "/gerencia/usuarios",
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+            permissions: ["gestionar_usuarios"],
         },
-
         {
             icon: IconBuildings,
             title: "Departamentos",
             path: "departamentos",
             link: "/gerencia/departamentos",
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+            permissions: ["gestionar_departamentos"],
         },
         {
             icon: IconListCheck,
@@ -68,6 +69,7 @@ export const headerConfigRoutes = {
             path: "servicios",
             link: "/gerencia/servicios",
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+            permissions: ["gestionar_servicios"],
         },
         {
             icon: IconReceiptTax,
@@ -75,6 +77,7 @@ export const headerConfigRoutes = {
             path: "config-iva",
             link: "/gerencia/config-iva",
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+            permissions: ["configurar_iva"],
         },
         {
             icon: IconSpray,
@@ -82,6 +85,7 @@ export const headerConfigRoutes = {
             path: "limpiezas",
             link: "/gerencia/limpiezas",
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+            permissions: ["gestionar_limpiezas"],
         },
     ],
 };
@@ -95,13 +99,15 @@ export const headerReservasRoutes = {
             path: "calendario-reservas",
             link: "/gerencia/calendario-reservas",
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+            permissions: ["gestionar_calendario_reservas"],
         },
         {
             icon: IconEyeSearch,
             title: "Disponibilidad Actual",
             path: "disponibilidad-departamento",
             link: "/hotel/disponibilidad-departamento",
-            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA, Roles.ASISTENTE],
+            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+            permissions: ["gestionar_disponibilidad"],
         },
 
         {
@@ -110,6 +116,7 @@ export const headerReservasRoutes = {
             path: "huespedes",
             link: "/gerencia/huespedes",
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+            permissions: ["gestionar_huespedes"],
         },
     ],
 };
@@ -123,6 +130,7 @@ export const headerReportesRoutes = {
             path: "reporte-reservas",
             link: "/gerencia/reporte-reservas",
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+            permissions: ["ver_reporte_reservas"],
         },
         {
             icon: IconFileIsr,
@@ -130,6 +138,7 @@ export const headerReportesRoutes = {
             path: "reporte-consumos",
             link: "/gerencia/reporte-consumos",
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+            permissions: ["ver_reporte_consumos"],
         },
     ],
     HISTORIALES: [
@@ -139,6 +148,7 @@ export const headerReportesRoutes = {
             path: "historial-reservas",
             link: "/gerencia/historial-reservas",
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+            permissions: ["ver_historial_reservas"],
         },
         {
             icon: IconListCheck,
@@ -146,6 +156,7 @@ export const headerReportesRoutes = {
             path: "historial-pagos",
             link: "/gerencia/historial-pagos",
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+            permissions: ["ver_historial_pagos"],
         },
     ],
     FACTURAS: [

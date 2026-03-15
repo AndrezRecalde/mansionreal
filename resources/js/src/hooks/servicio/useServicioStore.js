@@ -21,7 +21,7 @@ export const useServicioStore = () => {
     const fnCargarServicios = async () => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.get("/gerencia/servicios");
+            const { data } = await apiAxios.get("/administracion/servicios");
             const { servicios } = data;
             dispatch(rtkCargarServicios(servicios));
         } catch (error) {
@@ -34,7 +34,7 @@ export const useServicioStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.get(
-                "/gerencia/servicios-agrupados"
+                "/administracion/servicios-agrupados",
             );
             const { servicios } = data;
             dispatch(rtkCargarServicios(servicios));
@@ -49,8 +49,8 @@ export const useServicioStore = () => {
             if (servicio.id) {
                 //actualizando
                 const { data } = await apiAxios.put(
-                    `/gerencia/servicio/${servicio.id}`,
-                    servicio
+                    `/administracion/servicio/${servicio.id}`,
+                    servicio,
                 );
                 fnCargarServicios();
                 dispatch(rtkCargarMensaje(data));
@@ -61,8 +61,8 @@ export const useServicioStore = () => {
             }
             //creando
             const { data } = await apiAxios.post(
-                "/gerencia/servicio",
-                servicio
+                "/administracion/servicio",
+                servicio,
             );
             fnCargarServicios();
             dispatch(rtkCargarMensaje(data));

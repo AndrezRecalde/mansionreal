@@ -1,6 +1,23 @@
 import { useState, useEffect } from "react";
-import { Box, Stepper } from "@mantine/core";
-import { IconFileText, IconCash } from "@tabler/icons-react";
+import {
+    Box,
+    Button,
+    Badge,
+    Divider,
+    Group,
+    Stack,
+    Stepper,
+    Text,
+    ThemeIcon,
+    Title,
+} from "@mantine/core";
+import {
+    IconFileText,
+    IconCash,
+    IconCheck,
+    IconDownload,
+    IconCircleCheck,
+} from "@tabler/icons-react";
 import {
     ReservaValidacionStep,
     ReservaFacturacionStep,
@@ -23,6 +40,7 @@ export const ReservaFinalizarStepper = ({ datos_reserva }) => {
     const [datosFacturacion, setDatosFacturacion] = useState(null);
     const [generarFactura, setGenerarFactura] = useState(false);
     const [procesando, setProcesando] = useState(false);
+    const [facturaFinalizada, setFacturaFinalizada] = useState(null); // datos de la factura generada (paso éxito)
 
     const { cargando, fnAsignarReserva, fnCambiarEstadoReserva } =
         useReservaDepartamentoStore();
@@ -67,7 +85,6 @@ export const ReservaFinalizarStepper = ({ datos_reserva }) => {
             // VALIDACIÓN: Verificar que tenemos datos de facturación y reserva_id
             // ============================================================
             if (!reservaIdCapturado) {
-                //console.error("Error: No se encontró el ID de la reserva");
                 Swal.fire({
                     icon: "error",
                     title: "Error al finalizar reserva",
@@ -78,7 +95,6 @@ export const ReservaFinalizarStepper = ({ datos_reserva }) => {
             }
 
             if (!datosFacturacion || !datosFacturacion.cliente_id) {
-                //console.error("Error: No se puede generar factura sin cliente");
                 Swal.fire({
                     icon: "error",
                     title: "Error al generar factura",
@@ -89,7 +105,7 @@ export const ReservaFinalizarStepper = ({ datos_reserva }) => {
             }
 
             // ============================================================
-            // PASO 1: GENERAR FACTURA (sin descuentos a nivel de factura)
+            // PASO 1: GENERAR FACTURA
             // ============================================================
             const facturaGenerada = await fnGenerarFactura({
                 reserva_id: reservaIdCapturado,
@@ -100,14 +116,7 @@ export const ReservaFinalizarStepper = ({ datos_reserva }) => {
             });
 
             // ============================================================
-            // PASO 2: DESCARGAR PDF DE LA FACTURA GENERADA
-            // ============================================================
-            if (facturaGenerada && facturaGenerada.id) {
-                await fnDescargarFacturaPDF(facturaGenerada.id);
-            }
-
-            // ============================================================
-            // PASO 3: Cambiar estado de reserva a PAGADO
+            // PASO 2: Cambiar estado de reserva a PAGADO
             // ============================================================
             await fnCambiarEstadoReserva(
                 storageFields
@@ -120,9 +129,13 @@ export const ReservaFinalizarStepper = ({ datos_reserva }) => {
                       }
                     : { id: reservaIdCapturado, nombre_estado: "PAGADO" },
             );
-        } catch (error) {
-            //console.error("Error al finalizar reserva:", error);
 
+            // ============================================================
+            // ÉXITO: Guardar factura para mostrar el paso final
+            // ============================================================
+            setFacturaFinalizada(facturaGenerada || { sin_factura: false });
+
+        } catch (error) {
             // ============================================================
             // MANEJO ESPECIAL: Error code 1001 - Factura no generada
             // ============================================================
@@ -132,7 +145,7 @@ export const ReservaFinalizarStepper = ({ datos_reserva }) => {
                     title: "Advertencia",
                     html: `
                     <p>${error.response.data.msg || "No se pudo generar la factura"}</p>
-                    <p><strong>¿Desea finalizar la reserva?</strong></p>
+                    <p><strong>¿Desea finalizar la reserva sin factura?</strong></p>
                 `,
                     showCancelButton: true,
                     confirmButtonText: "Sí, finalizar reserva",
@@ -141,10 +154,8 @@ export const ReservaFinalizarStepper = ({ datos_reserva }) => {
                     cancelButtonColor: "#fa5252",
                 });
 
-                // Si el usuario confirma, finalizar sin factura
                 if (result.isConfirmed) {
                     try {
-                        // Solo cambiar el estado de la reserva a PAGADO
                         await fnCambiarEstadoReserva(
                             storageFields
                                 ? {
@@ -160,17 +171,9 @@ export const ReservaFinalizarStepper = ({ datos_reserva }) => {
                                       nombre_estado: "PAGADO",
                                   },
                         );
-
-                        // Mostrar mensaje de éxito
-                        await Swal.fire({
-                            icon: "success",
-                            title: "Reserva Finalizada",
-                            text: "La reserva se finalizó correctamente sin factura.",
-                            showConfirmButton: true,
-                            timer: 2000,
-                        });
+                        // Sin factura: mostrar paso final sin datos de factura
+                        setFacturaFinalizada({ sin_factura: true });
                     } catch (errorFinalizar) {
-                        // Error al finalizar sin factura
                         Swal.fire({
                             icon: "error",
                             title: "Error al finalizar",
@@ -179,13 +182,15 @@ export const ReservaFinalizarStepper = ({ datos_reserva }) => {
                                 "Ocurrió un error al finalizar la reserva.",
                             showConfirmButton: true,
                         });
+                        // En error: limpiar y cerrar
+                        fnAsignarDepartamento(null);
+                        fnAsignarReserva(null);
+                        fnAsignarEstadia(null);
+                        fnAbrirModalReservaFinalizar(false);
+                        fnAbrirDrawerConsumosDepartamento(false);
                     }
                 }
-                // Si cancela, no hacer nada (el finally limpiará los estados)
             } else {
-                // ============================================================
-                // OTROS ERRORES: Mostrar mensaje de error genérico
-                // ============================================================
                 Swal.fire({
                     icon: "error",
                     title: "Error al finalizar reserva",
@@ -195,23 +200,25 @@ export const ReservaFinalizarStepper = ({ datos_reserva }) => {
                         "Ocurrió un error inesperado al finalizar la reserva.",
                     showConfirmButton: true,
                 });
+                // En error: limpiar y cerrar
+                fnAsignarDepartamento(null);
+                fnAsignarReserva(null);
+                fnAsignarEstadia(null);
+                fnAbrirModalReservaFinalizar(false);
+                fnAbrirDrawerConsumosDepartamento(false);
             }
         } finally {
-            // ============================================================
-            // LIMPIEZA: Siempre se ejecuta, con éxito o error
-            // ============================================================
-            // Limpiar estados activados
-            fnAsignarDepartamento(null);
-            fnAsignarReserva(null);
-            fnAsignarEstadia(null);
-
-            // Cerrar modal y drawer
-            fnAbrirModalReservaFinalizar(false);
-            fnAbrirDrawerConsumosDepartamento(false);
-
-            // Desactivar estado de procesando
             setProcesando(false);
         }
+    };
+
+    // Llamado cuando el usuario cierra el paso de éxito manualmente
+    const handleCerrarExito = () => {
+        fnAsignarDepartamento(null);
+        fnAsignarReserva(null);
+        fnAsignarEstadia(null);
+        fnAbrirModalReservaFinalizar(false);
+        fnAbrirDrawerConsumosDepartamento(false);
     };
 
     return (
@@ -254,16 +261,87 @@ export const ReservaFinalizarStepper = ({ datos_reserva }) => {
                     />
                 </Stepper.Step>
 
-                {/* PASO 3: CONFIRMACIÓN */}
+                {/* PASO 3: CONFIRMACIÓN / ÉXITO */}
                 <Stepper.Completed>
-                    <ReservaConfirmacionStep
-                        datos_reserva={datos_reserva}
-                        generarFactura={generarFactura}
-                        datosFacturacion={datosFacturacion}
-                        onBack={prevStep}
-                        onConfirm={handleFinalizarReserva}
-                        cargando={cargando || procesando}
-                    />
+                    {facturaFinalizada ? (
+                        // ── Panel de éxito ───────────────────────────────
+                        <Stack align="center" gap="lg" py="xl">
+                            <ThemeIcon size={72} radius="xl" color="teal">
+                                <IconCircleCheck size={42} />
+                            </ThemeIcon>
+
+                            <Stack align="center" gap={4}>
+                                <Title order={3}>¡Reserva Finalizada!</Title>
+                                <Text c="dimmed" size="sm" ta="center">
+                                    La reserva ha pasado a estado
+                                </Text>
+                                <Badge color="teal" variant="light" size="sm">
+                                    PAGADO
+                                </Badge>
+                            </Stack>
+
+                            {!facturaFinalizada.sin_factura &&
+                            facturaFinalizada.numero_factura ? (
+                                <>
+                                    <Divider w="80%" />
+                                    <Stack align="center" gap={4}>
+                                        <Text fw={600} size="sm">
+                                            Factura Generada
+                                        </Text>
+                                        <Text size="sm" c="dimmed">
+                                            N°{" "}
+                                            <strong>
+                                                {facturaFinalizada.numero_factura}
+                                            </strong>
+                                        </Text>
+                                    </Stack>
+                                </>
+                            ) : facturaFinalizada.sin_factura ? (
+                                <Text size="sm" c="dimmed" ta="center">
+                                    La reserva se finalizó sin factura.
+                                </Text>
+                            ) : null}
+
+                            <Group justify="center" mt="sm">
+                                {!facturaFinalizada.sin_factura &&
+                                    facturaFinalizada?.id && (
+                                        <Button
+                                            variant="light"
+                                            color="blue"
+                                            leftSection={
+                                                <IconDownload size={16} />
+                                            }
+                                            onClick={() =>
+                                                fnDescargarFacturaPDF(
+                                                    facturaFinalizada.id,
+                                                )
+                                            }
+                                            loading={procesando}
+                                        >
+                                            Descargar Factura
+                                        </Button>
+                                    )}
+                                <Button
+                                    variant="filled"
+                                    color="teal"
+                                    leftSection={<IconCheck size={16} />}
+                                    onClick={handleCerrarExito}
+                                >
+                                    Cerrar
+                                </Button>
+                            </Group>
+                        </Stack>
+                    ) : (
+                        // ── Paso de confirmación normal ──────────────────
+                        <ReservaConfirmacionStep
+                            datos_reserva={datos_reserva}
+                            generarFactura={generarFactura}
+                            datosFacturacion={datosFacturacion}
+                            onBack={prevStep}
+                            onConfirm={handleFinalizarReserva}
+                            cargando={cargando || procesando}
+                        />
+                    )}
                 </Stepper.Completed>
             </Stepper>
         </Box>

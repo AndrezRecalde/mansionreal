@@ -30,6 +30,7 @@ export const useInventarioStore = () => {
         nombre_producto = null,
         activo = null,
         all = false,
+        solo_venta = false,
     } = {}) => {
         try {
             dispatch(rtkCargando(true));
@@ -40,6 +41,7 @@ export const useInventarioStore = () => {
             if (nombre_producto) params.nombre_producto = nombre_producto;
             if (activo !== null) params.activo = activo;
             if (all) params.all = 1;
+            if (solo_venta) params.solo_venta = solo_venta;
 
             const { data } = await apiAxios.get("/productos/inventario", {
                 params,

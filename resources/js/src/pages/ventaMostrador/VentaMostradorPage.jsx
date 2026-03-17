@@ -529,7 +529,7 @@ const FacturacionStep = ({ onBack, onReset }) => {
 
     const handleNuevaVenta = () => {
         fnLimpiarCarrito();
-        fnCargarProductosInventario(); // Refrescar stock actualizado
+        fnCargarProductosInventario({ solo_venta: true, activo: 1 }); // Refrescar stock actualizado
         onReset();
     };
 
@@ -618,7 +618,7 @@ const VentaMostradorPage = () => {
     const { fnCargarProductosInventario } = useInventarioStore();
 
     useEffect(() => {
-        fnCargarProductosInventario();
+        fnCargarProductosInventario({ solo_venta: true, activo: 1 });
     }, []);
 
     const handleNext = () => setActive((cur) => Math.min(cur + 1, 2));

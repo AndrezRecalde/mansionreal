@@ -22,8 +22,12 @@ class InventarioController extends Controller
                 ->porCategoria($request->input('categoria_id'))
                 ->porNombreProducto($request->input('nombre_producto'));
 
-            if ($request->has('activo')) {
+            if (!$request->boolean('all') && $request->has('activo')) {
                 $query->buscarActivos($request->input('activo'));
+            }
+
+            if ($request->boolean('solo_venta')) {
+                $query->excluirCategorias([1, 2]);
             }
 
             $productos = $query->get();

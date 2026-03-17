@@ -216,4 +216,9 @@ class Inventario extends Model
         }
         return $query;
     }
+
+    public function scopeExcluirCategorias(Builder $query, array $categorias)
+    {
+        return $query->whereNotIn('i.categoria_id', $categorias);
+    }
 }

@@ -3,7 +3,7 @@ import { useForm } from "@mantine/form";
 import { TextSection, BtnSubmit } from "../../../components";
 import { useCategoriaStore, useInventarioStore } from "../../../hooks";
 import { IconSearch } from "@tabler/icons-react";
-import classes from "../../../components/elements/modules/LabelsInput.module.css"
+import classes from "../../../components/elements/modules/LabelsInput.module.css";
 
 export const InventarioBusquedaForm = () => {
     const { categorias } = useCategoriaStore();
@@ -25,7 +25,7 @@ export const InventarioBusquedaForm = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        let objetoFinal = { ...form.getTransformedValues(), all: false };
+        let objetoFinal = { ...form.getTransformedValues(), all: 0 };
         fnCargarProductosInventario(objetoFinal);
         //fnSetStorageFields({ paginacion, ...objetoFinal });
     };

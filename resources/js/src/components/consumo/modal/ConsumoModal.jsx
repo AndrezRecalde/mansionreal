@@ -20,7 +20,13 @@ import {
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { BtnSubmit, TextSection } from "../../../components";
-import { IconSearch, IconPlus, IconMinus, IconTrash, IconShoppingCart } from "@tabler/icons-react";
+import {
+    IconSearch,
+    IconPlus,
+    IconMinus,
+    IconTrash,
+    IconShoppingCart,
+} from "@tabler/icons-react";
 import {
     useUiConsumo,
     useInventarioStore,
@@ -40,9 +46,11 @@ const formatMoney = (v) =>
 export function ConsumoModal({ reserva_id }) {
     const isMobile = useMediaQuery("(max-width: 768px)");
     const { abrirModalConsumo, fnAbrirModalConsumo } = useUiConsumo();
-    const { fnCargarProductosInventario, fnLimpiarInventarios, inventarios } = useInventarioStore();
+    const { fnCargarProductosInventario, fnLimpiarInventarios, inventarios } =
+        useInventarioStore();
     const { fnAgregarConsumo } = useConsumoStore();
-    const { activarIva, fnCargarConfiguracionIvaActiva } = useConfiguracionIvaStore();
+    const { activarIva, fnCargarConfiguracionIvaActiva } =
+        useConfiguracionIvaStore();
 
     const [carrito, setCarrito] = useState([]);
     const [busqueda, setBusqueda] = useState("");
@@ -51,7 +59,7 @@ export function ConsumoModal({ reserva_id }) {
     useEffect(() => {
         if (abrirModalConsumo) {
             // Cargar todos los productos activos y el IVA activo
-            fnCargarProductosInventario({ activo: 1 });
+            fnCargarProductosInventario({ activo: 1, solo_venta: true });
             fnCargarConfiguracionIvaActiva();
         }
         return () => {
@@ -108,14 +116,14 @@ export function ConsumoModal({ reserva_id }) {
                 carrito.map((item) =>
                     item.inventario_id === prod.id
                         ? { ...item, cantidad: item.cantidad + 1 }
-                        : item
-                )
+                        : item,
+                ),
             );
         } else {
             setCarrito([
                 ...carrito,
                 {
-                    categoria_id: prod.categoria_id, // Importante para el backend 
+                    categoria_id: prod.categoria_id, // Importante para el backend
                     inventario_id: prod.id,
                     nombre: prod.nombre_producto,
                     precio_unitario: parseFloat(prod.precio_unitario),
@@ -130,8 +138,8 @@ export function ConsumoModal({ reserva_id }) {
     const fnActualizarCantidad = (id, cantidad) => {
         setCarrito(
             carrito.map((item) =>
-                item.inventario_id === id ? { ...item, cantidad } : item
-            )
+                item.inventario_id === id ? { ...item, cantidad } : item,
+            ),
         );
     };
 
@@ -141,7 +149,7 @@ export function ConsumoModal({ reserva_id }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        
+
         if (carrito.length === 0) {
             Swal.fire({
                 icon: "warning",
@@ -168,7 +176,7 @@ export function ConsumoModal({ reserva_id }) {
                         inventario_id: item.inventario_id,
                         cantidad: item.cantidad,
                         precio_unitario: item.precio_unitario,
-                    }))
+                    })),
                 };
 
                 fnAgregarConsumo(payload).then(() => {
@@ -202,7 +210,8 @@ export function ConsumoModal({ reserva_id }) {
         >
             <Box mb={rem(15)}>
                 <Text mt={rem(5)} c="dimmed" size="sm">
-                    Busque y seleccione los productos a agregar como consumo de la reserva.
+                    Busque y seleccione los productos a agregar como consumo de
+                    la reserva.
                 </Text>
             </Box>
             <Divider mb={rem(15)} />
@@ -240,62 +249,75 @@ export function ConsumoModal({ reserva_id }) {
                                             >
                                                 <Accordion.Control>
                                                     <TextSection fw={500}>
-                                                        {categoria} ({productos.length})
+                                                        {categoria} (
+                                                        {productos.length})
                                                     </TextSection>
                                                 </Accordion.Control>
                                                 <Accordion.Panel>
                                                     <Stack gap="xs">
-                                                        {productos.map((prod) => (
-                                                            <Paper
-                                                                key={prod.id}
-                                                                p="sm"
-                                                                withBorder
-                                                                style={{
-                                                                    cursor: "pointer",
-                                                                }}
-                                                                onClick={() =>
-                                                                    handleAgregar(prod)
-                                                                }
-                                                            >
-                                                                <Group justify="space-between">
-                                                                    <Stack gap={2}>
-                                                                        <Text
-                                                                            size="sm"
-                                                                            fw={500}
-                                                                        >
-                                                                            {
-                                                                                prod.nombre_producto
+                                                        {productos.map(
+                                                            (prod) => (
+                                                                <Paper
+                                                                    key={
+                                                                        prod.id
+                                                                    }
+                                                                    p="sm"
+                                                                    withBorder
+                                                                    style={{
+                                                                        cursor: "pointer",
+                                                                    }}
+                                                                    onClick={() =>
+                                                                        handleAgregar(
+                                                                            prod,
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    <Group justify="space-between">
+                                                                        <Stack
+                                                                            gap={
+                                                                                2
                                                                             }
-                                                                        </Text>
-                                                                        <Text
-                                                                            size="xs"
-                                                                            c="dimmed"
                                                                         >
-                                                                            {prod.sin_stock
-                                                                                ? "Sin control de stock"
-                                                                                : `Stock: ${prod.stock}`}
-                                                                        </Text>
-                                                                    </Stack>
-                                                                    <Group gap="xs">
-                                                                        <Badge variant="light">
-                                                                            {formatMoney(
-                                                                                prod.precio_unitario,
-                                                                            )}
-                                                                        </Badge>
-                                                                        <ThemeIcon
-                                                                            size="sm"
-                                                                            variant="light"
-                                                                        >
-                                                                            <IconPlus
-                                                                                size={
-                                                                                    12
+                                                                            <Text
+                                                                                size="sm"
+                                                                                fw={
+                                                                                    500
                                                                                 }
-                                                                            />
-                                                                        </ThemeIcon>
+                                                                            >
+                                                                                {
+                                                                                    prod.nombre_producto
+                                                                                }
+                                                                            </Text>
+                                                                            <Text
+                                                                                size="xs"
+                                                                                c="dimmed"
+                                                                            >
+                                                                                {prod.sin_stock
+                                                                                    ? "Sin control de stock"
+                                                                                    : `Stock: ${prod.stock}`}
+                                                                            </Text>
+                                                                        </Stack>
+                                                                        <Group gap="xs">
+                                                                            <Badge variant="light">
+                                                                                {formatMoney(
+                                                                                    prod.precio_unitario,
+                                                                                )}
+                                                                            </Badge>
+                                                                            <ThemeIcon
+                                                                                size="sm"
+                                                                                variant="light"
+                                                                            >
+                                                                                <IconPlus
+                                                                                    size={
+                                                                                        12
+                                                                                    }
+                                                                                />
+                                                                            </ThemeIcon>
+                                                                        </Group>
                                                                     </Group>
-                                                                </Group>
-                                                            </Paper>
-                                                        ))}
+                                                                </Paper>
+                                                            ),
+                                                        )}
                                                     </Stack>
                                                 </Accordion.Panel>
                                             </Accordion.Item>
@@ -329,7 +351,11 @@ export function ConsumoModal({ reserva_id }) {
                                                 justify="space-between"
                                                 wrap="nowrap"
                                             >
-                                                <Text size="sm" flex={1} lineClamp={1}>
+                                                <Text
+                                                    size="sm"
+                                                    flex={1}
+                                                    lineClamp={1}
+                                                >
                                                     {item.nombre}
                                                 </Text>
                                                 <Group gap="xs" wrap="nowrap">
@@ -340,7 +366,9 @@ export function ConsumoModal({ reserva_id }) {
                                                                 item.inventario_id,
                                                                 Math.max(
                                                                     1,
-                                                                    parseInt(v) || 1,
+                                                                    parseInt(
+                                                                        v,
+                                                                    ) || 1,
                                                                 ),
                                                             )
                                                         }
@@ -353,7 +381,9 @@ export function ConsumoModal({ reserva_id }) {
                                                         style={{ width: 70 }}
                                                         size="xs"
                                                         leftSection={
-                                                            <IconMinus size={10} />
+                                                            <IconMinus
+                                                                size={10}
+                                                            />
                                                         }
                                                     />
                                                     <Text
@@ -389,14 +419,18 @@ export function ConsumoModal({ reserva_id }) {
                         </ScrollArea>
                         <Divider />
                         <Group justify="space-between">
-                            <Text size="sm" c="dimmed">Subtotal:</Text>
+                            <Text size="sm" c="dimmed">
+                                Subtotal:
+                            </Text>
                             <Text size="sm" c="dimmed">
                                 {formatMoney(subtotal)}
                             </Text>
                         </Group>
                         {activarIva > 0 && (
                             <Group justify="space-between">
-                                <Text size="sm" c="dimmed">IVA ({activarIva}%):</Text>
+                                <Text size="sm" c="dimmed">
+                                    IVA ({activarIva}%):
+                                </Text>
                                 <Text size="sm" c="dimmed">
                                     {formatMoney(valorIva)}
                                 </Text>
@@ -404,13 +438,25 @@ export function ConsumoModal({ reserva_id }) {
                         )}
                         <Divider variant="dashed" />
                         <Group justify="space-between">
-                            <Text fw={700}>Total{activarIva > 0 ? ` (IVA ${activarIva}% incl.)` : ""}:</Text>
+                            <Text fw={700}>
+                                Total
+                                {activarIva > 0
+                                    ? ` (IVA ${activarIva}% incl.)`
+                                    : ""}
+                                :
+                            </Text>
                             <Text fw={700} size="lg" c="blue">
                                 {formatMoney(activarIva > 0 ? total : subtotal)}
                             </Text>
                         </Group>
                         <Group justify="flex-end" mt="md">
-                            <BtnSubmit fullwidth={false} height={40} fontSize={14} disabled={carrito.length === 0} leftSection={<IconShoppingCart size={16} />}>
+                            <BtnSubmit
+                                fullwidth={false}
+                                height={40}
+                                fontSize={14}
+                                disabled={carrito.length === 0}
+                                leftSection={<IconShoppingCart size={16} />}
+                            >
                                 Guardar consumos
                             </BtnSubmit>
                         </Group>
@@ -420,4 +466,3 @@ export function ConsumoModal({ reserva_id }) {
         </Modal>
     );
 }
-

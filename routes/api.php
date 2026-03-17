@@ -136,19 +136,6 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/dashboard/ingresos-departamento', [DashboardController::class , 'ingresosPorTipoDepartamento']);
             Route::post('/dashboard/huespedes-recurrentes', [DashboardController::class , 'huespedesRecurrentes']);
 
-            /* ---- Categorías ---- */
-            Route::post('/categoria', [CategoriasController::class , 'store']);
-            Route::put('/categoria/{id}', [CategoriasController::class , 'update']);
-            Route::put('/categoria/{id}/status', [CategoriasController::class , 'updateStatus']);
-
-            /* ---- Inventario ---- */
-            Route::post('/producto/inventario', [InventarioController::class , 'store']);
-            Route::put('/producto/inventario/{id}', [InventarioController::class , 'update']);
-            Route::put('/producto/inventario/{id}/status', [InventarioController::class , 'updateStatus']);
-            Route::post('/producto/inventario/{id}/agregar-stock', [InventarioController::class , 'agregarStock']);
-            Route::get('/producto/inventario/{id}/historial-movimientos', [InventarioController::class , 'historialMovimientos']);
-            Route::post('/producto/inventario/reporte-movimientos', [InventarioController::class , 'reporteMovimientos']);
-
             /* ---- Limpieza ---- */
             Route::post('/limpieza', [LimpiezaController::class , 'store']);
             Route::put('/limpieza/{id}', [LimpiezaController::class , 'update']);
@@ -213,39 +200,61 @@ Route::middleware('auth:sanctum')->group(function () {
             ->middleware(CheckRole::class . ':ADMINISTRADOR|GERENTE|ASISTENTE')
             ->group(function () {
 
-            /* ---- Departamentos Disponibles ---- */
-            Route::post('/disponibilidad-departamentos', [DepartamentoController::class , 'obtenerDepartamentosDisponibles']);
-            Route::post('/departamentos-disponibilidad', [DepartamentoController::class , 'consultarDisponibilidadDepartamentosPorFecha']);
-            Route::get('/buscar-departamentos-disponibles', [DepartamentoController::class , 'getDisponibles']);
+            /* ---- Categorías ---- */
+            Route::middleware(CheckPermission::class . ':gestionar_categorias_inventario')->group(function () {
+                    Route::post('/categoria', [CategoriasController::class , 'store']);
+                    Route::put('/categoria/{id}', [CategoriasController::class , 'update']);
+                    Route::put('/categoria/{id}/status', [CategoriasController::class , 'updateStatus']);
+                }
+                );
 
-            /* ---- Consumos (reserva) ---- */
-            Route::get('/consumo-reserva', [ConsumosController::class , 'buscarConsumosPorReserva']);
-            Route::post('/consumo', [ConsumosController::class , 'registrarConsumos']);
-            Route::put('/consumo/{id}', [ConsumosController::class , 'update']);
-            Route::delete('/consumo/{id}', [ConsumosController::class , 'delete']);
+                /* ---- Inventario ---- */
+                Route::middleware(CheckPermission::class . ':gestionar_productos_inventario')->group(function () {
+                    Route::post('/producto/inventario', [InventarioController::class , 'store']);
+                    Route::put('/producto/inventario/{id}', [InventarioController::class , 'update']);
+                    Route::put('/producto/inventario/{id}/status', [InventarioController::class , 'updateStatus']);
+                    Route::post('/producto/inventario/{id}/agregar-stock', [InventarioController::class , 'agregarStock']);
+                }
+                );
+                Route::middleware(CheckPermission::class . ':ver_historial_movimientos_inventario')->group(function () {
+                    Route::get('/producto/inventario/{id}/historial-movimientos', [InventarioController::class , 'historialMovimientos']);
+                    Route::post('/producto/inventario/reporte-movimientos', [InventarioController::class , 'reporteMovimientos']);
+                }
+                );
 
-            /* ---- Estadías ---- */
-            Route::post('/estadias', [EstadiaController::class , 'getEstadias']);
+                /* ---- Departamentos Disponibles ---- */
+                Route::post('/disponibilidad-departamentos', [DepartamentoController::class , 'obtenerDepartamentosDisponibles']);
+                Route::post('/departamentos-disponibilidad', [DepartamentoController::class , 'consultarDisponibilidadDepartamentosPorFecha']);
+                Route::get('/buscar-departamentos-disponibles', [DepartamentoController::class , 'getDisponibles']);
 
-            /* ---- Conceptos de Pagos ---- */
-            Route::post('/conceptos-pagos', [ConceptoPagoController::class , 'getConceptosPagos']);
+                /* ---- Consumos (reserva) ---- */
+                Route::get('/consumo-reserva', [ConsumosController::class , 'buscarConsumosPorReserva']);
+                Route::post('/consumo', [ConsumosController::class , 'registrarConsumos']);
+                Route::put('/consumo/{id}', [ConsumosController::class , 'update']);
+                Route::delete('/consumo/{id}', [ConsumosController::class , 'delete']);
 
-            /* ---- Pagos ---- */
-            Route::post('/pagos', [PagoController::class , 'getPagos']);
-            Route::get('/pagos/historial', [PagoController::class , 'getHistorialPagos']);
-            Route::post('/reserva/{reservaId}/pago', [PagoController::class , 'store']);
-            Route::put('/pago/{id}', [PagoController::class , 'update']);
-            Route::delete('/pago/{id}', [PagoController::class , 'delete']);
-            Route::post('/totales-pagos', [PagoController::class , 'getTotalesPorReserva']);
+                /* ---- Estadías ---- */
+                Route::post('/estadias', [EstadiaController::class , 'getEstadias']);
+
+                /* ---- Conceptos de Pagos ---- */
+                Route::post('/conceptos-pagos', [ConceptoPagoController::class , 'getConceptosPagos']);
+
+                /* ---- Pagos ---- */
+                Route::post('/pagos', [PagoController::class , 'getPagos']);
+                Route::get('/pagos/historial', [PagoController::class , 'getHistorialPagos']);
+                Route::post('/reserva/{reservaId}/pago', [PagoController::class , 'store']);
+                Route::put('/pago/{id}', [PagoController::class , 'update']);
+                Route::delete('/pago/{id}', [PagoController::class , 'delete']);
+                Route::post('/totales-pagos', [PagoController::class , 'getTotalesPorReserva']);
 
 
 
-            // ================================================================
-            // VENTAS DE MOSTRADOR — Acceso: ADMIN|GERENTE libre, ASISTENTE con permiso
-            // ================================================================
-    
-            /* ---- Consumos Externos ---- */
-            Route::middleware(CheckPermission::class . ':ver_consumos_externos')->group(function () {
+                // ================================================================
+                // VENTAS DE MOSTRADOR — Acceso: ADMIN|GERENTE libre, ASISTENTE con permiso
+                // ================================================================
+        
+                /* ---- Consumos Externos ---- */
+                Route::middleware(CheckPermission::class . ':ver_consumos_externos')->group(function () {
                     Route::get('/consumos-externos', [ConsumosController::class , 'buscarConsumosExternos']);
                     Route::post('/consumos-externos', [ConsumosController::class , 'registrarConsumosExterno']);
                 }

@@ -24,6 +24,7 @@ export const PagoEliminarForm = ({ form }) => {
         fnEliminarPago(form.getValues());
         fnAsignarPago(null);
         fnAbrirModalEliminarRegistroPago(false);
+        form.reset();
     };
 
     return (

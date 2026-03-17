@@ -242,11 +242,11 @@ class PagoController extends Controller
 
             $user = User::where('dni', $request->dni)->where('activo', 1)->first();
 
-            // Validar existencia y rol GERENTE
-            if (!$user || !$user->hasRole('GERENTE')) {
+            // Validar existencia y rol ADMINISTRADOR
+            if (!$user || !$user->hasRole('ADMINISTRADOR')) {
                 return response()->json([
                     'status' => HTTPStatus::Error,
-                    'msg' => 'El DNI no corresponde a un usuario con rol GERENTE o no existe.'
+                    'msg' => 'El DNI no corresponde a un usuario con rol ADMINISTRADOR del Hotel o no existe.'
                 ], 403);
             }
 

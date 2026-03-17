@@ -219,7 +219,6 @@ const gerenciaRoutes = generateRoutes(
     "gerencia",
     [
         { path: MENU_PATH.DASHBOARD, Component: DashboardPage },
-        { path: MENU_PATH.CATEGORIAS, Component: CategoriasPage },
         { path: MENU_PATH.SERVICIOS, Component: ServiciosPage },
         { path: MENU_PATH.USUARIOS, Component: UsuariosPage },
         { path: MENU_PATH.ROLES_PERMISOS, Component: RolesPermisosPage },
@@ -241,14 +240,20 @@ const gerenciaRoutes = generateRoutes(
             path: MENU_PATH.REPORTE_RESERVAS,
             Component: ReporteDepartamentosPage,
         },
-
+        {
+            path: MENU_PATH.CATEGORIAS,
+            Component: CategoriasPage,
+            permissions: ["gestionar_categorias_inventario"],
+        },
         {
             path: MENU_PATH.INVENTARIO,
             Component: InventarioPage,
+            permissions: ["gestionar_productos_inventario"],
         },
         {
             path: MENU_PATH.HISTORIAL_MOVIMIENTOS,
             Component: HistorialMovimientosInvPage,
+            permissions: ["ver_historial_movimientos_inventario"],
         },
         {
             path: MENU_PATH.IVA,

@@ -17,6 +17,7 @@ class PermisosSeeder extends Seeder
         $permisos = [
             // Facturación y Ventas (Existentes)
             'ver_clientes_facturacion',
+            'ver_modulo_facturas',
             'ver_facturas',
             'ver_secuencias_facturas',
             'ver_consumos_externos',
@@ -43,7 +44,8 @@ class PermisosSeeder extends Seeder
 
             // Inventario
             'gestionar_categorias_inventario',
-            'gestionar_inventario',
+            'gestionar_productos_inventario',
+            'ver_historial_movimientos_inventario',
 
             // Gastos y Daños
             'gestionar_gastos_danos',
@@ -58,7 +60,7 @@ class PermisosSeeder extends Seeder
 
         // 3. Asignación a roles principales
         $admin = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'ADMINISTRADOR', 'guard_name' => 'web']);
-        $gerente = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'GERENCIA', 'guard_name' => 'web']);
+        $gerente = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'GERENTE', 'guard_name' => 'web']);
         $asistente = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'ASISTENTE', 'guard_name' => 'web']);
 
         // El Administrador tiene acceso a TODO
@@ -77,11 +79,19 @@ class PermisosSeeder extends Seeder
             'ver_historial_reservas',
             'ver_historial_pagos',
             'gestionar_categorias_inventario',
-            'gestionar_inventario',
+            'gestionar_productos_inventario',
+            'ver_historial_movimientos_inventario',
             'gestionar_gastos_danos',
+            'ver_clientes_facturacion',
+            'ver_facturas',
+            'ver_secuencias_facturas',
+            'ver_consumos_externos',
+            'ver_pagos_externos',
+            'ver_totales_externos',
         ])->get());
 
         $asistente->syncPermissions(Permission::where('guard_name', 'web')->whereIn('name', [
+            'gestionar_disponibilidad',
             'ver_clientes_facturacion',
             'ver_facturas',
             'ver_secuencias_facturas',

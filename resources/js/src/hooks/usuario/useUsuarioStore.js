@@ -113,6 +113,7 @@ export const useUsuarioStore = () => {
     /** Asignar permisos directos a un usuario (sincronización completa) */
     const fnAsignarPermisosDirectos = async (usuarioId, permisosArray) => {
         try {
+            console.log(permisosArray);
             dispatch(rtkCargando(true));
             await apiAxios.put(
                 `/administracion/usuario/${usuarioId}/permisos`,
@@ -122,9 +123,11 @@ export const useUsuarioStore = () => {
             );
             await fnCargarUsuarios();
         } catch (error) {
-            dispatch(rtkCargando(false));
+            console.log(error);
             ExceptionMessageError(error);
             throw error;
+        } finally {
+            dispatch(rtkCargando(false));
         }
     };
 

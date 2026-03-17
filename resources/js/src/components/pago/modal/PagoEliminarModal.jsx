@@ -20,6 +20,7 @@ export const PagoEliminarModal = () => {
     const handleCerrarModal = () => {
         fnAbrirModalEliminarRegistroPago(false);
         fnAsignarPago(null);
+        form.reset();
     };
 
     return (

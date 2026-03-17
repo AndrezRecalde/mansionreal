@@ -94,20 +94,13 @@ export const HeaderMenu = ({ usuario }) => {
                         </Group>
                     </Group>
                     <Group visibleFrom="lg">
-                        {menuConfiguracionRapida.some(
-                            (item) =>
-                                !item.permissions ||
-                                (Array.isArray(usuario.permissions) &&
-                                    item.permissions.some((p) =>
-                                        usuario.permissions.includes(p),
-                                    )),
-                        ) && (
+                        {usuario.roles?.includes(Roles.ADMINISTRADOR) ? (
                             <ConfiguracionMenu
                                 menuData={menuConfiguracionRapida}
                                 classes={classes}
                                 theme={theme}
                             />
-                        )}
+                        ) : null}
                         <UserBtnHeader
                             usuario={usuario}
                             theme={theme}

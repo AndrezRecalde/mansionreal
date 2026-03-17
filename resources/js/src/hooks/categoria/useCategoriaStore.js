@@ -38,8 +38,8 @@ export const useCategoriaStore = () => {
             if (categoria.id) {
                 //actualizando
                 const { data } = await apiAxios.put(
-                    `/gerencia/categoria/${categoria.id}`,
-                    categoria
+                    `/general/categoria/${categoria.id}`,
+                    categoria,
                 );
                 fnCargarCategorias({});
                 dispatch(rtkCargarMensaje(data));
@@ -50,8 +50,8 @@ export const useCategoriaStore = () => {
             }
             //creando
             const { data } = await apiAxios.post(
-                "/gerencia/categoria",
-                categoria
+                "/general/categoria",
+                categoria,
             );
             fnCargarCategorias({});
             dispatch(rtkCargarMensaje(data));
@@ -67,8 +67,8 @@ export const useCategoriaStore = () => {
     const fnActualizarStatusCategoria = async (categoria) => {
         try {
             const { data } = await apiAxios.put(
-                `/gerencia/categoria/${categoria.id}/status`,
-                categoria
+                `/general/categoria/${categoria.id}/status`,
+                categoria,
             );
             fnCargarCategorias({});
             dispatch(rtkCargarMensaje(data));

@@ -42,9 +42,9 @@ const PerfilPage = () => {
     const isDark = colorScheme === "dark";
     const usuarioStr = localStorage.getItem("service_user");
     const usuario = usuarioStr ? JSON.parse(usuarioStr) : {};
-    const authStoreStr = localStorage.getItem("auth-store");
-    const authStore = authStoreStr ? JSON.parse(authStoreStr) : {};
-    const permissions = authStore?.state?.permissions || [];
+    //const authStoreStr = localStorage.getItem("auth-store");
+    //const authStore = authStoreStr ? JSON.parse(authStoreStr) : {};
+    //const permissions = authStore?.state?.permissions || [];
 
     const handleNavigateChangePassword = () => {
         navigate(PAGE_TITLE.PERFIL.NAVEGACIONES.CAMBIAR_CONTRASENA);
@@ -350,21 +350,25 @@ const PerfilPage = () => {
                                         para su cuenta en el sistema.
                                     </Text>
 
-                                    {permissions && permissions.length > 0 ? (
+                                    {usuario.permissions &&
+                                    usuario.permissions.length > 0 ? (
                                         <Group gap="xs">
-                                            {permissions.map((perm, idx) => (
-                                                <Badge
-                                                    key={idx}
-                                                    color="teal"
-                                                    variant="dot"
-                                                    size="md"
-                                                    style={{
-                                                        textTransform: "none",
-                                                    }}
-                                                >
-                                                    {perm}
-                                                </Badge>
-                                            ))}
+                                            {usuario.permissions.map(
+                                                (perm, idx) => (
+                                                    <Badge
+                                                        key={idx}
+                                                        color="teal"
+                                                        variant="dot"
+                                                        size="md"
+                                                        style={{
+                                                            textTransform:
+                                                                "none",
+                                                        }}
+                                                    >
+                                                        {perm}
+                                                    </Badge>
+                                                ),
+                                            )}
                                         </Group>
                                     ) : (
                                         <Text c="dimmed" fs="italic">

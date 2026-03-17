@@ -157,7 +157,7 @@ class ConsumosController extends Controller
     // ====================================================================
 
     /**
-     * ✅ ACTUALIZADO: Buscar consumos por reserva (incluye descuentos)
+     * Buscar consumos por reserva (incluye descuentos)
      */
     public function buscarConsumosPorReserva(Request $request): JsonResponse
     {
@@ -176,7 +176,7 @@ class ConsumosController extends Controller
 
         return response()->json([
             'status' => HTTPStatus::Success,
-            'consumos' => ConsumoResource::collection($consumos), // ✅ Usar Resource
+            'consumos' => ConsumoResource::collection($consumos),
         ], 200);
     }
 
@@ -203,12 +203,12 @@ class ConsumosController extends Controller
                 $inventario = Inventario::findOrFail($c['inventario_id']);
                 $cantidad_agregar = $c['cantidad'];
                 $precio_unitario = $inventario->precio_unitario;
-                
+
                 // Check if there is already a pending consumption for the same reservation and product
                 $consumoExistente = Consumo::where('reserva_id', $reserva_id)
-                                           ->where('inventario_id', $inventario->id)
-                                           ->whereNull('factura_id')
-                                           ->first();
+                    ->where('inventario_id', $inventario->id)
+                    ->whereNull('factura_id')
+                    ->first();
 
                 if ($consumoExistente) {
                     // Accumulate quantities and recalculate totals
@@ -225,18 +225,18 @@ class ConsumosController extends Controller
                         'total' => $total,
                         'actualizado_por_usuario_id' => Auth::id(),
                     ]);
-                    
+
                     // If it had a discount initially applied, applying changes over discount logic
-                    // Although typically we wouldn't merge items that have distinct manual discounts, 
+                    // Although typically we wouldn't merge items that have distinct manual discounts,
                     // this handles the baseline recalculation safely if it had NO discount previously.
                     // If a discount exists, it should probably be removed or recalculated. We'll recalculate over NO discount.
                     if ($consumoExistente->tipo_descuento != Consumo::TIPO_DESCUENTO_SIN_DESCUENTO) {
-                         $consumoExistente->aplicarDescuento(
-                             descuento: $consumoExistente->descuento,
-                             tipo: $consumoExistente->tipo_descuento,
-                             motivo: $consumoExistente->motivo_descuento,
-                             usuarioId: $consumoExistente->usuario_registro_descuento_id
-                         );
+                        $consumoExistente->aplicarDescuento(
+                            descuento: $consumoExistente->descuento,
+                            tipo: $consumoExistente->tipo_descuento,
+                            motivo: $consumoExistente->motivo_descuento,
+                            usuarioId: $consumoExistente->usuario_registro_descuento_id
+                        );
                     }
 
                     $consumosProcesados[] = $consumoExistente->id;
@@ -267,9 +267,9 @@ class ConsumosController extends Controller
                 if (!$inventario->sin_stock) {
                     // Check availability first if needed, though typically done on frontend, good practice
                     if ($inventario->stock < $cantidad_agregar) {
-                         throw new \Exception("Stock insuficiente para {$inventario->nombre_producto}. Disponible: {$inventario->stock}");
+                        throw new \Exception("Stock insuficiente para {$inventario->nombre_producto}. Disponible: {$inventario->stock}");
                     }
-                    
+
                     $consumoId = $consumoExistente ? $consumoExistente->id : $consumo->id;
 
                     $inventario->registrarSalida(
@@ -285,7 +285,6 @@ class ConsumosController extends Controller
 
             DB::commit();
 
-            // ✅ Cargar relaciones y usar Resource
             $consumosProcesados = Consumo::with(['inventario', 'reserva.huesped'])
                 ->whereIn('id', $consumosProcesados)
                 ->get();
@@ -293,7 +292,7 @@ class ConsumosController extends Controller
             return response()->json([
                 'status' => HTTPStatus::Success,
                 'msg' => 'Consumos registrados correctamente',
-                'consumos' => ConsumoResource::collection($consumosProcesados), // ✅ Usar Resource
+                'consumos' => ConsumoResource::collection($consumosProcesados),
             ], 201);
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -305,7 +304,7 @@ class ConsumosController extends Controller
     }
 
     /**
-     * ✅ ACTUALIZADO: Actualizar consumo (usando Resource)
+     * Actualizar consumo (usando Resource)
      */
     public function update(Request $request, int $id): JsonResponse
     {
@@ -335,7 +334,7 @@ class ConsumosController extends Controller
             $cambioInventario = $consumo->inventario_id !== $request->inventario_id;
 
             // ====================================================================
-            // ✅ NUEVO: Validar traslape de fechas si es categoría HOSPEDAJE
+            // Validar traslape de fechas si es categoría HOSPEDAJE
             // ====================================================================
             $categoria = $inventario->categoria;
 
@@ -431,7 +430,7 @@ class ConsumosController extends Controller
             }
 
             // ====================================================================
-            // ✅ Ajustar fecha_checkout de la Reserva si es HOSPEDAJE
+            // Ajustar fecha_checkout de la Reserva si es HOSPEDAJE
             // ====================================================================
             if ($categoria && strtoupper($categoria->nombre_categoria) === 'HOSPEDAJE') {
                 $reserva = Reserva::findOrFail($consumo->reserva_id);
@@ -493,13 +492,12 @@ class ConsumosController extends Controller
 
             DB::commit();
 
-            // ✅ Usar Resource
             $consumo->load(['inventario', 'reserva.huesped', 'usuarioRegistroDescuento']);
 
             return response()->json([
                 'status' => HTTPStatus::Success,
                 'msg' => 'Consumo actualizado correctamente',
-                'consumo' => new ConsumoResource($consumo) // ✅ Usar Resource
+                'consumo' => new ConsumoResource($consumo)
             ]);
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -535,10 +533,10 @@ class ConsumosController extends Controller
 
             $user = User::where('dni', $request->dni)->where('activo', 1)->first();
 
-            if (!$user || !$user->hasRole('GERENTE')) {
+            if (!$user || !$user->hasRole('ADMINISTRADOR')) {
                 return response()->json([
                     'status' => HTTPStatus::Error,
-                    'msg' => 'El DNI no corresponde a un usuario con rol GERENTE o no existe.'
+                    'msg' => 'El DNI no corresponde a un usuario con role ADMINISTRADOR del Hotel o no existe.'
                 ], 403);
             }
 
@@ -548,7 +546,7 @@ class ConsumosController extends Controller
                 $inventario->registrarEntrada(
                     cantidad: $consumo->cantidad,
                     motivo: 'Devolución por eliminación de consumo',
-                    observaciones: "Consumo ID: {$consumo->id} eliminado por el usuario {$user->name} (GERENTE)",
+                    observaciones: "Consumo ID: {$consumo->id} eliminado por el usuario {$user->name} (ADMINISTRADOR DEL HOTEL)",
                     usuarioId: $user->id
                 );
             }
@@ -571,7 +569,7 @@ class ConsumosController extends Controller
     }
 
     /**
-     * ✅ NUEVO: Aplicar descuento a un consumo (usando Resource)
+     * Aplicar descuento a un consumo (usando Resource)
      */
     public function aplicarDescuento(AplicarDescuentoConsumoRequest $request, int $id): JsonResponse
     {
@@ -596,13 +594,13 @@ class ConsumosController extends Controller
 
             DB::commit();
 
-            // ✅ Cargar relaciones y usar Resource
+            // Cargar relaciones y usar Resource
             $consumo->load(['inventario', 'reserva.huesped', 'usuarioRegistroDescuento']);
 
             return response()->json([
                 'status' => HTTPStatus::Success,
                 'msg' => 'Descuento aplicado correctamente',
-                'consumo' => new ConsumoResource($consumo), // ✅ Usar Resource
+                'consumo' => new ConsumoResource($consumo),
             ], 200);
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -614,7 +612,7 @@ class ConsumosController extends Controller
     }
 
     /**
-     * ✅ NUEVO: Eliminar descuento de un consumo (usando Resource)
+     * Eliminar descuento de un consumo (usando Resource)
      */
     public function eliminarDescuento(int $id): JsonResponse
     {
@@ -637,13 +635,12 @@ class ConsumosController extends Controller
 
             DB::commit();
 
-            // ✅ Usar Resource
             $consumo->load(['inventario', 'reserva.huesped']);
 
             return response()->json([
                 'status' => HTTPStatus::Success,
                 'msg' => 'Descuento eliminado correctamente',
-                'consumo' => new ConsumoResource($consumo), // ✅ Usar Resource
+                'consumo' => new ConsumoResource($consumo),
             ], 200);
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -678,12 +675,12 @@ class ConsumosController extends Controller
                     DB::raw('SUM(c.cantidad) as cantidad_total'),
                     'i.precio_unitario',
                     DB::raw('SUM(c.subtotal) as subtotal'), // Subtotal SIN descuento
-                    DB::raw('SUM(c.descuento) as descuento_total'), // ✅ NUEVO: Total de descuentos
+                    DB::raw('SUM(c.descuento) as descuento_total'), // Total de descuentos
                     DB::raw('SUM(c.iva) as iva'),
                     DB::raw('SUM(c.total) as total')
                 );
 
-            // ✅ Aplicar filtro por rango de fechas o por año
+            // Aplicar filtro por rango de fechas o por año
             if ($fechaInicio && $fechaFin) {
                 $query->whereBetween('c.fecha_creacion', [$fechaInicio, $fechaFin]);
             } elseif ($anio) {
@@ -700,17 +697,17 @@ class ConsumosController extends Controller
             $categorias = [];
             $categoriasAgrupadas = $consumosPorCategoria->groupBy('categoria_id');
             $cantidadTotalGeneral = 0;
-            $descuentoTotalGeneral = 0; // ✅ NUEVO
+            $descuentoTotalGeneral = 0;
 
             foreach ($categoriasAgrupadas as $categoriaId => $productos) {
                 $primeraFila = $productos->first();
 
-                // ✅ Calcular cantidad total de la categoría
+                // Calcular cantidad total de la categoría
                 $cantidadTotalCategoria = $productos->sum('cantidad_total');
-                $descuentoTotalCategoria = $productos->sum('descuento_total'); // ✅ NUEVO
+                $descuentoTotalCategoria = $productos->sum('descuento_total');
 
                 $cantidadTotalGeneral += $cantidadTotalCategoria;
-                $descuentoTotalGeneral += $descuentoTotalCategoria; // ✅ NUEVO
+                $descuentoTotalGeneral += $descuentoTotalCategoria;
 
                 $categorias[] = [
                     'categoria_id' => $categoriaId,
@@ -722,7 +719,7 @@ class ConsumosController extends Controller
                             'cantidad_total' => (int) $p->cantidad_total,
                             'precio_unitario' => (float) $p->precio_unitario,
                             'subtotal' => (float) $p->subtotal,
-                            'descuento' => (float) $p->descuento_total, // ✅ NUEVO
+                            'descuento' => (float) $p->descuento_total,
                             'iva' => (float) $p->iva,
                             'total' => (float) $p->total,
                         ];
@@ -730,7 +727,7 @@ class ConsumosController extends Controller
                     'totales_categoria' => [
                         'cantidad_total' => $cantidadTotalCategoria,
                         'subtotal' => (float) $productos->sum('subtotal'),
-                        'descuento' => (float) $descuentoTotalCategoria, // ✅ NUEVO
+                        'descuento' => (float) $descuentoTotalCategoria,
                         'iva' => (float) $productos->sum('iva'),
                         'total' => (float) $productos->sum('total'),
                     ],
@@ -740,14 +737,14 @@ class ConsumosController extends Controller
             $totales_generales = [
                 'cantidad_total_general' => $cantidadTotalGeneral,
                 'subtotal_general' => (float) $consumosPorCategoria->sum('subtotal'),
-                'descuento_general' => (float) $descuentoTotalGeneral, // ✅ NUEVO
+                'descuento_general' => (float) $descuentoTotalGeneral,
                 'iva_general' => (float) $consumosPorCategoria->sum('iva'),
                 'total_general' => (float) $consumosPorCategoria->sum('total'),
                 'cantidad_categorias' => count($categorias),
                 'cantidad_productos' => $consumosPorCategoria->count(),
             ];
 
-            // ✅ Estructura de metadatos esperada por el frontend
+            // Estructura de metadatos esperada por el frontend
             $metadatos = [
                 'p_fecha_inicio' => $fechaInicio,
                 'p_fecha_fin' => $fechaFin,
@@ -757,7 +754,7 @@ class ConsumosController extends Controller
                 'total_productos' => $consumosPorCategoria->count(),
             ];
 
-            // ✅ Estructura correcta esperada por el frontend
+            // Estructura correcta esperada por el frontend
             $reporteData = [
                 'metadatos' => $metadatos,
                 'categorias' => $categorias,

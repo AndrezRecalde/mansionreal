@@ -59,7 +59,7 @@ export const useInventarioStore = () => {
             if (producto.id) {
                 //actualizando
                 const { data } = await apiAxios.put(
-                    `/gerencia/producto/inventario/${producto.id}`,
+                    `/general/producto/inventario/${producto.id}`,
                     producto,
                 );
                 fnCargarProductosInventario({});
@@ -71,7 +71,7 @@ export const useInventarioStore = () => {
             }
             //creando
             const { data } = await apiAxios.post(
-                "/gerencia/producto/inventario",
+                "/general/producto/inventario",
                 producto,
             );
             if (producto.storageFields !== null) {
@@ -93,7 +93,7 @@ export const useInventarioStore = () => {
     const fnActualizarStatusProductoInventario = async (producto) => {
         try {
             const { data } = await apiAxios.put(
-                `/gerencia/producto/inventario/${producto.id}/status`,
+                `/general/producto/inventario/${producto.id}/status`,
                 producto,
             );
 
@@ -113,7 +113,7 @@ export const useInventarioStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.post(
-                `/gerencia/producto/inventario/${producto.id}/agregar-stock`,
+                `/general/producto/inventario/${producto.id}/agregar-stock`,
                 producto,
             );
             if (storageFields !== null) {
@@ -139,7 +139,7 @@ export const useInventarioStore = () => {
             const params = {};
             if (anio) params.anio = anio;
             const { data } = await apiAxios.get(
-                `/gerencia/producto/inventario/${id}/historial-movimientos`,
+                `/general/producto/inventario/${id}/historial-movimientos`,
                 { params },
             );
             const { inventario, movimientos } = data;
@@ -161,7 +161,7 @@ export const useInventarioStore = () => {
         try {
             dispatch(rtkCargando(true));
             const { data } = await apiAxios.post(
-                `/gerencia/producto/inventario/reporte-movimientos`,
+                `/general/producto/inventario/reporte-movimientos`,
                 {
                     fecha_inicio,
                     fecha_fin,

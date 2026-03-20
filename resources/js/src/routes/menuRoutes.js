@@ -212,6 +212,13 @@ export const headerVentasRapidasRoutes = {
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA, Roles.ASISTENTE],
             permissions: ["ver_consumos_externos", "ver_pagos_externos"],
         },
+        {
+            icon: IconHistory,
+            title: "Historial de Cuentas",
+            path: "historial-cuentas-venta",
+            link: "/gerencia/historial-cuentas-venta",
+            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+        },
     ],
 };
 

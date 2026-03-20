@@ -2,15 +2,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { useErrorException } from "../error/useErrorException";
 import {
     rtkCargando,
+    rtkCargarCuentas,
+    rtkAgregarCuenta,
+    rtkCargarCuentaActiva,
+    rtkLimpiarCuentaActiva,
     rtkCargarErrores,
     rtkCargarMensaje,
-    rtkCargarConsumosCarrito,
-    rtkAgregarItemCarrito,
-    rtkEliminarItemCarrito,
-    rtkActualizarCantidadCarrito,
-    rtkLimpiarCarrito,
-    rtkCargarFactura,
-    rtkCargarPagos,
 } from "../../store/ventaMostrador/ventaMostradorSlice";
 import apiAxios from "../../api/apiAxios";
 import Swal from "sweetalert2";
@@ -18,10 +15,8 @@ import Swal from "sweetalert2";
 export const useVentaMostradorStore = () => {
     const {
         cargando,
-        carrito,
-        consumosConfirmados,
-        factura,
-        pagos,
+        cuentas,
+        cuentaActiva,
         mensaje,
         errores,
     } = useSelector((state) => state.ventaMostrador);
@@ -29,144 +24,70 @@ export const useVentaMostradorStore = () => {
     const dispatch = useDispatch();
     const { ExceptionMessageError } = useErrorException(rtkCargarErrores);
 
-    // ─── CARRITO ──────────────────────────────────────────────────────
+    // ─── CUENTAS DE VENTA ──────────────────────────────────────────────
 
-    const fnAgregarAlCarrito = (item) => {
-        dispatch(rtkAgregarItemCarrito(item));
-    };
-
-    const fnEliminarDelCarrito = (inventarioId) => {
-        dispatch(rtkEliminarItemCarrito(inventarioId));
-    };
-
-    const fnActualizarCantidad = (inventarioId, cantidad) => {
-        dispatch(rtkActualizarCantidadCarrito({ inventarioId, cantidad }));
-    };
-
-    const fnLimpiarCarrito = () => {
-        dispatch(rtkLimpiarCarrito());
-    };
-
-    // ─── CONSUMOS EXTERNOS ────────────────────────────────────────────
-
-    /**
-     * Registrar los productos del carrito como consumos externos (sin reserva).
-     * Muestra el mensaje real del backend si hay error de negocio (ej. stock insuficiente).
-     */
-    const fnRegistrarVenta = async () => {
+    const fnCargarCuentas = async (estadoId = null) => {
         try {
             dispatch(rtkCargando(true));
-            const payload = {
-                consumos: carrito.map((item) => ({
-                    inventario_id: item.inventario_id,
-                    cantidad: item.cantidad,
-                })),
-            };
-            const { data } = await apiAxios.post(
-                "/general/consumos-externos",
-                payload,
-            );
-            dispatch(rtkCargarConsumosCarrito(data.consumos));
-            dispatch(
-                rtkCargarMensaje({
-                    status: "success",
-                    msg: data.msg || "Venta registrada correctamente",
-                }),
-            );
-            setTimeout(() => dispatch(rtkCargarMensaje(undefined)), 3000);
-            return data.consumos;
+            const params = estadoId ? { estado_id: estadoId } : {};
+            const { data } = await apiAxios.get("/general/cuentas-ventas", { params });
+            dispatch(rtkCargarCuentas(data.cuentas));
         } catch (error) {
-            // Mostrar el mensaje real del backend (ej. "Stock insuficiente para Coca Cola")
-            const msg =
-                error?.response?.data?.msg ||
-                "Error al registrar la venta. Intenta nuevamente.";
-            Swal.fire({ icon: "error", title: "Error en la venta", text: msg });
-            return null;
+            ExceptionMessageError(error);
         } finally {
             dispatch(rtkCargando(false));
         }
     };
 
-    // ─── PAGOS EXTERNOS ───────────────────────────────────────────────
-
-    /**
-     * Registrar un pago externo (sin reserva).
-     */
-    const fnRegistrarPago = async (pago) => {
+    const fnCrearCuenta = async () => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.post(
-                "/general/pagos-externos",
-                pago,
-            );
-            dispatch(rtkCargarPagos([...(pagos || []), data.pago]));
-            dispatch(
-                rtkCargarMensaje({
-                    status: "success",
-                    msg: "Pago registrado correctamente",
-                }),
-            );
+            const { data } = await apiAxios.post("/general/cuentas-ventas");
+            dispatch(rtkAgregarCuenta(data.cuenta));
+            dispatch(rtkCargarCuentaActiva(data.cuenta));
+            dispatch(rtkCargarMensaje({ status: "success", msg: "Cuenta creada" }));
             setTimeout(() => dispatch(rtkCargarMensaje(undefined)), 3000);
-            return data.pago;
-        } catch (error) {
-            const msg =
-                error?.response?.data?.msg || "Error al registrar el pago.";
-            Swal.fire({ icon: "error", title: "Error", text: msg });
-            return null;
-        } finally {
-            dispatch(rtkCargando(false));
-        }
-    };
-
-    /**
-     * Calcular totales para un conjunto de consumo IDs externos.
-     */
-    const fnCalcularTotales = async (consumoIds) => {
-        try {
-            const { data } = await apiAxios.post("/general/totales-externos", {
-                consumo_ids: consumoIds,
-            });
-            return data.totales;
+            return data.cuenta;
         } catch (error) {
             ExceptionMessageError(error);
             return null;
+        } finally {
+            dispatch(rtkCargando(false));
         }
     };
 
-    // ─── FACTURACIÓN EXTERNA ──────────────────────────────────────────
-
-    /**
-     * Generar factura para consumos externos (venta de mostrador).
-     */
-    const fnGenerarFactura = async ({
-        consumoIds,
-        clienteFacturacionId,
-        observaciones,
-        solicitaFacturaDetallada = false,
-    }) => {
+    const fnCargarCuentaActiva = async (id) => {
         try {
             dispatch(rtkCargando(true));
-            const { data } = await apiAxios.post(
-                "/general/facturas/generar-externa",
-                {
-                    consumo_ids: consumoIds,
-                    cliente_facturacion_id: clienteFacturacionId,
-                    observaciones: observaciones || null,
-                    solicita_factura_detallada: solicitaFacturaDetallada,
-                },
-            );
-            dispatch(rtkCargarFactura(data.factura));
-            dispatch(
-                rtkCargarMensaje({
-                    status: "success",
-                    msg: "Factura generada correctamente",
-                }),
-            );
-            setTimeout(() => dispatch(rtkCargarMensaje(undefined)), 3000);
-            return data.factura;
+            const { data } = await apiAxios.get(`/general/cuentas-ventas/${id}`);
+            dispatch(rtkCargarCuentaActiva(data.cuenta));
         } catch (error) {
-            const msg =
-                error?.response?.data?.msg || "Error al generar la factura.";
+            ExceptionMessageError(error);
+        } finally {
+            dispatch(rtkCargando(false));
+        }
+    };
+
+    const fnSetCuentaActiva = (cuenta) => {
+        dispatch(rtkCargarCuentaActiva(cuenta));
+    };
+
+    const fnLimpiarCuentaActiva = () => {
+        dispatch(rtkLimpiarCuentaActiva());
+    };
+
+    // ─── CONSUMOS ──────────────────────────────────────────────────────
+
+    const fnAgregarConsumo = async (cuentaId, item) => {
+        try {
+            dispatch(rtkCargando(true));
+            const { data } = await apiAxios.post(`/general/cuentas-ventas/${cuentaId}/consumos`, {
+                consumos: [item]
+            });
+            dispatch(rtkCargarCuentaActiva(data.cuenta));
+            return data.cuenta;
+        } catch (error) {
+            const msg = error?.response?.data?.msg || "Error al agregar consumo.";
             Swal.fire({ icon: "error", title: "Error", text: msg });
             return null;
         } finally {
@@ -174,17 +95,101 @@ export const useVentaMostradorStore = () => {
         }
     };
 
-    /**
-     * Descargar PDF de una factura.
-     */
+    const fnActualizarConsumo = async (cuentaId, consumoId, cantidad) => {
+        try {
+            dispatch(rtkCargando(true));
+            const { data } = await apiAxios.put(`/general/cuentas-ventas/${cuentaId}/consumos/${consumoId}`, {
+                cantidad
+            });
+            dispatch(rtkCargarCuentaActiva(data.cuenta));
+        } catch (error) {
+            const msg = error?.response?.data?.msg || "Error al actualizar consumo.";
+            Swal.fire({ icon: "error", title: "Error", text: msg });
+        } finally {
+            dispatch(rtkCargando(false));
+        }
+    };
+
+    const fnEliminarConsumo = async (cuentaId, consumoId) => {
+        try {
+            dispatch(rtkCargando(true));
+            const { data } = await apiAxios.delete(`/general/cuentas-ventas/${cuentaId}/consumos/${consumoId}`);
+            dispatch(rtkCargarCuentaActiva(data.cuenta));
+        } catch (error) {
+            const msg = error?.response?.data?.msg || "Error al eliminar consumo.";
+            Swal.fire({ icon: "error", title: "Error", text: msg });
+        } finally {
+            dispatch(rtkCargando(false));
+        }
+    };
+
+    // ─── PAGOS ─────────────────────────────────────────────────────────
+
+    const fnRegistrarPago = async (cuentaId, pago) => {
+        try {
+            dispatch(rtkCargando(true));
+            const { data } = await apiAxios.post(`/general/cuentas-ventas/${cuentaId}/pagos`, pago);
+            dispatch(rtkCargarCuentaActiva(data.cuenta));
+            dispatch(rtkCargarMensaje({ status: "success", msg: "Pago registrado exitosamente" }));
+            setTimeout(() => dispatch(rtkCargarMensaje(undefined)), 3000);
+            return data.cuenta;
+        } catch (error) {
+            const msg = error?.response?.data?.msg || "Error al registrar el pago.";
+            Swal.fire({ icon: "error", title: "Error", text: msg });
+            return null;
+        } finally {
+            dispatch(rtkCargando(false));
+        }
+    };
+
+    // ─── CIERRE Y FACTURACIÓN ──────────────────────────────────────────
+
+    const fnGenerarFactura = async ({ consumoIds, clienteFacturacionId, observaciones, solicitaFacturaDetallada = false }) => {
+        try {
+            dispatch(rtkCargando(true));
+            const { data } = await apiAxios.post("/general/facturas/generar-externa", {
+                consumo_ids: consumoIds,
+                cliente_facturacion_id: clienteFacturacionId,
+                observaciones: observaciones || null,
+                solicita_factura_detallada: solicitaFacturaDetallada,
+            });
+            dispatch(rtkCargarMensaje({ status: "success", msg: "Factura generada correctamente" }));
+            setTimeout(() => dispatch(rtkCargarMensaje(undefined)), 3000);
+            return data.factura;
+        } catch (error) {
+            const msg = error?.response?.data?.msg || "Error al generar la factura.";
+            Swal.fire({ icon: "error", title: "Error", text: msg });
+            return null;
+        } finally {
+            dispatch(rtkCargando(false));
+        }
+    };
+
+    const fnCerrarCuenta = async (cuentaId, facturaId = null) => {
+        try {
+            dispatch(rtkCargando(true));
+            const { data } = await apiAxios.post(`/general/cuentas-ventas/${cuentaId}/cerrar`, {
+                factura_id: facturaId
+            });
+            dispatch(rtkCargarCuentaActiva(data.cuenta));
+            dispatch(rtkCargarMensaje({ status: "success", msg: "Cuenta cerrada correctamente" }));
+            setTimeout(() => dispatch(rtkCargarMensaje(undefined)), 3000);
+            return data.cuenta;
+        } catch (error) {
+            const msg = error?.response?.data?.msg || "Error al cerrar la cuenta.";
+            Swal.fire({ icon: "error", title: "Error", text: msg });
+            return null;
+        } finally {
+            dispatch(rtkCargando(false));
+        }
+    };
+
     const fnDescargarFacturaPDF = async (facturaId) => {
         try {
             dispatch(rtkCargando(true));
             const response = await apiAxios.get(
                 `/general/facturas/${facturaId}/pdf`,
-                {
-                    responseType: "blob",
-                },
+                { responseType: "blob" }
             );
             const url = window.URL.createObjectURL(
                 new Blob([response.data], { type: "application/pdf" }),
@@ -205,21 +210,25 @@ export const useVentaMostradorStore = () => {
 
     return {
         cargando,
-        carrito,
-        consumosConfirmados,
-        factura,
-        pagos,
+        cuentas,
+        cuentaActiva,
         mensaje,
         errores,
 
-        fnAgregarAlCarrito,
-        fnEliminarDelCarrito,
-        fnActualizarCantidad,
-        fnLimpiarCarrito,
-        fnRegistrarVenta,
+        fnCargarCuentas,
+        fnCrearCuenta,
+        fnCargarCuentaActiva,
+        fnSetCuentaActiva,
+        fnLimpiarCuentaActiva,
+
+        fnAgregarConsumo,
+        fnActualizarConsumo,
+        fnEliminarConsumo,
+
         fnRegistrarPago,
-        fnCalcularTotales,
+        
         fnGenerarFactura,
+        fnCerrarCuenta,
         fnDescargarFacturaPDF,
     };
 };

@@ -107,6 +107,7 @@ import { useStorageField } from "./storage/useStorageField";
 
 /* Ventas de Mostrador */
 import { useVentaMostradorStore } from "./ventaMostrador/useVentaMostradorStore";
+import { useHistorialCuentasVenta } from "./ventaMostrador/useHistorialCuentasVenta";
 
 export {
     useAuthStore,
@@ -219,4 +220,5 @@ export {
 
     /* Ventas de Mostrador */
     useVentaMostradorStore,
+    useHistorialCuentasVenta,
 };

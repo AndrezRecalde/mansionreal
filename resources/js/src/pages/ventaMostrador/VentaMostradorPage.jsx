@@ -7,6 +7,7 @@ import {
     Container,
     Divider,
     Group,
+    Menu,
     NumberInput,
     Paper,
     ScrollArea,
@@ -18,31 +19,38 @@ import {
     TextInput,
     ThemeIcon,
     Title,
+    Card,
+    ActionIcon,
 } from "@mantine/core";
 import {
     IconCheck,
     IconCoin,
     IconFileInvoice,
+    IconDotsVertical,
     IconMinus,
     IconPlus,
     IconSearch,
     IconShoppingCart,
     IconTrash,
+    IconArrowLeft,
+    IconReceipt2,
 } from "@tabler/icons-react";
 import {
     useClienteFacturacionStore,
     useInventarioStore,
     useVentaMostradorStore,
+    useFacturaStore,
 } from "../../hooks";
 import {
     ClienteFacturacionSelector,
     PrincipalSectionPage,
     TextSection,
     TitlePage,
+    LoadingSkeleton,
+    VisorFacturaPDF,
 } from "../../components";
 import Swal from "sweetalert2";
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+import dayjs from "dayjs";
 
 const formatMoney = (v) =>
     parseFloat(v || 0).toLocaleString("es-EC", {
@@ -51,21 +59,272 @@ const formatMoney = (v) =>
         minimumFractionDigits: 2,
     });
 
+// ─── Componente Cuentas Abiertas View ────────────────────────────────────────
+
+const CuentasView = () => {
+    const {
+        cuentas,
+        cargando,
+        fnCargarCuentas,
+        fnCrearCuenta,
+        fnSetCuentaActiva,
+    } = useVentaMostradorStore();
+    const {
+        pdfUrl,
+        fnPrevisualizarFacturaPDF,
+        fnLimpiarPdfUrl,
+        fnDescargarFacturaPDF,
+    } = useFacturaStore();
+
+    const [abrirModalPdf, setAbrirModalPdf] = useState(false);
+    const [facturaActiva, setFacturaActiva] = useState(null);
+
+    useEffect(() => {
+        fnCargarCuentas();
+    }, []);
+
+    const handleNuevaCuenta = async () => {
+        await fnCrearCuenta();
+    };
+
+    const handlePrevisualizarFactura = async (factura) => {
+        setFacturaActiva(factura);
+        setAbrirModalPdf(true);
+        await fnPrevisualizarFacturaPDF(factura.id);
+    };
+
+    if (cargando && cuentas.length === 0) {
+        return <LoadingSkeleton />;
+    }
+
+    const pendientes = cuentas.filter(
+        (c) => c.estado?.nombre_estado === "PENDIENTE",
+    );
+    const pagadas = cuentas.filter((c) => c.estado?.nombre_estado === "PAGADO");
+
+    return (
+        <Stack gap="lg">
+            <Group justify="space-between">
+                <Text fw={600} size="lg">
+                    Cuentas Abiertas ({pendientes.length})
+                </Text>
+                <Button
+                    leftSection={<IconPlus size={16} />}
+                    onClick={handleNuevaCuenta}
+                    loading={cargando}
+                >
+                    Nueva Cuenta de Venta
+                </Button>
+            </Group>
+
+            {pendientes.length === 0 ? (
+                <Paper p="xl" ta="center" bg="gray.0">
+                    <Text c="dimmed">
+                        No hay cuentas abiertas. Puede crear una nueva.
+                    </Text>
+                </Paper>
+            ) : (
+                <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="md">
+                    {pendientes.map((cta) => (
+                        <Card
+                            key={cta.id}
+                            shadow="sm"
+                            padding="lg"
+                            radius="md"
+                            withBorder
+                        >
+                            <Card.Section withBorder inheritPadding py="xs">
+                                <Group justify="space-between">
+                                    <Text fw={600}>{cta.codigo}</Text>
+                                    <Badge color="yellow">
+                                        {cta.estado?.nombre_estado}
+                                    </Badge>
+                                </Group>
+                            </Card.Section>
+
+                            <Stack mt="md" mb="xs" gap="xs">
+                                <Group justify="space-between">
+                                    <Text size="sm" c="dimmed">
+                                        Atendido por:
+                                    </Text>
+                                    <Text size="sm" fw={500}>
+                                        {cta.usuario?.nombres}{" "}
+                                        {cta.usuario?.apellidos}
+                                    </Text>
+                                </Group>
+                                <Group justify="space-between">
+                                    <Text size="sm" c="dimmed">
+                                        Total:
+                                    </Text>
+                                    <Text size="sm" fw={600}>
+                                        {formatMoney(cta.total)}
+                                    </Text>
+                                </Group>
+                                <Group justify="space-between">
+                                    <Text size="sm" c="dimmed">
+                                        Pagado:
+                                    </Text>
+                                    <Text size="sm" fw={600} c="green">
+                                        {formatMoney(cta.total_pagos)}
+                                    </Text>
+                                </Group>
+                                <Divider />
+                                <Group justify="space-between">
+                                    <Text size="sm" c="dimmed">
+                                        Saldo Pendiente:
+                                    </Text>
+                                    <Text size="sm" fw={600} c="red">
+                                        {formatMoney(cta.saldo_pendiente)}
+                                    </Text>
+                                </Group>
+                            </Stack>
+
+                            <Button
+                                variant="light"
+                                color="blue"
+                                fullWidth
+                                mt="md"
+                                radius="md"
+                                onClick={() => fnSetCuentaActiva(cta)}
+                            >
+                                Ver Detalles / Cobrar
+                            </Button>
+                        </Card>
+                    ))}
+                </SimpleGrid>
+            )}
+
+            {pagadas.length > 0 && (
+                <>
+                    <Divider my="md" />
+                    <Accordion>
+                        <Accordion.Item value="historial">
+                            <Accordion.Control>
+                                <Text fw={600}>
+                                    Últimas cuentas pagadas ({pagadas.length})
+                                </Text>
+                            </Accordion.Control>
+                            <Accordion.Panel>
+                                <SimpleGrid
+                                    cols={{ base: 1, sm: 2, md: 3 }}
+                                    spacing="md"
+                                >
+                                    {pagadas.map((cta) => (
+                                        <Card
+                                            key={cta.id}
+                                            shadow="sm"
+                                            padding="sm"
+                                            radius="md"
+                                            withBorder
+                                        >
+                                            <Group
+                                                justify="space-between"
+                                                align="flex-start"
+                                            >
+                                                <Group gap="xs">
+                                                    <Text fw={600}>
+                                                        {cta.codigo}
+                                                    </Text>
+                                                    <Badge color="green">
+                                                        PAGADO
+                                                    </Badge>
+                                                </Group>
+                                                {cta.factura && (
+                                                    <Menu
+                                                        position="bottom-end"
+                                                        withArrow
+                                                    >
+                                                        <Menu.Target>
+                                                            <ActionIcon
+                                                                variant="subtle"
+                                                                color="gray"
+                                                            >
+                                                                <IconDotsVertical
+                                                                    size={16}
+                                                                />
+                                                            </ActionIcon>
+                                                        </Menu.Target>
+                                                        <Menu.Dropdown>
+                                                            <Menu.Item
+                                                                leftSection={
+                                                                    <IconFileInvoice
+                                                                        size={
+                                                                            14
+                                                                        }
+                                                                    />
+                                                                }
+                                                                onClick={() =>
+                                                                    handlePrevisualizarFactura(
+                                                                        cta.factura,
+                                                                    )
+                                                                }
+                                                            >
+                                                                Ver Factura PDF
+                                                            </Menu.Item>
+                                                        </Menu.Dropdown>
+                                                    </Menu>
+                                                )}
+                                            </Group>
+                                            <Text size="xs" mt="xs" c="dimmed">
+                                                Total pagado:{" "}
+                                                {formatMoney(cta.total_pagos)}
+                                            </Text>
+                                            <Text size="xs" c="dimmed">
+                                                Cajero: {cta.usuario?.nombres}{" "}
+                                                {cta.usuario?.apellidos}
+                                            </Text>
+                                            {cta.factura && (
+                                                <Text size="xs" c="dimmed">
+                                                    Factura:{" "}
+                                                    {cta.factura.numero_factura}
+                                                </Text>
+                                            )}
+                                        </Card>
+                                    ))}
+                                </SimpleGrid>
+                            </Accordion.Panel>
+                        </Accordion.Item>
+                    </Accordion>
+                </>
+            )}
+
+            <VisorFacturaPDF
+                opened={abrirModalPdf}
+                onClose={() => {
+                    setAbrirModalPdf(false);
+                    setFacturaActiva(null);
+                    fnLimpiarPdfUrl();
+                }}
+                pdfUrl={pdfUrl}
+                facturaNumero={facturaActiva?.numero_factura}
+                onDownload={() => {
+                    if (facturaActiva) {
+                        fnDescargarFacturaPDF(facturaActiva.id);
+                    }
+                }}
+            />
+        </Stack>
+    );
+};
+
 // ─── Paso 1: Carrito ─────────────────────────────────────────────────────────
 
 const CarritoStep = ({ onNext }) => {
-    const { inventarios } = useInventarioStore();
+    const { inventarios, fnCargarProductosInventario } = useInventarioStore();
     const {
-        carrito,
-        fnAgregarAlCarrito,
-        fnEliminarDelCarrito,
-        fnActualizarCantidad,
+        cuentaActiva,
+        fnAgregarConsumo,
+        fnEliminarConsumo,
+        fnActualizarConsumo,
     } = useVentaMostradorStore();
 
     const [busqueda, setBusqueda] = useState("");
     const [categoriasExpandidas, setCategoriasExpandidas] = useState([]);
 
-    // Filtrar por búsqueda y activos
+    useEffect(() => {
+        fnCargarProductosInventario({ solo_venta: true, activo: 1 });
+    }, []);
+
     const productosFiltrados = inventarios.filter((p) => {
         if (!p.activo) return false;
         if (busqueda.trim() === "") return true;
@@ -77,7 +336,6 @@ const CarritoStep = ({ onNext }) => {
         return nomProd.includes(termino) || nomCat.includes(termino);
     });
 
-    // Agrupar por categoría
     const productosPorCategoria = productosFiltrados.reduce((acc, prod) => {
         const catName = prod.nombre_categoria || "Otros";
         if (!acc[catName]) acc[catName] = [];
@@ -93,26 +351,18 @@ const CarritoStep = ({ onNext }) => {
         }
     }, [busqueda]);
 
-    // Subtotal local
-    const subtotal = carrito.reduce(
-        (acc, item) => acc + item.precio_unitario * item.cantidad,
-        0,
-    );
+    const consumos = cuentaActiva?.consumos || [];
+    const total = cuentaActiva?.total || 0;
 
     const handleAgregar = (prod) => {
-        fnAgregarAlCarrito({
+        fnAgregarConsumo(cuentaActiva.id, {
             inventario_id: prod.id,
-            nombre: prod.nombre_producto,
-            precio_unitario: parseFloat(prod.precio_unitario),
             cantidad: 1,
-            stock: prod.stock,
-            sin_stock: prod.sin_stock,
         });
     };
 
-    // Solo valida localmente — el stock se descuenta cuando se paga
     const handleConfirmar = () => {
-        if (carrito.length === 0) {
+        if (consumos.length === 0) {
             Swal.fire({
                 icon: "warning",
                 title: "Carrito vacío",
@@ -125,7 +375,6 @@ const CarritoStep = ({ onNext }) => {
 
     return (
         <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg">
-            {/* Catálogo */}
             <Stack gap="sm">
                 <Text fw={600} size="sm" c="dimmed">
                     Catálogo de Productos
@@ -222,38 +471,34 @@ const CarritoStep = ({ onNext }) => {
                 </ScrollArea>
             </Stack>
 
-            {/* Carrito */}
             <Stack gap="sm">
                 <Text fw={600} size="sm" c="dimmed">
-                    Carrito ({carrito.length}{" "}
-                    {carrito.length === 1 ? "item" : "items"})
+                    Consumos Cuenta {cuentaActiva.codigo} ({consumos.length}{" "}
+                    items)
                 </Text>
                 <ScrollArea h={300}>
-                    {carrito.length === 0 ? (
+                    {consumos.length === 0 ? (
                         <Text c="dimmed" size="sm" ta="center" mt="xl">
                             Seleccione productos del catálogo
                         </Text>
                     ) : (
                         <Stack gap="xs">
-                            {carrito.map((item) => (
-                                <Paper
-                                    key={item.inventario_id}
-                                    p="sm"
-                                    withBorder
-                                >
+                            {consumos.map((item) => (
+                                <Paper key={item.id} p="sm" withBorder>
                                     <Group
                                         justify="space-between"
                                         wrap="nowrap"
                                     >
                                         <Text size="sm" flex={1} lineClamp={1}>
-                                            {item.nombre}
+                                            {item.inventario?.nombre_producto}
                                         </Text>
                                         <Group gap="xs" wrap="nowrap">
                                             <NumberInput
                                                 value={item.cantidad}
                                                 onChange={(v) =>
-                                                    fnActualizarCantidad(
-                                                        item.inventario_id,
+                                                    fnActualizarConsumo(
+                                                        cuentaActiva.id,
+                                                        item.id,
                                                         Math.max(
                                                             1,
                                                             parseInt(v) || 1,
@@ -262,9 +507,11 @@ const CarritoStep = ({ onNext }) => {
                                                 }
                                                 min={1}
                                                 max={
-                                                    item.sin_stock
+                                                    item.inventario?.sin_stock
                                                         ? 9999
-                                                        : item.stock
+                                                        : item.inventario
+                                                              ?.stock +
+                                                          item.cantidad
                                                 }
                                                 style={{ width: 70 }}
                                                 size="xs"
@@ -278,10 +525,7 @@ const CarritoStep = ({ onNext }) => {
                                                 w={70}
                                                 ta="right"
                                             >
-                                                {formatMoney(
-                                                    item.precio_unitario *
-                                                        item.cantidad,
-                                                )}
+                                                {formatMoney(item.total)}
                                             </Text>
                                             <Button
                                                 size="xs"
@@ -289,8 +533,9 @@ const CarritoStep = ({ onNext }) => {
                                                 variant="subtle"
                                                 p={4}
                                                 onClick={() =>
-                                                    fnEliminarDelCarrito(
-                                                        item.inventario_id,
+                                                    fnEliminarConsumo(
+                                                        cuentaActiva.id,
+                                                        item.id,
                                                     )
                                                 }
                                             >
@@ -305,17 +550,17 @@ const CarritoStep = ({ onNext }) => {
                 </ScrollArea>
                 <Divider />
                 <Group justify="space-between">
-                    <Text fw={600}>Subtotal estimado:</Text>
+                    <Text fw={600}>Total Cuenta (con IVA):</Text>
                     <Text fw={700} size="lg">
-                        {formatMoney(subtotal)}
+                        {formatMoney(total)}
                     </Text>
                 </Group>
                 <Button
                     leftSection={<IconShoppingCart size={16} />}
                     onClick={handleConfirmar}
-                    disabled={carrito.length === 0}
+                    disabled={consumos.length === 0}
                 >
-                    Confirmar Venta
+                    Ir a Pagos
                 </Button>
             </Stack>
         </SimpleGrid>
@@ -324,37 +569,31 @@ const CarritoStep = ({ onNext }) => {
 
 // ─── Paso 2: Pago ─────────────────────────────────────────────────────────────
 
-// Concepto fijo para ventas de mostrador
 const CONCEPTO_PAGO_CONSUMOS_ID = 3;
 
 const PagoStep = ({ onNext, onBack }) => {
-    const { carrito, cargando, fnRegistrarVenta, fnRegistrarPago, pagos } =
+    const { cuentaActiva, cargando, fnRegistrarPago } =
         useVentaMostradorStore();
-
-    // Calcular totales localmente desde el carrito (sin backend aún)
-    const subtotal = carrito.reduce(
-        (acc, item) => acc + item.precio_unitario * item.cantidad,
-        0,
-    );
-    const tasa = 0.15; // Se calcula definitivo en el backend
-    const iva = subtotal * tasa;
-    const total = subtotal + iva;
 
     const [metodoPago, setMetodoPago] = useState("EFECTIVO");
     const [codigoVoucher, setCodigoVoucher] = useState("");
-    const [monto, setMonto] = useState(parseFloat(total.toFixed(2)));
+    const [monto, setMonto] = useState(
+        Number(parseFloat(cuentaActiva?.saldo_pendiente || 0).toFixed(2)),
+    );
     const [observaciones, setObservaciones] = useState("");
 
     const requiereVoucher = ["TARJETA", "TRANSFERENCIA", "OTRO"].includes(
         metodoPago,
     );
 
-    // Recalcular monto cuando cambia el total estimado
     useEffect(() => {
-        setMonto(parseFloat(total.toFixed(2)));
-    }, [carrito.length]);
+        setMonto(
+            Number(parseFloat(cuentaActiva?.saldo_pendiente || 0).toFixed(2)),
+        );
+    }, [cuentaActiva?.saldo_pendiente]);
 
     const handlePagar = async () => {
+        if (monto <= 0) return;
         if (requiereVoucher && !codigoVoucher.trim()) {
             Swal.fire({
                 icon: "warning",
@@ -364,20 +603,19 @@ const PagoStep = ({ onNext, onBack }) => {
             return;
         }
 
-        // 1. Registrar consumos y descontar stock
-        const consumos = await fnRegistrarVenta();
-        if (!consumos) return; // fnRegistrarVenta ya muestra el error
-
-        // 2. Registrar el pago
-        const result = await fnRegistrarPago({
+        await fnRegistrarPago(cuentaActiva.id, {
             concepto_pago_id: CONCEPTO_PAGO_CONSUMOS_ID,
             monto,
             metodo_pago: metodoPago,
             codigo_voucher: codigoVoucher || null,
             observaciones,
         });
-        if (result) onNext();
+
+        setObservaciones("");
+        setCodigoVoucher("");
     };
+
+    const puedeCerrar = cuentaActiva?.saldo_pendiente <= 0.01; // margen flotante
 
     const METODOS = [
         { value: "EFECTIVO", label: "💵 Efectivo" },
@@ -388,99 +626,146 @@ const PagoStep = ({ onNext, onBack }) => {
 
     return (
         <Stack gap="lg">
-            {/* Resumen de totales (calculado localmente) */}
             <Paper p="md" withBorder>
                 <Text fw={600} mb="sm">
-                    Resumen de la Venta
+                    Pagos de la Cuenta
                 </Text>
+
+                {cuentaActiva?.pagos?.length > 0 && (
+                    <Box mb="sm">
+                        {cuentaActiva.pagos.map((p) => (
+                            <Group justify="space-between" key={p.id} mt={5}>
+                                <Text size="sm">
+                                    {p.metodo_pago} -{" "}
+                                    {dayjs(p.fecha_pago).format(
+                                        "DD/MM/YYYY HH:mm",
+                                    )}
+                                </Text>
+                                <Text size="sm" c="green" fw={600}>
+                                    {formatMoney(p.monto)}
+                                </Text>
+                            </Group>
+                        ))}
+                        <Divider my="sm" />
+                    </Box>
+                )}
+
                 <Group justify="space-between">
                     <Text size="sm" c="dimmed">
-                        Subtotal:
+                        Total:
                     </Text>
-                    <Text size="sm">{formatMoney(subtotal)}</Text>
+                    <Text size="sm">{formatMoney(cuentaActiva?.total)}</Text>
                 </Group>
                 <Group justify="space-between">
                     <Text size="sm" c="dimmed">
-                        IVA (15%):
+                        Total Pagado:
                     </Text>
-                    <Text size="sm">{formatMoney(iva)}</Text>
+                    <Text size="sm" c="green">
+                        {formatMoney(cuentaActiva?.total_pagos)}
+                    </Text>
                 </Group>
                 <Divider my="xs" />
                 <Group justify="space-between">
-                    <Text fw={700}>Total estimado:</Text>
-                    <Text fw={700} size="lg" c="blue">
-                        {formatMoney(total)}
+                    <Text fw={700}>Saldo Pendiente:</Text>
+                    <Text fw={700} size="lg" c="red">
+                        {formatMoney(cuentaActiva?.saldo_pendiente)}
                     </Text>
                 </Group>
             </Paper>
 
-            {/* Método de pago */}
-            <Box>
-                <Text size="sm" fw={500} mb="xs">
-                    Método de Pago
-                </Text>
-                <Group>
-                    {METODOS.map((m) => (
-                        <Button
-                            key={m.value}
-                            variant={
-                                metodoPago === m.value ? "filled" : "light"
+            {!puedeCerrar ? (
+                <>
+                    <Box>
+                        <Text size="sm" fw={500} mb="xs">
+                            Registrar Nuevo Pago
+                        </Text>
+                        <Group>
+                            {METODOS.map((m) => (
+                                <Button
+                                    key={m.value}
+                                    variant={
+                                        metodoPago === m.value
+                                            ? "filled"
+                                            : "light"
+                                    }
+                                    size="sm"
+                                    onClick={() => {
+                                        setMetodoPago(m.value);
+                                        setCodigoVoucher("");
+                                    }}
+                                >
+                                    {m.label}
+                                </Button>
+                            ))}
+                        </Group>
+                    </Box>
+
+                    {requiereVoucher && (
+                        <TextInput
+                            label="Código de Voucher *"
+                            value={codigoVoucher}
+                            onChange={(e) =>
+                                setCodigoVoucher(e.currentTarget.value)
                             }
-                            size="sm"
-                            onClick={() => {
-                                setMetodoPago(m.value);
-                                setCodigoVoucher("");
-                            }}
-                        >
-                            {m.label}
-                        </Button>
-                    ))}
-                </Group>
-            </Box>
+                            placeholder="Ej: TXN-00123456"
+                            required
+                            maxLength={100}
+                        />
+                    )}
 
-            {/* Voucher — solo cuando no es efectivo */}
-            {requiereVoucher && (
-                <TextInput
-                    label="Código de Voucher *"
-                    value={codigoVoucher}
-                    onChange={(e) => setCodigoVoucher(e.currentTarget.value)}
-                    placeholder="Ej: TXN-00123456"
-                    required
-                    maxLength={100}
-                />
+                    <NumberInput
+                        label="Monto a pagar"
+                        value={monto}
+                        onChange={setMonto}
+                        min={0.01}
+                        max={cuentaActiva?.saldo_pendiente + 0.01} // margen de float
+                        precision={2}
+                        prefix="$ "
+                    />
+
+                    <Textarea
+                        label="Observaciones (opcional)"
+                        value={observaciones}
+                        onChange={(e) =>
+                            setObservaciones(e.currentTarget.value)
+                        }
+                        placeholder="Ej: Pago parcial"
+                        maxLength={500}
+                        autosize
+                        minRows={2}
+                    />
+                </>
+            ) : (
+                <Paper p="md" bg="blue.0" mt="md" radius="md">
+                    <Text ta="center" fw={600} c="blue.7">
+                        El saldo pendiente ha sido cubierto por completo. Ya
+                        puede facturar y cerrar la cuenta.
+                    </Text>
+                </Paper>
             )}
-
-            {/* Monto */}
-            <NumberInput
-                label="Monto recibido"
-                value={monto}
-                onChange={setMonto}
-                min={0}
-                precision={2}
-                prefix="$ "
-            />
-
-            <Textarea
-                label="Observaciones (opcional)"
-                value={observaciones}
-                onChange={(e) => setObservaciones(e.currentTarget.value)}
-                placeholder="Ej: Pago en efectivo con vuelto"
-                maxLength={500}
-                autosize
-                minRows={2}
-            />
 
             <Group justify="space-between" mt="md">
                 <Button variant="default" onClick={onBack}>
-                    Atrás
+                    Volver a Consumos
                 </Button>
-                <Button
-                    leftSection={<IconCoin size={16} />}
-                    onClick={handlePagar}
-                    loading={cargando}
-                >
-                    Confirmar y Pagar
-                </Button>
+
+                {!puedeCerrar ? (
+                    <Button
+                        leftSection={<IconCoin size={16} />}
+                        onClick={handlePagar}
+                        loading={cargando}
+                    >
+                        Registrar Pago
+                    </Button>
+                ) : (
+                    <Button
+                        rightSection={<IconReceipt2 size={16} />}
+                        onClick={onNext}
+                        color="blue"
+                    >
+                        Facturar / Cerrar
+                    </Button>
+                )}
             </Group>
         </Stack>
     );
@@ -497,11 +782,10 @@ const FacturacionStep = ({ onBack, onReset }) => {
     const { consumidorFinal, fnCargarConsumidorFinal } =
         useClienteFacturacionStore();
     const {
-        consumosConfirmados,
-        factura,
+        cuentaActiva,
         cargando,
         fnGenerarFactura,
-        fnLimpiarCarrito,
+        fnCerrarCuenta,
         fnDescargarFacturaPDF,
     } = useVentaMostradorStore();
     const { fnCargarProductosInventario } = useInventarioStore();
@@ -510,51 +794,78 @@ const FacturacionStep = ({ onBack, onReset }) => {
         fnCargarConsumidorFinal();
     }, []);
 
-    const handleGenerar = async () => {
-        if (!clienteSeleccionado?.id) {
-            Swal.fire({
-                icon: "warning",
-                title: "Seleccione el tipo de facturación",
+    const handleCerrarProceso = async () => {
+        let fac = null;
+        if (generarFactura) {
+            if (!clienteSeleccionado?.id) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Seleccione el tipo de facturación",
+                });
+                return;
+            }
+            const ids = cuentaActiva.consumos.map((c) => c.id);
+            fac = await fnGenerarFactura({
+                consumoIds: ids,
+                clienteFacturacionId: clienteSeleccionado.id,
+                observaciones,
+                solicitaFacturaDetallada: solicitaDetallada,
             });
-            return;
+            if (!fac) return;
         }
-        const ids = consumosConfirmados.map((c) => c.id);
-        await fnGenerarFactura({
-            consumoIds: ids,
-            clienteFacturacionId: clienteSeleccionado.id,
-            observaciones,
-            solicitaFacturaDetallada: solicitaDetallada,
-        });
+
+        const cerrada = await fnCerrarCuenta(cuentaActiva.id, fac?.id);
+        if (cerrada) {
+            // Actualizar inventario local si hace falta
+            fnCargarProductosInventario({ solo_venta: true, activo: 1 });
+            if (!fac) {
+                Swal.fire(
+                    "Éxito",
+                    "Cuenta cerrada sin emitir factura.",
+                    "success",
+                ).then(() => {
+                    onReset();
+                });
+            }
+        }
     };
 
-    const handleNuevaVenta = () => {
-        fnLimpiarCarrito();
-        fnCargarProductosInventario({ solo_venta: true, activo: 1 }); // Refrescar stock actualizado
-        onReset();
-    };
-
-    if (factura) {
+    if (cuentaActiva?.estado?.nombre_estado === "PAGADO") {
         return (
             <Stack align="center" gap="lg" py="xl">
                 <ThemeIcon size={64} radius="xl" color="teal">
                     <IconCheck size={36} />
                 </ThemeIcon>
-                <Title order={3}>¡Factura Generada!</Title>
-                <Text c="dimmed">
-                    Factura N° <strong>{factura.numero_factura}</strong> —{" "}
-                    {formatMoney(factura.total_factura)}
-                </Text>
-                <Group>
-                    <Button
-                        variant="light"
-                        leftSection={<IconFileInvoice size={16} />}
-                        onClick={() => fnDescargarFacturaPDF(factura.id)}
-                        loading={cargando}
-                    >
-                        Descargar PDF
-                    </Button>
-                    <Button onClick={handleNuevaVenta}>Nueva Venta</Button>
-                </Group>
+                <Title order={3}>¡Cuenta Cerrada!</Title>
+
+                {cuentaActiva.factura ? (
+                    <>
+                        <Text c="dimmed">
+                            Factura N°{" "}
+                            <strong>
+                                {cuentaActiva.factura.numero_factura}
+                            </strong>{" "}
+                            emitido por {formatMoney(cuentaActiva.total_pagos)}
+                        </Text>
+                        <Button
+                            variant="light"
+                            leftSection={<IconFileInvoice size={16} />}
+                            onClick={() =>
+                                fnDescargarFacturaPDF(cuentaActiva.factura.id)
+                            }
+                            loading={cargando}
+                        >
+                            Descargar PDF
+                        </Button>
+                    </>
+                ) : (
+                    <Text c="dimmed">
+                        La cuenta fue cerrada sin emitir factura.
+                    </Text>
+                )}
+                <Button onClick={onReset} mt="md">
+                    Regresar al Listado de Cuentas
+                </Button>
             </Stack>
         );
     }
@@ -588,23 +899,22 @@ const FacturacionStep = ({ onBack, onReset }) => {
                 <Button variant="default" onClick={onBack}>
                     Atrás
                 </Button>
-                <Group>
-                    <Button
-                        variant="light"
-                        color="gray"
-                        onClick={handleNuevaVenta}
-                    >
-                        Finalizar sin factura
-                    </Button>
-                    <Button
-                        leftSection={<IconFileInvoice size={16} />}
-                        onClick={handleGenerar}
-                        loading={cargando}
-                        disabled={!clienteSeleccionado?.id}
-                    >
-                        Generar Factura
-                    </Button>
-                </Group>
+                <Button
+                    leftSection={
+                        generarFactura ? (
+                            <IconFileInvoice size={16} />
+                        ) : (
+                            <IconCheck size={16} />
+                        )
+                    }
+                    onClick={handleCerrarProceso}
+                    loading={cargando}
+                    color={generarFactura ? "blue" : "teal"}
+                >
+                    {generarFactura
+                        ? "Generar Factura y Cerrar"
+                        : "Cerrar Cuenta Definitiva"}
+                </Button>
             </Group>
         </Stack>
     );
@@ -612,36 +922,34 @@ const FacturacionStep = ({ onBack, onReset }) => {
 
 // ─── Página Principal ─────────────────────────────────────────────────────────
 
-const VentaMostradorPage = () => {
+const StepperView = () => {
+    const { cuentaActiva, fnLimpiarCuentaActiva } = useVentaMostradorStore();
     const [active, setActive] = useState(0);
-    const { fnLimpiarCarrito } = useVentaMostradorStore();
-    const { fnCargarProductosInventario } = useInventarioStore();
-
-    useEffect(() => {
-        fnCargarProductosInventario({ solo_venta: true, activo: 1 });
-    }, []);
 
     const handleNext = () => setActive((cur) => Math.min(cur + 1, 2));
-
     const handleBack = () => setActive((cur) => Math.max(cur - 1, 0));
 
     const handleReset = () => {
         setActive(0);
-        fnLimpiarCarrito();
+        fnLimpiarCuentaActiva();
     };
 
     return (
-        <Container size="xl" my={20}>
-            <PrincipalSectionPage
-                title="Venta de Mostrador"
-                description="Registro de consumos para clientes sin reserva"
-                icon={<IconShoppingCart size={22} />}
-            />
+        <>
+            <Group mb="md">
+                <ActionIcon variant="light" size="lg" onClick={handleReset}>
+                    <IconArrowLeft size={20} />
+                </ActionIcon>
+                <Title order={4}>Cuenta Activa: {cuentaActiva.codigo}</Title>
+                <Badge color="yellow">
+                    {cuentaActiva.estado?.nombre_estado}
+                </Badge>
+            </Group>
 
             <Paper p="xl" withBorder>
                 <Stepper
                     active={active}
-                    onStepClick={() => {}} // no navigation manual
+                    onStepClick={() => {}} // bloqueo de navegacion manual
                     mb="xl"
                 >
                     <Stepper.Step
@@ -672,6 +980,24 @@ const VentaMostradorPage = () => {
                     />
                 )}
             </Paper>
+        </>
+    );
+};
+
+const VentaMostradorPage = () => {
+    const { cuentaActiva } = useVentaMostradorStore();
+
+    return (
+        <Container size="xl" my={20}>
+            {!cuentaActiva && (
+                <PrincipalSectionPage
+                    title="Cuentas de Venta"
+                    description="Gestión de cuentas abiertas y pagos para ventas sin reserva"
+                    icon={<IconShoppingCart size={22} />}
+                />
+            )}
+
+            {cuentaActiva ? <StepperView /> : <CuentasView />}
         </Container>
     );
 };

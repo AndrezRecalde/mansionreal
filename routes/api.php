@@ -16,6 +16,7 @@ use App\Http\Controllers\HuespedController;
 use App\Http\Controllers\InventarioController;
 use App\Http\Controllers\LimpiezaController;
 use App\Http\Controllers\PagoController;
+use App\Http\Controllers\CuentaVentaController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProvinciaController;
 use App\Http\Controllers\ReservasController;
@@ -267,6 +268,19 @@ Route::middleware('auth:sanctum')->group(function () {
                 }
                 );
 
+                /* ---- Cuentas Ventas de Mostrador ---- */
+                Route::middleware(CheckPermission::class . ':ver_consumos_externos')->group(function () {
+                    Route::get('/cuentas-ventas', [CuentaVentaController::class, 'index']);
+                    Route::post('/cuentas-ventas', [CuentaVentaController::class, 'store']);
+                    Route::get('/cuentas-ventas/{id}', [CuentaVentaController::class, 'show']);
+                    Route::post('/cuentas-ventas-historial', [CuentaVentaController::class, 'historial']);
+                    Route::post('/cuentas-ventas/{id}/consumos', [CuentaVentaController::class, 'agregarConsumos']);
+                    Route::put('/cuentas-ventas/{id}/consumos/{consumoId}', [CuentaVentaController::class, 'actualizarConsumo']);
+                    Route::delete('/cuentas-ventas/{id}/consumos/{consumoId}', [CuentaVentaController::class, 'eliminarConsumo']);
+                    Route::post('/cuentas-ventas/{id}/pagos', [CuentaVentaController::class, 'registrarPago']);
+                    Route::post('/cuentas-ventas/{id}/cerrar', [CuentaVentaController::class, 'cerrarCuenta']);
+                });
+
                 /* ---- Totales Externos ---- */
                 Route::middleware(CheckPermission::class . ':ver_totales_externos')->group(function () {
                     Route::post('/totales-externos', [PagoController::class , 'getTotalesExterno']);
@@ -274,7 +288,7 @@ Route::middleware('auth:sanctum')->group(function () {
                 );
 
                 // ================================================================
-                // CLIENTES DE FACTURACIÓN — Acceso: ADMIN|GERENTE libre, ASISTENTE con permiso
+                // CLIENTES DE FACTURACIÓN — Acceso: ADMINISTRADOR|GERENTE libre, ASISTENTE con permiso
                 // ================================================================
                 Route::middleware(CheckPermission::class . ':ver_clientes_facturacion')
                     ->prefix('clientes-facturacion')
@@ -295,7 +309,7 @@ Route::middleware('auth:sanctum')->group(function () {
             );
 
             // ================================================================
-            // FACTURAS — Acceso: ADMIN|GERENTE libre, ASISTENTE con permiso
+            // FACTURAS — Acceso: ADMINISTRADOR|GERENTE libre, ASISTENTE con permiso
             // ================================================================
             Route::middleware(CheckPermission::class . ':ver_facturas')
                 ->prefix('facturas')
@@ -317,7 +331,7 @@ Route::middleware('auth:sanctum')->group(function () {
             );
 
             // ================================================================
-            // SECUENCIAS DE FACTURAS — Acceso: ADMIN|GERENTE libre, ASISTENTE con permiso
+            // SECUENCIAS DE FACTURAS — Acceso: ADMINISTRADOR|GERENTE libre, ASISTENTE con permiso
             // ================================================================
             Route::middleware(CheckPermission::class . ':ver_secuencias_facturas')
                 ->prefix('secuencias-facturas')

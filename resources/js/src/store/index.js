@@ -54,6 +54,10 @@ import { uiHuespedSlice } from "./huesped/uiHuespedSlice";
 import { inventarioSlice } from "./inventario/inventarioSlice";
 import { uiInventarioSlice } from "./inventario/uiInventarioSlice";
 
+/* Ventas de Mostrador */
+import { ventaMostradorSlice } from "./ventaMostrador/ventaMostradorSlice";
+import { historialCuentasVentaSlice } from "./ventaMostrador/historialCuentasVentaSlice";
+
 /* Reservas */
 import { reservaSlice } from "./reserva/reservaSlice";
 import { uiReservaSlice } from "./reserva/uiReservaSlice";

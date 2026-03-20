@@ -10,6 +10,7 @@ class Consumo extends Model
     protected $fillable = [
         'reserva_id',
         'factura_id',
+        'cuenta_venta_id',
         'inventario_id',
         'cantidad',
         'fecha_creacion',
@@ -57,6 +58,14 @@ class Consumo extends Model
     public function reserva(): BelongsTo
     {
         return $this->belongsTo(Reserva::class);
+    }
+
+    /**
+     * Cuenta Venta (Venta de mostrador persistida)
+     */
+    public function cuentaVenta(): BelongsTo
+    {
+        return $this->belongsTo(CuentaVenta::class, 'cuenta_venta_id');
     }
 
     /**

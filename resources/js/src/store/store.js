@@ -52,6 +52,7 @@ import {
     usuarioSlice,
 } from "../store";
 import { ventaMostradorSlice } from "./ventaMostrador/ventaMostradorSlice";
+import { historialCuentasVentaSlice } from "./ventaMostrador/historialCuentasVentaSlice";
 
 export const store = configureStore({
     reducer: {
@@ -156,6 +157,7 @@ export const store = configureStore({
 
         /* Ventas de Mostrador */
         ventaMostrador: ventaMostradorSlice.reducer,
+        historialCuentasVenta: historialCuentasVentaSlice.reducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

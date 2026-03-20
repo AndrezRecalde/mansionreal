@@ -2,10 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     cargando: false,
-    carrito: [], // items pendientes de confirmar
-    consumosConfirmados: [], // consumos ya registrados en backend
-    factura: null,
-    pagos: [],
+    cuentas: [],       // Lista de cuentas abiertas/pagadas
+    cuentaActiva: null, // Cuenta seleccionada (con consumos y pagos)
     mensaje: undefined,
     errores: undefined,
 };
@@ -18,50 +16,25 @@ export const ventaMostradorSlice = createSlice({
             state.cargando = payload;
         },
 
-        // Carrito
-        rtkAgregarItemCarrito: (state, { payload }) => {
-            const existe = state.carrito.find(
-                (i) => i.inventario_id === payload.inventario_id,
-            );
-            if (existe) {
-                existe.cantidad += payload.cantidad;
-            } else {
-                state.carrito.push({ ...payload });
+        // Cuentas de Venta
+        rtkCargarCuentas: (state, { payload }) => {
+            state.cuentas = payload;
+        },
+        rtkAgregarCuenta: (state, { payload }) => {
+            state.cuentas.unshift(payload);
+        },
+        rtkCargarCuentaActiva: (state, { payload }) => {
+            state.cuentaActiva = payload;
+            // Update it in the list as well if it exists
+            if (payload && payload.id) {
+                const idx = state.cuentas.findIndex(c => c.id === payload.id);
+                if (idx !== -1) {
+                    state.cuentas[idx] = payload;
+                }
             }
         },
-        rtkEliminarItemCarrito: (state, { payload }) => {
-            state.carrito = state.carrito.filter(
-                (i) => i.inventario_id !== payload,
-            );
-        },
-        rtkActualizarCantidadCarrito: (state, { payload }) => {
-            const item = state.carrito.find(
-                (i) => i.inventario_id === payload.inventarioId,
-            );
-            if (item) {
-                item.cantidad = payload.cantidad;
-            }
-        },
-        rtkLimpiarCarrito: (state) => {
-            state.carrito = [];
-            state.consumosConfirmados = [];
-            state.factura = null;
-            state.pagos = [];
-        },
-
-        // Consumos confirmados (backend)
-        rtkCargarConsumosCarrito: (state, { payload }) => {
-            state.consumosConfirmados = payload;
-        },
-
-        // Factura
-        rtkCargarFactura: (state, { payload }) => {
-            state.factura = payload;
-        },
-
-        // Pagos
-        rtkCargarPagos: (state, { payload }) => {
-            state.pagos = payload;
+        rtkLimpiarCuentaActiva: (state) => {
+            state.cuentaActiva = null;
         },
 
         // Mensajes / errores
@@ -76,13 +49,10 @@ export const ventaMostradorSlice = createSlice({
 
 export const {
     rtkCargando,
-    rtkAgregarItemCarrito,
-    rtkEliminarItemCarrito,
-    rtkActualizarCantidadCarrito,
-    rtkLimpiarCarrito,
-    rtkCargarConsumosCarrito,
-    rtkCargarFactura,
-    rtkCargarPagos,
+    rtkCargarCuentas,
+    rtkAgregarCuenta,
+    rtkCargarCuentaActiva,
+    rtkLimpiarCuentaActiva,
     rtkCargarMensaje,
     rtkCargarErrores,
 } = ventaMostradorSlice.actions;

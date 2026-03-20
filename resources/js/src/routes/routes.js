@@ -8,6 +8,13 @@ const VentaMostradorPage = lazy(
         ),
 );
 
+const HistorialCuentasVentaPage = lazy(
+    () =>
+        import(
+            /* webpackChunkName: "HistorialCuentasVentaPage" */ "../pages/ventaMostrador/HistorialCuentasVentaPage"
+        ),
+);
+
 const AuthPage = lazy(
     () => import(/* webpackChunkName: "AuthPage" */ "../pages/auth/AuthPage"),
 );
@@ -192,6 +199,7 @@ export const MENU_PATH = {
     HISTORIAL_PAGOS: "historial-pagos",
     FACTURAS: "facturas",
     VENTA_MOSTRADOR: "venta-mostrador",
+    HISTORIAL_CUENTAS_VENTA: "historial-cuentas-venta",
 
     PERFIL: "perfil",
     CAMBIAR_CONTRASENA: "cambiar-contrasena",
@@ -280,6 +288,11 @@ const gerenciaRoutes = generateRoutes(
             Component: VentaMostradorPage,
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA, Roles.ASISTENTE],
             permissions: ["ver_consumos_externos", "ver_pagos_externos"],
+        },
+        {
+            path: MENU_PATH.HISTORIAL_CUENTAS_VENTA,
+            Component: HistorialCuentasVentaPage,
+            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
         },
     ],
     [Roles.ADMINISTRADOR, Roles.GERENCIA],

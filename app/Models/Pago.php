@@ -11,6 +11,7 @@ class Pago extends Model
 
     protected $fillable = [
         'reserva_id',          // nullable: null para ventas de mostrador
+        'cuenta_venta_id',     // nullable: para ventas de mostrador
         'codigo_voucher',
         'concepto_pago_id',
         'monto',
@@ -24,6 +25,11 @@ class Pago extends Model
     public function reserva()
     {
         return $this->belongsTo(Reserva::class, 'reserva_id');
+    }
+
+    public function cuentaVenta()
+    {
+        return $this->belongsTo(CuentaVenta::class, 'cuenta_venta_id');
     }
 
     /**

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Modal, Group, Button, Stack } from "@mantine/core";
-import { useForm, isNotEmpty } from "@mantine/form";
+import { useForm } from "@mantine/form";
 import { IconX, IconCheck } from "@tabler/icons-react";
 import { TextSection, ConsumoDescuentoForm } from "../../../components";
 import { useConsumoStore, useUiConsumo } from "../../../hooks";
@@ -49,7 +49,7 @@ export const ConsumoAplicarDescuentoModal = () => {
                 return null;
             },
             motivo_descuento: (value, values) => {
-                // ✅ ACTUALIZADO: Calcular porcentaje real
+                // ACTUALIZADO: Calcular porcentaje real
                 if (!activarConsumo) return null;
 
                 let porcentajeReal = 0;

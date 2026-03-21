@@ -41,13 +41,13 @@ import {
     useInventarioStore,
     useVentaMostradorStore,
     useFacturaStore,
-    useAuthStore,
+    //useAuthStore,
 } from "../../hooks";
 import {
     ClienteFacturacionSelector,
     PrincipalSectionPage,
     TextSection,
-    TitlePage,
+    //TitlePage,
     LoadingSkeleton,
     VisorFacturaPDF,
     VentaMostradorDescuentoModal,
@@ -883,7 +883,7 @@ const FacturacionStep = ({ onBack, onReset }) => {
             Swal.fire({
                 icon: "warning",
                 title: "Seleccione el tipo de facturación",
-                text: "Debe seleccionar Consumidor Final o un Cliente Registrado."
+                text: "Debe seleccionar Consumidor Final o un Cliente Registrado.",
             });
             return;
         }

@@ -541,7 +541,25 @@ class CuentaVentaController extends Controller
 
             $cuenta = CuentaVenta::findOrFail($id);
 
-            // Verificar si el saldo es 0
+            // AUTO-BALANCEO DE VUELTO: Si hay saldo a favor, registrar pago en negativo
+            if ($cuenta->saldo_pendiente < -0.01) {
+                // Asumimos el ID de concepto de pago 3 (Consumos/Ventas) o buscamos uno genérico
+                $conceptoId = 3; 
+
+                Pago::create([
+                    'cuenta_venta_id' => $cuenta->id,
+                    'concepto_pago_id' => $conceptoId,
+                    'monto' => $cuenta->saldo_pendiente, // Al ser negativo compensa el exceso
+                    'metodo_pago' => 'EFECTIVO',
+                    'observaciones' => 'Vuelto/Devolución automática por saldo a favor',
+                    'fecha_pago' => now(),
+                    'usuario_creador_id' => Auth::id(),
+                ]);
+
+                $this->recalcularTotales($cuenta);
+            }
+
+            // Verificar si quedó saldo pendiente por cobrar
             if ($cuenta->saldo_pendiente > 0.01) {
                 throw new \Exception("No se puede cerrar la cuenta. Hay un saldo pendiente de " . $cuenta->saldo_pendiente);
             }

@@ -120,7 +120,7 @@ export const HistorialCuentasTable = ({ datos, cargando, onVerFactura }) => {
                         Detalle de Cuenta: {cuentaDetalle?.codigo}
                     </Text>
                 }
-                size="lg"
+                size="xl"
             >
                 {cuentaDetalle && (
                     <Stack gap="md">
@@ -159,7 +159,12 @@ export const HistorialCuentasTable = ({ datos, cargando, onVerFactura }) => {
                         <Stack gap="xs">
                             {cuentaDetalle.pagos?.map((p) => (
                                 <Group justify="space-between" key={p.id}>
-                                    <Text size="sm">{p.metodo_pago}</Text>
+                                    <Text size="sm">
+                                        {p.metodo_pago +
+                                            (p.codigo_voucher
+                                                ? " - " + p.codigo_voucher
+                                                : "")}
+                                    </Text>
                                     <Text size="sm" fw={500} c="green">
                                         {formatearMonto(p.monto)}
                                     </Text>

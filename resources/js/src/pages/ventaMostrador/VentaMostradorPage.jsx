@@ -850,7 +850,9 @@ const PagoStep = ({ onNext, onBack }) => {
 // ─── Paso 3: Facturación ──────────────────────────────────────────────────────
 
 const FacturacionStep = ({ onBack, onReset }) => {
-    const [generarFactura, setGenerarFactura] = useState(true);
+    // Nota: 'generarFactura' aquí significa realmente 'usarClienteRegistrado'
+    // false = Consumidor Final, true = Buscar Cliente
+    const [usarClienteRegistrado, setUsarClienteRegistrado] = useState(false);
     const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
     const [solicitaDetallada, setSolicitaDetallada] = useState(false);
     const [observaciones, setObservaciones] = useState("");
@@ -871,30 +873,30 @@ const FacturacionStep = ({ onBack, onReset }) => {
     }, []);
 
     useEffect(() => {
-        if (generarFactura && !clienteSeleccionado && consumidorFinal) {
+        if (!usarClienteRegistrado && consumidorFinal) {
             setClienteSeleccionado(consumidorFinal);
         }
-    }, [consumidorFinal, generarFactura, clienteSeleccionado]);
+    }, [consumidorFinal, usarClienteRegistrado, clienteSeleccionado]);
 
     const handleCerrarProceso = async () => {
-        let fac = null;
-        if (generarFactura) {
-            if (!clienteSeleccionado?.id) {
-                Swal.fire({
-                    icon: "warning",
-                    title: "Seleccione el tipo de facturación",
-                });
-                return;
-            }
-            const ids = cuentaActiva.consumos.map((c) => c.id);
-            fac = await fnGenerarFactura({
-                consumoIds: ids,
-                clienteFacturacionId: clienteSeleccionado.id,
-                observaciones,
-                solicitaFacturaDetallada: solicitaDetallada,
+        if (!clienteSeleccionado?.id) {
+            Swal.fire({
+                icon: "warning",
+                title: "Seleccione el tipo de facturación",
+                text: "Debe seleccionar Consumidor Final o un Cliente Registrado."
             });
-            if (!fac) return;
+            return;
         }
+
+        const ids = cuentaActiva.consumos.map((c) => c.id);
+        const fac = await fnGenerarFactura({
+            consumoIds: ids,
+            clienteFacturacionId: clienteSeleccionado.id,
+            observaciones,
+            solicitaFacturaDetallada: solicitaDetallada,
+        });
+
+        if (!fac) return; // Si falla la generación, nos detenemos
 
         const cerrada = await fnCerrarCuenta(cuentaActiva.id, fac?.id);
         if (cerrada) {
@@ -948,8 +950,8 @@ const FacturacionStep = ({ onBack, onReset }) => {
             <ClienteFacturacionSelector
                 consumidorFinal={consumidorFinal}
                 huespedId={null}
-                generarFactura={generarFactura}
-                setGenerarFactura={setGenerarFactura}
+                generarFactura={usarClienteRegistrado}
+                setGenerarFactura={setUsarClienteRegistrado}
                 clienteSeleccionado={clienteSeleccionado}
                 onClienteChange={setClienteSeleccionado}
                 solicitaDetallada={solicitaDetallada}
@@ -973,20 +975,12 @@ const FacturacionStep = ({ onBack, onReset }) => {
                     Atrás
                 </Button>
                 <Button
-                    leftSection={
-                        generarFactura ? (
-                            <IconFileInvoice size={16} />
-                        ) : (
-                            <IconCheck size={16} />
-                        )
-                    }
+                    leftSection={<IconFileInvoice size={16} />}
                     onClick={handleCerrarProceso}
                     loading={cargando}
-                    color={generarFactura ? "blue" : "teal"}
+                    color="blue"
                 >
-                    {generarFactura
-                        ? "Generar Factura y Cerrar"
-                        : "Cerrar Cuenta Definitiva"}
+                    Generar Factura y Cerrar
                 </Button>
             </Group>
         </Stack>

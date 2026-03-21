@@ -216,14 +216,14 @@ class FacturaController extends Controller
                 'factura' => $factura,
             ], 201);
         } catch (FacturacionException $e) {
-            \Illuminate\Support\Facades\Log::error('FacturacionException externa: ' . $e->getMessage());
+            //\Illuminate\Support\Facades\Log::error('FacturacionException externa: ' . $e->getMessage());
             return response()->json([
                 'status' => HTTPStatus::Error,
                 'msg' => $e->getMessage(),
                 'code' => $e->getCode(),
             ], 400);
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Excepcion en generarFacturaExterna: ' . $e->getMessage() . ' ' . $e->getTraceAsString());
+            //\Illuminate\Support\Facades\Log::error('Excepcion en generarFacturaExterna: ' . $e->getMessage() . ' ' . $e->getTraceAsString());
             return response()->json([
                 'status' => HTTPStatus::Error,
                 'msg' => 'Error al generar factura: ' . $e->getMessage()

@@ -4,6 +4,7 @@ const initialState = {
     cargando: false,
     cuentas: [],       // Lista de cuentas abiertas/pagadas
     cuentaActiva: null, // Cuenta seleccionada (con consumos y pagos)
+    consumoDescuentoActivo: null, // Guardar data de producto para aplicar descuento
     mensaje: undefined,
     errores: undefined,
 };
@@ -36,6 +37,9 @@ export const ventaMostradorSlice = createSlice({
         rtkLimpiarCuentaActiva: (state) => {
             state.cuentaActiva = null;
         },
+        rtkCargarConsumoDescuentoActivo: (state, { payload }) => {
+            state.consumoDescuentoActivo = payload;
+        },
 
         // Mensajes / errores
         rtkCargarMensaje: (state, { payload }) => {
@@ -53,6 +57,7 @@ export const {
     rtkAgregarCuenta,
     rtkCargarCuentaActiva,
     rtkLimpiarCuentaActiva,
+    rtkCargarConsumoDescuentoActivo,
     rtkCargarMensaje,
     rtkCargarErrores,
 } = ventaMostradorSlice.actions;

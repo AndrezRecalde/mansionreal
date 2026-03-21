@@ -277,6 +277,10 @@ Route::middleware('auth:sanctum')->group(function () {
                     Route::post('/cuentas-ventas/{id}/consumos', [CuentaVentaController::class, 'agregarConsumos']);
                     Route::put('/cuentas-ventas/{id}/consumos/{consumoId}', [CuentaVentaController::class, 'actualizarConsumo']);
                     Route::delete('/cuentas-ventas/{id}/consumos/{consumoId}', [CuentaVentaController::class, 'eliminarConsumo']);
+                    
+                    Route::put('/cuentas-ventas/{id}/consumos/{consumoId}/descuento', [CuentaVentaController::class, 'aplicarDescuentoConsumo']);
+                    Route::delete('/cuentas-ventas/{id}/consumos/{consumoId}/descuento', [CuentaVentaController::class, 'removerDescuentoConsumo']);
+
                     Route::post('/cuentas-ventas/{id}/pagos', [CuentaVentaController::class, 'registrarPago']);
                     Route::post('/cuentas-ventas/{id}/cerrar', [CuentaVentaController::class, 'cerrarCuenta']);
                 });

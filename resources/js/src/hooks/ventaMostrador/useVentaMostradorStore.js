@@ -6,6 +6,7 @@ import {
     rtkAgregarCuenta,
     rtkCargarCuentaActiva,
     rtkLimpiarCuentaActiva,
+    rtkCargarConsumoDescuentoActivo,
     rtkCargarErrores,
     rtkCargarMensaje,
 } from "../../store/ventaMostrador/ventaMostradorSlice";
@@ -17,6 +18,7 @@ export const useVentaMostradorStore = () => {
         cargando,
         cuentas,
         cuentaActiva,
+        consumoDescuentoActivo,
         mensaje,
         errores,
     } = useSelector((state) => state.ventaMostrador);
@@ -142,6 +144,51 @@ export const useVentaMostradorStore = () => {
         }
     };
 
+    // ─── DESCUENTOS EN CONSUMOS ──────────────────────────────────────────
+
+    const fnAsignarConsumoDescuento = (consumo) => {
+        dispatch(rtkCargarConsumoDescuentoActivo(consumo));
+    };
+
+    const fnAplicarDescuentoConsumoMostrador = async (cuentaId, consumoId, datosDescuento) => {
+        try {
+            dispatch(rtkCargando(true));
+            const { data } = await apiAxios.put(
+                `/general/cuentas-ventas/${cuentaId}/consumos/${consumoId}/descuento`,
+                datosDescuento
+            );
+            dispatch(rtkCargarCuentaActiva(data.cuenta));
+            dispatch(rtkCargarMensaje({ status: "success", msg: data.msg || "Descuento aplicado correctamente" }));
+            setTimeout(() => dispatch(rtkCargarMensaje(undefined)), 3000);
+            return true;
+        } catch (error) {
+            ExceptionMessageError(error);
+            return false;
+        } finally {
+            dispatch(rtkCargando(false));
+            dispatch(rtkCargarConsumoDescuentoActivo(null));
+        }
+    };
+
+    const fnRemoverDescuentoConsumoMostrador = async (cuentaId, consumoId) => {
+        try {
+            dispatch(rtkCargando(true));
+            const { data } = await apiAxios.delete(
+                `/general/cuentas-ventas/${cuentaId}/consumos/${consumoId}/descuento`
+            );
+            dispatch(rtkCargarCuentaActiva(data.cuenta));
+            dispatch(rtkCargarMensaje({ status: "success", msg: data.msg || "Descuento removido correctamente" }));
+            setTimeout(() => dispatch(rtkCargarMensaje(undefined)), 3000);
+            return true;
+        } catch (error) {
+            ExceptionMessageError(error);
+            return false;
+        } finally {
+            dispatch(rtkCargando(false));
+            dispatch(rtkCargarConsumoDescuentoActivo(null));
+        }
+    };
+
     // ─── CIERRE Y FACTURACIÓN ──────────────────────────────────────────
 
     const fnGenerarFactura = async ({ consumoIds, clienteFacturacionId, observaciones, solicitaFacturaDetallada = false }) => {
@@ -224,6 +271,11 @@ export const useVentaMostradorStore = () => {
         fnAgregarConsumo,
         fnActualizarConsumo,
         fnEliminarConsumo,
+
+        consumoDescuentoActivo,
+        fnAsignarConsumoDescuento,
+        fnAplicarDescuentoConsumoMostrador,
+        fnRemoverDescuentoConsumoMostrador,
 
         fnRegistrarPago,
         

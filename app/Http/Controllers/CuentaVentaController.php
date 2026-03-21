@@ -156,7 +156,7 @@ class CuentaVentaController extends Controller
             'total_iva' => $iva,
             'total' => $total,
             'total_pagos' => $totalPagos,
-            'saldo_pendiente' => max(0, $total - $totalPagos),
+            'saldo_pendiente' => round($total - $totalPagos, 2),
         ]);
 
         return $cuenta;
@@ -335,6 +335,108 @@ class CuentaVentaController extends Controller
     }
 
     /**
+     * Aplicar descuento a un consumo específico
+     */
+    public function aplicarDescuentoConsumo(Request $request, $id, $consumoId): JsonResponse
+    {
+        try {
+            DB::beginTransaction();
+
+            $cuenta = CuentaVenta::findOrFail($id);
+
+            // Verificar que no esté pagada o facturada
+            if ($cuenta->estado->nombre_estado !== 'PENDIENTE') {
+                throw new \Exception("Solo se pueden aplicar descuentos a cuentas PENDIENTES.");
+            }
+
+            $consumo = Consumo::where('cuenta_venta_id', $cuenta->id)->findOrFail($consumoId);
+
+            // Obtenemos los valores
+            $descuento = $request->descuento;
+            $tipo_descuento = $request->tipo_descuento;
+            $motivo_descuento = $request->motivo_descuento;
+            $usuarioId = Auth::id();
+
+            // Evitar problemas si falta el tipo
+            if (!in_array($tipo_descuento, [Consumo::TIPO_DESCUENTO_MONTO_FIJO, Consumo::TIPO_DESCUENTO_PORCENTAJE])) {
+                throw new \Exception("El tipo de descuento es inválido.");
+            }
+
+            // Aplicar el método del modelo Consumo
+            $success = $consumo->aplicarDescuento(
+                descuento: $descuento,
+                tipo: $tipo_descuento,
+                motivo: $motivo_descuento,
+                usuarioId: $usuarioId
+            );
+
+            if (!$success) {
+                throw new \Exception("No se pudo aplicar el descuento al consumo. Revise el monto total.");
+            }
+
+            // Recalculamos totales de la cuenta global
+            $this->recalcularTotales($cuenta);
+
+            DB::commit();
+
+            return response()->json([
+                'status' => HTTPStatus::Success,
+                'msg' => 'Descuento aplicado correctamente',
+                'cuenta' => $cuenta->load(['estado', 'usuario', 'consumos.inventario', 'pagos', 'factura']),
+            ], 200);
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'status' => HTTPStatus::Error,
+                'msg' => $th->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Remover descuento de un consumo específico
+     */
+    public function removerDescuentoConsumo(Request $request, $id, $consumoId): JsonResponse
+    {
+        try {
+            DB::beginTransaction();
+
+            $cuenta = CuentaVenta::findOrFail($id);
+
+            // Verificar que no esté pagada
+            if ($cuenta->estado->nombre_estado !== 'PENDIENTE') {
+                throw new \Exception("No se puede remover el descuento porque la cuenta ya no está PENDIENTE.");
+            }
+
+            $consumo = Consumo::where('cuenta_venta_id', $cuenta->id)->findOrFail($consumoId);
+
+            $success = $consumo->removerDescuento();
+
+            if (!$success) {
+                throw new \Exception("No se pudo remover el descuento (quizá el consumo ya está facturado).");
+            }
+
+            $this->recalcularTotales($cuenta);
+
+            DB::commit();
+
+            return response()->json([
+                'status' => HTTPStatus::Success,
+                'msg' => 'Descuento removido correctamente',
+                'cuenta' => $cuenta->load(['estado', 'usuario', 'consumos.inventario', 'pagos', 'factura']),
+            ], 200);
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'status' => HTTPStatus::Error,
+                'msg' => $th->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
      * Eliminar un consumo
      */
     public function eliminarConsumo($id, $consumoId): JsonResponse
@@ -467,6 +569,7 @@ class CuentaVentaController extends Controller
         }
         catch (\Throwable $th) {
             DB::rollBack();
+            \Illuminate\Support\Facades\Log::error('Excepción en cerrarCuenta: ' . $th->getMessage() . ' ' . $th->getTraceAsString());
             return response()->json([
                 'status' => HTTPStatus::Error,
                 'msg' => $th->getMessage(),

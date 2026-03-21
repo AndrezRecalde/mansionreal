@@ -31,15 +31,17 @@ import {
     IconPlus,
     IconSearch,
     IconShoppingCart,
-    IconTrash,
     IconArrowLeft,
     IconReceipt2,
+    IconPercentage,
+    IconTrash,
 } from "@tabler/icons-react";
 import {
     useClienteFacturacionStore,
     useInventarioStore,
     useVentaMostradorStore,
     useFacturaStore,
+    useAuthStore,
 } from "../../hooks";
 import {
     ClienteFacturacionSelector,
@@ -48,6 +50,7 @@ import {
     TitlePage,
     LoadingSkeleton,
     VisorFacturaPDF,
+    VentaMostradorDescuentoModal,
 } from "../../components";
 import Swal from "sweetalert2";
 import dayjs from "dayjs";
@@ -171,10 +174,22 @@ const CuentasView = () => {
                                 <Divider />
                                 <Group justify="space-between">
                                     <Text size="sm" c="dimmed">
-                                        Saldo Pendiente:
+                                        {cta.saldo_pendiente < 0
+                                            ? "Saldo a Favor:"
+                                            : "Saldo Pendiente:"}
                                     </Text>
-                                    <Text size="sm" fw={600} c="red">
-                                        {formatMoney(cta.saldo_pendiente)}
+                                    <Text
+                                        size="sm"
+                                        fw={600}
+                                        c={
+                                            cta.saldo_pendiente < 0
+                                                ? "blue"
+                                                : "red"
+                                        }
+                                    >
+                                        {formatMoney(
+                                            Math.abs(cta.saldo_pendiente),
+                                        )}
                                     </Text>
                                 </Group>
                             </Stack>
@@ -310,12 +325,18 @@ const CuentasView = () => {
 // ─── Paso 1: Carrito ─────────────────────────────────────────────────────────
 
 const CarritoStep = ({ onNext }) => {
+    const usuario = JSON.parse(localStorage.getItem("service_user")) || {};
+    const isGerencia = usuario?.roles?.some((r) =>
+        ["ADMINISTRADOR", "GERENTE"].includes(r),
+    );
+
     const { inventarios, fnCargarProductosInventario } = useInventarioStore();
     const {
         cuentaActiva,
         fnAgregarConsumo,
         fnEliminarConsumo,
         fnActualizarConsumo,
+        fnAsignarConsumoDescuento,
     } = useVentaMostradorStore();
 
     const [busqueda, setBusqueda] = useState("");
@@ -526,7 +547,45 @@ const CarritoStep = ({ onNext }) => {
                                                 ta="right"
                                             >
                                                 {formatMoney(item.total)}
+                                                {item.tipo_descuento &&
+                                                    item.tipo_descuento !==
+                                                        "SIN_DESCUENTO" && (
+                                                        <Badge
+                                                            color="teal"
+                                                            size="xs"
+                                                            display="block"
+                                                        >
+                                                            -
+                                                            {item.tipo_descuento ===
+                                                            "MONTO_FIJO"
+                                                                ? formatMoney(
+                                                                      item.descuento,
+                                                                  )
+                                                                : `${item.porcentaje_descuento}%`}
+                                                        </Badge>
+                                                    )}
                                             </Text>
+                                            {isGerencia && (
+                                                <Button
+                                                    size="xs"
+                                                    color="teal"
+                                                    variant={
+                                                        item.tipo_descuento &&
+                                                        item.tipo_descuento !==
+                                                            "SIN_DESCUENTO"
+                                                            ? "filled"
+                                                            : "subtle"
+                                                    }
+                                                    p={4}
+                                                    onClick={() =>
+                                                        fnAsignarConsumoDescuento(
+                                                            item,
+                                                        )
+                                                    }
+                                                >
+                                                    <IconPercentage size={14} />
+                                                </Button>
+                                            )}
                                             <Button
                                                 size="xs"
                                                 color="red"
@@ -578,7 +637,10 @@ const PagoStep = ({ onNext, onBack }) => {
     const [metodoPago, setMetodoPago] = useState("EFECTIVO");
     const [codigoVoucher, setCodigoVoucher] = useState("");
     const [monto, setMonto] = useState(
-        Number(parseFloat(cuentaActiva?.saldo_pendiente || 0).toFixed(2)),
+        Math.max(
+            0,
+            Number(parseFloat(cuentaActiva?.saldo_pendiente || 0).toFixed(2)),
+        ),
     );
     const [observaciones, setObservaciones] = useState("");
 
@@ -588,7 +650,12 @@ const PagoStep = ({ onNext, onBack }) => {
 
     useEffect(() => {
         setMonto(
-            Number(parseFloat(cuentaActiva?.saldo_pendiente || 0).toFixed(2)),
+            Math.max(
+                0,
+                Number(
+                    parseFloat(cuentaActiva?.saldo_pendiente || 0).toFixed(2),
+                ),
+            ),
         );
     }, [cuentaActiva?.saldo_pendiente]);
 
@@ -666,9 +733,17 @@ const PagoStep = ({ onNext, onBack }) => {
                 </Group>
                 <Divider my="xs" />
                 <Group justify="space-between">
-                    <Text fw={700}>Saldo Pendiente:</Text>
-                    <Text fw={700} size="lg" c="red">
-                        {formatMoney(cuentaActiva?.saldo_pendiente)}
+                    <Text fw={700}>
+                        {cuentaActiva?.saldo_pendiente < 0
+                            ? "Saldo a Favor:"
+                            : "Saldo Pendiente:"}
+                    </Text>
+                    <Text
+                        fw={700}
+                        size="lg"
+                        c={cuentaActiva?.saldo_pendiente < 0 ? "blue" : "red"}
+                    >
+                        {formatMoney(Math.abs(cuentaActiva?.saldo_pendiente))}
                     </Text>
                 </Group>
             </Paper>
@@ -738,8 +813,9 @@ const PagoStep = ({ onNext, onBack }) => {
             ) : (
                 <Paper p="md" bg="blue.0" mt="md" radius="md">
                     <Text ta="center" fw={600} c="blue.7">
-                        El saldo pendiente ha sido cubierto por completo. Ya
-                        puede facturar y cerrar la cuenta.
+                        {cuentaActiva?.saldo_pendiente < 0
+                            ? "Existe un saldo a favor. Ya puede facturar y cerrar la cuenta devolviendo la diferencia en caja."
+                            : "El saldo pendiente ha sido cubierto por completo. Ya puede facturar y cerrar la cuenta."}
                     </Text>
                 </Paper>
             )}
@@ -774,7 +850,7 @@ const PagoStep = ({ onNext, onBack }) => {
 // ─── Paso 3: Facturación ──────────────────────────────────────────────────────
 
 const FacturacionStep = ({ onBack, onReset }) => {
-    const [generarFactura, setGenerarFactura] = useState(false);
+    const [generarFactura, setGenerarFactura] = useState(true);
     const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
     const [solicitaDetallada, setSolicitaDetallada] = useState(false);
     const [observaciones, setObservaciones] = useState("");
@@ -793,6 +869,12 @@ const FacturacionStep = ({ onBack, onReset }) => {
     useEffect(() => {
         fnCargarConsumidorFinal();
     }, []);
+
+    useEffect(() => {
+        if (generarFactura && !clienteSeleccionado && consumidorFinal) {
+            setClienteSeleccionado(consumidorFinal);
+        }
+    }, [consumidorFinal, generarFactura, clienteSeleccionado]);
 
     const handleCerrarProceso = async () => {
         let fac = null;
@@ -818,15 +900,6 @@ const FacturacionStep = ({ onBack, onReset }) => {
         if (cerrada) {
             // Actualizar inventario local si hace falta
             fnCargarProductosInventario({ solo_venta: true, activo: 1 });
-            if (!fac) {
-                Swal.fire(
-                    "Éxito",
-                    "Cuenta cerrada sin emitir factura.",
-                    "success",
-                ).then(() => {
-                    onReset();
-                });
-            }
         }
     };
 
@@ -998,6 +1071,9 @@ const VentaMostradorPage = () => {
             )}
 
             {cuentaActiva ? <StepperView /> : <CuentasView />}
+
+            {/* Modal de Descuentos para Venta Mostrador */}
+            <VentaMostradorDescuentoModal />
         </Container>
     );
 };

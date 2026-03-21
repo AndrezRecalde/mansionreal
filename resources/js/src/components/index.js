@@ -194,6 +194,9 @@ import { MetadatosSection } from "./consumo/section/MetadatosSection";
 import { TotalesGeneralesSection } from "./consumo/section/TotalesGeneralesSection";
 import { ReporteConsumosVisualizacion } from "./consumo/section/ReporteConsumosVisualizacion";
 
+/* Venta Mostrador */
+import { VentaMostradorDescuentoModal } from "./ventaMostrador/modal/VentaMostradorDescuentoModal";
+
 export {
     /* Elements */
     CssLoader,
@@ -376,4 +379,7 @@ export {
     MetadatosSection,
     TotalesGeneralesSection,
     ReporteConsumosVisualizacion,
+
+    /* Venta Mostrador */
+    VentaMostradorDescuentoModal,
 };

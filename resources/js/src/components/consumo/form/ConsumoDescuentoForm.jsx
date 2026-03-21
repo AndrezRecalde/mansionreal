@@ -85,7 +85,7 @@ export const ConsumoDescuentoForm = ({ form, consumo }) => {
                             Producto:
                         </Text>
                         <Text size="sm" fw={500}>
-                            {consumo?.nombre_producto}
+                            {consumo?.nombre_producto || consumo?.inventario?.nombre_producto}
                         </Text>
                     </Group>
                     <Group justify="space-between" mt="xs">
@@ -101,7 +101,7 @@ export const ConsumoDescuentoForm = ({ form, consumo }) => {
                             Precio unitario:
                         </Text>
                         <Text size="sm" fw={500}>
-                            ${parseFloat(consumo?.precio_unitario).toFixed(2)}
+                            ${parseFloat(consumo?.precio_unitario || consumo?.inventario?.precio_unitario || 0).toFixed(2)}
                         </Text>
                     </Group>
                     <Divider my="xs" />

@@ -55,21 +55,17 @@ export const AuthForm = () => {
                 <TextInput
                     withAsterisk
                     label={PAGE_TITLE.AUTENTICACION.INPUTS.LABEL_USUARIO}
-                    placeholder={PAGE_TITLE.AUTENTICACION.INPUTS.PLACEHOLDER_USUARIO}
-                    classNames={{
-                        input: classes.input,
-                        label: classes.label,
-                    }}
+                    placeholder={
+                        PAGE_TITLE.AUTENTICACION.INPUTS.PLACEHOLDER_USUARIO
+                    }
                     {...form.getInputProps("dni")}
                 />
                 <PasswordInput
                     withAsterisk
                     label={PAGE_TITLE.AUTENTICACION.INPUTS.LABEL_CONTRASEÑA}
-                    placeholder={PAGE_TITLE.AUTENTICACION.INPUTS.PLACEHOLDER_CONTRASENA}
-                    classNames={{
-                        input: classes.input,
-                        label: classes.label,
-                    }}
+                    placeholder={
+                        PAGE_TITLE.AUTENTICACION.INPUTS.PLACEHOLDER_CONTRASENA
+                    }
                     {...form.getInputProps("password")}
                 />
 

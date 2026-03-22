@@ -15,6 +15,7 @@ class Factura extends Model
     protected $fillable = [
         'numero_factura',
         'reserva_id',
+        'cuenta_venta_id',
         'cliente_facturacion_id',
         'fecha_emision',
         'cliente_tipo_identificacion',
@@ -64,6 +65,14 @@ class Factura extends Model
     public function reserva(): BelongsTo
     {
         return $this->belongsTo(Reserva::class);
+    }
+
+    /**
+     * Cuenta de venta asociada (para ventas de mostrador)
+     */
+    public function cuentaVenta(): BelongsTo
+    {
+        return $this->belongsTo(CuentaVenta::class, 'cuenta_venta_id');
     }
 
     /**

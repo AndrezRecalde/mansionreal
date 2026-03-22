@@ -581,10 +581,7 @@ class CuentaVentaController extends Controller
 
             $cuenta->estado_id = $estadoPagado->id;
 
-            if ($request->has('factura_id') && $request->factura_id) {
-                $cuenta->factura_id = $request->input('factura_id');
-            }
-
+            // Ya no se guarda factura_id en la cuenta, la relación está en la factura
             $cuenta->save();
 
             DB::commit();

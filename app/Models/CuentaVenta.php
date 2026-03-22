@@ -18,7 +18,6 @@ class CuentaVenta extends Model
         'total',
         'total_pagos',
         'saldo_pendiente',
-        'factura_id',
     ];
 
     public function estado()
@@ -43,7 +42,7 @@ class CuentaVenta extends Model
 
     public function factura()
     {
-        return $this->belongsTo(Factura::class , 'factura_id');
+        return $this->hasOne(Factura::class, 'cuenta_venta_id')->latestOfMany();
     }
 
 }

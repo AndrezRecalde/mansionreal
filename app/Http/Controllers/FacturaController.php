@@ -195,6 +195,7 @@ class FacturaController extends Controller
             'consumo_ids' => 'required|array|min:1',
             'consumo_ids.*' => 'integer|exists:consumos,id',
             'cliente_facturacion_id' => 'required|integer|exists:clientes_facturacion,id',
+            'cuenta_venta_id' => 'nullable|integer|exists:cuentas_ventas,id',
             'observaciones' => 'nullable|string|max:500',
             'solicita_factura_detallada' => 'nullable|boolean',
         ]);
@@ -205,6 +206,7 @@ class FacturaController extends Controller
                 clienteFacturacionId: $request->cliente_facturacion_id,
                 usuarioId: Auth::id(),
                 opciones: [
+                    'cuenta_venta_id' => $request->cuenta_venta_id,
                     'observaciones' => $request->observaciones,
                     'solicita_factura_detallada' => $request->boolean('solicita_factura_detallada'),
                 ]

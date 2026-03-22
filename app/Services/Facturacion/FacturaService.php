@@ -165,6 +165,7 @@ class FacturaService
             $factura = new Factura();
             $factura->numero_factura = $numeroFactura;
             $factura->reserva_id = null; // ← venta de mostrador
+            $factura->cuenta_venta_id = $opciones['cuenta_venta_id'] ?? $consumos->first()?->cuenta_venta_id;
             $factura->cliente_facturacion_id = $cliente->id;
             $factura->fecha_emision = now()->toDateString();
             $factura->observaciones = $opciones['observaciones'] ?? null;

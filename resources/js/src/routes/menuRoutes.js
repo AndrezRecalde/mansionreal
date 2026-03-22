@@ -12,6 +12,7 @@ import {
     IconSettings,
     IconShoppingCart,
     IconSpray,
+    IconCash,
     IconUserCheck,
     IconUserCircle,
     IconUserPentagon,
@@ -219,6 +220,13 @@ export const headerVentasRapidasRoutes = {
             link: "/gerencia/historial-cuentas-venta",
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
         },
+        {
+            icon: IconCash,
+            title: "Turnos de Caja",
+            path: "historial-cajas",
+            link: "/gerencia/historial-cajas",
+            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+        },
     ],
 };
 
@@ -264,6 +272,13 @@ export const menuConfiguracionRapida = [
         title: "Limpiezas",
         path: "limpiezas",
         link: "/gerencia/limpiezas",
+        roles: [Roles.ADMINISTRADOR],
+    },
+    {
+        icon: IconCash,
+        title: "Cajas",
+        path: "cajas",
+        link: "/gerencia/cajas",
         roles: [Roles.ADMINISTRADOR],
     },
 ];

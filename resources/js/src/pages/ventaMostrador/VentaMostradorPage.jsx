@@ -35,13 +35,15 @@ import {
     IconReceipt2,
     IconPercentage,
     IconTrash,
+    IconArrowsExchange,
+    IconLock,
 } from "@tabler/icons-react";
 import {
     useClienteFacturacionStore,
     useInventarioStore,
     useVentaMostradorStore,
     useFacturaStore,
-    //useAuthStore,
+    useCajasStore,
 } from "../../hooks";
 import {
     ClienteFacturacionSelector,
@@ -79,6 +81,8 @@ const CuentasView = () => {
         fnDescargarFacturaPDF,
     } = useFacturaStore();
 
+    const { setModalMovimiento, setModalCierre } = useCajasStore();
+
     const [abrirModalPdf, setAbrirModalPdf] = useState(false);
     const [facturaActiva, setFacturaActiva] = useState(null);
 
@@ -111,13 +115,31 @@ const CuentasView = () => {
                 <Text fw={600} size="lg">
                     Cuentas Abiertas ({pendientes.length})
                 </Text>
-                <Button
-                    leftSection={<IconPlus size={16} />}
-                    onClick={handleNuevaCuenta}
-                    loading={cargando}
-                >
-                    Nueva Cuenta de Venta
-                </Button>
+                <Group>
+                    <Button
+                        variant="light"
+                        color="teal"
+                        leftSection={<IconArrowsExchange size={16} />}
+                        onClick={() => setModalMovimiento(true)}
+                    >
+                        Movimientos
+                    </Button>
+                    <Button
+                        variant="light"
+                        color="red"
+                        leftSection={<IconLock size={16} />}
+                        onClick={() => setModalCierre(true)}
+                    >
+                        Cerrar Caja
+                    </Button>
+                    <Button
+                        leftSection={<IconPlus size={16} />}
+                        onClick={handleNuevaCuenta}
+                        loading={cargando}
+                    >
+                        Nueva Venta
+                    </Button>
+                </Group>
             </Group>
 
             {pendientes.length === 0 ? (

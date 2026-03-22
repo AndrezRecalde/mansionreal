@@ -17,6 +17,8 @@ use App\Http\Controllers\InventarioController;
 use App\Http\Controllers\LimpiezaController;
 use App\Http\Controllers\PagoController;
 use App\Http\Controllers\CuentaVentaController;
+use App\Http\Controllers\TurnoCajaController;
+use App\Http\Controllers\CajaController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProvinciaController;
 use App\Http\Controllers\ReservasController;
@@ -28,6 +30,7 @@ use App\Http\Controllers\TiposDepartamentosController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Middleware\CheckPermission;
 use App\Http\Middleware\CheckRole;
+use App\Http\Middleware\CheckTurnoAbierto;
 use Illuminate\Support\Facades\Route;
 
 /* |-------------------------------------------------------------------------- | API Routes |-------------------------------------------------------------------------- */
@@ -271,7 +274,7 @@ Route::middleware('auth:sanctum')->group(function () {
                 /* ---- Cuentas Ventas de Mostrador ---- */
                 Route::middleware(CheckPermission::class . ':ver_consumos_externos')->group(function () {
                     Route::get('/cuentas-ventas', [CuentaVentaController::class, 'index']);
-                    Route::post('/cuentas-ventas', [CuentaVentaController::class, 'store']);
+                    Route::post('/cuentas-ventas', [CuentaVentaController::class, 'store'])->middleware(CheckTurnoAbierto::class);
                     Route::get('/cuentas-ventas/{id}', [CuentaVentaController::class, 'show']);
                     Route::post('/cuentas-ventas-historial', [CuentaVentaController::class, 'historial']);
                     Route::post('/cuentas-ventas/{id}/consumos', [CuentaVentaController::class, 'agregarConsumos']);
@@ -281,8 +284,28 @@ Route::middleware('auth:sanctum')->group(function () {
                     Route::put('/cuentas-ventas/{id}/consumos/{consumoId}/descuento', [CuentaVentaController::class, 'aplicarDescuentoConsumo']);
                     Route::delete('/cuentas-ventas/{id}/consumos/{consumoId}/descuento', [CuentaVentaController::class, 'removerDescuentoConsumo']);
 
-                    Route::post('/cuentas-ventas/{id}/pagos', [CuentaVentaController::class, 'registrarPago']);
-                    Route::post('/cuentas-ventas/{id}/cerrar', [CuentaVentaController::class, 'cerrarCuenta']);
+                    Route::post('/cuentas-ventas/{id}/pagos', [CuentaVentaController::class, 'registrarPago'])->middleware(CheckTurnoAbierto::class);
+                    Route::post('/cuentas-ventas/{id}/cerrar', [CuentaVentaController::class, 'cerrarCuenta'])->middleware(CheckTurnoAbierto::class);
+                });
+
+                /* ---- Turnos y Cajas (Asistente y Gerencia) ---- */
+                Route::prefix('turnos-caja')->group(function () {
+                    Route::get('/mi-turno', [TurnoCajaController::class, 'miTurno']);
+                    Route::post('/abrir', [TurnoCajaController::class, 'abrir']);
+                    Route::post('/movimientos', [TurnoCajaController::class, 'crearMovimiento'])->middleware(CheckTurnoAbierto::class);
+                    Route::get('/reporte-cierre', [TurnoCajaController::class, 'reporteCierre']);
+                    Route::post('/cerrar', [TurnoCajaController::class, 'cerrar']);
+                    Route::get('/historial', [TurnoCajaController::class, 'historial'])->middleware(CheckRole::class . ':ADMINISTRADOR|GERENTE'); 
+                });
+
+                Route::middleware(CheckRole::class . ':ADMINISTRADOR|GERENTE')
+                    ->prefix('cajas')
+                    ->group(function () {
+                        Route::get('/', [CajaController::class, 'index']);
+                        Route::post('/', [CajaController::class, 'store']);
+                        Route::put('/{id}', [CajaController::class, 'update']);
+                        Route::patch('/{id}/toggle', [CajaController::class, 'toggleEstado']);
+                        Route::delete('/{id}', [CajaController::class, 'destroy']);
                 });
 
                 /* ---- Totales Externos ---- */

@@ -58,6 +58,9 @@ import { uiInventarioSlice } from "./inventario/uiInventarioSlice";
 import { ventaMostradorSlice } from "./ventaMostrador/ventaMostradorSlice";
 import { historialCuentasVentaSlice } from "./ventaMostrador/historialCuentasVentaSlice";
 
+/* Cajas / Turnos */
+import { cajasSlice } from "./cajas/cajasSlice";
+
 /* Reservas */
 import { reservaSlice } from "./reserva/reservaSlice";
 import { uiReservaSlice } from "./reserva/uiReservaSlice";
@@ -201,4 +204,7 @@ export {
 
     /* Storage Fields */
     storageFieldsSlice,
+
+    /* Cajas Turnos */
+    cajasSlice,
 };

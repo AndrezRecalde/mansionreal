@@ -1,6 +1,7 @@
 import { AppShell } from "@mantine/core";
 import { HeaderMenu } from "./HeaderMenu";
 import classes from "./modules/AppBody.module.css";
+import { CajasGlobalHandler } from "../components/cajas/CajasGlobalHandler";
 
 export const AppHeaderMenu = ({ children }) => {
     const usuario = JSON.parse(localStorage.getItem("service_user") || "{}");
@@ -21,7 +22,10 @@ export const AppHeaderMenu = ({ children }) => {
                         <Skeleton key={index} h={28} mt="sm" animate={false} />
                     ))}
             </AppShell.Navbar> */}
-            <AppShell.Main className={classes.body}>{children}</AppShell.Main>
+            <AppShell.Main className={classes.body}>
+                <CajasGlobalHandler />
+                {children}
+            </AppShell.Main>
             {/* <AppShell.Footer p="md">Footer</AppShell.Footer> */}
         </AppShell>
     );

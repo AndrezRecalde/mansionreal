@@ -12,6 +12,7 @@ class Pago extends Model
     protected $fillable = [
         'reserva_id',          // nullable: null para ventas de mostrador
         'cuenta_venta_id',     // nullable: para ventas de mostrador
+        'turno_caja_id',
         'codigo_voucher',
         'concepto_pago_id',
         'monto',
@@ -53,6 +54,11 @@ class Pago extends Model
     public function usuarioCreador()
     {
         return $this->belongsTo(User::class, 'usuario_creador_id');
+    }
+
+    public function turno_caja()
+    {
+        return $this->belongsTo(TurnoCaja::class, 'turno_caja_id');
     }
 
     public function usuarioModificador()

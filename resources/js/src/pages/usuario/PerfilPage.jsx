@@ -12,10 +12,11 @@ import {
     Tabs,
     Text,
     ThemeIcon,
+    Paper,
     useMantineColorScheme,
 } from "@mantine/core";
 import { PrincipalSectionPage, TextSection, TitlePage } from "../../components";
-import { useTitleHook } from "../../hooks";
+import { useCajasStore, useTitleHook } from "../../hooks";
 import {
     IconBookmarksFilled,
     IconKeyFilled,
@@ -25,6 +26,7 @@ import {
     IconMail,
     IconUserCircle,
     IconCheck,
+    IconCash,
 } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -42,6 +44,7 @@ const PerfilPage = () => {
     const isDark = colorScheme === "dark";
     const usuarioStr = localStorage.getItem("service_user");
     const usuario = usuarioStr ? JSON.parse(usuarioStr) : {};
+    const { turnoActivo } = useCajasStore();
     //const authStoreStr = localStorage.getItem("auth-store");
     //const authStore = authStoreStr ? JSON.parse(authStoreStr) : {};
     //const permissions = authStore?.state?.permissions || [];
@@ -340,6 +343,50 @@ const PerfilPage = () => {
                                         }
                                     </Button>
                                 </SimpleGrid>
+                                {turnoActivo && (
+                                    <Paper
+                                        withBorder
+                                        radius="md"
+                                        p="md"
+                                        mt="xl"
+                                        bg={
+                                            isDark
+                                                ? "rgba(34, 139, 230, 0.05)"
+                                                : "blue.0"
+                                        }
+                                    >
+                                        <Group justify="space-between" mb="xs">
+                                            <Group gap="sm">
+                                                <ThemeIcon
+                                                    color="blue"
+                                                    variant="light"
+                                                    size="lg"
+                                                    radius="md"
+                                                >
+                                                    <IconCash size={20} />
+                                                </ThemeIcon>
+                                                <div>
+                                                    <Text fw={700} fz="sm">
+                                                        Sesión de Caja Activa -
+                                                        {
+                                                            turnoActivo.caja
+                                                                ?.nombre
+                                                        }
+                                                    </Text>
+                                                </div>
+                                            </Group>
+                                            <Badge
+                                                variant="dot"
+                                                color="teal"
+                                                size="lg"
+                                            >
+                                                {turnoActivo.estado
+                                                    ?.nombre_estado ||
+                                                    "ABIERTA"}
+                                            </Badge>
+                                        </Group>
+                                    </Paper>
+                                )}
                             </Tabs.Panel>
 
                             {/* TAB: Roles y Permisos */}

@@ -15,6 +15,20 @@ const HistorialCuentasVentaPage = lazy(
         ),
 );
 
+const CajasPage = lazy(
+    () =>
+        import(
+            /* webpackChunkName: "CajasPage" */ "../pages/cajas/CajasPage"
+        ),
+);
+
+const TurnosCajaHistorialPage = lazy(
+    () =>
+        import(
+            /* webpackChunkName: "TurnosCajaHistorialPage" */ "../pages/cajas/TurnosCajaHistorialPage"
+        ),
+);
+
 const AuthPage = lazy(
     () => import(/* webpackChunkName: "AuthPage" */ "../pages/auth/AuthPage"),
 );
@@ -200,6 +214,8 @@ export const MENU_PATH = {
     FACTURAS: "facturas",
     VENTA_MOSTRADOR: "venta-mostrador",
     HISTORIAL_CUENTAS_VENTA: "historial-cuentas-venta",
+    HISTORIAL_CAJAS: "historial-cajas",
+    CAJAS: "cajas",
 
     PERFIL: "perfil",
     CAMBIAR_CONTRASENA: "cambiar-contrasena",
@@ -293,6 +309,16 @@ const gerenciaRoutes = generateRoutes(
             path: MENU_PATH.HISTORIAL_CUENTAS_VENTA,
             Component: HistorialCuentasVentaPage,
             roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+        },
+        {
+            path: MENU_PATH.HISTORIAL_CAJAS,
+            Component: TurnosCajaHistorialPage,
+            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
+        },
+        {
+            path: MENU_PATH.CAJAS,
+            Component: CajasPage,
+            roles: [Roles.ADMINISTRADOR],
         },
     ],
     [Roles.ADMINISTRADOR, Roles.GERENCIA],

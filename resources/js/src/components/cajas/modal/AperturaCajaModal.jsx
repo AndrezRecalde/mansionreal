@@ -19,7 +19,7 @@ export const AperturaCajaModal = () => {
         fnAbrirTurno,
         cargando,
         checkMiTurno,
-        turnoActivo,
+        //turnoActivo,
         setModalApertura,
     } = useCajasStore();
 

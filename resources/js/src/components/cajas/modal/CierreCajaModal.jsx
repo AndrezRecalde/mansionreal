@@ -126,6 +126,31 @@ export const CierreCajaModal = () => {
                                 </Group>
                                 <Group justify="space-between">
                                     <Text size="sm" c="dimmed">
+                                        Ventas otros Métodos (+):
+                                    </Text>
+                                    <Text size="sm" fw={500} c="blue">
+                                        ${" "}
+                                        {reporteCierre.reporte.ventas_otros.toFixed(
+                                            2,
+                                        )}
+                                    </Text>
+                                </Group>
+                                <Group justify="space-between" mt="xs">
+                                    <Text size="sm" fw={600} c="dark">
+                                        Total Ingresos por Ventas (=):
+                                    </Text>
+                                    <Text size="sm" fw={700}>
+                                        ${" "}
+                                        {(
+                                            reporteCierre.reporte
+                                                .ventas_efectivo +
+                                            reporteCierre.reporte.ventas_otros
+                                        ).toFixed(2)}
+                                    </Text>
+                                </Group>
+                                <Divider variant="dashed" my="xs" />
+                                <Group justify="space-between">
+                                    <Text size="sm" c="dimmed">
                                         Ingresos Extra (+):
                                     </Text>
                                     <Text size="sm" fw={500} c="green">
@@ -166,8 +191,8 @@ export const CierreCajaModal = () => {
                 </Paper>
 
                 <NumberInput
-                    label="Efectivo Físico Declarado"
-                    description="¿Cuánto dinero en efectivo tiene en sus manos ahora mismo?"
+                    label="Efectivo Físico Declarado (Solo Dinero en Gaveta)"
+                    description="Ingrese el monto total de billetes y monedas que tiene físicamente."
                     placeholder="0.00"
                     size="lg"
                     prefix="$ "

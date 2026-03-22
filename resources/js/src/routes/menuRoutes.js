@@ -126,14 +126,6 @@ export const headerReservasRoutes = {
 export const headerReportesRoutes = {
     REPORTES: [
         {
-            icon: IconBuildings,
-            title: "Reporte Reservas",
-            path: "reporte-reservas",
-            link: "/gerencia/reporte-reservas",
-            roles: [Roles.ADMINISTRADOR, Roles.GERENCIA],
-            permissions: ["ver_reporte_reservas"],
-        },
-        {
             icon: IconFileIsr,
             title: "Reporte de Consumos",
             path: "reporte-consumos",

@@ -17,9 +17,7 @@ const HistorialCuentasVentaPage = lazy(
 
 const CajasPage = lazy(
     () =>
-        import(
-            /* webpackChunkName: "CajasPage" */ "../pages/cajas/CajasPage"
-        ),
+        import(/* webpackChunkName: "CajasPage" */ "../pages/cajas/CajasPage"),
 );
 
 const TurnosCajaHistorialPage = lazy(
@@ -79,13 +77,6 @@ const HuespedesPage = lazy(
     () =>
         import(
             /* webpackChunkName: "HuespedesPage" */ "../pages/huesped/HuespedesPage"
-        ),
-);
-
-const ReporteDepartamentosPage = lazy(
-    () =>
-        import(
-            /* webpackChunkName: "ReporteDepartamentosPage" */ "../pages/departamento/ReporteDepartamentosPage"
         ),
 );
 
@@ -259,10 +250,6 @@ const gerenciaRoutes = generateRoutes(
         {
             path: MENU_PATH.DEPARTAMENTOS,
             Component: DepartamentosPage,
-        },
-        {
-            path: MENU_PATH.REPORTE_RESERVAS,
-            Component: ReporteDepartamentosPage,
         },
         {
             path: MENU_PATH.CATEGORIAS,

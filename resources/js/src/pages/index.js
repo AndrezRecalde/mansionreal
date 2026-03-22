@@ -10,7 +10,6 @@ import HuespedesPage from "./huesped/HuespedesPage";
 
 /* Departamentos */
 import DepartamentosPage from "./departamento/DepartamentosPage";
-import ReporteDepartamentosPage from "./departamento/ReporteDepartamentosPage"
 
 /* Usuarios */
 import UsuariosPage from "./usuario/UsuariosPage";
@@ -23,7 +22,6 @@ export {
     AuthPage,
     HuespedesPage,
     DepartamentosPage,
-    ReporteDepartamentosPage,
     UsuariosPage,
     PerfilPage,
     CambioContrasenaPage,

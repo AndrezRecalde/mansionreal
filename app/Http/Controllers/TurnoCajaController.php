@@ -24,7 +24,11 @@ class TurnoCajaController extends Controller
             ->with('caja')
             ->first();
 
-        $cajasDisponibles = Caja::where('activa', true)->get();
+        // Solo mostrar cajas que no tengan un turno abierto por otro usuario
+        $cajasDisponibles = Caja::where('activa', true)
+            ->whereDoesntHave('turnos', function ($query) {
+                $query->where('estado', 'ABIERTO');
+            })->get();
 
         return response()->json([
             'status' => HTTPStatus::Success,
@@ -51,6 +55,18 @@ class TurnoCajaController extends Controller
             return response()->json([
                 'status' => HTTPStatus::Error,
                 'msg' => 'Ya tienes un turno de caja abierto en: ' . $turnoAbierto->caja->nombre
+            ], 400);
+        }
+
+        // Validar que la caja no esté siendo ocupada por otro usuario (Validación de concurrencia)
+        $cajaOcupada = TurnoCaja::where('caja_id', $request->caja_id)
+            ->where('estado', 'ABIERTO')
+            ->exists();
+
+        if ($cajaOcupada) {
+            return response()->json([
+                'status' => HTTPStatus::Error,
+                'msg' => 'La caja seleccionada ya está siendo ocupada por otro usuario. Por favor, selecciona otra.'
             ], 400);
         }
 

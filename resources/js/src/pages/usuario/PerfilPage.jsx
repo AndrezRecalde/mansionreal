@@ -343,7 +343,7 @@ const PerfilPage = () => {
                                         }
                                     </Button>
                                 </SimpleGrid>
-                                {turnoActivo && (
+                                {turnoActivo?.id ? (
                                     <Paper
                                         withBorder
                                         radius="md"
@@ -386,7 +386,7 @@ const PerfilPage = () => {
                                             </Badge>
                                         </Group>
                                     </Paper>
-                                )}
+                                ) : null}
                             </Tabs.Panel>
 
                             {/* TAB: Roles y Permisos */}

@@ -88,7 +88,7 @@ export const MovimientoCajaModal = () => {
 
                 <TextInput
                     label="Concepto / Razón"
-                    placeholder="Ej. Sencillo por Admin, o Pago Votellón Agua"
+                    placeholder="Ej. Cambio de billete, Gastos operativos, etc."
                     value={concepto}
                     onChange={(e) => setConcepto(e.currentTarget.value)}
                     required

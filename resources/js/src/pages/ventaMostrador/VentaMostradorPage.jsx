@@ -81,7 +81,7 @@ const CuentasView = () => {
         fnDescargarFacturaPDF,
     } = useFacturaStore();
 
-    const { setModalMovimiento, setModalCierre } = useCajasStore();
+    const { turnoActivo, setModalMovimiento, setModalCierre } = useCajasStore();
 
     const [abrirModalPdf, setAbrirModalPdf] = useState(false);
     const [facturaActiva, setFacturaActiva] = useState(null);
@@ -121,6 +121,7 @@ const CuentasView = () => {
                         color="teal"
                         leftSection={<IconArrowsExchange size={16} />}
                         onClick={() => setModalMovimiento(true)}
+                        disabled={!turnoActivo ? true : false}
                     >
                         Movimientos
                     </Button>
@@ -129,6 +130,7 @@ const CuentasView = () => {
                         color="red"
                         leftSection={<IconLock size={16} />}
                         onClick={() => setModalCierre(true)}
+                        disabled={!turnoActivo ? true : false}
                     >
                         Cerrar Caja
                     </Button>
@@ -136,6 +138,7 @@ const CuentasView = () => {
                         leftSection={<IconPlus size={16} />}
                         onClick={handleNuevaCuenta}
                         loading={cargando}
+                        disabled={!turnoActivo ? true : false}
                     >
                         Nueva Venta
                     </Button>

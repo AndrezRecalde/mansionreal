@@ -16,6 +16,7 @@ import {
     IconFileInvoice,
     IconWallet,
 } from "@tabler/icons-react";
+import Swal from "sweetalert2";
 
 export const CierreCajaModal = () => {
     const {
@@ -24,7 +25,7 @@ export const CierreCajaModal = () => {
         reporteCierre,
         fnObtenerReporteCierre,
         fnCerrarTurno,
-        isLoading,
+        cargando,
     } = useCajasStore();
 
     const [montoDeclarado, setMontoDeclarado] = useState("");
@@ -51,7 +52,23 @@ export const CierreCajaModal = () => {
     const handleCerrarCaja = async () => {
         if (montoDeclarado === "") return;
 
-        await fnCerrarTurno(Number(montoDeclarado));
+        const { msg, status } = await fnCerrarTurno(Number(montoDeclarado));
+        if (status) {
+            Swal.fire({
+                title: "¡Caja Cerrada!",
+                text: msg,
+                icon: "success",
+                confirmButtonText: "Aceptar",
+            });
+            setModalCierre(false);
+        } else {
+            Swal.fire({
+                title: "Error",
+                text: msg,
+                icon: "error",
+                confirmButtonText: "Aceptar",
+            });
+        }
     };
 
     return (
@@ -194,8 +211,8 @@ export const CierreCajaModal = () => {
                     size="md"
                     mt="md"
                     color="red"
-                    disabled={montoDeclarado === "" || isLoading}
-                    loading={isLoading}
+                    disabled={montoDeclarado === "" || cargando}
+                    loading={cargando}
                     onClick={handleCerrarCaja}
                 >
                     Registrar Cierre Permanente

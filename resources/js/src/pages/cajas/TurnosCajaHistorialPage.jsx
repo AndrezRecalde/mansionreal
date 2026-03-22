@@ -8,7 +8,7 @@ import { IconCalendar } from "@tabler/icons-react";
 import dayjs from "dayjs";
 
 const TurnosCajaHistorialPage = () => {
-    const { turnosHistorial, fnCargarHistorial, isLoading } = useCajasStore();
+    const { turnosHistorial, fnCargarHistorial, cargando } = useCajasStore();
 
     const [dateRange, setDateRange] = useState([
         dayjs().startOf("month").toDate(),
@@ -50,7 +50,7 @@ const TurnosCajaHistorialPage = () => {
             </Paper>
 
             <Paper shadow="sm" radius="md" withBorder>
-                <TurnosCajaTable data={turnosHistorial} isLoading={isLoading} />
+                <TurnosCajaTable data={turnosHistorial} isLoading={cargando} />
             </Paper>
         </Container>
     );

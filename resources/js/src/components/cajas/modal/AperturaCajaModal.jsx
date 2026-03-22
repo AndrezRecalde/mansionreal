@@ -17,9 +17,10 @@ export const AperturaCajaModal = () => {
         isAperturaModalOpen,
         cajasDisponibles,
         fnAbrirTurno,
-        isLoading,
+        cargando,
         checkMiTurno,
         turnoActivo,
+        setModalApertura,
     } = useCajasStore();
 
     const [cajaId, setCajaId] = useState(null);
@@ -47,19 +48,20 @@ export const AperturaCajaModal = () => {
         }
     };
 
-    // No permitir cerrar el modal si no hay turno abierto (Bloqueo forzoso)
+    // Permitir cerrar el modal si no hay turno abierto (Bloqueo forzoso)
     const handleClose = () => {
-        if (turnoActivo) {
+        /* if (turnoActivo) {
             // permitir cerrar
             // pero el modal ya se cierra auto desde Redux
-        }
+        } */
+        setModalApertura(false);
     };
 
     return (
         <Modal
             opened={isAperturaModalOpen}
             onClose={handleClose}
-            withCloseButton={false}
+            //withCloseButton={false}
             closeOnClickOutside={false}
             closeOnEscape={false}
             title={
@@ -113,8 +115,8 @@ export const AperturaCajaModal = () => {
                     fullWidth
                     size="md"
                     mt="md"
-                    disabled={!cajaId || isLoading}
-                    loading={isLoading}
+                    disabled={!cajaId || cargando}
+                    loading={cargando}
                     onClick={handleAbrirCaja}
                 >
                     Confirmar Inicio de Turno

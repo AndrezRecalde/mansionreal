@@ -68,7 +68,7 @@ export const useCajasStore = () => {
             );
             dispatch(rtkSetTurnoActivo(data.turno));
             dispatch(rtkSetModalApertura(false));
-            dispatch(rtkCargarMensaje({ msg: "Caja Abierta Exitosamente" }));
+            dispatch(rtkCargarMensaje("Caja Abierta Exitosamente"));
             setTimeout(() => dispatch(rtkCargarMensaje(undefined)), 2000);
             return true;
         } catch (error) {

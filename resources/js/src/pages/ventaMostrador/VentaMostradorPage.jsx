@@ -91,7 +91,20 @@ const CuentasView = () => {
     }, []);
 
     const handleNuevaCuenta = async () => {
-        await fnCrearCuenta();
+        const result = await Swal.fire({
+            title: "¿Desea abrir una nueva cuenta de venta?",
+            text: "Se generará un nuevo código de seguimiento para la venta.",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Sí, abrir cuenta",
+            cancelButtonText: "Cancelar",
+        });
+
+        if (result.isConfirmed) {
+            await fnCrearCuenta();
+        }
     };
 
     const handlePrevisualizarFactura = async (factura) => {

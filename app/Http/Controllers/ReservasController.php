@@ -407,7 +407,7 @@ class ReservasController extends Controller
             $categoria = $inventario->categoria;
 
             // Solo devolver stock si NO es de categoría Hospedaje o Estadía
-            $categoriasExcluidas = ['HOSPEDAJE', 'ESTADIA', 'Hospedaje', 'Estadía'];
+            $categoriasExcluidas = ['HOSPEDAJE', 'Hospedaje'];
 
             if (!in_array(strtoupper($categoria->nombre_categoria ?? ''), array_map('strtoupper', $categoriasExcluidas))) {
 

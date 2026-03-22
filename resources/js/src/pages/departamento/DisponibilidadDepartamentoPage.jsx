@@ -1,5 +1,5 @@
-import { useEffect, useMemo } from "react";
-import { Container, Divider, Tabs } from "@mantine/core";
+import { useEffect } from "react";
+import { Container, Divider } from "@mantine/core";
 import {
     LimpiezaModal,
     TabContentDisponibilidad,
@@ -8,24 +8,20 @@ import {
 } from "../../components";
 import {
     useDepartamentoStore,
-    useEstadiaStore,
     useTitleHook,
     useDatosReservaDisponibilidad,
-    useDisponibilidadTabManagement,
     usePagoStore,
     useConsumoStore,
     useGastoStore,
 } from "../../hooks";
-import { PAGE_CONFIG, TABS } from "../../helpers/calendario.constants";
+import { PAGE_CONFIG } from "../../helpers/calendario.constants";
 import { PAGE_TITLE } from "../../helpers/getPrefix";
-import classes from "./modules/Tabs.module.css";
 import Swal from "sweetalert2";
 import { IconBuildingSkyscraper } from "@tabler/icons-react";
 
 /**
- * Página de disponibilidad de departamentos
- * Muestra los departamentos disponibles y las estadías reservadas
- * Permite gestionar reservas, pagos, consumos y limpieza
+ * Página de disponibilidad de departamentos (solo HOSPEDAJE)
+ * Muestra los departamentos disponibles y permite gestionar reservas, pagos, consumos y limpieza
  */
 const DisponibilidadDepartamentoPage = () => {
     // Configuración inicial
@@ -41,17 +37,8 @@ const DisponibilidadDepartamentoPage = () => {
         fnLimpiarDepartamentos,
     } = useDepartamentoStore();
 
-    const {
-        cargando: cargandoEstadias,
-        activarEstadia,
-        fnCargarEstadias,
-        fnAsignarEstadia,
-        fnLimpiarEstadias,
-    } = useEstadiaStore();
-
     const { mensaje: mensajePagos, errores: erroresPagos } = usePagoStore();
-    const { mensaje: mensajeConsumos, errores: erroresConsumos } =
-        useConsumoStore();
+    const { mensaje: mensajeConsumos, errores: erroresConsumos } = useConsumoStore();
     const { mensaje: mensajeGastos, errores: erroresGastos } = useGastoStore();
 
     useEffect(() => {
@@ -114,30 +101,13 @@ const DisponibilidadDepartamentoPage = () => {
         }
     }, [erroresPagos]);
 
-    // Hooks personalizados - Ahora retorna también activeTab
-    const { activeTab, handleTabChange } = useDisponibilidadTabManagement(
-        fnConsultarDisponibilidadDepartamentos,
-        fnCargarEstadias,
-    );
-
-    const datos_reserva = useDatosReservaDisponibilidad(
-        activarDepartamento,
-        activarEstadia,
-    );
-
-    // Memoizar la función según el tab activo
-    const fnAsignarElemento = useMemo(() => {
-        return activeTab === TABS.HOSPEDAJE
-            ? fnAsignarDepartamento
-            : fnAsignarEstadia;
-    }, [activeTab, fnAsignarDepartamento, fnAsignarEstadia]);
+    const datos_reserva = useDatosReservaDisponibilidad(activarDepartamento);
 
     useEffect(() => {
         fnConsultarDisponibilidadDepartamentos();
 
         return () => {
             fnLimpiarDepartamentos();
-            fnLimpiarEstadias();
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -154,28 +124,14 @@ const DisponibilidadDepartamentoPage = () => {
             />
             <Divider my={PAGE_CONFIG.DISPONIBILIDAD.DIVIDER_MARGIN} />
 
-            <Tabs
-                variant="unstyled"
-                value={activeTab}
-                mt="md"
-                onChange={handleTabChange}
-                classNames={classes}
-            >
-                <Tabs.List grow>
-                    <Tabs.Tab value={TABS.HOSPEDAJE}>Hospedajes</Tabs.Tab>
-                    <Tabs.Tab value={TABS.ESTADIA}>Estadías</Tabs.Tab>
-                </Tabs.List>
-
-                <TabContentDisponibilidad
-                    cargandoDepartamentos={cargandoDepartamentos}
-                    cargandoEstadias={cargandoEstadias}
-                    usuario={usuario}
-                />
-            </Tabs>
+            <TabContentDisponibilidad
+                cargandoDepartamentos={cargandoDepartamentos}
+                usuario={usuario}
+            />
 
             <ReservaModals
                 datos_reserva={datos_reserva}
-                fnAsignarDepartamento={fnAsignarElemento}
+                fnAsignarDepartamento={fnAsignarDepartamento}
             />
             <LimpiezaModal PAGE_TITLE={PAGE_TITLE.LIMPIEZA.CAMPOS_MODAL} />
         </Container>

@@ -1,16 +1,11 @@
 import { useMemo } from "react";
 
 /**
- * Hook para construir datos de reserva desde departamento o estadía
- * Versión específica para la página de disponibilidad
+ * Hook para construir datos de reserva desde un departamento activo (solo HOSPEDAJE)
  * @param {Object} activarDepartamento - Departamento activo con reserva
- * @param {Object} activarEstadia - Estadía activa
  * @returns {Object|null} Datos formateados de la reserva
  */
-export const useDatosReservaDisponibilidad = (
-    activarDepartamento,
-    activarEstadia
-) => {
+export const useDatosReservaDisponibilidad = (activarDepartamento) => {
     return useMemo(() => {
         if (activarDepartamento?.reserva) {
             return {
@@ -28,19 +23,6 @@ export const useDatosReservaDisponibilidad = (
             };
         }
 
-        if (activarEstadia) {
-            return {
-                codigo_reserva: activarEstadia.codigo_reserva,
-                reserva_id: activarEstadia.id,
-                huesped_id: activarEstadia.huesped_id,
-                huesped: activarEstadia.huesped,
-                fecha_checkin: activarEstadia.fecha_checkin,
-                fecha_checkout: activarEstadia.fecha_checkout,
-                total_noches: activarEstadia.total_noches,
-                estado: activarEstadia.estado,
-            };
-        }
-
         return null;
-    }, [activarDepartamento, activarEstadia]);
+    }, [activarDepartamento]);
 };

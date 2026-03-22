@@ -26,6 +26,14 @@ export const historialCuentasVentaSlice = createSlice({
         rtkCargarErrores: (state, { payload }) => {
             state.errores = payload;
         },
+        rtkActualizarCuenta: (state, { payload }) => {
+            const index = state.historialCuentas.findIndex(
+                (c) => c.id === payload.id,
+            );
+            if (index !== -1) {
+                state.historialCuentas[index] = payload;
+            }
+        },
     },
 });
 
@@ -35,4 +43,6 @@ export const {
     rtkLimpiarHistorial,
     rtkCargarMensaje,
     rtkCargarErrores,
+    rtkActualizarCuenta,
 } = historialCuentasVentaSlice.actions;
+

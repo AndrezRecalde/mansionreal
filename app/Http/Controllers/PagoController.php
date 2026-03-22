@@ -36,8 +36,13 @@ class PagoController extends Controller
         ]);
 
         try {
+            $turnoAbierto = \App\Models\TurnoCaja::where('usuario_id', Auth::id())
+                ->where('estado', 'ABIERTO')
+                ->first();
+
             $pago = Pago::create([
                 'reserva_id' => null, // ← Venta de mostrador
+                'turno_caja_id' => $turnoAbierto ? $turnoAbierto->id : null,
                 'codigo_voucher' => $request->codigo_voucher,
                 'concepto_pago_id' => $request->concepto_pago_id,
                 'monto' => $request->monto,
@@ -184,8 +189,13 @@ class PagoController extends Controller
 
         $pagosCreados = [];
 
+        $turnoAbierto = \App\Models\TurnoCaja::where('usuario_id', Auth::id())
+            ->where('estado', 'ABIERTO')
+            ->first();
+
         foreach ($request->pagos as $pagoData) {
             $pagosCreados[] = $reserva->pagos()->create([
+                'turno_caja_id' => $turnoAbierto ? $turnoAbierto->id : null,
                 'codigo_voucher' => $pagoData['codigo_voucher'] ?? null,
                 'concepto_pago_id' => $pagoData['concepto_pago_id'],
                 'monto' => $pagoData['monto'],

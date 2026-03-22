@@ -6,7 +6,8 @@ import {
 
 /**
  * Hook personalizado para manejar las acciones de reserva
- * @returns {Object} Funciones para manejar reservas y estadías
+ * Solo existe el tipo HOSPEDAJE
+ * @returns {Object} Función para iniciar una reserva de hospedaje
  */
 export const useReservaActions = () => {
     const { fnAsignarTipoReserva } = useReservaDepartamentoStore();
@@ -17,13 +18,7 @@ export const useReservaActions = () => {
         fnAbrirModalReservarDepartamento(true);
     }, [fnAsignarTipoReserva, fnAbrirModalReservarDepartamento]);
 
-    const handleEstadia = useCallback(() => {
-        fnAsignarTipoReserva("ESTADIA");
-        fnAbrirModalReservarDepartamento(true);
-    }, [fnAsignarTipoReserva, fnAbrirModalReservarDepartamento]);
-
     return {
         handleReservar,
-        handleEstadia,
     };
 };

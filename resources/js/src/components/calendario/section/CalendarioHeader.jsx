@@ -1,11 +1,11 @@
 import { Group, Stack } from "@mantine/core";
 import { PrincipalSectionPage, TitlePage } from "../../../components";
-import { IconBeach, IconBuilding, IconCalendar } from "@tabler/icons-react";
+import { IconBuilding, IconCalendar } from "@tabler/icons-react";
 import { BtnAddActions } from "../../../components";
 import { useMediaQuery } from "@mantine/hooks";
 import { PAGE_TITLE } from "../../../helpers/getPrefix";
 
-export const CalendarioHeader = ({ onReservar, onEstadia }) => {
+export const CalendarioHeader = ({ onReservar }) => {
     const isMobile = useMediaQuery("(max-width: 768px)");
 
     const menuActions = [
@@ -14,12 +14,6 @@ export const CalendarioHeader = ({ onReservar, onEstadia }) => {
             icon: IconBuilding,
             onClick: onReservar,
             color: "indigo",
-        },
-        {
-            label: "Estadia",
-            icon: IconBeach,
-            onClick: onEstadia,
-            color: "green",
         },
     ];
 

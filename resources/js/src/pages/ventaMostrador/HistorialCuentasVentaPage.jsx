@@ -15,6 +15,7 @@ const HistorialCuentasVentaPage = () => {
         historialCuentas,
         fnCargarHistorialCuentas,
         fnLimpiarHistorialCuentas,
+        fnAnularFacturaCuenta,
     } = useHistorialCuentasVenta();
 
     const {
@@ -46,6 +47,10 @@ const HistorialCuentasVentaPage = () => {
         await fnPrevisualizarFacturaPDF(factura.id);
     };
 
+    const handleAnularFactura = async (cuenta, motivo) => {
+        await fnAnularFacturaCuenta(cuenta.id, motivo);
+    };
+
     return (
         <Container size="xl" my={20}>
             <PrincipalSectionPage
@@ -65,6 +70,7 @@ const HistorialCuentasVentaPage = () => {
                     datos={historialCuentas}
                     cargando={cargando}
                     onVerFactura={handleVerFactura}
+                    onAnularFactura={handleAnularFactura}
                 />
             </Stack>
 

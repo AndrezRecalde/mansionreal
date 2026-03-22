@@ -5,8 +5,9 @@ import {
     rtkCargando,
     rtkCargarHistorial,
     rtkLimpiarHistorial,
-    //rtkCargarMensaje,
+    rtkCargarMensaje,
     rtkCargarErrores,
+    rtkActualizarCuenta,
 } from "../../store/ventaMostrador/historialCuentasVentaSlice";
 
 export const useHistorialCuentasVenta = () => {
@@ -36,13 +37,35 @@ export const useHistorialCuentasVenta = () => {
         dispatch(rtkLimpiarHistorial());
     };
 
+    const fnAnularFacturaCuenta = async (cuentaId, motivo) => {
+        try {
+            dispatch(rtkCargando(true));
+            const { data } = await apiAxios.post(
+                `/general/cuentas-ventas/${cuentaId}/anular-factura`,
+                { motivo_anulacion: motivo },
+            );
+            dispatch(rtkActualizarCuenta(data.cuenta));
+            dispatch(rtkCargarMensaje(data));
+            setTimeout(() => {
+                dispatch(rtkCargarMensaje(undefined));
+            }, 3000);
+            return data.cuenta;
+        } catch (error) {
+            ExceptionMessageError(error);
+            return null;
+        } finally {
+            dispatch(rtkCargando(false));
+        }
+    };
+
     return {
         cargando,
         historialCuentas,
-        //mensaje,
         errores,
 
         fnCargarHistorialCuentas,
         fnLimpiarHistorialCuentas,
+        fnAnularFacturaCuenta,
     };
 };
+

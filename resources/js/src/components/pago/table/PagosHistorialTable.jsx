@@ -11,12 +11,15 @@ export const PagosHistorialTable = () => {
         () => [
             {
                 header: "Código Reserva",
-                accessorKey: "reserva.codigo_reserva",
+                accessorFn: (row) =>
+                    row.reserva?.codigo_reserva
+                        ? row.reserva.codigo_reserva
+                        : "N/A",
             },
             {
                 header: "Codigo Voucher",
-                accessorKey: "codigo_voucher",
-                filterVariant: "autocomplete",
+                accessorFn: (row) =>
+                    row?.codigo_voucher ? row.codigo_voucher : "N/A",
             },
             {
                 header: "Concepto Pago",
@@ -36,7 +39,7 @@ export const PagosHistorialTable = () => {
                 accessorKey: "fecha_pago",
             },
         ],
-        []
+        [],
     );
 
     const table = useMantineReactTable({

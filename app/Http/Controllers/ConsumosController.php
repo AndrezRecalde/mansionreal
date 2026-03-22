@@ -664,9 +664,11 @@ class ConsumosController extends Controller
             $query = DB::table('consumos as c')
                 ->join('inventarios as i', 'c.inventario_id', '=', 'i.id')
                 ->join('categorias as cat', 'i.categoria_id', '=', 'cat.id')
-                ->join('reservas as r', 'c.reserva_id', '=', 'r.id')
-                ->join('estados as e', 'r.estado_id', '=', 'e.id')
-                ->where('e.nombre_estado', 'PAGADO') // Solo reservas PAGADAS
+                ->leftJoin('reservas as r', 'c.reserva_id', '=', 'r.id')
+                ->leftJoin('estados as e', 'r.estado_id', '=', 'e.id')
+                ->leftJoin('facturas as f', 'c.factura_id', '=', 'f.id')
+                ->whereNotNull('c.factura_id')
+                ->where('f.estado', 'EMITIDA')
                 ->select(
                     'cat.id as categoria_id',
                     'cat.nombre_categoria',

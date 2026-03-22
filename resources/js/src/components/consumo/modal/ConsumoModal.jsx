@@ -198,7 +198,7 @@ export function ConsumoModal({ reserva_id }) {
             opened={abrirModalConsumo}
             onClose={handleCloseModal}
             closeOnClickOutside={false}
-            size="xl" // Usar un tamaño más grande o MODAL_CONFIG.size si era grande
+            size={900} // Usar un tamaño más grande o MODAL_CONFIG.size si era grande
             overlayProps={MODAL_CONFIG.overlayProps}
             title={
                 <Group>

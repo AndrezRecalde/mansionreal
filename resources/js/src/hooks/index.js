@@ -61,8 +61,6 @@ import { useDatosReserva } from "./reserva/useDatosReserva";
 import { useDatosReservaDisponibilidad } from "./reserva/useDatosReservaDisponibilidad";
 import { useReservaActions } from "./reserva/useReservaActions";
 
-/* Estadia */
-import { useEstadiaStore } from "./reserva/useEstadiaStore";
 
 /* Consumo */
 import { useConsumoStore } from "./consumo/useConsumoStore";
@@ -175,8 +173,6 @@ export {
     useDatosReservaDisponibilidad,
     useReservaActions,
 
-    /* Estadia */
-    useEstadiaStore,
 
     /* Consumo */
     useConsumoStore,

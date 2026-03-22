@@ -40,7 +40,7 @@ export const CierreCajaModal = () => {
 
     // Recalcular diferencia en tiempo real
     useEffect(() => {
-        if (reporteCierre && montoDeclarado !== "") {
+        if (reporteCierre?.reporte && montoDeclarado !== "") {
             const esperado = reporteCierre.reporte.efectivo_esperado_caja;
             setDiferencia(Number(montoDeclarado) - esperado);
         } else {
@@ -83,7 +83,7 @@ export const CierreCajaModal = () => {
 
                 <Paper withBorder p="md" radius="md" bg="gray.0">
                     <Stack gap="xs">
-                        {reporteCierre ? (
+                        {reporteCierre?.reporte ? (
                             <>
                                 <Group justify="space-between">
                                     <Text size="sm" c="dimmed">

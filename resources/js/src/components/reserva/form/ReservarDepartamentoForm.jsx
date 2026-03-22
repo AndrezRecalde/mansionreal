@@ -5,7 +5,6 @@ import {
     ReservarDatosReservaSection,
 } from "../../../components";
 import {
-    useEstadiaStore,
     useHuespedStore,
     useReservaDepartamentoStore,
     useUiReservaDepartamento,
@@ -17,10 +16,8 @@ import Swal from "sweetalert2";
 export const ReservarDepartamentoForm = ({ reservaForm }) => {
     const { fnBuscarHuespedPorDni, activarHuesped, fnAsignarHuesped } =
         useHuespedStore();
-    const { fnAgregarReserva, activarTipoReserva } =
-        useReservaDepartamentoStore();
+    const { fnAgregarReserva } = useReservaDepartamentoStore();
     const { fnAbrirModalReservarDepartamento } = useUiReservaDepartamento();
-    const { fnAgregarEstadia } = useEstadiaStore();
     const [showDetails, setShowDetails] = useState(false);
 
     const disabledInput = activarHuesped !== null;
@@ -34,27 +31,16 @@ export const ReservarDepartamentoForm = ({ reservaForm }) => {
 
     const handleSubmitReserva = (e) => {
         e.preventDefault();
-        //console.log(activarTipoReserva);
         Swal.fire({
-            title: `¿Confirmar ${activarTipoReserva.toLowerCase()}?`,
-            text: `¿Desea confirmar la ${activarTipoReserva.toLowerCase()}?`,
+            title: "¿Confirmar hospedaje?",
+            text: "¿Desea confirmar el hospedaje?",
             icon: "question",
             showCancelButton: true,
             confirmButtonText: "Sí, reservar",
             cancelButtonText: "Cancelar",
         }).then((result) => {
             if (result.isConfirmed) {
-                //console.log(activarTipoReserva);
-                if (activarTipoReserva === "HOSPEDAJE") {
-                    fnAgregarReserva(reservaForm.getTransformedValues());
-                    /* console.log(
-                        "HOSPEDAJE:",
-                        reservaForm.getTransformedValues()
-                    ); */
-                } else {
-                    fnAgregarEstadia(reservaForm.getTransformedValues());
-                    //console.log("ESTADIA:", reservaForm.getTransformedValues());
-                }
+                fnAgregarReserva(reservaForm.getTransformedValues());
                 reservaForm.reset();
                 fnAsignarHuesped(null);
                 setShowDetails(false);

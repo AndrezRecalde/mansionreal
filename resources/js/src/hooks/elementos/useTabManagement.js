@@ -1,35 +1,17 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { TABS } from "../../helpers/calendario.constants.js";
 
 /**
- * Hook personalizado para manejar el estado y comportamiento de los tabs
- * @param {Function} fnCargarEstadias - Función para cargar las estadías
- * @returns {Object} Estado y funciones para manejar tabs
+ * Hook personalizado para manejar el estado de tab activo en el Calendario
+ * Solo existe el tab HOSPEDAJE
+ * @returns {Object} Estado y set de tabs visitados
  */
-export const useTabManagement = (fnCargarEstadias) => {
-    const [activeTab, setActiveTab] = useState(TABS.HOSPEDAJE);
-    const [tabsVisitados, setTabsVisitados] = useState(
-        () => new Set([TABS.HOSPEDAJE])
-    );
-
-    const handleTabChange = useCallback(
-        (value) => {
-            if (!value) return;
-
-            setActiveTab(value);
-            setTabsVisitados((prev) => new Set([...prev, value]));
-
-            // Cargar estadías solo la primera vez que se visita el tab
-            if (value === TABS.ESTADIA && !tabsVisitados.has(TABS.ESTADIA)) {
-                fnCargarEstadias();
-            }
-        },
-        [fnCargarEstadias, tabsVisitados]
-    );
+export const useTabManagement = () => {
+    const [activeTab] = useState(TABS.HOSPEDAJE);
+    const [tabsVisitados] = useState(() => new Set([TABS.HOSPEDAJE]));
 
     return {
         activeTab,
         tabsVisitados,
-        handleTabChange,
     };
 };

@@ -1,6 +1,5 @@
 export const TABS = {
     HOSPEDAJE: "HOSPEDAJE",
-    ESTADIA: "ESTADIA",
 };
 
 export const SKELETON_CONFIG = {

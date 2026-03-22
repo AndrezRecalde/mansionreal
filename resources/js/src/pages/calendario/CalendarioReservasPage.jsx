@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Container, Divider, Tabs } from "@mantine/core";
+import { Container, Divider } from "@mantine/core";
 import {
     CalendarioHeader,
     ReservarDepartamentoModal,
@@ -7,25 +7,17 @@ import {
     ReservaModals,
 } from "../../components";
 import {
-    useEstadiaStore,
     useReservaDepartamentoStore,
     useTitleHook,
     useNotificaciones,
     useDatosReserva,
-    useTabManagement,
     useReservaActions,
     useStorageField,
     usePagoStore,
     useConsumoStore,
     useGastoStore,
 } from "../../hooks";
-import classes from "./modules/Tabs.module.css";
-import {
-    PAGE_CONFIG,
-    STORAGE_FIELDS,
-    TABS,
-} from "../../helpers/calendario.constants";
-import { PAGE_TITLE } from "../../helpers/getPrefix";
+import { PAGE_CONFIG, STORAGE_FIELDS } from "../../helpers/calendario.constants";
 import Swal from "sweetalert2";
 
 const CalendarioReservasPage = () => {
@@ -44,14 +36,6 @@ const CalendarioReservasPage = () => {
 
     // Stores
     const {
-        activarEstadia,
-        cargando: cargandoEstadias,
-        fnCargarEstadias,
-        fnAsignarEstadia,
-        mensaje: mensajeEstadia,
-        errores: erroresEstadia,
-    } = useEstadiaStore();
-    const {
         activarReserva,
         fnAsignarReserva,
         mensaje: mensajeReserva,
@@ -59,14 +43,11 @@ const CalendarioReservasPage = () => {
     } = useReservaDepartamentoStore();
 
     // Hooks personalizados
-    const { activeTab, tabsVisitados, handleTabChange } =
-        useTabManagement(fnCargarEstadias);
-    const { handleReservar, handleEstadia } = useReservaActions();
-    const datos_reserva = useDatosReserva(activarReserva, activarEstadia);
+    const { handleReservar } = useReservaActions();
+    const datos_reserva = useDatosReserva(activarReserva);
 
     const { mensaje: mensajePagos, errores: erroresPagos } = usePagoStore();
-    const { mensaje: mensajeConsumos, errores: erroresConsumos } =
-        useConsumoStore();
+    const { mensaje: mensajeConsumos, errores: erroresConsumos } = useConsumoStore();
     const { mensaje: mensajeGastos, errores: erroresGastos } = useGastoStore();
 
     useEffect(() => {
@@ -88,26 +69,6 @@ const CalendarioReservasPage = () => {
             });
         }
     }, [erroresReserva]);
-
-    useEffect(() => {
-        if (mensajeEstadia !== undefined) {
-            Swal.fire({
-                icon: mensajeEstadia.status,
-                text: mensajeEstadia.msg,
-                showConfirmButton: true,
-            });
-        }
-    }, [mensajeEstadia]);
-
-    useEffect(() => {
-        if (erroresEstadia !== undefined) {
-            Swal.fire({
-                icon: "error",
-                text: erroresEstadia,
-                showConfirmButton: true,
-            });
-        }
-    }, [erroresEstadia]);
 
     useEffect(() => {
         if (mensajeGastos !== undefined) {
@@ -175,45 +136,16 @@ const CalendarioReservasPage = () => {
             py={{ base: "xs", sm: "sm", md: PAGE_CONFIG.CALENDARIO.PADDING }}
             px={{ base: "xs", sm: "md" }}
         >
-            <CalendarioHeader
-                onReservar={handleReservar}
-                onEstadia={handleEstadia}
-            />
+            <CalendarioHeader onReservar={handleReservar} />
 
             <Divider my="md" />
 
-            <Tabs
-                variant="unstyled"
-                value={activeTab}
-                onChange={handleTabChange}
-                classNames={classes}
-                keepMounted={false}
-                orientation="horizontal"
-            >
-                <Tabs.List grow>
-                    <Tabs.Tab value={TABS.HOSPEDAJE}>
-                        {PAGE_TITLE.CALENDARIO_RESERVAS.TABS.RESERVAS}
-                    </Tabs.Tab>
-                    <Tabs.Tab value={TABS.ESTADIA}>
-                        {PAGE_TITLE.CALENDARIO_RESERVAS.TABS.ESTADIAS}
-                    </Tabs.Tab>
-                </Tabs.List>
-
-                <TabContent
-                    activeTab={activeTab}
-                    tabsVisitados={tabsVisitados}
-                    cargandoEstadias={cargandoEstadias}
-                />
-            </Tabs>
+            <TabContent />
 
             <ReservarDepartamentoModal />
             <ReservaModals
                 datos_reserva={datos_reserva}
-                fnAsignarDepartamento={
-                    activeTab === TABS.HOSPEDAJE
-                        ? fnAsignarReserva
-                        : fnAsignarEstadia
-                }
+                fnAsignarDepartamento={fnAsignarReserva}
             />
         </Container>
     );

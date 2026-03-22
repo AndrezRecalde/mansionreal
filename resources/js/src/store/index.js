@@ -65,9 +65,6 @@ import { cajasSlice } from "./cajas/cajasSlice";
 import { reservaSlice } from "./reserva/reservaSlice";
 import { uiReservaSlice } from "./reserva/uiReservaSlice";
 
-/* Estadias */
-import { estadiaSlice } from "./reserva/estadiaSlice";
-import { uiEstadiaSlice } from "./reserva/uiEstadiaSlice";
 
 /* Consumos */
 import { consumoSlice } from "./consumo/consumoSlice";
@@ -166,9 +163,6 @@ export {
     reservaSlice,
     uiReservaSlice,
 
-    /* Estadias */
-    estadiaSlice,
-    uiEstadiaSlice,
 
     /* Consumo */
     consumoSlice,

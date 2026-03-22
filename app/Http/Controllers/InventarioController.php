@@ -27,7 +27,7 @@ class InventarioController extends Controller
             }
 
             if ($request->boolean('solo_venta')) {
-                $query->excluirCategorias([1, 2]);
+                $query->excluirCategorias([1]);
             }
 
             $productos = $query->get();

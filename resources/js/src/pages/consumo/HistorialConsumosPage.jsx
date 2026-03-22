@@ -12,7 +12,6 @@ import {
 import {
     useConsumoStore,
     useDatosReserva,
-    useEstadiaStore,
     useFacturaStore,
     useGastoStore,
     useNotificaciones,
@@ -36,7 +35,6 @@ const HistorialConsumosPage = () => {
         fnBuscarReservas,
         fnLimpiarReservas,
     } = useReservaDepartamentoStore();
-    const { activarEstadia, fnAsignarEstadia } = useEstadiaStore();
     const { mensaje: mensajePagos, errores: erroresPagos } = usePagoStore();
     const { mensaje: mensajeConsumos, errores: erroresConsumos } =
         useConsumoStore();
@@ -52,7 +50,7 @@ const HistorialConsumosPage = () => {
     const { abrirModalPdfFactura, fnAbrirModalPdfFactura } = useUiFactura();
     const { fnSetStorageFields } = useStorageField();
 
-    const datos_reserva = useDatosReserva(activarReserva, activarEstadia);
+    const datos_reserva = useDatosReserva(activarReserva);
 
     useEffect(() => {
         return () => {
@@ -185,9 +183,7 @@ const HistorialConsumosPage = () => {
             />
             <ReservaModals
                 datos_reserva={datos_reserva}
-                fnAsignarDepartamento={
-                    activarReserva ? fnAsignarReserva : fnAsignarEstadia
-                }
+                fnAsignarDepartamento={fnAsignarReserva}
             />
             <ReGenerarFacturaModal />
             <VisorFacturaPDF

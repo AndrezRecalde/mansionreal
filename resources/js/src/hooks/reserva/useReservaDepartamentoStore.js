@@ -13,7 +13,6 @@ import {
 import {
     useCalendarioStore,
     useDepartamentoStore,
-    useEstadiaStore,
 } from "../../hooks";
 import { formatDateStr } from "../../helpers/fnHelper";
 import { addMonths, subMonths } from "date-fns";
@@ -32,7 +31,6 @@ export const useReservaDepartamentoStore = () => {
     } = useSelector((state) => state.reserva);
     const { fnConsultarDisponibilidadDepartamentos } = useDepartamentoStore();
     const { fnCargarDatosCalendario } = useCalendarioStore();
-    const { fnCargarEstadias } = useEstadiaStore();
     const dispatch = useDispatch();
     const { ExceptionMessageError } = useErrorException(rtkCargarErrores);
 
@@ -93,7 +91,6 @@ export const useReservaDepartamentoStore = () => {
 
             if (carga_pagina === "DEPARTAMENTOS") {
                 await fnConsultarDisponibilidadDepartamentos();
-                await fnCargarEstadias();
             } else if (carga_pagina === "RESERVAS") {
                 await fnBuscarReservas(storageFields);
             } else if (carga_pagina === "CALENDARIO") {
@@ -105,8 +102,6 @@ export const useReservaDepartamentoStore = () => {
                     end: formatDateStr(fin),
                 });
 
-                //await actualizarEstadisticas(new Date());
-                await fnCargarEstadias();
                 // Recargar datos y mostrar mensaje
                 dispatch(rtkCargarMensaje(data));
                 setTimeout(() => {
@@ -236,10 +231,7 @@ export const useReservaDepartamentoStore = () => {
 
             // Recargar datos según la página
             if (carga_pagina === "DEPARTAMENTOS") {
-                await Promise.all([
-                    fnConsultarDisponibilidadDepartamentos(),
-                    fnCargarEstadias(),
-                ]);
+                await fnConsultarDisponibilidadDepartamentos();
             } else if (carga_pagina === "RESERVAS") {
                 await fnBuscarReservas(storageFields);
             } else if (carga_pagina === "CALENDARIO") {
@@ -250,9 +242,6 @@ export const useReservaDepartamentoStore = () => {
                     start: formatDateStr(inicio),
                     end: formatDateStr(fin),
                 });
-
-                //await actualizarEstadisticas(new Date());
-                await fnCargarEstadias();
             }
         } catch (error) {
             ExceptionMessageError(error);

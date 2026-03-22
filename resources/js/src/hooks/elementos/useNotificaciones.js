@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import Swal from "sweetalert2";
 import {
     useCalendarioStore,
-    useEstadiaStore,
     useFacturaStore,
     useReservaDepartamentoStore,
 } from "../../hooks";
@@ -18,8 +17,7 @@ export const useNotificaciones = () => {
         mensaje: mensajeReserva,
         errores: erroresReserva,
     } = useReservaDepartamentoStore();
-    const { mensaje: mensajeEstadia, errores: erroresEstadia } =
-        useEstadiaStore();
+
     const { cargandoPDF } = useFacturaStore();
 
     useEffect(() => {
@@ -28,8 +26,6 @@ export const useNotificaciones = () => {
             erroresCalendario,
             mensajeReserva,
             erroresReserva,
-            mensajeEstadia,
-            erroresEstadia,
         ].filter(Boolean);
 
         if (notificaciones.length > 0) {
@@ -45,8 +41,6 @@ export const useNotificaciones = () => {
         erroresCalendario,
         mensajeReserva,
         erroresReserva,
-        mensajeEstadia,
-        erroresEstadia,
     ]);
 
     useEffect(() => {

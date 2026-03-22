@@ -96,9 +96,6 @@ import { ReservaFinalizarForm } from "./reserva/form/ReservaFinalizarForm";
 import { ReservaCancelarModal } from "./reserva/modal/ReservaCancelarModal";
 import { ReservaCancelarForm } from "./reserva/form/ReservaCancelarForm";
 
-/* Reservas de Estadias */
-import { EstadiasReservadasCards } from "./reserva/cards/EstadiasReservadasCards";
-
 /* Facturacion */
 import { ClienteFacturacionForm } from "./facturacion/form/ClienteFacturacionForm";
 import { ClienteFacturacionSelector } from "./facturacion/form/ClienteFacturacionSelector";
@@ -278,9 +275,6 @@ export {
     /* Reservas Cancelar Estado */
     ReservaCancelarModal,
     ReservaCancelarForm,
-
-    /* Reservas de Estadias */
-    EstadiasReservadasCards,
 
     /* Facturacion */
     ClienteFacturacionForm,

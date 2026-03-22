@@ -1,12 +1,11 @@
 import { useMemo } from "react";
 
 /**
- * Hook personalizado para construir el objeto de datos de reserva
+ * Hook personalizado para construir el objeto de datos de reserva (solo HOSPEDAJE)
  * @param {Object} activarReserva - Datos de la reserva activa
- * @param {Object} activarEstadia - Datos de la estadía activa
  * @returns {Object|null} Objeto con los datos de la reserva o null
  */
-export const useDatosReserva = (activarReserva, activarEstadia) => {
+export const useDatosReserva = (activarReserva) => {
     return useMemo(() => {
         if (activarReserva) {
             return {
@@ -24,19 +23,6 @@ export const useDatosReserva = (activarReserva, activarEstadia) => {
             };
         }
 
-        if (activarEstadia) {
-            return {
-                codigo_reserva: activarEstadia.codigo_reserva,
-                reserva_id: activarEstadia.id,
-                huesped_id: activarEstadia.huesped_id,
-                huesped: activarEstadia.huesped,
-                fecha_checkin: activarEstadia.fecha_checkin,
-                fecha_checkout: activarEstadia.fecha_checkout,
-                total_noches: activarEstadia.total_noches,
-                estado: activarEstadia.estado,
-            };
-        }
-
         return null;
-    }, [activarReserva, activarEstadia]);
+    }, [activarReserva]);
 };

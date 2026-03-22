@@ -31,7 +31,6 @@ import {
     useUiConsumo,
     useStorageField,
     useDepartamentoStore,
-    useEstadiaStore,
 } from "../../../hooks";
 import Swal from "sweetalert2";
 
@@ -49,7 +48,6 @@ export const ReservaFinalizarStepper = ({ datos_reserva }) => {
     const { fnAbrirModalReservaFinalizar } = useUiReservaDepartamento();
     const { fnAbrirDrawerConsumosDepartamento } = useUiConsumo();
     const { fnAsignarDepartamento } = useDepartamentoStore();
-    const { fnAsignarEstadia } = useEstadiaStore();
     const { storageFields } = useStorageField();
 
     const [consumidorFinal, setConsumidorFinal] = useState(null);
@@ -185,7 +183,6 @@ export const ReservaFinalizarStepper = ({ datos_reserva }) => {
                         // En error: limpiar y cerrar
                         fnAsignarDepartamento(null);
                         fnAsignarReserva(null);
-                        fnAsignarEstadia(null);
                         fnAbrirModalReservaFinalizar(false);
                         fnAbrirDrawerConsumosDepartamento(false);
                     }
@@ -203,7 +200,6 @@ export const ReservaFinalizarStepper = ({ datos_reserva }) => {
                 // En error: limpiar y cerrar
                 fnAsignarDepartamento(null);
                 fnAsignarReserva(null);
-                fnAsignarEstadia(null);
                 fnAbrirModalReservaFinalizar(false);
                 fnAbrirDrawerConsumosDepartamento(false);
             }
@@ -216,7 +212,6 @@ export const ReservaFinalizarStepper = ({ datos_reserva }) => {
     const handleCerrarExito = () => {
         fnAsignarDepartamento(null);
         fnAsignarReserva(null);
-        fnAsignarEstadia(null);
         fnAbrirModalReservaFinalizar(false);
         fnAbrirDrawerConsumosDepartamento(false);
     };

@@ -502,8 +502,13 @@ class CuentaVentaController extends Controller
                 throw new \Exception("El monto a pagar {$request->monto} no puede superar el saldo pendiente {$cuenta->saldo_pendiente}.");
             }
 
+            $turnoAbierto = \App\Models\TurnoCaja::where('usuario_id', Auth::id())
+                ->where('estado', 'ABIERTO')
+                ->first();
+
             Pago::create([
                 'cuenta_venta_id' => $cuenta->id,
+                'turno_caja_id' => $turnoAbierto ? $turnoAbierto->id : null,
                 'concepto_pago_id' => $request->concepto_pago_id,
                 'monto' => $request->monto,
                 'metodo_pago' => $request->metodo_pago,
@@ -544,10 +549,15 @@ class CuentaVentaController extends Controller
             // AUTO-BALANCEO DE VUELTO: Si hay saldo a favor, registrar pago en negativo
             if ($cuenta->saldo_pendiente < -0.01) {
                 // Asumimos el ID de concepto de pago 3 (Consumos/Ventas) o buscamos uno genérico
-                $conceptoId = 3; 
+                $conceptoId = 3;
+
+                $turnoAbierto = \App\Models\TurnoCaja::where('usuario_id', Auth::id())
+                    ->where('estado', 'ABIERTO')
+                    ->first();
 
                 Pago::create([
                     'cuenta_venta_id' => $cuenta->id,
+                    'turno_caja_id' => $turnoAbierto ? $turnoAbierto->id : null,
                     'concepto_pago_id' => $conceptoId,
                     'monto' => $cuenta->saldo_pendiente, // Al ser negativo compensa el exceso
                     'metodo_pago' => 'EFECTIVO',
@@ -591,6 +601,60 @@ class CuentaVentaController extends Controller
             return response()->json([
                 'status' => HTTPStatus::Error,
                 'msg' => $th->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Anular la factura de una cuenta de venta y devolver la cuenta a estado PENDIENTE.
+     */
+    public function anularFacturaCuenta(Request $request, $id): JsonResponse
+    {
+        $request->validate([
+            'motivo_anulacion' => 'required|string|min:10|max:500',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $cuenta = CuentaVenta::with(['estado', 'factura'])->findOrFail($id);
+
+            if (!$cuenta->factura) {
+                throw new \Exception('La cuenta no tiene una factura asociada.');
+            }
+
+            if ($cuenta->factura->estado !== \App\Models\Factura::ESTADO_EMITIDA) {
+                throw new \Exception('Solo se puede anular una factura en estado EMITIDA.');
+            }
+
+            // Anular la factura
+            $anulada = $cuenta->factura->anular($request->motivo_anulacion, Auth::id());
+
+            if (!$anulada) {
+                throw new \Exception('No se pudo anular la factura.');
+            }
+
+            // Devolver la cuenta a estado PENDIENTE
+            $estadoPendiente = Estado::where('tipo_estado', 'PAGO')
+                ->where('nombre_estado', 'PENDIENTE')
+                ->firstOrFail();
+
+            $cuenta->estado_id = $estadoPendiente->id;
+            //$cuenta->factura_id = null;
+            $cuenta->save();
+
+            DB::commit();
+
+            return response()->json([
+                'status' => HTTPStatus::Success,
+                'msg'    => 'Factura anulada correctamente. La cuenta volvió a estado PENDIENTE.',
+                'cuenta' => $cuenta->load(['estado', 'usuario', 'consumos.inventario', 'pagos', 'factura']),
+            ], 200);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'status' => HTTPStatus::Error,
+                'msg'    => $th->getMessage(),
             ], 500);
         }
     }

@@ -286,6 +286,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
                     Route::post('/cuentas-ventas/{id}/pagos', [CuentaVentaController::class, 'registrarPago'])->middleware(CheckTurnoAbierto::class);
                     Route::post('/cuentas-ventas/{id}/cerrar', [CuentaVentaController::class, 'cerrarCuenta'])->middleware(CheckTurnoAbierto::class);
+                    Route::post('/cuentas-ventas/{id}/anular-factura', [CuentaVentaController::class, 'anularFacturaCuenta']);
                 });
 
                 /* ---- Turnos y Cajas (Asistente y Gerencia) ---- */

@@ -1,12 +1,11 @@
 import { useEffect } from "react";
-import { Grid, Title, Container, Group, Divider } from "@mantine/core";
+import { Grid, Container, Divider } from "@mantine/core";
 import {
     useDashboardKPIStore,
     useDashHuepedGananciaStore,
     useDashHuespedStore,
     useDashIngresosPorDepartamentoStore,
     useDashRankingProductosStore,
-    useEstadiaStore,
     useTitleHook,
 } from "../../hooks";
 //import { FiltrarPorFechasForm } from "../../components";
@@ -15,7 +14,6 @@ import OccupancyLineChart from "../../components/dashboard/OccupancyLineChart";
 import DepartmentBarChart from "../../components/dashboard/DepartmentBarChart";
 import ProductPieChart from "../../components/dashboard/ProductPieChart";
 import GuestsRankingTable from "../../components/dashboard/GuestsRankingTable";
-import EstadiasBarChart from "../../components/dashboard/EstadiasBarChart";
 import { FiltrarPorFechasForm, PrincipalSectionPage } from "../../components";
 import { PAGE_TITLE } from "../../helpers/getPrefix";
 import { IconChartAreaLineFilled } from "@tabler/icons-react";
@@ -32,8 +30,6 @@ export default function DashboardPage() {
         fnCargarIngresosPorDepartamento,
         fnLimpiarIngresosPorDepartamento,
     } = useDashIngresosPorDepartamentoStore();
-    const { fnCargarReporteEstadiasPorFechas, fnLimpiarEstadias } =
-        useEstadiaStore();
     const { fnCargarHuespedesRecurrentes, fnLimpiarHuespedesRecurrentes } =
         useDashHuespedStore();
 
@@ -42,7 +38,6 @@ export default function DashboardPage() {
         fnCargarHuespedesGananciasMes(new Date().getFullYear());
         fnCargarRankingProductos({ p_anio: new Date().getFullYear() });
         fnCargarIngresosPorDepartamento({ p_anio: new Date().getFullYear() });
-        fnCargarReporteEstadiasPorFechas({ p_anio: new Date().getFullYear() });
         fnCargarHuespedesRecurrentes({ p_anio: new Date().getFullYear() });
         return () => {
             fnLimpiarResumenKPI();
@@ -80,11 +75,6 @@ export default function DashboardPage() {
                         p_fecha_inicio: values.p_fecha_inicio,
                         p_fecha_fin: values.p_fecha_fin,
                     });
-                    fnCargarReporteEstadiasPorFechas({
-                        p_anio: values.p_anio,
-                        p_fecha_inicio: values.p_fecha_inicio,
-                        p_fecha_fin: values.p_fecha_fin,
-                    });
                     fnCargarHuespedesRecurrentes({
                         p_anio: values.p_anio,
                         p_fecha_inicio: values.p_fecha_inicio,
@@ -113,9 +103,6 @@ export default function DashboardPage() {
                 </Grid.Col>
                 <Grid.Col span={{ base: 12, md: 6, lg: 6 }}>
                     <DepartmentBarChart />
-                </Grid.Col>
-                <Grid.Col span={{ base: 12, md: 6, lg: 6 }}>
-                    <EstadiasBarChart />
                 </Grid.Col>
             </Grid>
 

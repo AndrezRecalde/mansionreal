@@ -287,6 +287,12 @@ class CuentaVentaController extends Controller
             $consumo = Consumo::where('cuenta_venta_id', $cuenta->id)->findOrFail($consumoId);
             $inventario = $consumo->inventario;
 
+            // PROTECCIÓN CONTRA FRAUDE: No permitir modificar cantidades si ya hay pagos, a menos que sea Gerente/Admin
+            $tienePagos = $cuenta->pagos()->exists();
+            if ($tienePagos && !Auth::user()->hasAnyRole(['ADMINISTRADOR', 'GERENTE'])) {
+                throw new \Exception("No tiene permisos para modificar cantidades de una cuenta con pagos registrados. Solicite autorización de Gerencia.");
+            }
+
             $cantidadAnterior = $consumo->cantidad;
             $cantidadNueva = $request->cantidad;
             $diferencia = $cantidadNueva - $cantidadAnterior;
@@ -343,6 +349,12 @@ class CuentaVentaController extends Controller
             DB::beginTransaction();
 
             $cuenta = CuentaVenta::where('id', $id)->lockForUpdate()->firstOrFail();
+ 
+            // PROTECCIÓN CONTRA FRAUDE: No permitir descuentos si ya hay pagos, a menos que sea Gerente/Admin
+            $tienePagos = $cuenta->pagos()->exists();
+            if ($tienePagos && !Auth::user()->hasAnyRole(['ADMINISTRADOR', 'GERENTE'])) {
+                throw new \Exception("No tiene permisos para aplicar descuentos en una cuenta con pagos registrados. Solicite autorización de Gerencia.");
+            }
 
             // Verificar que no esté pagada o facturada
             if ($cuenta->estado->nombre_estado !== 'PENDIENTE') {
@@ -403,6 +415,12 @@ class CuentaVentaController extends Controller
             DB::beginTransaction();
 
             $cuenta = CuentaVenta::where('id', $id)->lockForUpdate()->firstOrFail();
+ 
+            // PROTECCIÓN CONTRA FRAUDE: No permitir modificar consumos si ya hay pagos, a menos que sea Gerente/Admin
+            $tienePagos = $cuenta->pagos()->exists();
+            if ($tienePagos && !Auth::user()->hasAnyRole(['ADMINISTRADOR', 'GERENTE'])) {
+                throw new \Exception("No tiene permisos para modificar consumos de una cuenta con pagos registrados. Solicite autorización de Gerencia.");
+            }
 
             // Verificar que no esté pagada
             if ($cuenta->estado->nombre_estado !== 'PENDIENTE') {
@@ -452,9 +470,25 @@ class CuentaVentaController extends Controller
             $consumo = Consumo::where('cuenta_venta_id', $cuenta->id)->findOrFail($consumoId);
             $inventario = $consumo->inventario;
 
+            // PROTECCIÓN CONTRA FRAUDE: No permitir modificar cantidades si ya hay pagos, a menos que sea Gerente/Admin
+            $tienePagos = $cuenta->pagos()->exists();
+            if ($tienePagos && !Auth::user()->hasAnyRole(['ADMINISTRADOR', 'GERENTE'])) {
+                throw new \Exception("No tiene permisos para modificar cantidades de una cuenta con pagos registrados. Solicite autorización de Gerencia.");
+            }
+
+            // PROTECCIÓN CONTRA FRAUDE: No permitir borrar si ya hay pagos, a menos que sea Gerente/Admin
+            $tienePagos = $cuenta->pagos()->exists();
+            if ($tienePagos && !Auth::user()->hasAnyRole(['ADMINISTRADOR', 'GERENTE'])) {
+                throw new \Exception("No tiene permisos para eliminar productos de una cuenta con pagos registrados. Solicite autorización de Gerencia.");
+            }
+
             if (!$inventario->sin_stock) {
                 $inventario->registrarEntrada($consumo->cantidad, 'Devolución de consumo cancelado cuenta ' . $cuenta->codigo, null, Auth::id());
             }
+
+            // Registrar quién borró para auditoría (SoftDelete)
+            $consumo->deleted_by_user_id = Auth::id();
+            $consumo->save();
 
             $consumo->delete();
 

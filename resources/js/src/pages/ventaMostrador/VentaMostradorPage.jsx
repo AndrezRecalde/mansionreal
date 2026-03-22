@@ -37,6 +37,7 @@ import {
     IconTrash,
     IconArrowsExchange,
     IconLock,
+    IconRefresh,
 } from "@tabler/icons-react";
 import {
     useClienteFacturacionStore,
@@ -125,9 +126,21 @@ const CuentasView = () => {
     return (
         <Stack gap="lg">
             <Group justify="space-between">
-                <Text fw={600} size="lg">
-                    Cuentas Abiertas ({pendientes.length})
-                </Text>
+                <Group gap="xs">
+                    <Text fw={600} size="lg">
+                        Cuentas Abiertas ({pendientes.length})
+                    </Text>
+                    <ActionIcon
+                        variant="subtle"
+                        color="blue"
+                        onClick={() => fnCargarCuentas()}
+                        loading={cargando}
+                        disabled={!turnoActivo}
+                        title="Actualizar lista"
+                    >
+                        <IconRefresh size={18} />
+                    </ActionIcon>
+                </Group>
                 <Group>
                     <Button
                         variant="light"

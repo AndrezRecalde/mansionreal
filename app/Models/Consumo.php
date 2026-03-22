@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Consumo extends Model
 {
+    use SoftDeletes;
+ 
     protected $fillable = [
         'reserva_id',
         'factura_id',
@@ -25,7 +28,9 @@ class Consumo extends Model
         'usuario_registro_descuento_id',
         // Auditoría
         'creado_por_usuario_id',
+        'creado_por_usuario_id',
         'actualizado_por_usuario_id',
+        'deleted_by_user_id',
     ];
 
     protected $casts = [
@@ -98,6 +103,14 @@ class Consumo extends Model
     public function usuarioActualizador(): BelongsTo
     {
         return $this->belongsTo(User::class, 'actualizado_por_usuario_id');
+    }
+
+    /**
+     * Usuario que eliminó el consumo (Auditoría)
+     */
+    public function usuarioEliminador(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'deleted_by_user_id');
     }
 
     /**

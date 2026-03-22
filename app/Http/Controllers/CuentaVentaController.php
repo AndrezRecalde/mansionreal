@@ -124,7 +124,7 @@ class CuentaVentaController extends Controller
     {
         try {
             $cuenta = CuentaVenta::with(['estado', 'usuario', 'consumos.inventario', 'pagos', 'factura'])
-                ->findOrFail($id);
+                ->where('id', $id)->lockForUpdate()->firstOrFail();
             return response()->json([
                 'status' => HTTPStatus::Success,
                 'cuenta' => $cuenta,
@@ -176,7 +176,7 @@ class CuentaVentaController extends Controller
         try {
             DB::beginTransaction();
 
-            $cuenta = CuentaVenta::findOrFail($id);
+            $cuenta = CuentaVenta::where('id', $id)->lockForUpdate()->firstOrFail();
 
             // Verificar estado
             if ($cuenta->estado->nombre_estado !== 'PENDIENTE') {
@@ -279,7 +279,7 @@ class CuentaVentaController extends Controller
         try {
             DB::beginTransaction();
 
-            $cuenta = CuentaVenta::findOrFail($id);
+            $cuenta = CuentaVenta::where('id', $id)->lockForUpdate()->firstOrFail();
             if ($cuenta->estado->nombre_estado !== 'PENDIENTE') {
                 throw new \Exception("La cuenta ya está pagada o cerrada.");
             }
@@ -342,7 +342,7 @@ class CuentaVentaController extends Controller
         try {
             DB::beginTransaction();
 
-            $cuenta = CuentaVenta::findOrFail($id);
+            $cuenta = CuentaVenta::where('id', $id)->lockForUpdate()->firstOrFail();
 
             // Verificar que no esté pagada o facturada
             if ($cuenta->estado->nombre_estado !== 'PENDIENTE') {
@@ -402,7 +402,7 @@ class CuentaVentaController extends Controller
         try {
             DB::beginTransaction();
 
-            $cuenta = CuentaVenta::findOrFail($id);
+            $cuenta = CuentaVenta::where('id', $id)->lockForUpdate()->firstOrFail();
 
             // Verificar que no esté pagada
             if ($cuenta->estado->nombre_estado !== 'PENDIENTE') {
@@ -444,7 +444,7 @@ class CuentaVentaController extends Controller
         try {
             DB::beginTransaction();
 
-            $cuenta = CuentaVenta::findOrFail($id);
+            $cuenta = CuentaVenta::where('id', $id)->lockForUpdate()->firstOrFail();
             if ($cuenta->estado->nombre_estado !== 'PENDIENTE') {
                 throw new \Exception("La cuenta ya está pagada o cerrada.");
             }
@@ -492,7 +492,7 @@ class CuentaVentaController extends Controller
         try {
             DB::beginTransaction();
 
-            $cuenta = CuentaVenta::findOrFail($id);
+            $cuenta = CuentaVenta::where('id', $id)->lockForUpdate()->firstOrFail();
             if ($cuenta->estado->nombre_estado !== 'PENDIENTE') {
                 throw new \Exception("La cuenta ya está pagada.");
             }
@@ -544,7 +544,7 @@ class CuentaVentaController extends Controller
         try {
             DB::beginTransaction();
 
-            $cuenta = CuentaVenta::findOrFail($id);
+            $cuenta = CuentaVenta::where('id', $id)->lockForUpdate()->firstOrFail();
 
             // AUTO-BALANCEO DE VUELTO: Si hay saldo a favor, registrar pago en negativo
             if ($cuenta->saldo_pendiente < -0.01) {
@@ -614,7 +614,7 @@ class CuentaVentaController extends Controller
         try {
             DB::beginTransaction();
 
-            $cuenta = CuentaVenta::with(['estado', 'factura'])->findOrFail($id);
+            $cuenta = CuentaVenta::with(['estado', 'factura'])->where('id', $id)->lockForUpdate()->firstOrFail();
 
             if (!$cuenta->factura) {
                 throw new \Exception('La cuenta no tiene una factura asociada.');

@@ -19,6 +19,7 @@ import { dashIngresosTotalesSlice } from "./dashboard/dashIngresosTotalesSlice";
 import { dashIvaRecaudadoSlice } from "./dashboard/dashIvaRecaudadoSlice";
 import { dashOcupacionActualSlice } from "./dashboard/dashOcupacionActualSlice";
 import { dashRankingProductosSlice } from "./dashboard/dashRankingProductosSlice";
+import { dashResumenConsumosEstadiaSlice } from "./dashboard/dashResumenConsumosEstadiaSlice";
 
 /* Roles */
 import { roleSlice } from "./role/roleSlice";
@@ -124,6 +125,7 @@ export {
     dashIvaRecaudadoSlice,
     dashOcupacionActualSlice,
     dashRankingProductosSlice,
+    dashResumenConsumosEstadiaSlice,
 
     /* Roles */
     roleSlice,

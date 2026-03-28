@@ -13,6 +13,7 @@ import { useDashHuepedGananciaStore } from "./dashboard/useDashHuepedGananciaSto
 import { useDashHuespedStore } from "./dashboard/useDashHuespedStore";
 import { useDashIngresosPorDepartamentoStore } from "./dashboard/useDashIngresosPorDepartamentoStore";
 import { useDashRankingProductosStore } from "./dashboard/useDashRankingProductosStore";
+import { useDashResumenConsumosEstadiaStore } from "./dashboard/useDashResumenConsumosEstadiaStore";
 
 /* Usuario */
 import { useUsuarioStore } from "./usuario/useUsuarioStore";
@@ -125,6 +126,7 @@ export {
     useDashHuespedStore,
     useDashIngresosPorDepartamentoStore,
     useDashRankingProductosStore,
+    useDashResumenConsumosEstadiaStore,
 
     /* Usuario */
     useUsuarioStore,

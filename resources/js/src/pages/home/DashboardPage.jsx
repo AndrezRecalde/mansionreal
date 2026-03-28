@@ -6,6 +6,7 @@ import {
     useDashHuespedStore,
     useDashIngresosPorDepartamentoStore,
     useDashRankingProductosStore,
+    useDashResumenConsumosEstadiaStore,
     useTitleHook,
 } from "../../hooks";
 //import { FiltrarPorFechasForm } from "../../components";
@@ -14,6 +15,7 @@ import OccupancyLineChart from "../../components/dashboard/OccupancyLineChart";
 import DepartmentBarChart from "../../components/dashboard/DepartmentBarChart";
 import ProductPieChart from "../../components/dashboard/ProductPieChart";
 import GuestsRankingTable from "../../components/dashboard/GuestsRankingTable";
+import ConsumosEstadiaChart from "../../components/dashboard/ConsumosEstadiaChart";
 import { FiltrarPorFechasForm, PrincipalSectionPage } from "../../components";
 import { PAGE_TITLE } from "../../helpers/getPrefix";
 import { IconChartAreaLineFilled } from "@tabler/icons-react";
@@ -32,6 +34,8 @@ export default function DashboardPage() {
     } = useDashIngresosPorDepartamentoStore();
     const { fnCargarHuespedesRecurrentes, fnLimpiarHuespedesRecurrentes } =
         useDashHuespedStore();
+    const { fnCargarResumenConsumosEstadia, fnLimpiarResumenConsumosEstadia } =
+        useDashResumenConsumosEstadiaStore();
 
     useEffect(() => {
         fnCargarResumenKPI({ p_anio: new Date().getFullYear() });
@@ -39,12 +43,14 @@ export default function DashboardPage() {
         fnCargarRankingProductos({ p_anio: new Date().getFullYear() });
         fnCargarIngresosPorDepartamento({ p_anio: new Date().getFullYear() });
         fnCargarHuespedesRecurrentes({ p_anio: new Date().getFullYear() });
+        fnCargarResumenConsumosEstadia({ p_anio: new Date().getFullYear() });
         return () => {
             fnLimpiarResumenKPI();
             fnLimpiarHuespedesGananciasMes();
             fnLimpiarRankingProductos();
             fnLimpiarIngresosPorDepartamento();
             fnLimpiarHuespedesRecurrentes();
+            fnLimpiarResumenConsumosEstadia();
             // No limpiar estadías aquí - son datos compartidos con DisponibilidadDepartamentoPage
             // fnLimpiarEstadias();
         };
@@ -80,6 +86,11 @@ export default function DashboardPage() {
                         p_fecha_inicio: values.p_fecha_inicio,
                         p_fecha_fin: values.p_fecha_fin,
                     });
+                    fnCargarResumenConsumosEstadia({
+                        p_anio: values.p_anio,
+                        p_fecha_inicio: values.p_fecha_inicio,
+                        p_fecha_fin: values.p_fecha_fin,
+                    });
                 }}
             />
 
@@ -103,6 +114,9 @@ export default function DashboardPage() {
                 </Grid.Col>
                 <Grid.Col span={{ base: 12, md: 6, lg: 6 }}>
                     <DepartmentBarChart />
+                </Grid.Col>
+                <Grid.Col span={{ base: 12, md: 6, lg: 6 }}>
+                    <ConsumosEstadiaChart />
                 </Grid.Col>
             </Grid>
 

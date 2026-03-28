@@ -139,6 +139,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/dashboard/ranking-productos', [DashboardController::class , 'productosMasConsumidos']);
             Route::post('/dashboard/ingresos-departamento', [DashboardController::class , 'ingresosPorTipoDepartamento']);
             Route::post('/dashboard/huespedes-recurrentes', [DashboardController::class , 'huespedesRecurrentes']);
+            Route::post('/dashboard/resumen-consumos-estadia', [DashboardController::class , 'resumenConsumosEstadia']);
 
             /* ---- Limpieza ---- */
             Route::post('/limpieza', [LimpiezaController::class , 'store']);

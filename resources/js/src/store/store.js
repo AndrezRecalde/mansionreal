@@ -15,6 +15,7 @@ import {
     //dashIvaRecaudadoSlice,
     //dashOcupacionActualSlice,
     dashRankingProductosSlice,
+    dashResumenConsumosEstadiaSlice,
     dashResumenKPISlice,
     departamentoSlice,
     facturaSlice,
@@ -68,6 +69,7 @@ export const store = configureStore({
         dashRankingProductos: dashRankingProductosSlice.reducer,
         dashIngresosPorDepartamento: dashIngresosPorDepartamentoSlice.reducer,
         dashHuespedes: dashHuespedesSlice.reducer,
+        dashResumenConsumosEstadia: dashResumenConsumosEstadiaSlice.reducer,
 
         //dashGastosDanios: dashGastosDaniosSlice.reducer,
         //dashIngresosTotales: dashIngresosTotalesSlice.reducer,

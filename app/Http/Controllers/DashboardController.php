@@ -137,4 +137,30 @@ class DashboardController extends Controller
             ], 500);
         }
     }
+
+    // Resumen de los consumos de tipo ESTADIA
+    public function resumenConsumosEstadia(Request $request)
+    {
+        try {
+            $fecha_inicio = $request->p_fecha_inicio;
+            $fecha_fin = $request->p_fecha_fin;
+            $anio = $request->p_anio;
+            
+            $result = DB::select('CALL sp_resumen_consumos_estadia(?, ?, ?)', [
+                $fecha_inicio,
+                $fecha_fin,
+                $anio
+            ]);
+            
+            return response()->json([
+                'status' => HTTPStatus::Success,
+                'result' => $result
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => HTTPStatus::Error,
+                'msg'    => $th->getMessage()
+            ], 500);
+        }
+    }
 }

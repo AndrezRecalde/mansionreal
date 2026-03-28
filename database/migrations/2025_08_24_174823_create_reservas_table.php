@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('codigo_reserva', 100)->nullable()->unique();
 
-            $table->enum('tipo_reserva', ['HOSPEDAJE', 'ESTADIA'])->default('HOSPEDAJE');
+            $table->enum('tipo_reserva', ['HOSPEDAJE'])->default('HOSPEDAJE');
 
             $table->unsignedBigInteger('huesped_id');
             $table->unsignedBigInteger('departamento_id')->nullable();
